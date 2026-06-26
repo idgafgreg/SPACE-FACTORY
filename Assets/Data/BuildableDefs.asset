@@ -1,0 +1,23 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e751189cab819f648baf9223cec15bc9, type: 3}
+  m_Name: BuildableDefs
+  m_EditorClassIdentifier: Assembly-CSharp::BuildableDefs
+  defs:
+  - {fileID: 11400000, guid: a281ecfc715199c429f723b2759ec5e0, type: 2}
+  - {fileID: 11400000, guid: 1f4c24ac7ee1ef741a8e22cc9c20bb30, type: 2}
+  - {fileID: 11400000, guid: 432413e6547d9ff4c9a27200b4623fee, type: 2}
+  - {fileID: 11400000, guid: 01e356fcbe1ccaf49a4dcfadf4d4b4a7, type: 2}
+  - {fileID: 11400000, guid: 479a57b55313e9f4e9a3084194a4d4b6, type: 2}
+  - {fileID: 11400000, guid: 87820d2d6b002164084dddfa565a814c, type: 2}
+  - {fileID: 11400000, guid: b904b2356d627ba42bbb4d7b84bec36f, type: 2}
+  - {fileID: 11400000, guid: e92c1914073d9ee49886e80c44311d5d, type: 2}
