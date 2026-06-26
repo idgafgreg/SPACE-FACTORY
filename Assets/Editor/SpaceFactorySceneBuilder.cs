@@ -10,7 +10,7 @@ using UnityEngine.UI;
 /// <summary>
 /// One-shot editor tool that builds the playable "Sector01" scene out of the
 /// existing SPACE FACTORY scripts: 8 buildable prefabs + BuildableDef assets,
-/// 3 enemy prefabs, 3 EnemyWaveDefinition assets + 1 EnemyWaveSet, and a full
+/// 3 enemy prefabs continuously spawned by SimpleEnemySpawner, and a full
 /// scene hierarchy (ground, lanes, command hub, player, camera, GameSystems,
 /// Canvas/HUD) with every field wired to the locked numbers from
 /// Sector_Layout_&amp;_Teaching.txt.
@@ -433,63 +433,6 @@ public static class SpaceFactorySceneBuilder
         return SavePrefab(go, $"{PrefabEnemiesDir}/Sapper.prefab");
     }
 
-    // ───────────────────────────── waves ────────────────────────────────────
-
-    static EnemyWaveSet BuildWaves()
-    {
-        EnemySpawnEntry E(float t, EnemyTypeId type, int count, string lane) =>
-            new EnemySpawnEntry { timeOffset = t, enemyType = type, count = count, laneId = lane };
-
-        var wave1 = ScriptableObject.CreateInstance<EnemyWaveDefinition>();
-        wave1.waveIndex = 0;
-        wave1.spawns = new List<EnemySpawnEntry>
-        {
-            E(0,  EnemyTypeId.Crawler, 4, "WestCorridor"),
-            E(10, EnemyTypeId.Crawler, 5, "WestCorridor"),
-            E(22, EnemyTypeId.Bruiser, 1, "WestCorridor"),
-            E(22, EnemyTypeId.Crawler, 3, "WestCorridor"),
-        };
-        AssetDatabase.CreateAsset(wave1, $"{DataWavesDir}/Wave1.asset");
-
-        var wave2 = ScriptableObject.CreateInstance<EnemyWaveDefinition>();
-        wave2.waveIndex = 1;
-        wave2.spawns = new List<EnemySpawnEntry>
-        {
-            E(0,  EnemyTypeId.Crawler, 5, "WestCorridor"),
-            E(8,  EnemyTypeId.Crawler, 4, "WestCorridor"),
-            E(8,  EnemyTypeId.Crawler, 2, "VentBreach"),
-            E(20, EnemyTypeId.Bruiser, 1, "WestCorridor"),
-            E(20, EnemyTypeId.Crawler, 4, "WestCorridor"),
-            E(31, EnemyTypeId.Bruiser, 1, "VentBreach"),
-            E(31, EnemyTypeId.Crawler, 2, "WestCorridor"), // "3 Crawlers split between lanes" - doc gives no exact split; 2 main / 1 side used
-            E(31, EnemyTypeId.Crawler, 1, "VentBreach"),
-        };
-        AssetDatabase.CreateAsset(wave2, $"{DataWavesDir}/Wave2.asset");
-
-        var wave3 = ScriptableObject.CreateInstance<EnemyWaveDefinition>();
-        wave3.waveIndex = 2;
-        wave3.spawns = new List<EnemySpawnEntry>
-        {
-            E(0,  EnemyTypeId.Crawler, 4, "WestCorridor"),
-            E(0,  EnemyTypeId.Crawler, 2, "VentBreach"),
-            E(12, EnemyTypeId.Sapper,  1, "VentBreach"),
-            E(12, EnemyTypeId.Crawler, 3, "VentBreach"),
-            E(24, EnemyTypeId.Bruiser, 1, "WestCorridor"),
-            E(24, EnemyTypeId.Crawler, 4, "WestCorridor"),
-            E(34, EnemyTypeId.Sapper,  1, "VentBreach"), // "support access route" mapped to the Vent Breach lane (only two lanes exist)
-            E(34, EnemyTypeId.Crawler, 2, "VentBreach"),
-            E(43, EnemyTypeId.Bruiser, 1, "WestCorridor"),
-            E(43, EnemyTypeId.Crawler, 3, "WestCorridor"), // "5 Crawlers split across both lanes" - doc gives no exact split; 3 main / 2 side used
-            E(43, EnemyTypeId.Crawler, 2, "VentBreach"),
-        };
-        AssetDatabase.CreateAsset(wave3, $"{DataWavesDir}/Wave3.asset");
-
-        var set = ScriptableObject.CreateInstance<EnemyWaveSet>();
-        set.waves = new List<EnemyWaveDefinition> { wave1, wave2, wave3 };
-        AssetDatabase.CreateAsset(set, $"{DataEnemiesDir}/EnemyWaveSet.asset");
-        return set;
-    }
-
     // ───────────────────────────── build ghost ──────────────────────────────
 
     static GameObject BuildGhostPrefab()
@@ -695,7 +638,7 @@ public static class SpaceFactorySceneBuilder
         var controller = go.AddComponent<PlayerController>();
         controller.playerCamera        = cam;
         controller.characterController = cc;
-        controller.moveSpeed = 1.15f;  // locked player movement baseline
+        controller.moveSpeed = 4.5f;   // raised from the 1.15f locked baseline — felt sluggish vs. map scale
         controller.maxHealth = 120f;   // locked player health baseline
 
         var weapon = go.AddComponent<PlayerWeapon>();
@@ -708,6 +651,14 @@ public static class SpaceFactorySceneBuilder
         // Note: the locked "12-shot heat pause" rule has no corresponding mechanic
         // in PlayerWeapon.cs (no shot counter/heat field exists). Not implemented —
         // this is new mechanic code, not a connection between existing pieces.
+
+        var secondary = go.AddComponent<PlayerSecondaryWeapon>();
+        secondary.fireCamera      = cam;
+        secondary.muzzleTransform = muzzle.transform;
+        secondary.fireRate        = 0.8f;  // slower than the primary
+        secondary.damagePerShot   = 30f;   // hits harder per shot than the primary
+        secondary.maxRange        = 6f;    // slightly longer reach than the primary
+        secondary.hitMask         = 1 << LayerOrWarn("Enemy");
 
         var repair = go.AddComponent<PlayerRepairTool>();
         repair.repairCamera      = cam;
@@ -820,50 +771,6 @@ public static class SpaceFactorySceneBuilder
         var constructionText = UIText("ConstructionText", resourcePanelRt, new Vector2(0f, 1f), new Vector2(0f, 1f),
             new Vector2(0f, -90f), new Vector2(300f, 28f), 20, TextAnchor.MiddleLeft, Color.white, "Parts: 0");
 
-        // ── Wave panel (top-right) ──
-        var wavePanelRt = UIElement("WavePanel", canvasT);
-        wavePanelRt.anchorMin = new Vector2(1f, 1f);
-        wavePanelRt.anchorMax = new Vector2(1f, 1f);
-        wavePanelRt.pivot = new Vector2(1f, 1f);
-        wavePanelRt.anchoredPosition = new Vector2(-20f, -20f);
-        wavePanelRt.sizeDelta = new Vector2(300f, 70f);
-        var wavePanel = wavePanelRt.gameObject.AddComponent<UIWavePanel>();
-
-        var waveText = UIText("WaveText", wavePanelRt, new Vector2(1f, 1f), new Vector2(1f, 1f),
-            new Vector2(0f, 0f), new Vector2(300f, 28f), 22, TextAnchor.MiddleRight, Color.white, "WAVE 1");
-        var statusText = UIText("StatusText", wavePanelRt, new Vector2(1f, 1f), new Vector2(1f, 1f),
-            new Vector2(0f, -30f), new Vector2(300f, 28f), 18, TextAnchor.MiddleRight, new Color(0.8f, 0.8f, 0.8f), "WORK PHASE");
-
-        // ── Phase / timer (top-center) ──
-        var hudControllerRt = UIElement("HudController", canvasT);
-        hudControllerRt.anchorMin = new Vector2(0.5f, 1f);
-        hudControllerRt.anchorMax = new Vector2(0.5f, 1f);
-        hudControllerRt.pivot = new Vector2(0.5f, 1f);
-        hudControllerRt.anchoredPosition = new Vector2(0f, -20f);
-        hudControllerRt.sizeDelta = new Vector2(300f, 70f);
-        var hudController = hudControllerRt.gameObject.AddComponent<UIHudController>();
-        hudController.resourcePanel = resourcePanel;
-        hudController.wavePanel = wavePanel;
-
-        var phaseText = UIText("PhaseText", hudControllerRt, new Vector2(0.5f, 1f), new Vector2(0.5f, 1f),
-            new Vector2(0f, 0f), new Vector2(300f, 28f), 20, TextAnchor.MiddleCenter, Color.white, "WORK");
-        var timerText = UIText("TimerText", hudControllerRt, new Vector2(0.5f, 1f), new Vector2(0.5f, 1f),
-            new Vector2(0f, -30f), new Vector2(300f, 28f), 20, TextAnchor.MiddleCenter, Color.white, "0");
-
-        // ── Phase banner (upper-center popup) ──
-        var bannerRt = UIElement("PhaseBanner", canvasT);
-        bannerRt.anchorMin = new Vector2(0.5f, 0.5f);
-        bannerRt.anchorMax = new Vector2(0.5f, 0.5f);
-        bannerRt.pivot = new Vector2(0.5f, 0.5f);
-        bannerRt.anchoredPosition = new Vector2(0f, 200f);
-        bannerRt.sizeDelta = new Vector2(600f, 60f);
-        var canvasGroup = bannerRt.gameObject.AddComponent<CanvasGroup>();
-        var phaseBanner = bannerRt.gameObject.AddComponent<UIPopupPhaseBanner>();
-        phaseBanner.canvasGroup = canvasGroup;
-
-        var bannerText = UIText("BannerText", bannerRt, new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f),
-            Vector2.zero, new Vector2(600f, 60f), 32, TextAnchor.MiddleCenter, Color.white, "");
-
         // ── Placement reason (bottom-center) ──
         var placementReasonText = UIText("PlacementReasonText", canvasT, new Vector2(0.5f, 0f), new Vector2(0.5f, 0f),
             new Vector2(0f, 30f), new Vector2(700f, 30f), 18, TextAnchor.MiddleCenter, new Color(1f, 0.5f, 0.4f), "");
@@ -879,7 +786,7 @@ public static class SpaceFactorySceneBuilder
 
         var resultText = UIText("ResultText", endPanelRt, new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f),
             new Vector2(0f, 100f), new Vector2(800f, 50f), 36, TextAnchor.MiddleCenter, Color.white, "");
-        var wavesSurvivedText = UIText("WavesSurvivedText", endPanelRt, new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f),
+        var survivalTimeText = UIText("SurvivalTimeText", endPanelRt, new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f),
             new Vector2(0f, 50f), new Vector2(800f, 40f), 22, TextAnchor.MiddleCenter, new Color(0.85f, 0.85f, 0.85f), "");
 
         var restartButton = UIButton("RestartButton", endPanelRt, new Vector2(0f, -30f), new Vector2(220f, 50f), "Restart");
@@ -896,9 +803,6 @@ public static class SpaceFactorySceneBuilder
         // ── HudWiring: binds every UnityEvent<string> source above to its Text ──
         var wiring = canvasGO.AddComponent<HudWiring>();
         wiring.resourcePanel = resourcePanel;
-        wiring.wavePanel = wavePanel;
-        wiring.hudController = hudController;
-        wiring.phaseBanner = phaseBanner;
         wiring.endOfRunScreen = endOfRunScreen;
         // buildTool assigned by caller (WireHud) once the Player exists.
 
@@ -906,16 +810,9 @@ public static class SpaceFactorySceneBuilder
         wiring.energyText = energyText;
         wiring.circuitText = circuitText;
         wiring.constructionText = constructionText;
-        wiring.waveText = waveText;
-        wiring.statusText = statusText;
-        wiring.phaseText = phaseText;
-        wiring.timerText = timerText;
-        wiring.bannerText = bannerText;
         wiring.resultText = resultText;
-        wiring.wavesSurvivedText = wavesSurvivedText;
+        wiring.survivalTimeText = survivalTimeText;
         wiring.placementReasonText = placementReasonText;
-
-        hudController.phaseBanner = phaseBanner; // required for the phase pop-up banner to fire
 
         hudWiring = wiring;
     }
@@ -926,3 +823,4 @@ public static class SpaceFactorySceneBuilder
         wiring.buildTool = buildTool;
     }
 }
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           

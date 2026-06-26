@@ -11,7 +11,7 @@ public class UIEndOfRunScreen : MonoBehaviour
 
     [Header("Text events — wire to any Text component's 'text' field")]
     public UnityEvent<string> onResultText;
-    public UnityEvent<string> onWavesSurvivedText;
+    public UnityEvent<string> onSurvivalTimeText;
 
     void Awake()
     {
@@ -25,13 +25,13 @@ public class UIEndOfRunScreen : MonoBehaviour
         panel?.SetActive(true);
         onResultText.Invoke(playerWon ? "SECTOR SECURED" : "RUN FAILED");
 
-        int waves = CycleController.Instance != null ? CycleController.Instance.WaveIndex : 0;
-        onWavesSurvivedText.Invoke($"Waves survived: {waves}");
+        float seconds = Time.timeSinceLevelLoad;
+        int   mins    = Mathf.FloorToInt(seconds / 60f);
+        int   secs    = Mathf.FloorToInt(seconds % 60f);
+        onSurvivalTimeText.Invoke($"Survived: {mins:00}:{secs:00}");
     }
 
     public void OnRestartPressed() =>
         SceneManager.LoadScene(SceneManager.GetActiveScene().name);
 
-    public void OnMenuPressed() =>
-        SceneManager.LoadScene("Boot");
-}
+    pu
