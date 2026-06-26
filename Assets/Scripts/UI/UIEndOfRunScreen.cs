@@ -34,4 +34,6 @@ public class UIEndOfRunScreen : MonoBehaviour
     public void OnRestartPressed() =>
         SceneManager.LoadScene(SceneManager.GetActiveScene().name);
 
-    pu
+    public void OnMenuPressed() =>
+        SceneManager.LoadScene("Boot");
+}

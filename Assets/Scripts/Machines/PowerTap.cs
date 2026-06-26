@@ -22,4 +22,5 @@ public class PowerTap : MachineBase
         PowerSystem.Instance?.AddCapacity(-extraCapacity);
     }
 
-    protected override 
+    protected override void Tick(float dt) { /* no tick behaviour needed */ }
+}

@@ -52,4 +52,35 @@ public class PlayerRepairTool : MonoBehaviour
         float desiredHp      = repairRate * Time.deltaTime;
         int   availableParts = resourceInventory.Get(ResourceTypeId.ConstructionParts);
         float maxHpFromParts = availableParts / constructionPartCostPerHP;
-        float
+        float clampedHp      = Mathf.Min(desiredHp, maxHpFromParts);
+
+        float healed = 0f;
+
+        if (defense != null && defense.CurrentHealth < defense.maxHealth)
+        {
+            float before = defense.CurrentHealth;
+            defense.Repair(clampedHp);
+            healed = defense.CurrentHealth - before;
+        }
+        else if (health != null && health.IsDamaged)
+        {
+            float before = health.CurrentHealth;
+            health.ApplyHeal(clampedHp);
+            healed = health.CurrentHealth - before;
+        }
+        else if (damageable != null && damageable.CurrentHealth < damageable.maxHealth)
+        {
+            float before = damageable.CurrentHealth;
+            damageable.Heal(clampedHp);
+            healed = damageable.CurrentHealth - before;
+        }
+        else
+        {
+            return;
+        }
+
+        int partsUsed = Mathf.CeilToInt(healed * constructionPartCostPerHP);
+        if (partsUsed > 0)
+            resourceInventory.Spend(ResourceTypeId.ConstructionParts, partsUsed);
+    }
+}

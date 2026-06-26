@@ -9,3 +9,4 @@ EditorBuildSettings:
     path: Assets/Scenes/Sector01.unity
     guid: f39fac0089e77994bbb82e8ed074031b
   m_configObjects:
+    com.unity.dt.app-ui: {fileID: 11400000, guid: 1b1c20d82303e4b5781c3ef50ac1449f, type: 2}

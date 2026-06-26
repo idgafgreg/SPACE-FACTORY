@@ -160,4 +160,5 @@ public class PlayerBuildTool : MonoBehaviour
     void PublishReason(PlacementResult result) =>
         onPlacementReasonChanged?.Invoke(result == PlacementResult.Success
             ? string.Empty
-    
+            : result.ToMessage());
+}

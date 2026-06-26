@@ -38,4 +38,10 @@ public abstract class DefenseBase : MonoBehaviour
     }
 
     /// <summary>
-    /// Frees this structure's
+    /// Frees this structure's BuildSystem grid cell on combat death, mirroring
+    /// what BuildSystem.Demolish/TryRemoveAt do for player-initiated removal.
+    /// Without this, a structure killed by an enemy (e.g. a Bruiser destroying
+    /// a Barrier) would leave its tile permanently un-buildable.
+    /// </summary>
+    protected virtual void OnDestroyed() => BuildSystem.Instance?.FreeCellAt(transform.position);
+}

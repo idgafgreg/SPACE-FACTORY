@@ -26,6 +26,7 @@ public class BuildSystem : MonoBehaviour
     public LayerMask resourceNodeMask;  // ResourceNode marker layer
 
     ResourceInventory _inventory;
+    ResourceInventory Inventory => _inventory ??= ResourceInventory.Instance;
     readonly HashSet<Vector3Int> _occupiedCells = new();
 
     // ── Lifecycle ────────────────────────────────────────────────────────────
@@ -33,8 +34,7 @@ public class BuildSystem : MonoBehaviour
     void Awake()
     {
         if (Instance != null && Instance != this) { Destroy(gameObject); return; }
-        Instance  = this;
-        _inventory = ResourceInventory.Instance;
+        Instance = this;
     }
 
     // ── Primary API — by BuildableDef ─────────────────────────────────────────
@@ -47,7 +47,7 @@ public class BuildSystem : MonoBehaviour
     {
         if (def == null || def.prefab == null) return PlacementResult.DefNotFound;
 
-        if (!_inventory.CanAfford(ResourceTypeId.ScrapMetal, def.scrapCost))
+        if (!Inventory.CanAfford(ResourceTypeId.ScrapMetal, def.scrapCost))
             return PlacementResult.InsufficientScrap;
 
         Vector3 snapped = SnapToGrid(worldPos);
@@ -81,7 +81,7 @@ public class BuildSystem : MonoBehaviour
         Vector3    snapped = SnapToGrid(worldPos);
         Vector3Int cell    = WorldToCell(snapped);
 
-        _inventory.Spend(ResourceTypeId.ScrapMetal, def.scrapCost);
+        Inventory.Spend(ResourceTypeId.ScrapMetal, def.scrapCost);
 
         placed = Instantiate(def.prefab, snapped, rot);
         _occupiedCells.Add(cell);
@@ -99,7 +99,7 @@ public class BuildSystem : MonoBehaviour
     // ── Convenience bool overloads ────────────────────────────────────────────
 
     public bool CanAfford(BuildableDef def) =>
-        def != null && _inventory.CanAfford(ResourceTypeId.ScrapMetal, def.scrapCost);
+        def != null && Inventory.CanAfford(ResourceTypeId.ScrapMetal, def.scrapCost);
 
     /// <summary>Cheap pre-check used by ghost preview (skips cost + power checks).</summary>
     public bool IsCellFree(Vector3 worldPos)
@@ -170,4 +170,16 @@ public class BuildSystem : MonoBehaviour
 
     bool HasBuildableOverlap(BuildableDef def, Vector3 snapped, Quaternion rot) =>
         Physics.CheckBox(snapped,
-            new Vector3(def.footprint.x * grid
+            new Vector3(def.footprint.x * gridSize * 0.49f, 0.5f, def.footprint.y * gridSize * 0.49f),
+            rot, buildableMask);
+
+    bool IsOnResourceNode(Vector3 snapped) =>
+        Physics.CheckSphere(snapped, gridSize * 0.6f, resourceNodeMask);
+
+    bool HasPowerCapacity(BuildableDef def)
+    {
+        var ps = PowerSystem.Instance;
+        if (ps == null) return true;  // no PowerSystem in scene = always passes
+        return ps.HasCapacityFor(def.powerUsage);
+    }
+}
