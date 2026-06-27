@@ -46,12 +46,17 @@ public class PlayerSecondaryWeapon : MonoBehaviour
 
     void Fire()
     {
-        Vector3 origin = muzzleTransform ? muzzleTransform.position : transform.position;
-        Ray     ray    = fireCamera.ScreenPointToRay(Input.mousePosition);
+        // Fire straight out of the muzzle in the direction the player model is
+        // facing — NOT toward the mouse cursor. With this camera's elevated,
+        // far-away orbit position, a camera-to-mouse ray only travels maxRange
+        // (a few units) from the *camera*, which never reaches the play area —
+        // that was sending shots up toward the camera instead of at enemies.
+        Vector3 origin    = muzzleTransform ? muzzleTransform.position : transform.position;
+        Vector3 direction = transform.forward;
 
-        Vector3 endpoint = ray.origin + ray.direction * maxRange;
+        Vector3 endpoint = origin + direction * maxRange;
 
-        if (Physics.Raycast(ray, out var hit, maxRange, hitMask))
+        if (Physics.Raycast(origin, direction, out var hit, maxRange, hitMask))
         {
             endpoint = hit.point;
             var health = hit.collider.GetComponentInParent<Health>();
