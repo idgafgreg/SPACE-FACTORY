@@ -41,13 +41,16 @@ public class PlayerWeapon : MonoBehaviour
 
     void Fire()
     {
-        // Fire straight out of the muzzle in the direction the player model is
-        // facing — NOT toward the mouse cursor. With this camera's elevated,
-        // far-away orbit position, a camera-to-mouse ray only travels maxRange
-        // (a few units) from the *camera*, which never reaches the play area —
-        // that was sending shots up toward the camera instead of at enemies.
+        // Fire out of the muzzle in whatever direction the muzzle is currently
+        // facing. The muzzle is a child of the Torso pivot, which PlayerAim
+        // rotates to face the mouse cursor (via a ground-plane intersection,
+        // not a fixed range measured from the camera — that's what caused the
+        // earlier "shooting at the camera" bug). This is independent of
+        // transform.forward, which PlayerController instead points at the
+        // WASD movement direction for the legs. Falls back to transform.forward
+        // if no muzzle is assigned.
         Vector3 origin    = muzzleTransform ? muzzleTransform.position : transform.position;
-        Vector3 direction = transform.forward;
+        Vector3 direction = muzzleTransform ? muzzleTransform.forward  : transform.forward;
 
         Vector3 endpoint = origin + direction * maxRange;
 

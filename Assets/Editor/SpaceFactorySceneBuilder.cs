@@ -624,6 +624,7 @@ public static class SpaceFactorySceneBuilder
         cc.radius = 0.4f;
         cc.center = new Vector3(0f, 1f, 0f);
 
+        // Legs/body — rotates with movement direction (WASD), via PlayerController.
         var visual = GameObject.CreatePrimitive(PrimitiveType.Capsule);
         visual.name = "Visual";
         visual.transform.SetParent(go.transform);
@@ -631,15 +632,35 @@ public static class SpaceFactorySceneBuilder
         Object.DestroyImmediate(visual.GetComponent<Collider>());
         visual.GetComponent<Renderer>().sharedMaterial = CreateMaterial("Player", new Color(0.2f, 0.6f, 1f));
 
+        // Torso — independent pivot that rotates to face the mouse (see
+        // PlayerAim), separate from the body capsule above. Holds a small
+        // visual marker plus the Muzzle, so both weapons aim wherever the
+        // torso/mouse is pointing instead of wherever the legs are walking.
+        var torso = new GameObject("Torso");
+        torso.transform.SetParent(go.transform);
+        torso.transform.localPosition = new Vector3(0f, 1.5f, 0f);
+
+        var torsoVisual = GameObject.CreatePrimitive(PrimitiveType.Cube);
+        torsoVisual.name = "TorsoVisual";
+        torsoVisual.transform.SetParent(torso.transform);
+        torsoVisual.transform.localPosition = new Vector3(0f, 0f, 0.15f);
+        torsoVisual.transform.localScale    = new Vector3(0.5f, 0.25f, 0.5f);
+        Object.DestroyImmediate(torsoVisual.GetComponent<Collider>());
+        torsoVisual.GetComponent<Renderer>().sharedMaterial = CreateMaterial("PlayerTorso", new Color(0.85f, 0.85f, 0.95f));
+
         var muzzle = new GameObject("Muzzle");
-        muzzle.transform.SetParent(go.transform);
-        muzzle.transform.localPosition = new Vector3(0f, 1.5f, 0.5f);
+        muzzle.transform.SetParent(torso.transform);
+        muzzle.transform.localPosition = new Vector3(0f, 0f, 0.55f);
 
         var controller = go.AddComponent<PlayerController>();
         controller.playerCamera        = cam;
         controller.characterController = cc;
         controller.moveSpeed = 4.5f;   // raised from the 1.15f locked baseline — felt sluggish vs. map scale
         controller.maxHealth = 120f;   // locked player health baseline
+
+        var aim = go.AddComponent<PlayerAim>();
+        aim.aimCamera = cam;
+        aim.torso     = torso.transform;
 
         var weapon = go.AddComponent<PlayerWeapon>();
         weapon.fireCamera      = cam;
