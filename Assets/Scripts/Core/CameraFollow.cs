@@ -20,7 +20,7 @@ public class CameraFollow : MonoBehaviour
     public float lookAtHeightOffset = 1.5f;
 
     [Header("Orbit (right-click drag)")]
-    public float orbitSensitivity = 200f;
+    public float orbitSensitivity = 500f;
 
     [Header("Zoom (scroll wheel)")]
     public float zoomSpeed         = 30f;
