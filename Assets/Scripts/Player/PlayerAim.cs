@@ -8,12 +8,16 @@ using UnityEngine;
 /// torso (and aim) turns to follow the mouse.
 ///
 /// The aim point is found by intersecting the camera-to-mouse ray with a
-/// horizontal plane at the torso's height — NOT by capping the ray at a fixed
-/// range measured from the camera. That fixed-range-from-camera approach is
-/// exactly what caused the earlier "shooting at the camera instead of
-/// enemies" bug, since this camera orbits ~27 units away from the player. A
-/// plane intersection finds the correct world point regardless of how far
-/// away the camera sits.
+/// horizontal plane at GROUND height — NOT by capping the ray at a fixed
+/// range measured from the camera (that's what caused the earlier "shooting
+/// at the camera instead of enemies" bug), and NOT at the torso's own height
+/// either. This camera looks down at a steep angle (~54°, see CameraFollow's
+/// offset), so intersecting at chest height instead of ground level pulls the
+/// computed point noticeably toward the camera — a couple of units off from
+/// where the cursor visually sits over the ground/enemies, which was enough
+/// to make shots consistently miss even though the aim looked right on
+/// screen. Ground height is taken from this script's own transform (the
+/// Player root, which sits at foot height), not the torso.
 /// </summary>
 public class PlayerAim : MonoBehaviour
 {
@@ -33,7 +37,7 @@ public class PlayerAim : MonoBehaviour
         if (!aimCamera) return;
 
         Ray   ray   = aimCamera.ScreenPointToRay(Input.mousePosition);
-        Plane plane = new Plane(Vector3.up, new Vector3(0f, torso.position.y, 0f));
+        Plane plane = new Plane(Vector3.up, new Vector3(0f, transform.position.y, 0f));
 
         if (!plane.Raycast(ray, out float distance)) return;
 
