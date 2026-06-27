@@ -21,9 +21,11 @@ public class PlayerSecondaryWeapon : MonoBehaviour
     public float     maxRange      = 6f;    // slightly longer reach than the primary
     public LayerMask hitMask;                // Enemy + any other hittable layers
 
-    [Header("VFX (optional)")]
-    public LineRenderer shotLine;
-    public float        lineDuration = 0.08f;
+    [Header("VFX")]
+    public Color         bulletColor  = new Color(1f, 0.55f, 0.15f); // orange — reads as "heavier" than the primary's cyan
+    public float         bulletSpeed  = 24f;
+    public LineRenderer  shotLine;
+    public float         lineDuration = 0.08f;
 
     float _cooldown;
 
@@ -56,6 +58,7 @@ public class PlayerSecondaryWeapon : MonoBehaviour
             health?.ApplyDamage(damagePerShot);
         }
 
+        Bullet.Spawn(origin, endpoint, bulletSpeed, bulletColor);
         if (shotLine) ShowShotLine(origin, endpoint);
     }
 

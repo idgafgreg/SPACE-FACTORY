@@ -16,9 +16,11 @@ public class PlayerWeapon : MonoBehaviour
     public float     maxRange      = 30f;
     public LayerMask hitMask;              // Enemy + any other hittable layers
 
-    [Header("VFX (optional)")]
-    public LineRenderer shotLine;
-    public float        lineDuration = 0.05f;
+    [Header("VFX")]
+    public Color         bulletColor  = new Color(0.4f, 0.9f, 1f); // cyan
+    public float         bulletSpeed  = 30f;
+    public LineRenderer  shotLine;
+    public float         lineDuration = 0.05f;
 
     float _cooldown;
 
@@ -51,6 +53,7 @@ public class PlayerWeapon : MonoBehaviour
             health?.ApplyDamage(damagePerShot);
         }
 
+        Bullet.Spawn(origin, endpoint, bulletSpeed, bulletColor);
         if (shotLine) ShowShotLine(origin, endpoint);
     }
 
