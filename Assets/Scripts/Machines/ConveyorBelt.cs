@@ -2,8 +2,10 @@ using System.Collections.Generic;
 using UnityEngine;
 
 /// <summary>
-/// Moves visual item icons from startPoint to endPoint, then delivers to inventory.
-/// Call PushItem() from MiningDrill or another machine to inject an item.
+/// Moves item icons from startPoint to endPoint, then hands the item off to a
+/// downstream <see cref="IItemReceiver"/> (e.g. a Processor's input buffer)
+/// sitting at endPoint — or, if there is none, dumps it into the global
+/// stockpile. Call PushItem() from MiningDrill or another machine to inject an item.
 /// </summary>
 public class ConveyorBelt : MonoBehaviour
 {
@@ -16,7 +18,15 @@ public class ConveyorBelt : MonoBehaviour
     public float tileSize            = 1.0f;
 
     [Header("Visual")]
-    [SerializeField] GameObject itemIconPrefab;
+    public GameObject itemIconPrefab;
+
+    [Header("Output")]
+    [Tooltip("Optional explicit downstream machine. If null, the belt searches for an IItemReceiver at endPoint; if none is found the item goes to the global stockpile.")]
+    public MonoBehaviour outputReceiver;
+    public float receiverSearchRadius = 0.75f;
+
+    /// <summary>True when this belt is actually able to carry items (wired up with endpoints + an icon).</summary>
+    public bool CanCarry => startPoint && endPoint && itemIconPrefab;
 
     class ConveyorItem
     {
@@ -69,8 +79,26 @@ public class ConveyorBelt : MonoBehaviour
 
     void Deliver(ResourceTypeId res)
     {
-        // Prototype: goes straight to inventory.
-        // Post-prototype: find a Processor at endPoint and call OnItemArrived.
+        // Hand off to a downstream machine at the belt's end (e.g. a Processor's
+        // input buffer). Only if there's none — or it rejects the item — does the
+        // belt fall back to the global stockpile. This is what makes factory layout
+        // matter: a drill wired through a belt into a processor gets its scrap
+        // refined; a drill on a dead-end belt only ever stockpiles raw scrap.
+        var receiver = ResolveReceiver();
+        if (receiver != null && receiver.TryAcceptItem(res)) return;
         ResourceInventory.Instance?.Add(res, 1);
+    }
+
+    IItemReceiver ResolveReceiver()
+    {
+        if (outputReceiver is IItemReceiver explicitReceiver) return explicitReceiver;
+        if (!endPoint) return null;
+
+        foreach (var col in Physics.OverlapSphere(endPoint.position, receiverSearchRadius))
+        {
+            var rec = col.GetComponentInParent<IItemReceiver>();
+            if (rec != null) return rec;
+        }
+        return null;
     }
 }

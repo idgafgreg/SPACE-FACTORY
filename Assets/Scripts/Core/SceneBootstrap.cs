@@ -33,7 +33,7 @@ public class SceneBootstrap : MonoBehaviour
         Check(sb, "ResourceInventory", resourceInventory ??  FindAny<ResourceInventory>());
         Check(sb, "PowerSystem",       powerSystem       ??  FindAny<PowerSystem>());
         Check(sb, "SectorLayout",      sectorLayout      ??  FindAny<SectorLayout>());
-        Check(sb, "SimpleEnemySpawner", FindAny<SimpleEnemySpawner>());
+        Check(sb, "WaveController", FindAny<WaveController>());
         CheckBuildSystem(sb);
         CheckProcessor(sb);
         CheckHUD(sb);
@@ -98,7 +98,7 @@ public class SceneBootstrap : MonoBehaviour
         bool hasPower   = FindAny<PowerSystem>() != null;
         bool hasInv     = FindAny<ResourceInventory>() != null;
         bool hasLayout  = FindAny<SectorLayout>() != null;
-        bool hasSpawner = FindAny<SimpleEnemySpawner>() != null;
+        bool hasSpawner = FindAny<WaveController>() != null;
         bool hasProc    = FindAny<Processor>() != null;
 
         void Line(bool ok, string label) =>
@@ -107,7 +107,7 @@ public class SceneBootstrap : MonoBehaviour
         Line(hasPower,   "PowerSystem");
         Line(hasInv,     "ResourceInventory");
         Line(hasLayout,  "SectorLayout");
-        Line(hasSpawner, "SimpleEnemySpawner");
+        Line(hasSpawner, "WaveController");
         Line(hasProc,    "Processor (ScrapMetal → ConstructionParts loop)");
 
         var bs = FindAny<BuildSystem>();

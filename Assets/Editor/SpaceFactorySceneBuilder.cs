@@ -10,7 +10,7 @@ using UnityEngine.UI;
 /// <summary>
 /// One-shot editor tool that builds the playable "Sector01" scene out of the
 /// existing SPACE FACTORY scripts: 8 buildable prefabs + BuildableDef assets,
-/// 3 enemy prefabs continuously spawned by SimpleEnemySpawner, and a full
+/// 3 enemy prefabs released in escalating waves by WaveController, and a full
 /// scene hierarchy (ground, lanes, command hub, player, camera, GameSystems,
 /// Canvas/HUD) with every field wired to the locked numbers from
 /// Sector_Layout_&amp;_Teaching.txt.
@@ -283,9 +283,10 @@ public static class SpaceFactorySceneBuilder
         var go = Primitive(PrimitiveType.Cube, "RelayNode", "Buildable",
             new Vector3(1f, 0.3f, 1f), new Color(0.5f, 0.5f, 0.55f));
 
-        // ConveyorBelt is a plain MonoBehaviour (not a MachineBase subclass) with no
-        // durability of its own — startPoint/endPoint are left null (no other script
-        // ever calls PushItem on it), so it's a dormant placeholder structure for now.
+        // The player-buildable RelayNode carries a ConveyorBelt but ships with
+        // null startPoint/endPoint, so CanCarry is false and it stays inert until
+        // an in-game tool can wire endpoints. The working reference belt is the
+        // pre-placed StarterBelt (see BuildStarterChain), which feeds a Processor.
         go.AddComponent<ConveyorBelt>();
 
         var health = go.AddComponent<Health>();
@@ -383,13 +384,17 @@ public static class SpaceFactorySceneBuilder
         SetMaxHealthField(health, 35f);
 
         var crawler = go.AddComponent<Crawler>();
-        // Crawler has no Awake() override, so every stat must be set explicitly here.
-        crawler.moveSpeedTilesPerSec = 1.4f;
+        // Crawler: fast serpentine harasser — rapid light bites, eager to chase the player.
+        crawler.moveSpeedTilesPerSec = 1.6f;
         crawler.tileSize             = 1f;
         crawler.attackRange          = 0.8f;
-        crawler.attackRate           = 1.0f;   // locked: 1.0s interval
-        crawler.damagePerHit         = 6f;
-        crawler.scrapReward          = 4;      // locked salvage value (class default is 2)
+        crawler.attackRate           = 2.5f;   // rapid bites
+        crawler.damagePerHit         = 4f;     // small per bite
+        crawler.scrapReward          = 2;
+        crawler.playerAggroRadius    = 9f;     // strongly player-seeking
+        crawler.retargetInterval     = 0.4f;
+        crawler.weaveAmplitude       = 0.6f;   // serpentine movement
+        crawler.weaveFrequency       = 6f;
 
         return SavePrefab(go, $"{PrefabEnemiesDir}/Crawler.prefab");
     }
@@ -403,15 +408,21 @@ public static class SpaceFactorySceneBuilder
         SetMaxHealthField(health, 140f);
 
         var bruiser = go.AddComponent<Bruiser>();
-        // Bruiser.Awake() also hardcodes these three to the same locked values;
-        // set explicitly anyway so the prefab's serialized data is correct
-        // regardless of editor-time Awake() execution order.
+        // Bruiser: slow siege charger — heavy slam with splash, smashes barriers then hub.
         bruiser.moveSpeedTilesPerSec = 0.7f;
-        bruiser.damagePerHit         = 18f;
+        bruiser.attackRange          = 1.2f;
+        bruiser.attackRate           = 0.6f;   // slow, heavy swings
+        bruiser.damagePerHit         = 22f;
         bruiser.scrapReward          = 12;
-        bruiser.attackRate           = 1f / 1.5f; // locked: 1.5s interval - Awake() does NOT set this
+        bruiser.playerAggroRadius    = 2.2f;   // only notices the player point-blank
+        bruiser.retargetInterval     = 0.8f;
         bruiser.barrierSearchRadius  = 8f;
         bruiser.structureMask        = 1 << LayerOrWarn("Buildable");
+        bruiser.chargeInterval       = 4f;     // charge movement
+        bruiser.chargeDuration       = 1.2f;
+        bruiser.chargeMultiplier     = 2.6f;
+        bruiser.slamRadius           = 1.6f;   // slam splash
+        bruiser.slamSplash           = 0.5f;
 
         return SavePrefab(go, $"{PrefabEnemiesDir}/Bruiser.prefab");
     }
@@ -425,10 +436,17 @@ public static class SpaceFactorySceneBuilder
         SetMaxHealthField(health, 55f);
 
         var sapper = go.AddComponent<Sapper>();
-        sapper.moveSpeedTilesPerSec = 1.0f;
-        sapper.damagePerHit         = 10f;
+        // Sapper: flanking saboteur — light hit + corrosion DoT, banks around the front line.
+        sapper.moveSpeedTilesPerSec = 1.1f;
+        sapper.attackRange          = 0.9f;
+        sapper.attackRate           = 1.2f;
+        sapper.damagePerHit         = 5f;      // light on impact — corrosion does the work
         sapper.scrapReward          = 10;
-        sapper.attackRate           = 1f / 0.9f; // locked: 0.9s interval - Awake() does NOT set this
+        sapper.playerAggroRadius    = 5f;
+        sapper.retargetInterval     = 0.6f;
+        sapper.flankBias            = 0.55f;   // flank movement
+        sapper.corrosionDps         = 6f;      // corrosion DoT
+        sapper.corrosionDuration    = 4f;
 
         return SavePrefab(go, $"{PrefabEnemiesDir}/Sapper.prefab");
     }
@@ -476,7 +494,7 @@ public static class SpaceFactorySceneBuilder
             new Vector3(0f, 0.5f, -1f),
         }, lanesRoot.transform);
 
-        BuildScrapVein();
+        var scrapVein = BuildScrapVein();
 
         var mainCamera = BuildMainCamera();
         BuildLight();
@@ -506,18 +524,29 @@ public static class SpaceFactorySceneBuilder
         layout.commandHubDamageable = commandHubDamageable;
         layout.lanes = new[] { westCorridor, ventBreach };
 
-        var spawner = gameSystems.AddComponent<SimpleEnemySpawner>();
-        spawner.crawlerPrefab    = enemyPrefabs["Crawler"];
-        spawner.bruiserPrefab    = enemyPrefabs["Bruiser"];
-        spawner.sapperPrefab     = enemyPrefabs["Sapper"];
-        spawner.initialInterval  = 8f;
-        spawner.minimumInterval  = 2f;
-        spawner.rampDuration     = 300f;
+        var waveController = gameSystems.AddComponent<WaveController>();
+        waveController.crawlerPrefab = enemyPrefabs["Crawler"];
+        waveController.bruiserPrefab = enemyPrefabs["Bruiser"];
+        waveController.sapperPrefab  = enemyPrefabs["Sapper"];
+        waveController.prepDuration  = 15f;
+        waveController.endlessGrowth = 1.25f;
+        waveController.waves = new List<WaveController.WaveDef>
+        {
+            new WaveController.WaveDef { crawlers = 4,  bruisers = 0, sappers = 0, spawnSpacing = 0.8f },
+            new WaveController.WaveDef { crawlers = 6,  bruisers = 1, sappers = 0, spawnSpacing = 0.7f },
+            new WaveController.WaveDef { crawlers = 5,  bruisers = 1, sappers = 2, spawnSpacing = 0.7f },
+            new WaveController.WaveDef { crawlers = 8,  bruisers = 2, sappers = 2, spawnSpacing = 0.6f },
+            new WaveController.WaveDef { crawlers = 10, bruisers = 3, sappers = 3, spawnSpacing = 0.5f },
+        };
 
         gameSystems.AddComponent<SceneBootstrap>();
         gameSystems.AddComponent<RunStateController>();
 
         var starting = gameSystems.AddComponent<StartingResources>();
+
+        // Pre-placed, working drill → belt → processor chain so the logistics
+        // loop has real spatial consequence out of the box.
+        BuildStarterChain(defs, scrapVein);
 
         var player = BuildPlayer(mainCamera, buildSystem, inventory, hotbarDefs,
             ghostPrefab, validMat, invalidMat, blockedMat);
@@ -527,6 +556,7 @@ public static class SpaceFactorySceneBuilder
         if (follow != null) follow.target = player.transform;
 
         BuildUI(out var hudWiring);
+        hudWiring.waveController = waveController;
         WireHud(hudWiring);
 
         EditorSceneManager.SaveScene(EditorSceneManager.GetActiveScene(), ScenePath);
@@ -590,6 +620,65 @@ public static class SpaceFactorySceneBuilder
         node.resourceType = ResourceTypeId.ScrapMetal;
         node.totalYield = -1; // infinite
         return go;
+    }
+
+    // ─────────────────────────── starter logistics chain ────────────────────
+    //
+    // A real, wired MiningDrill → ConveyorBelt → Processor line laid down at
+    // build time. The drill mines the scrap vein and pushes ScrapMetal onto the
+    // belt (NOT the global stockpile); the belt carries each unit to the
+    // processor's input buffer; the processor refines 5 ScrapMetal → 1
+    // ConstructionParts into the global stockpile. Move/break any link and the
+    // refined output stops — that's the spatial consequence.
+
+    static void BuildStarterChain(Dictionary<string, BuildableDef> defs, GameObject scrapVein)
+    {
+        var node = scrapVein.GetComponent<ResourceNode>();
+
+        // Drill sits on the vein.
+        var drillGO = (GameObject)PrefabUtility.InstantiatePrefab(defs["MiningDrill"].prefab);
+        drillGO.name = "MiningDrill (Starter)";
+        drillGO.transform.position = new Vector3(12f, 0.6f, 12f);
+        var drill = drillGO.GetComponent<MiningDrill>();
+        drill.assignedNode = node;
+
+        // Processor a few tiles toward the hub.
+        var procGO = (GameObject)PrefabUtility.InstantiatePrefab(defs["Processor"].prefab);
+        procGO.name = "Processor (Starter)";
+        procGO.transform.position = new Vector3(7f, 0.5f, 12f);
+        var processor = procGO.GetComponent<Processor>();
+
+        // Belt running drill → processor, carrying the item icon.
+        var itemIcon = BuildItemIconPrefab();
+        var beltGO   = new GameObject("StarterBelt");
+
+        var startT = new GameObject("Start").transform;
+        startT.SetParent(beltGO.transform);
+        startT.position = new Vector3(11.2f, 0.6f, 12f);
+
+        var endT = new GameObject("End").transform;
+        endT.SetParent(beltGO.transform);
+        endT.position = new Vector3(7.8f, 0.6f, 12f);
+
+        var belt = beltGO.AddComponent<ConveyorBelt>();
+        belt.startPoint          = startT;
+        belt.endPoint            = endT;
+        belt.itemIconPrefab      = itemIcon;
+        belt.speedTilesPerSecond = 2.5f;
+        belt.outputReceiver      = processor;   // explicit hand-off target
+
+        drill.outputBelt = belt;                // drill feeds the belt
+    }
+
+    static GameObject BuildItemIconPrefab()
+    {
+        var go = GameObject.CreatePrimitive(PrimitiveType.Sphere);
+        go.name = "ScrapItemIcon";
+        go.transform.localScale = Vector3.one * 0.25f;
+        Object.DestroyImmediate(go.GetComponent<Collider>());
+        go.GetComponent<Renderer>().sharedMaterial =
+            CreateMaterial("ScrapItemIcon", new Color(0.8f, 0.6f, 0.25f));
+        return SavePrefab(go, $"{PrefabMiscDir}/ScrapItemIcon.prefab");
     }
 
     static Camera BuildMainCamera()
@@ -669,17 +758,8 @@ public static class SpaceFactorySceneBuilder
         weapon.damagePerShot   = 14f;   // locked sidearm damage
         weapon.maxRange        = 4.5f;  // locked sidearm range
         weapon.hitMask         = 1 << LayerOrWarn("Enemy");
-        // Note: the locked "12-shot heat pause" rule has no corresponding mechanic
-        // in PlayerWeapon.cs (no shot counter/heat field exists). Not implemented —
-        // this is new mechanic code, not a connection between existing pieces.
-
-        var secondary = go.AddComponent<PlayerSecondaryWeapon>();
-        secondary.fireCamera      = cam;
-        secondary.muzzleTransform = muzzle.transform;
-        secondary.fireRate        = 0.8f;  // slower than the primary
-        secondary.damagePerShot   = 30f;   // hits harder per shot than the primary
-        secondary.maxRange        = 6f;    // slightly longer reach than the primary
-        secondary.hitMask         = 1 << LayerOrWarn("Enemy");
+        weapon.shotsBeforePause  = 12;   // locked: 12-shot heat limit
+        weapon.heatPauseDuration = 1.2f; // locked: 1.2s forced pause
 
         var repair = go.AddComponent<PlayerRepairTool>();
         repair.repairCamera      = cam;
@@ -792,6 +872,10 @@ public static class SpaceFactorySceneBuilder
         var constructionText = UIText("ConstructionText", resourcePanelRt, new Vector2(0f, 1f), new Vector2(0f, 1f),
             new Vector2(0f, -90f), new Vector2(300f, 28f), 20, TextAnchor.MiddleLeft, Color.white, "Parts: 0");
 
+        // ── Wave banner (top-center) ──
+        var waveBannerText = UIText("WaveBannerText", canvasT, new Vector2(0.5f, 1f), new Vector2(0.5f, 1f),
+            new Vector2(0f, -24f), new Vector2(700f, 36f), 26, TextAnchor.MiddleCenter, new Color(1f, 0.85f, 0.4f), "");
+
         // ── Placement reason (bottom-center) ──
         var placementReasonText = UIText("PlacementReasonText", canvasT, new Vector2(0.5f, 0f), new Vector2(0.5f, 0f),
             new Vector2(0f, 30f), new Vector2(700f, 30f), 18, TextAnchor.MiddleCenter, new Color(1f, 0.5f, 0.4f), "");
@@ -834,6 +918,7 @@ public static class SpaceFactorySceneBuilder
         wiring.resultText = resultText;
         wiring.survivalTimeText = survivalTimeText;
         wiring.placementReasonText = placementReasonText;
+        wiring.waveBannerText = waveBannerText;
 
         hudWiring = wiring;
     }

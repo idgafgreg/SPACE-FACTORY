@@ -141,9 +141,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7cd3f0c18b6a8e948949ad4d3e9c1af3, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Crawler
-  moveSpeedTilesPerSec: 1.4
+  moveSpeedTilesPerSec: 1.6
   tileSize: 1
   attackRange: 0.8
-  attackRate: 1
-  damagePerHit: 6
-  scrapReward: 4
+  attackRate: 2.5
+  damagePerHit: 4
+  playerAggroRadius: 9
+  retargetInterval: 0.4
+  scrapReward: 2
+  weaveAmplitude: 0.6
+  weaveFrequency: 6

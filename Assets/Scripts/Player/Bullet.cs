@@ -3,7 +3,7 @@ using UnityEngine;
 
 /// <summary>
 /// Pure-visual flying bullet. Damage is already applied instantly by the hitscan
-/// raycast in PlayerWeapon/PlayerSecondaryWeapon at the moment of firing — this
+/// raycast in PlayerWeapon at the moment of firing — this
 /// object exists only to give the shot something to look at: a small glowing
 /// capsule (plus a short trail) that flies from the muzzle to the hit point (or
 /// out to max range if nothing was hit) and disappears on arrival.

@@ -16,6 +16,15 @@ public class PlayerWeapon : MonoBehaviour
     public float     maxRange      = 30f;
     public LayerMask hitMask;              // Enemy + any other hittable layers
 
+    [Header("Heat")]
+    [Tooltip("Shots fired before a forced cooldown pause (the heat limit).")]
+    public int   shotsBeforePause = 12;
+    [Tooltip("Length of the forced pause once the heat limit is hit.")]
+    public float heatPauseDuration = 1.2f;
+
+    /// <summary>Shots remaining before the next forced heat pause.</summary>
+    public int ShotsUntilPause => Mathf.Max(0, shotsBeforePause - _shotsSincePause);
+
     [Header("VFX")]
     public Color         bulletColor  = new Color(0.4f, 0.9f, 1f); // cyan
     public float         bulletSpeed  = 30f;
@@ -23,6 +32,7 @@ public class PlayerWeapon : MonoBehaviour
     public float         lineDuration = 0.05f;
 
     float _cooldown;
+    int   _shotsSincePause;
 
     void Start()
     {
@@ -35,7 +45,19 @@ public class PlayerWeapon : MonoBehaviour
         if (Input.GetMouseButton(0) && _cooldown <= 0f)
         {
             Fire();
-            _cooldown = 1f / fireRate;
+            _shotsSincePause++;
+
+            // Every 12th shot the sidearm overheats: force a longer pause and
+            // reset the counter. Otherwise the normal per-shot fire interval.
+            if (shotsBeforePause > 0 && _shotsSincePause >= shotsBeforePause)
+            {
+                _cooldown        = heatPauseDuration;
+                _shotsSincePause = 0;
+            }
+            else
+            {
+                _cooldown = 1f / fireRate;
+            }
         }
     }
 

@@ -1,18 +1,30 @@
 using UnityEngine;
 
 /// <summary>
-/// Fast, low-HP scout enemy.
+/// Fast, low-HP harasser.
 ///
-/// Prefab setup:
-///   Health._maxHealth = 35
-///   EnemyBase.moveSpeedTilesPerSec = 1.4  (default)
-///   EnemyBase.damagePerHit         = 6    (default)
-///   EnemyBase.scrapReward          = 2    (default)
+/// Movement — SERPENTINE: weaves side to side around its heading, hard to
+/// track with the turret/sidearm.
+/// Damage   — RAPID BITES: low damage, high attack rate (set on the prefab).
+/// AI       — strongly player-seeking; breaks off the lane to chase the
+/// player whenever they come within aggro range, otherwise runs the hub.
 ///
-/// At 22 DPS from AutoTurret (11 dmg × 2/s), a Crawler dies in ~1.6 s.
+/// All numeric stats live on the prefab (built by SpaceFactorySceneBuilder).
+/// This class only adds the weave movement.
 /// </summary>
 public class Crawler : EnemyBase
 {
-    // All stats configured on the Health component and EnemyBase fields
-    // in the Inspector. No overrides needed for the prototype.
+    [Header("Crawler — Serpentine Movement")]
+    public float weaveAmplitude = 0.6f;   // how far it swings off-axis
+    public float weaveFrequency = 6f;     // swings per second
+
+    float _phase;
+
+    protected override void Tick(float dt) => _phase += dt * weaveFrequency;
+
+    protected override Vector3 Steer(Vector3 desiredDir)
+    {
+        Vector3 side = Vector3.Cross(Vector3.up, desiredDir);
+        return desiredDir + side * (Mathf.Sin(_phase) * weaveAmplitude);
+    }
 }

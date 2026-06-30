@@ -141,10 +141,15 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a5ba01c9c13a68f4fb945bfbf7e02be3, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Sapper
-  moveSpeedTilesPerSec: 1
+  moveSpeedTilesPerSec: 1.1
   tileSize: 1
-  attackRange: 0.8
-  attackRate: 1.1111112
-  damagePerHit: 10
+  attackRange: 0.9
+  attackRate: 1.2
+  damagePerHit: 5
+  playerAggroRadius: 5
+  retargetInterval: 0.6
   scrapReward: 10
   supportTarget: {fileID: 0}
+  flankBias: 0.55
+  corrosionDps: 6
+  corrosionDuration: 4

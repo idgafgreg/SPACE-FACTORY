@@ -11,6 +11,12 @@ public class MiningDrill : MachineBase
     public GameObject iconPrefab;        // simple sprite or particle
     public float      iconLifetime = 0.8f;
 
+    [Header("Output Routing")]
+    [Tooltip("Belt this drill feeds. If null, the drill searches for a carry-capable ConveyorBelt at beltSearchPoint; if none is found, output goes straight to the global stockpile.")]
+    public ConveyorBelt outputBelt;
+    public Transform     beltSearchPoint;       // defaults to this transform
+    public float         beltSearchRadius = 0.75f;
+
     [Header("Runtime")]
     public ResourceNode assignedNode;
 
@@ -27,11 +33,34 @@ public class MiningDrill : MachineBase
         if (assignedNode != null)
             whole = assignedNode.Extract(whole);
 
-        if (whole > 0)
+        if (whole <= 0) return;
+
+        // Route onto a connected belt if one can carry; otherwise the raw scrap
+        // goes straight to the global stockpile (an unrouted drill still mines,
+        // it just never gets refined). Layout decides which path runs.
+        var belt = ResolveBelt();
+        if (belt != null)
+        {
+            for (int i = 0; i < whole; i++) belt.PushItem(outputResource);
+        }
+        else
         {
             ResourceInventory.Instance.Add(outputResource, whole);
-            SpawnIcon();
         }
+        SpawnIcon();
+    }
+
+    ConveyorBelt ResolveBelt()
+    {
+        if (outputBelt && outputBelt.CanCarry) return outputBelt;
+
+        Vector3 p = beltSearchPoint ? beltSearchPoint.position : transform.position;
+        foreach (var col in Physics.OverlapSphere(p, beltSearchRadius))
+        {
+            var b = col.GetComponentInParent<ConveyorBelt>();
+            if (b != null && b.CanCarry) return b;
+        }
+        return null;
     }
 
     void SpawnIcon()

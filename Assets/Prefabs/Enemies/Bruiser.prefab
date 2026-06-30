@@ -143,11 +143,18 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::Bruiser
   moveSpeedTilesPerSec: 0.7
   tileSize: 1
-  attackRange: 0.8
-  attackRate: 0.6666667
-  damagePerHit: 18
+  attackRange: 1.2
+  attackRate: 0.6
+  damagePerHit: 22
+  playerAggroRadius: 2.2
+  retargetInterval: 0.8
   scrapReward: 12
   barrierSearchRadius: 8
   structureMask:
     serializedVersion: 2
     m_Bits: 512
+  chargeInterval: 4
+  chargeDuration: 1.2
+  chargeMultiplier: 2.6
+  slamRadius: 1.6
+  slamSplash: 0.5

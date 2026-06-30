@@ -1,0 +1,12 @@
+{
+    "asset": "f0929415ac94de940b214501462e2618",
+    "fileName": "019f0bf2-ef42-7452-ab68-5414eb745f91_Preview.png",
+    "prompt": "space ship floor",
+    "negativePrompt": "",
+    "model": "gemini-3.1-flash-texture",
+    "modelName": "Gemini 3.1 Nano Banana 2",
+    "customSeed": 835956327,
+    "w3CTraceId": "",
+    "feedback": 0,
+    "refinementMode": "Generation"
+}

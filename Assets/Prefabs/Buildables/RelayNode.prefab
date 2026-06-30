@@ -132,6 +132,8 @@ MonoBehaviour:
   speedTilesPerSecond: 1
   tileSize: 1
   itemIconPrefab: {fileID: 0}
+  outputReceiver: {fileID: 0}
+  receiverSearchRadius: 0.75
 --- !u!114 &4761202827881606118
 MonoBehaviour:
   m_ObjectHideFlags: 0

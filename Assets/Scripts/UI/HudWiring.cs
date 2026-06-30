@@ -14,6 +14,7 @@ public class HudWiring : MonoBehaviour
     public UIResourcePanel    resourcePanel;
     public UIEndOfRunScreen   endOfRunScreen;
     public PlayerBuildTool    buildTool;
+    public WaveController     waveController;
 
     [Header("Resource Texts")]
     public Text scrapText, energyText, circuitText, constructionText;
@@ -23,6 +24,9 @@ public class HudWiring : MonoBehaviour
 
     [Header("Build Feedback")]
     public Text placementReasonText;
+
+    [Header("Waves")]
+    public Text waveBannerText;
 
     void Awake()
     {
@@ -42,5 +46,8 @@ public class HudWiring : MonoBehaviour
 
         if (buildTool)
             buildTool.onPlacementReasonChanged.AddListener(v => { if (placementReasonText) placementReasonText.text = v; });
+
+        if (waveController)
+            waveController.onWaveText.AddListener(v => { if (waveBannerText) waveBannerText.text = v; });
     }
 }

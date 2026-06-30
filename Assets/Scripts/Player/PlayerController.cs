@@ -4,6 +4,9 @@ using UnityEngine;
 [RequireComponent(typeof(CharacterController))]
 public class PlayerController : MonoBehaviour
 {
+    /// <summary>Scene-wide handle so enemy AI can find and damage the player.</summary>
+    public static PlayerController Instance { get; private set; }
+
     [Header("References")]
     public Camera              playerCamera;
     public CharacterController characterController;
@@ -22,11 +25,14 @@ public class PlayerController : MonoBehaviour
 
     void Awake()
     {
+        Instance = this;
         if (!characterController) characterController = GetComponent<CharacterController>();
         if (!playerCamera)        playerCamera        = Camera.main;
         CurrentHealth = maxHealth;
         _spawnPoint   = transform.position;
     }
+
+    void OnDestroy() { if (Instance == this) Instance = null; }
 
     void Update()
     {

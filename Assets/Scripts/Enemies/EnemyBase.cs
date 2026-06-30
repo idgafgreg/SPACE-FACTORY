@@ -10,6 +10,12 @@ public abstract class EnemyBase : MonoBehaviour
     public float attackRate           = 1.0f;
     public float damagePerHit         = 6f;
 
+    [Header("Threat / Targeting")]
+    [Tooltip("Distance at which this enemy will break off and go for the player. 0 = ignores the player.")]
+    public float playerAggroRadius = 0f;
+    [Tooltip("How often (s) the enemy re-evaluates its target — lets it switch between hub, structures and player.")]
+    public float retargetInterval  = 0.6f;
+
     [Header("Reward")]
     public int scrapReward = 2;
 
@@ -21,8 +27,12 @@ public abstract class EnemyBase : MonoBehaviour
     Health _health;
     int    _pathIndex;
     float  _attackCooldown;
+    float  _retargetTimer;
     float  _speedMultiplier = 1f;
     float  _slowTimer;
+    bool   _removed;
+
+    protected Transform Hub => SectorLayout.Instance != null ? SectorLayout.Instance.commandHubTransform : null;
 
     // ── Lifecycle ────────────────────────────────────────────────────────────
 
@@ -42,10 +52,17 @@ public abstract class EnemyBase : MonoBehaviour
     {
         if (IsDead) return;
 
+        float dt = Time.deltaTime;
         UpdateSlow();
-        _attackCooldown -= Time.deltaTime;
+        Tick(dt);
+        _attackCooldown -= dt;
+        _retargetTimer  -= dt;
 
-        if (_currentTarget == null) AcquireTarget();
+        if (_currentTarget == null || _retargetTimer <= 0f)
+        {
+            AcquireTarget();
+            _retargetTimer = retargetInterval;
+        }
 
         if (_currentTarget != null)
         {
@@ -61,12 +78,24 @@ public abstract class EnemyBase : MonoBehaviour
         }
     }
 
+    /// <summary>Per-frame hook for subclass timers (e.g. Bruiser charge cadence). Default does nothing.</summary>
+    protected virtual void Tick(float dt) { }
+
     // ── Target acquisition ───────────────────────────────────────────────────
 
     protected virtual void AcquireTarget()
     {
-        if (SectorLayout.Instance?.commandHubTransform != null)
-            _currentTarget = SectorLayout.Instance.commandHubTransform;
+        _currentTarget = PlayerInRange() ?? Hub;
+    }
+
+    /// <summary>Returns the player transform if alive and inside <see cref="playerAggroRadius"/>, else null.</summary>
+    protected Transform PlayerInRange()
+    {
+        var p = PlayerController.Instance;
+        if (p == null || p.IsDead || playerAggroRadius <= 0f) return null;
+        return Vector3.Distance(transform.position, p.transform.position) <= playerAggroRadius
+            ? p.transform
+            : null;
     }
 
     // ── Movement ─────────────────────────────────────────────────────────────
@@ -86,9 +115,7 @@ public abstract class EnemyBase : MonoBehaviour
         }
         else
         {
-            dir.Normalize();
-            transform.position += dir * (moveSpeedTilesPerSec * tileSize * _speedMultiplier * Time.deltaTime);
-            transform.forward   = dir;
+            Step(dir);
         }
     }
 
@@ -96,27 +123,41 @@ public abstract class EnemyBase : MonoBehaviour
     {
         Vector3 dir = pos - transform.position;
         dir.y = 0f;
-        if (dir.sqrMagnitude < 0.001f) return;
+        Step(dir);
+    }
+
+    /// <summary>Applies steering + speed shaping, then advances. Shared by path and chase movement.</summary>
+    void Step(Vector3 desiredDir)
+    {
+        if (desiredDir.sqrMagnitude < 1e-4f) return;
+        desiredDir.Normalize();
+
+        Vector3 dir = Steer(desiredDir);
+        dir.y = 0f;
+        if (dir.sqrMagnitude < 1e-4f) return;
         dir.Normalize();
-        transform.position += dir * (moveSpeedTilesPerSec * tileSize * _speedMultiplier * Time.deltaTime);
+
+        float speed = moveSpeedTilesPerSec * tileSize * _speedMultiplier * SpeedScale();
+        transform.position += dir * (speed * Time.deltaTime);
         transform.forward   = dir;
     }
+
+    /// <summary>Reshape the desired heading (default = straight at target). Override for unique movement.</summary>
+    protected virtual Vector3 Steer(Vector3 desiredDir) => desiredDir;
+
+    /// <summary>Multiplier on top of base move speed (default 1). Override for dashes/charges.</summary>
+    protected virtual float SpeedScale() => 1f;
 
     // ── Attack ───────────────────────────────────────────────────────────────
 
     void Attack(Transform target)
     {
         _attackCooldown = 1f / attackRate;
-
-        // Try DefenseBase first (preserves its internal HP logic), then Health.
-        var defense = target.GetComponentInParent<DefenseBase>();
-        if (defense != null) { defense.TakeDamage(damagePerHit); return; }
-
-        var health = target.GetComponentInParent<Health>();
-        if (health != null) { health.ApplyDamage(damagePerHit); return; }
-
-        target.GetComponentInParent<Damageable>()?.TakeDamage(damagePerHit);
+        DealDamage(target);
     }
+
+    /// <summary>Deliver this enemy's hit to the target. Override for slam/AoE/corrosion.</summary>
+    protected virtual void DealDamage(Transform target) => DamageRouter.Apply(target, damagePerHit);
 
     // ── End of path ──────────────────────────────────────────────────────────
 
@@ -140,11 +181,18 @@ public abstract class EnemyBase : MonoBehaviour
         _slowTimer -= Time.deltaTime;
     }
 
-    // ── Death ────────────────────────────────────────────────────────────────
+    // ── Death / removal ──────────────────────────────────────────────────────
 
     protected virtual void OnDied()
     {
         ResourceInventory.Instance?.Add(ResourceTypeId.ScrapMetal, scrapReward);
+    }
+
+    void OnDestroy()
+    {
+        if (_removed) return;
+        _removed = true;
+        WaveController.Instance?.NotifyEnemyRemoved(this);
     }
 
     /// <summary>External damage passthrough (AutoTurret, PlayerWeapon via Health component).</summary>

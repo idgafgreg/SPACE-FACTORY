@@ -137,6 +137,7 @@ MonoBehaviour:
     output: 3
     outputAmount: 1
     processTime: 5
+  inputBufferCapacity: 20
 --- !u!114 &822708656476062303
 MonoBehaviour:
   m_ObjectHideFlags: 0
