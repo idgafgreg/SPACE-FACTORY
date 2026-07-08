@@ -20,6 +20,11 @@ public class UIEndOfRunScreen : MonoBehaviour
         panel?.SetActive(false);
     }
 
+    void OnDestroy()
+    {
+        if (Instance == this) Instance = null;
+    }
+
     public void Show(bool playerWon)
     {
         panel?.SetActive(true);
@@ -31,9 +36,19 @@ public class UIEndOfRunScreen : MonoBehaviour
         onSurvivalTimeText.Invoke($"Survived: {mins:00}:{secs:00}");
     }
 
-    public void OnRestartPressed() =>
-        SceneManager.LoadScene(SceneManager.GetActiveScene().name);
+    public void OnRestartPressed()
+    {
+        Debug.Log("[UIEndOfRunScreen] RESTART PRESSED");
+        Time.timeScale = 1f;               // defensive: in case anything ever pauses on game-over
+        panel?.SetActive(false);           // hide immediately — don't wait on the scene reload to do it
+        SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
+    }
 
-    public void OnMenuPressed() =>
+    public void OnMenuPressed()
+    {
+        Debug.Log("[UIEndOfRunScreen] MENU PRESSED");
+        Time.timeScale = 1f;
+        panel?.SetActive(false);
         SceneManager.LoadScene("Boot");
+    }
 }
