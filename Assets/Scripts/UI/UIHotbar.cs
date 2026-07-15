@@ -24,11 +24,13 @@ public class UIHotbar : MonoBehaviour
 
     static readonly Color SlotColor       = new Color(0.10f, 0.12f, 0.16f, 0.85f);
     static readonly Color SlotSelected    = new Color(0.20f, 0.45f, 0.30f, 0.95f);
+    static readonly Color SlotDemolish    = new Color(0.55f, 0.18f, 0.15f, 0.95f);
     static readonly Color TextNormal      = Color.white;
     static readonly Color TextUnaffordable = new Color(1f, 0.45f, 0.4f);
 
     readonly List<Image> _slotBackgrounds = new();
     readonly List<Text>  _costTexts       = new();
+    Image _demolishBackground;
     Text _weaponText;
     Font _font;
 
@@ -42,6 +44,11 @@ public class UIHotbar : MonoBehaviour
         _font = Resources.GetBuiltinResource<Font>("LegacyRuntime.ttf");
         BuildSlots();
         buildTool.onSelectionChanged.AddListener(OnSelectionChanged);
+        buildTool.onDemolishModeChanged.AddListener(on =>
+        {
+            if (_demolishBackground != null)
+                _demolishBackground.color = on ? SlotDemolish : SlotColor;
+        });
         OnSelectionChanged(buildTool.CurrentDef);
     }
 
@@ -76,7 +83,8 @@ public class UIHotbar : MonoBehaviour
     void BuildSlots()
     {
         int n = buildTool.buildableDefs.Count;
-        float totalWidth = (n + 1) * slotWidth + n * slotSpacing;   // +1 = weapon slot
+        int extras = 2;   // deconstruct slot + weapon slot
+        float totalWidth = (n + extras) * slotWidth + (n + extras - 1) * slotSpacing;
         float x0 = -totalWidth * 0.5f + slotWidth * 0.5f;
 
         var root = new GameObject("Hotbar", typeof(RectTransform));
@@ -105,8 +113,17 @@ public class UIHotbar : MonoBehaviour
                 TextAnchor.LowerCenter, new Vector2(0f, 4f)));
         }
 
+        // Deconstruct toggle — refunds full cost on click-removal.
+        var demoSlot = MakeSlot(root.transform, "DemolishSlot", x0 + n * (slotWidth + slotSpacing));
+        _demolishBackground = demoSlot.GetComponent<Image>();
+        demoSlot.gameObject.AddComponent<Button>().onClick
+            .AddListener(() => buildTool.ToggleDemolishMode());
+        AddText(demoSlot, "X", 13, TextAnchor.UpperLeft, new Vector2(6f, -3f));
+        AddText(demoSlot, "Deconstruct", 13, TextAnchor.MiddleCenter, Vector2.zero);
+        AddText(demoSlot, "full refund", 11, TextAnchor.LowerCenter, new Vector2(0f, 4f));
+
         // Sidearm slot (display only) on the far right.
-        var weaponSlot = MakeSlot(root.transform, "WeaponSlot", x0 + n * (slotWidth + slotSpacing));
+        var weaponSlot = MakeSlot(root.transform, "WeaponSlot", x0 + (n + 1) * (slotWidth + slotSpacing));
         _weaponText = AddText(weaponSlot, "SIDEARM", 13, TextAnchor.MiddleCenter, Vector2.zero);
     }
 

@@ -46,7 +46,8 @@ public class PlayerWeapon : MonoBehaviour
 
         // Left-click is overloaded: placing buildings (ghost active) and UI
         // clicks (end screen, hotbar) must not also fire the sidearm.
-        if (PlayerBuildTool.Instance != null && PlayerBuildTool.Instance.HasSelection) return;
+        if (PlayerBuildTool.Instance != null &&
+            (PlayerBuildTool.Instance.HasSelection || PlayerBuildTool.Instance.DemolishMode)) return;
         if (UnityEngine.EventSystems.EventSystem.current != null &&
             UnityEngine.EventSystems.EventSystem.current.IsPointerOverGameObject()) return;
 

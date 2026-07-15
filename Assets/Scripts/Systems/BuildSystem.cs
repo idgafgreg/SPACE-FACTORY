@@ -119,22 +119,34 @@ public class BuildSystem : MonoBehaviour
     public PlacementResult TryPlace(string id, Vector3 worldPos, Quaternion rot) =>
         TryPlace(buildableDefs?.GetById(id), worldPos, rot, out _);
 
-    // ── Demolish ─────────────────────────────────────────────────────────────
+    // ── Demolish (full scrap refund) ─────────────────────────────────────────
 
     public bool TryRemoveAt(Vector3 worldPos)
     {
         Ray ray = new Ray(worldPos + Vector3.up * 5f, Vector3.down);
         if (!Physics.Raycast(ray, out var hit, 10f, buildableMask)) return false;
 
-        _occupiedCells.Remove(WorldToCell(SnapToGrid(hit.collider.transform.position)));
-        if (hit.collider.TryGetComponent<MachineBase>(out var m)) m.OnDemolished();
-        Destroy(hit.collider.gameObject);
+        // Only PLACED structures carry the Buildable marker. Map walls share
+        // the Buildable layer (to block placement) but must never be demolishable.
+        var marker = hit.collider.GetComponentInParent<Buildable>();
+        if (marker == null) return false;
+
+        Demolish(marker.gameObject);
         return true;
     }
 
     public void Demolish(GameObject go)
     {
         if (!go) return;
+
+        // Deconstruct refunds the full build cost — placement mistakes are free.
+        if (go.TryGetComponent<Buildable>(out var marker))
+        {
+            var def = buildableDefs?.GetById(marker.Id);
+            if (def != null && def.scrapCost > 0)
+                Inventory.Add(ResourceTypeId.ScrapMetal, def.scrapCost);
+        }
+
         _occupiedCells.Remove(WorldToCell(SnapToGrid(go.transform.position)));
         if (go.TryGetComponent<MachineBase>(out var m)) m.OnDemolished();
         Destroy(go);

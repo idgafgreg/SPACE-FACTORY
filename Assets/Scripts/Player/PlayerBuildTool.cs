@@ -43,6 +43,14 @@ public class PlayerBuildTool : MonoBehaviour
 
     [Header("Selection — UIHotbar subscribes to this")]
     public UnityEvent<BuildableDef> onSelectionChanged = new UnityEvent<BuildableDef>();
+    public UnityEvent<bool> onDemolishModeChanged = new UnityEvent<bool>();
+
+    [Header("Deconstruct")]
+    public KeyCode demolishKey = KeyCode.X;
+
+    /// <summary>True while deconstruct mode is armed: left-click removes a
+    /// placed structure and refunds its full scrap cost.</summary>
+    public bool DemolishMode { get; private set; }
 
     /// <summary>True while a buildable is selected (ghost active). Camera zoom
     /// and weapon fire check this to avoid fighting build-mode input.</summary>
@@ -86,15 +94,40 @@ public class PlayerBuildTool : MonoBehaviour
     {
         if (UIPauseMenu.IsPaused) return;
         ReadHotbar();
+        if (Input.GetKeyDown(demolishKey)) ToggleDemolishMode();
         ReadRotation();
         UpdateGhost();
         HandlePlace();
+        HandleDemolishClick();
         HandleRemove();
-        if (Input.GetKeyDown(KeyCode.Escape) && _currentDef != null)
+        if (Input.GetKeyDown(KeyCode.Escape) && (_currentDef != null || DemolishMode))
         {
             ClearSelection();
+            SetDemolishMode(false);
             LastEscClearFrame = Time.frameCount;   // UIPauseMenu: this Esc was "cancel", not "pause"
         }
+    }
+
+    // ── Deconstruct mode ──────────────────────────────────────────────────────
+
+    public void ToggleDemolishMode() => SetDemolishMode(!DemolishMode);
+
+    void SetDemolishMode(bool on)
+    {
+        if (DemolishMode == on) return;
+        DemolishMode = on;
+        if (on) Select(null);   // deconstruct and build modes are exclusive
+        onPlacementReasonChanged?.Invoke(on ? "DECONSTRUCT — click a structure for a full refund" : string.Empty);
+        onDemolishModeChanged.Invoke(on);
+    }
+
+    void HandleDemolishClick()
+    {
+        if (!DemolishMode || !Input.GetMouseButtonDown(0)) return;
+        if (UnityEngine.EventSystems.EventSystem.current != null &&
+            UnityEngine.EventSystems.EventSystem.current.IsPointerOverGameObject()) return;
+        if (!TryGetBuildPoint(out var point)) return;
+        buildSystem?.TryRemoveAt(point);
     }
 
     /// <summary>Frame on which Esc cleared a build selection — lets UIPauseMenu
@@ -121,6 +154,7 @@ public class PlayerBuildTool : MonoBehaviour
 
     void Select(BuildableDef def)
     {
+        if (def != null) SetDemolishMode(false);   // picking a buildable disarms deconstruct
         _currentDef = def;
         _ghost?.SetActive(def != null);
         PublishReason(PlacementResult.Success);

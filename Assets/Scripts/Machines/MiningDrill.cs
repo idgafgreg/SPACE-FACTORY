@@ -40,7 +40,7 @@ public class MiningDrill : MachineBase
         if (assignedNode != null) { outputResource = assignedNode.resourceType; return; }
 
         float best = nodeBindRadius * nodeBindRadius;
-        foreach (var n in FindObjectsByType<ResourceNode>(FindObjectsSortMode.None))
+        foreach (var n in FindObjectsByType<ResourceNode>())
         {
             float d = (n.transform.position - transform.position).sqrMagnitude;
             if (d < best) { best = d; assignedNode = n; }
