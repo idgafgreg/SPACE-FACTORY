@@ -84,13 +84,22 @@ public class PlayerBuildTool : MonoBehaviour
 
     void Update()
     {
+        if (UIPauseMenu.IsPaused) return;
         ReadHotbar();
         ReadRotation();
         UpdateGhost();
         HandlePlace();
         HandleRemove();
-        if (Input.GetKeyDown(KeyCode.Escape)) ClearSelection();
+        if (Input.GetKeyDown(KeyCode.Escape) && _currentDef != null)
+        {
+            ClearSelection();
+            LastEscClearFrame = Time.frameCount;   // UIPauseMenu: this Esc was "cancel", not "pause"
+        }
     }
+
+    /// <summary>Frame on which Esc cleared a build selection — lets UIPauseMenu
+    /// ignore the same press regardless of script execution order.</summary>
+    public static int LastEscClearFrame { get; private set; } = -1;
 
     // ── Hotbar ───────────────────────────────────────────────────────────────
 
@@ -120,11 +129,15 @@ public class PlayerBuildTool : MonoBehaviour
 
     void ClearSelection() => Select(null);
 
-    // ── Rotation (scroll wheel while a buildable is selected) ─────────────────
+    // ── Rotation (R key, or Shift+scroll — plain scroll stays camera zoom) ────
 
     void ReadRotation()
     {
         if (_currentDef == null) return;
+
+        if (Input.GetKeyDown(KeyCode.R)) { _ghostYaw = Mathf.Repeat(_ghostYaw + 90f, 360f); return; }
+
+        if (!Input.GetKey(KeyCode.LeftShift) && !Input.GetKey(KeyCode.RightShift)) return;
         float scroll = Input.GetAxis("Mouse ScrollWheel");
         if (scroll >  0.0001f) _ghostYaw = Mathf.Repeat(_ghostYaw + 90f, 360f);
         if (scroll < -0.0001f) _ghostYaw = Mathf.Repeat(_ghostYaw - 90f, 360f);

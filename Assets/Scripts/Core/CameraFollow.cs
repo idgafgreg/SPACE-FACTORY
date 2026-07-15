@@ -107,8 +107,10 @@ public class CameraFollow : MonoBehaviour
 
     void ReadZoomInput()
     {
-        // While a buildable ghost is active the wheel rotates the building instead.
-        if (PlayerBuildTool.Instance != null && PlayerBuildTool.Instance.HasSelection) return;
+        // Plain scroll always zooms — including while placing a building.
+        // Shift+scroll is reserved for rotating the ghost (PlayerBuildTool).
+        if (PlayerBuildTool.Instance != null && PlayerBuildTool.Instance.HasSelection &&
+            (Input.GetKey(KeyCode.LeftShift) || Input.GetKey(KeyCode.RightShift))) return;
 
         float scroll = Input.GetAxis("Mouse ScrollWheel");
         if (Mathf.Abs(scroll) > 0.0001f)
