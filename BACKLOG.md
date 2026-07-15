@@ -11,7 +11,11 @@ Rules for tasks in this file:
 
 ## Needs human decision
 
-- (none open)
+- Wave 1 setup time: doc conflicts with itself. Pressure plan (Sector_Layout_&_Teaching.txt:109)
+  says Cycle 1 setup = 4 minutes → implemented as prepSeconds 240 (commit 6cd2a78). But the
+  Locked Economy Pacing Package (Sector_Layout_&_Teaching.txt:363) says "Pre-wave setup window
+  before Wave 1: 25 seconds". 25s vs 240s changes the whole opening economy (140 scrap,
+  Barrier+Turret opening package). Which number is truth? Loser line must be fixed in the doc.
 
 ## Decisions (human-made, newest first)
 
