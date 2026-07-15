@@ -2833,7 +2833,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: f0929415ac94de940b214501462e2618, type: 2}
+  - {fileID: 2100000, guid: d6f348aef0ed4de43a5cdd684a804efd, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -4236,6 +4236,10 @@ MonoBehaviour:
   onSelectionChanged:
     m_PersistentCalls:
       m_Calls: []
+  onDemolishModeChanged:
+    m_PersistentCalls:
+      m_Calls: []
+  demolishKey: 120
 --- !u!114 &1445036920
 MonoBehaviour:
   m_ObjectHideFlags: 0
