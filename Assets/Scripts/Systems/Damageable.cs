@@ -21,7 +21,8 @@ public class Damageable : MonoBehaviour
     public void TakeDamage(float amount)
     {
         if (IsDead || amount <= 0f) return;
-        CurrentHealth -= amount;
+        // Clamp so overkill hits never expose negative HP to UI/listeners.
+        CurrentHealth = Mathf.Max(0f, CurrentHealth - amount);
         OnDamaged?.Invoke(CurrentHealth);
         if (CurrentHealth <= 0f) Kill();
     }

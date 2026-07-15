@@ -29,21 +29,23 @@ Rules for tasks in this file:
 
 ## Now (agent works top-down)
 
-- [?] Per-wave lane assignment to match locked plan (Sector_Layout_&_Teaching.txt:110-116): Wave 1 West Corridor only, Wave 2 mostly-West + Vent Breach hint, Wave 3 both lanes. Implemented via WaveDef.ventBreachShare (0 / 0.15 / 0.35; -1 = round-robin for waves 4-5). W2/W3 shares are tunable — doc locks the pattern, not the numbers. Compile unconfirmed (Unity MCP gated).
-      Done-when: WaveDef carries lane weighting; waves 1-3 configured per doc.
+- [x] Per-wave lane assignment to match locked plan — VERIFIED in Play mode 2026-07-14: Wave 2 split west=6/vent=1 (exact round(7×0.15) w/ min-1), Wave 3 west=5/vent=3 (exact round(8×0.35)), types shuffled across lanes.
 
-## Awaiting in-editor verification (Unity MCP plan-gated — convert to verify tasks once unblocked)
+## Verified in-editor (Unity MCP restored 2026-07-14, subscription renewed)
 
-- [?] Y-jitter spawn fix (commit 5ffe0eb) — confirm enemies rest on ground plane, no console errors.
-- [?] Dead spawner deletion (commit 0b4e4a1) — confirm clean compile.
-- [?] Wave spawn windows 60/75/90s (commit 83cf622) — confirm compile + wave pacing in Play mode.
-- [?] Per-wave prep windows 240/300/240s (commit 6cd2a78) — confirm compile + prep countdown in Play mode.
-- [?] Review-fix batch (2026-07-14 evening) — confirm compile + Play mode: deterministic vent lane
-      counts (min 1 when share > 0), spawn window spans full 60/75/90s, HUD shows remaining count
-      during spawn windows, waves 4-5 = 90s window / 150s prep / 0.35-0.4 vent share (endless inherits),
-      repair tool costs ~0.1 parts/HP (was ~1 part/frame), starting ConstructionParts = 20.
-- [!] End-of-run restart flow after commit 9ca5b95 — never verified; needs live Play-mode session.
-      Done-when: restart reloads cleanly — time scale reset, UI panel gone, no duplicate singletons.
+- [x] Y-jitter spawn fix (5ffe0eb) — all spawns at y=0.50 (lane plane), zero float. VERIFIED live.
+- [x] Dead spawner deletion (0b4e4a1) — clean compile, zero console errors. VERIFIED.
+- [x] Wave spawn windows (83cf622) — waves release across windows in Play mode. VERIFIED.
+- [x] Per-wave prep windows (6cd2a78) — Wave 1 prep starts at exactly 240.0s. VERIFIED.
+- [x] Review-fix batch (7ecf516) — scene config exact (windows 60/75/90/90/90, preps 240/300/240/150/150, shares 0/0.15/0.35/0.35/0.4), starting scrap 140 + parts 20, HUD shows "Wave 3 — 8 left". Empty-wave edge case (0 spawns) advances without deadlock. VERIFIED.
+- [x] End-of-run restart flow (9ca5b95) — restart from end screen VERIFIED twice: wave reset to 0/Prep/240s, hub 500/500, panel hidden, timeScale reset to 1, singletons single, enemies cleared.
+
+## Play-mode observations (2026-07-14 session — future tuning input)
+
+- Without defenses, Combat phase deadlocks until hub dies (enemies never die on their own) — fine
+  for real runs (turrets exist), worth remembering for automated tests.
+- Damageable had no HP floor: hub showed -10 HP on overkill. Fixed same session (clamp to 0).
+- Restart resets Time.timeScale unconditionally to 1 — correct behavior, confirmed.
 
 ## Next (groomed, not yet started)
 
@@ -55,6 +57,8 @@ Rules for tasks in this file:
 - [ ] (dump ideas here; /backlog-groom promotes them)
 
 ## Agent log (newest first — one line per session: date, task, result, commit)
+
+- 2026-07-14: Unity MCP RESTORED (subscription renewed). Full in-editor verification pass: compile clean, all pending [?] items verified in Play mode (jitter y=0.50, prep 240.0s, lane splits 6/1 and 5/3 exact, restart flow clean ×2, HUD counts, empty-wave edge OK). New bug found+fixed: Damageable negative HP on overkill (clamp added).
 
 - 2026-07-14: Review-fix batch (human-directed) — 240s ruled + doc line 363 fixed; starting parts 20; deterministic vent lane queue (consts for lane IDs, per-spawn roll removed); spawn window spans full duration ((n-1) divisor); HUD remaining count during Spawning; waves 4-5 pacing set (90s/150s/0.35-0.4, endless inherits, prep cliff gone); repair-tool 30× overcharge fixed (fractional parts accumulator); _nextDef cache kills double GetWave alloc.
 
