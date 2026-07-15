@@ -35,6 +35,10 @@ public class WaveController : MonoBehaviour
                  "240 (W1 setup), 300 (W2 = 120 recovery + 180 setup), " +
                  "240 (W3 = 120 recovery + 120 setup). 0 = use prepDuration.")]
         public float prepSeconds = 0f;
+        [Tooltip("Fraction of this wave's spawns routed to the VentBreach lane; the rest " +
+                 "use WestCorridor. Locked lane plan: W1 = 0 (West only), W2 = small hint, " +
+                 "W3 = active second lane. Negative = round-robin across all lanes.")]
+        public float ventBreachShare = -1f;
     }
 
     [Header("Prefabs")]
@@ -60,6 +64,7 @@ public class WaveController : MonoBehaviour
     public float PhaseTimeLeft     { get; private set; }
 
     SectorLayout _layout;
+    WaveDef      _currentDef;
     int          _spawnQueueIndex;
     List<GameObject> _spawnQueue = new List<GameObject>();
     float        _spawnTimer;
@@ -114,6 +119,7 @@ public class WaveController : MonoBehaviour
     {
         WaveNumber++;
         WaveDef def = GetWave(WaveNumber);
+        _currentDef = def;
 
         _spawnQueue.Clear();
         AddCopies(_spawnQueue, crawlerPrefab, def.crawlers);
@@ -155,7 +161,7 @@ public class WaveController : MonoBehaviour
     void SpawnOne(GameObject prefab)
     {
         if (prefab == null) return;
-        LanePath lane = NextLane();
+        LanePath lane = PickLane();
         if (lane == null) return;
 
         Vector2 jitter = UnityEngine.Random.insideUnitCircle * 0.4f;
@@ -168,6 +174,21 @@ public class WaveController : MonoBehaviour
             if (enemy is Sapper sapper) sapper.supportTarget = FindSupportTarget(pos);
             EnemiesAlive++;
         }
+    }
+
+    /// <summary>Lane for the next spawn: weighted West/Vent split when the wave
+    /// defines ventBreachShare >= 0, otherwise legacy round-robin.</summary>
+    LanePath PickLane()
+    {
+        float share = _currentDef != null ? _currentDef.ventBreachShare : -1f;
+        if (share >= 0f && _layout != null)
+        {
+            LanePath west = _layout.GetLane("WestCorridor");
+            LanePath vent = _layout.GetLane("VentBreach");
+            if (west != null && vent != null)
+                return UnityEngine.Random.value < share ? vent : west;
+        }
+        return NextLane();
     }
 
     LanePath NextLane()
@@ -223,6 +244,7 @@ public class WaveController : MonoBehaviour
             spawnSpacing = baseDef.spawnSpacing,
             spawnWindowSeconds = baseDef.spawnWindowSeconds,
             prepSeconds  = baseDef.prepSeconds,
+            ventBreachShare = baseDef.ventBreachShare,
         };
     }
 

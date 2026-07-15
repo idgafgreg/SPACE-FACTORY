@@ -17,7 +17,7 @@ Rules for tasks in this file:
 
 ## Now (agent works top-down)
 
-- [ ] Per-wave lane assignment to match locked plan (Sector_Layout_&_Teaching.txt:110-116): Wave 1 West Corridor only, Wave 2 mostly-West + Vent Breach hint, Wave 3 both lanes. Code currently round-robins all lanes every wave.
+- [?] Per-wave lane assignment to match locked plan (Sector_Layout_&_Teaching.txt:110-116): Wave 1 West Corridor only, Wave 2 mostly-West + Vent Breach hint, Wave 3 both lanes. Implemented via WaveDef.ventBreachShare (0 / 0.15 / 0.35; -1 = round-robin for waves 4-5). W2/W3 shares are tunable — doc locks the pattern, not the numbers. Compile unconfirmed (Unity MCP gated).
       Done-when: WaveDef carries lane weighting; waves 1-3 configured per doc.
 
 ## Awaiting in-editor verification (Unity MCP plan-gated — convert to verify tasks once unblocked)
@@ -38,6 +38,8 @@ Rules for tasks in this file:
 - [ ] (dump ideas here; /backlog-groom promotes them)
 
 ## Agent log (newest first — one line per session: date, task, result, commit)
+
+- 2026-07-14: Groomed (verification items sectioned off, win-condition question → Needs human decision). Lane weighting — WaveDef.ventBreachShare + PickLane(); W1 West-only, W2 15% vent, W3 35% vent; scene updated; [?] pending compile check.
 
 - 2026-07-14: Recovery gap — WaveDef.prepSeconds added, prep before waves 1/2/3 = 240/300/240s (doc recovery+setup summed), scene updated; endless inherits; [?] pending compile check.
 
