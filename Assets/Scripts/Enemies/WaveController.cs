@@ -28,6 +28,9 @@ public class WaveController : MonoBehaviour
         public int   sappers  = 0;
         [Tooltip("Seconds between individual spawns while releasing this wave.")]
         public float spawnSpacing = 0.7f;
+        [Tooltip("If > 0, release the whole wave evenly across this many seconds " +
+                 "(locked design: 60/75/90 for waves 1-3) and ignore spawnSpacing.")]
+        public float spawnWindowSeconds = 0f;
     }
 
     [Header("Prefabs")]
@@ -114,7 +117,10 @@ public class WaveController : MonoBehaviour
         Shuffle(_spawnQueue);
 
         _spawnQueueIndex = 0;
-        _spawnSpacing    = Mathf.Max(0.05f, def.spawnSpacing);
+        float spacing = (def.spawnWindowSeconds > 0f && _spawnQueue.Count > 0)
+            ? def.spawnWindowSeconds / _spawnQueue.Count
+            : def.spawnSpacing;
+        _spawnSpacing    = Mathf.Max(0.05f, spacing);
         _spawnTimer      = 0f;
         CurrentPhase     = Phase.Spawning;
     }
@@ -210,6 +216,7 @@ public class WaveController : MonoBehaviour
             bruisers     = Mathf.CeilToInt(baseDef.bruisers * mult),
             sappers      = Mathf.CeilToInt(baseDef.sappers  * mult),
             spawnSpacing = baseDef.spawnSpacing,
+            spawnWindowSeconds = baseDef.spawnWindowSeconds,
         };
     }
 
