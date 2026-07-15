@@ -1,0 +1,112 @@
+# Master Game Design Doc
+
+# Game Title
+
+- Working title: SPACE FACTORY 
+- Final title ideas:
+- Short pitch:
+
+# High Concept
+
+- What is the game in one sentence? A space ship with a factory on it, that's being tracked by an alien hive ship
+- What makes it different? In space, with deep space travel
+- Why will players care? Satisfying, cool setting, and slight horror
+
+# Player Fantasy
+
+- The player should feel like: They're scared and overwhelmed with management 
+- The player’s main role is: Build a bigger and better ship to find help or any civilizations
+- The emotional tone should be: Lonely and Scary
+
+# Design Pillars
+
+- Pillar 1:
+- Pillar 2:
+- Pillar 3:
+- Things that do not fit these pillars:
+
+# Genre & Format
+
+- Genre:
+- Subgenre:
+- Camera / perspective:
+- Single-player / multiplayer:
+- Session length goal:
+- Platform target:
+
+# Core Gameplay Loop
+
+- The player gathers:
+- The player builds:
+- The player automates:
+- The player expands:
+- The player overcomes:
+- The player unlocks:
+
+# Secondary Loops
+
+- Exploration loop:
+- Combat / defense loop:
+- Research / tech loop:
+- Story / discovery loop:
+
+# Progression
+
+- Early game:
+- Mid game:
+- Late game:
+- Endgame:
+
+# Core Mechanics
+
+- Mining / extraction:
+- Processing / refining:
+- Power / fuel:
+- Logistics / transport:
+- Base building:
+- Automation:
+- Upgrades:
+- Hazards / failure:
+
+# Story Role
+
+- Main conflict:
+- Main mystery:
+- Factions involved:
+- Narrative style:
+- How story is delivered:
+
+# World Snapshot
+
+- Setting:
+- Main region:
+- Resource theme:
+- Environmental tone:
+- Major dangers:
+
+# Art / Audio Direction
+
+- Visual style:
+- UI style:
+- Sound style:
+- Music tone:
+- Reference games / media:
+
+# Scope Rules
+
+- Must have:
+- Nice to have:
+- Definitely not included:
+- Features to delay:
+
+# Open Questions
+
+- Question 1:
+- Question 2:
+- Question 3:
+
+# Current Priorities
+
+- Priority 1:
+- Priority 2:
+- Priority 3:

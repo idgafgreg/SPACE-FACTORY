@@ -1,0 +1,72 @@
+# Game Vision & Scope
+
+# Vision Statement
+
+- A horror-infused factory management game set aboard a broken-down far-future ship, where the player scans, extracts, processes, and automates resources while surviving pressure from hive-like alien waves.
+- The game should stand out by combining the long-form satisfaction of production optimization with the emotional tension of isolation, fear, and constant environmental threat.
+
+# Experience Goals
+
+- Deliver satisfying automation growth without losing moment-to-moment danger.
+- Make players feel lonely, pressured, and resourceful rather than comfortable or overpowered.
+- Keep the ship itself feeling like both a workplace and a hostile survival space.
+- Reward planning and layout refinement under pressure, not only combat reactions.
+
+# Audience and Positioning
+
+- Primary audience: adult players who enjoy management, factory-building, optimization, and horror tension.
+- Likely appeal: players who enjoy optimization games but want stronger atmosphere, dread, and defensive pressure than standard factory sims provide.
+- Not aimed at: younger audiences, players seeking low-stress cozy automation, or players who only want pure action horror without systems depth.
+
+# Must Have Features
+
+- Resource scanning and extraction.
+- Conveyor or transport-based resource movement.
+- Processing chains that convert raw materials into useful outputs.
+- Build and unlock progression tied to industrial expansion.
+- Defensive response to random or semi-random alien wave threats.
+- Layout refinement during short play sessions.
+
+# Nice to Have Features
+
+- Environmental storytelling that deepens the lonely industrial-horror mood.
+- Expanded ship sectors or distinct processing zones once the core loop is stable.
+- More enemy variants and threat behaviors after the baseline defense loop is proven.
+
+# Excluded Features
+
+- Multiplayer.
+- First-person presentation.
+- Space-walk systems and external EVA gameplay.
+- Feature creep that turns the game into a broad survival sandbox instead of a focused factory-horror experience.
+
+# Scope Tiers
+
+- MVP: one strong resource pipeline, one defendable ship environment, a small set of processing machines, a limited unlock tree, and recurring alien wave pressure.
+- Target Version: broader factory complexity, clearer progression beats, more ship sectors, and more varied threats.
+- Future Expansion: deeper narrative arcs, higher-tier automation, and expanded enemy ecology if the base game loop proves strong.
+- MVP
+- Target Version
+- Future Expansion
+
+# Feature Fit Checks
+
+- Does this feature strengthen factory optimization under pressure?
+- Does it increase dread, isolation, or threat without replacing the management loop?
+- Can it be explained and learned without bloating the early game?
+- Would removing it make the game more focused?
+
+# Core Loop Breakdown
+
+- Scan ship areas or resource nodes to identify valuable materials.
+- Extract and transport materials through a conveyor-driven or equivalent logistics chain.
+- Process outputs into upgrades, construction parts, or survival-critical supplies.
+- Use outputs to expand, reinforce, or optimize the ship’s industrial layout.
+- Defend the operation from alien wave disruptions and recover from damage or breakdowns.
+- Repeat with more efficiency, higher throughput, and rising danger.
+
+# Pillar Compliance Notes
+
+- Factory management remains the lead identity; horror should intensify the loop, not replace it.
+- Combat and defense should create pressure and interruption, not dominate session time.
+- Atmosphere should support loneliness, dread, and industrial decay across art, sound, and pacing.

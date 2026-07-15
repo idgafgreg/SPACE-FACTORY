@@ -1,0 +1,60 @@
+# Master Game Brief
+
+# Game Summary
+
+- One-paragraph concept summary:  
+- Why this game should exist:  This is a passion project, and I personally think it might fit a niche
+
+# Core Fantasy
+
+- What the player does and feels at the highest level: Feels satisfying, Overwhelmed, and Fear all at once
+
+# Player Promise
+
+- What experience the player can reliably expect: A balanced mix of factory optimization and defensive pressure, with steady escalation across each cycle and story present mainly through context, atmosphere, and light progression beats.
+
+# Target Audience
+
+- Who the game is for: Adult gamers who like management factory games + horror games
+- Who it is not for: children, and people who are close minded 
+
+# Genre and Platform
+
+- Genre and subgenre: management and horror
+- Platform assumptions: hopefully steam
+
+# Core Loop
+
+- Primary player loop: scan → extract → move resource → process → build/unlock \*while that's happening they have to defend from random waves of hive aliens
+- Short session flow: refine and improve already set up conveyor belts while defending
+
+# Design Pillars
+
+- Pillar 1: Factory management is the primary identity; every major feature should strengthen planning, throughput, and layout optimization.
+- Pillar 2: Defensive pressure should regularly disrupt and test the factory without overtaking it as the dominant activity.
+- Pillar 3: Story should enrich the setting and player motivation, but remain secondary to atmosphere, systems, and progression.
+
+# Tone and Mood
+
+- Intended emotional tone: Sad, lonely, and fear
+- Visual and thematic direction: rustic space worker, far future, broken down ship, zombie like alien enemies (think of horde from Halo and aliens from deadspace)
+
+# Scope Guardrails
+
+- What must stay in scope: Has to stay a factory game with horror annotations 
+- What stays out of scope for now: Multiplayer, First person gameplay, space walks
+
+# Success Criteria
+
+- What success looks like in planning: The project has a clearly scoped factory-first gameplay structure, predictable cycle-based threat escalation, and a narrative layer that supports rather than drives production decisions.
+- What success looks like for players: Players feel steadily more capable at optimizing their ship, preparing for each coming threat cycle, and uncovering just enough story to deepen the mood without interrupting the loop.
+
+# Current Assumptions
+
+- Assumption 1: The best default pacing is a predictable cycle-based escalation model, such as daily or per-shift threat waves, so players can plan around pressure rather than react to pure chaos.
+- Assumption 2: Narrative is delivered through environmental context, light progression beats, and atmosphere rather than heavy cutscenes or story-first mission structure.
+
+# Open Approval Questions
+
+- Approved decision: Use a balanced management/defense split, with management remaining the primary activity and defense acting as recurring pressure.
+- Approved decision: Use predictable cycle-based escalation and keep story present but secondary to systems, atmosphere, and progression.

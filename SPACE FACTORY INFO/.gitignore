@@ -1,0 +1,5 @@
+# gstack is installed globally (~/.claude/skills/gstack), not vendored here
+.claude/skills/gstack/
+
+# logs / temp
+*.log

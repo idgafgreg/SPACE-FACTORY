@@ -1,0 +1,1656 @@
+# Sector Layout & Teaching
+
+# Sector Purpose
+
+- This first sector should prove that factory planning, readable wave pressure, and light direct combat work together in one compact space.
+- The map should be small enough to understand quickly, but large enough to create routing choices and at least two meaningful defensive decisions.
+- The player should finish the slice understanding the full rhythm: gather, build, fortify, survive, repair, and expand.
+
+# Layout Zones
+
+- Zone A — Command Hub: starting safe zone with player spawn, basic build access, repair access, and enough open space to teach first placements.
+- Zone B — Scrap Vein: nearest low-risk resource source used to teach extraction and first transport routing.
+- Zone C — Power Nook: secondary resource or energy source placed just far enough away to force a simple expansion choice.
+- Zone D — Processing Deck: central area where the first core machine chain is expected to be built and visually read by the player.
+- Zone E — West Access Corridor: narrow defendable lane with clear chokepoint potential, used to teach barrier placement.
+- Zone F — Vent Breach Approach: second threat lane with a less obvious path, used to teach that one defense line is not enough.
+- Zone G — Maintenance Pocket: fallback area for repairs and repositioning, protected enough to support recovery but not fully immune to failure spillover.
+
+# Flow Through The Sector
+
+- Start at the Command Hub with immediate visual access to the nearest scrap source and the central processing space.
+- The first natural route should be short and readable: extract scrap, move it to the Processing Deck, and convert it into build parts.
+- The second route should ask the player to reach the Power Nook, adding a mild extension problem before heavier defense pressure begins.
+- Threat lanes should intersect the edges of production space indirectly, so bad planning hurts operations without constant unavoidable player interruption.
+- Movement loops should allow the player to check extraction, production, and both defense lanes in a fast patrol path.
+
+# Defense Lanes
+
+- Lane 1 — West Corridor: primary early wave lane, narrow enough that a barrier plus one turret/trap creates an understandable first defensive success.
+- Lane 2 — Vent Breach: secondary lane introduced after the first defense success so players learn to avoid overcommitting to one chokepoint.
+- Lane pressure should first threaten access and machine uptime, then later threaten simultaneous response capacity.
+- Player direct combat should matter most when leaks get through, when a turret is underperforming, or when repairs must be protected.
+- No lane should require perfect aim or constant manual fighting; good structure should still be the dominant solution.
+
+# Teaching Flow
+
+## Cycle 1 — Establish The Loop
+
+- Teach the nearest resource loop first: collect scrap, place the first extractor, route output, and build one processor.
+- Give the player enough quiet time to understand placement and throughput before any serious threat arrives.
+- First wave uses only the West Corridor and is weak enough that one simple defense line plus light player support can hold.
+- Post-wave recovery should be brief and readable, reinforcing that defense is part of the production rhythm.
+
+## Cycle 2 — Expand And Fortify
+
+- Introduce the Power Nook so the player must extend infrastructure and decide how much to invest in economy versus defense.
+- Second wave remains manageable but forces stronger use of barriers, better turret placement, or more efficient patrol movement.
+- The player should feel the cost of weak preparation through downtime or damage, not instant failure.
+- Recovery after cycle 2 should teach repair triage: restore the line that protects future stability first.
+
+## Cycle 3 — Split Attention Under Pressure
+
+- Introduce the Vent Breach as a second active pressure source so the player must split attention across economy, lane defense, and quick intervention.
+- This wave should create one likely leak scenario that rewards direct player cleanup without making manual combat the dominant strategy.
+- A successful player should end cycle 3 with a stable basic factory, two viable defensive responses, and a clear sense of what better automation would solve next.
+- Failure in cycle 3 should still allow recovery if the Command Hub and one resource line remain intact.
+
+## Teaching Rules
+
+- Only teach one new mental model at a time whenever possible.
+- Use map geometry to suggest good first solutions before adding explicit instruction.
+- Every wave should teach something about preparation, not just survival.
+- If a player fails, the layout should make the cause legible: weak lane coverage, overextended routing, or delayed repairs.
+
+# Failure And Recovery
+
+- Primary recoverable state: lose a lane, suffer machine damage, spend time and materials to restore operations, then continue.
+- Soft fail state: production stalls because one critical route is damaged or underpowered, forcing repair prioritization.
+- Hard fail state for the slice: Command Hub overrun or total loss of both production and defensive continuity.
+- Recovery materials should be attainable inside the same sector so a damaged run is not automatically dead.
+
+# Prototype Validation
+
+- Can a new player establish the first functioning production loop without confusion?
+- Can the player identify at least one strong chokepoint naturally?
+- Does wave 3 create tension without forcing pure manual combat?
+- After failure, does the player understand what to change in layout or priorities?
+- Does the sector end with a clear desire for more automation, stronger defenses, or better expansion tools?
+
+# Prototype Spec
+
+## Player Starting Kit
+
+- Basic sidearm: low damage, short range, reliable, intended for finishing leaks and defending repairs rather than solving full waves alone.
+- Repair tool: restores structure and machine health over time, forcing the player to commit attention during recovery windows.
+- Build tool: places and removes prototype structures and allows repositioning of a limited subset of defenses between waves.
+- Emergency support action: short cooldown overdrive burst that temporarily boosts one nearby defense or machine, used as a clutch intervention tool.
+- Starting inventory should be enough for one extractor, one processor, one basic power connection, two barriers, and one turret so the first good plan is achievable immediately.
+
+## Machine List
+
+- Scrap Extractor: harvests the nearest scrap vein and establishes the first resource loop.
+- Power Tap: connects the Power Nook resource to the local grid and acts as the first expansion requirement.
+- Processor: converts raw scrap into build parts needed for defenses, repairs, and expansion.
+- Relay Node: extends logistics or power connection across short distances and creates the first layout efficiency decisions.
+- Stockpile Bin: buffers a small amount of parts so the player can absorb brief production disruption without total collapse.
+- No advanced splitters, crafting trees, or automation scripting in this slice; the machine set should stay intentionally small.
+
+## Defense List
+
+- Barrier: cheap lane-shaping structure with moderate health, mainly used to create or strengthen chokepoints.
+- Auto Turret: short-to-mid range direct-fire defense with clear line-of-sight needs and low enough damage that placement matters.
+- Shock Trap: single-lane support defense with cooldown-based area control, good for buying time rather than killing everything.
+- Repair Post: optional support structure that speeds nearby repairs and encourages fallback stabilization after a wave.
+- Only one offensive tower type in the prototype. Do not add sniper towers, missile towers, or drones yet.
+
+## Wave Timings And Pressure Plan
+
+- Cycle 1 setup window: 4 minutes of low-pressure learning time to place the first extractor, first processor, and first lane defense.
+- Wave 1: 60 seconds from the West Corridor only. Composition should be light enough that a basic barrier line, one turret, and minor player support succeed.
+- Recovery 1: 2 minutes. Teach repair, reloading of defenses if relevant, and minor layout correction.
+- Cycle 2 setup window: 3 minutes. Player expands to the Power Nook and improves the first lane or adds a second line.
+- Wave 2: 75 seconds, mostly West Corridor with a small side-pressure hint from the Vent Breach approach or pre-wave warning signs there.
+- Recovery 2: 2 minutes. The player should feel time pressure but still have enough room to make one meaningful strategic adjustment.
+- Cycle 3 setup window: 2 minutes. Player must finalize a second defensive answer and stabilize throughput before the split-pressure test.
+- Wave 3: 90 seconds. West Corridor remains the main lane while Vent Breach becomes active enough to create likely leaks or repair interruptions.
+- Post-wave success check: hold for 30 additional seconds of low residual pressure so the player proves stability rather than surviving a single spike.
+- Target total session length for the slice: roughly 15 to 18 minutes for a first successful run.
+
+## Win And Fail Conditions
+
+- Primary win condition: survive all three waves and keep the Command Hub online through the final stability check.
+- Secondary success condition: maintain at least one active extractor and one active processor at the end, proving economy continuity.
+- Hard fail if the Command Hub is destroyed or disabled beyond recovery during the slice.
+- Hard fail if both core production functions are lost at once: no active extraction and no active processing with no recovery path.
+- Soft fail state should exist inside the run whenever defense collapse causes long production downtime, but the player can still salvage the sector.
+- Prototype scoring, medals, or grading should be excluded for now. Focus only on comprehension, tension, and recoverability.
+
+## Prototype Scope Guardrails
+
+- No hero abilities beyond the single emergency overdrive action.
+- No more than five machine types and four defense/support structures in the prototype.
+- Only two active enemy lanes in the slice.
+- Keep enemy variety low enough that lane behavior is readable and counterplay comes mostly from placement and timing.
+- If the prototype becomes fun only when adding more weapons or more tower types, the core loop is not solved yet.
+
+## Enemy Roster And Wave Composition
+
+## Enemy Roster
+
+- Crawler: baseline enemy. Fast, fragile, attacks the nearest valid structure or player. Its job is to test lane coverage and punish leaks, not soak damage.
+- Bruiser: slow, durable lane-breaker. Prioritizes barriers and front-line defenses. Its job is to punish shallow chokepoints and create windows for smaller enemies to slip through.
+- Sapper: medium-speed disruption unit. Prefers power-facing or support structures when it can path to them. Its job is to create repair pressure and make the second lane tactically relevant.
+- No ranged enemies, no flyers, and no stealth units in this first slice. Readability matters more than variety.
+
+## Targeting Rules
+
+- Default rule: enemies attack the first blocking defense or the nearest active structure along their path.
+- Crawlers switch to the player if the player is nearby and damaging them, reinforcing active cleanup without letting the player kite the whole lane forever.
+- Bruisers strongly prefer barriers, turrets, and the Command Hub if the lane is open.
+- Sappers prefer Relay Nodes, Power Taps, Repair Posts, and lightly protected processing-side structures over pure front-line targets when a valid route exists.
+- Targeting should be readable enough that players understand why a breach hurt their economy.
+
+## Rough Enemy Prototype Stats
+
+- Tuning baseline: assume one Auto Turret is the core reference defense. These values should make one turret plus a decent chokepoint handle light pressure, but not solve every wave without support.
+
+## Crawler
+
+- HP: 35
+- Move speed: 1.4 tiles per second relative prototype pace. It should feel clearly faster than the player’s comfortable repair rhythm.
+- Structure damage: 6 per hit
+- Attack interval: 1.0 second
+- Player damage: light. Enough that two or three Crawlers become dangerous if ignored at close range, but one leak is recoverable.
+- Target priority: nearest blocker first, then nearest active structure, then player if the player is within local aggro range and actively interfering.
+- Role intent: punish uncovered lanes and poor cleanup, not erase sturdy defenses by itself.
+
+## Bruiser
+
+- HP: 140
+- Move speed: 0.7 tiles per second. Slow enough to telegraph threat, fast enough that the player cannot ignore one forever.
+- Structure damage: 18 per hit
+- Attack interval: 1.5 seconds
+- Player damage: moderate. Dangerous in melee, especially if the player is already occupied by smaller leaks.
+- Target priority: barriers first, then turrets and Repair Posts, then Command Hub if the lane is open.
+- Role intent: force layered defense and punish shallow builds that rely on one fragile front line.
+
+## Sapper
+
+- HP: 55
+- Move speed: 1.0 tiles per second. Fast enough to exploit weak backlines, but not so fast that it feels impossible to intercept.
+- Structure damage: 10 per hit baseline, but apply a disruption bonus against power or relay structures if the prototype supports subsystem vulnerability.
+- Attack interval: 0.9 seconds
+- Player damage: light to moderate. The threat is positional disruption more than direct dueling power.
+- Target priority: Relay Nodes and Power Taps first, then Repair Posts, then Processors and Stockpile Bins, then any nearby fallback structure.
+- Role intent: create backline panic and force the player to protect infrastructure, not just the obvious chokepoint.
+
+## Tuning Notes
+
+- These values are intentionally readable ratios: Bruiser has about four times Crawler HP, Sapper has slightly more than one and a half times Crawler HP.
+- If Crawlers overwhelm too quickly, reduce speed before reducing count. Their identity depends on movement pressure.
+- If Bruisers feel irrelevant, raise barrier damage slightly before adding HP. They should be scary because they break plans, not because they take forever to kill.
+- If Sappers feel unfair, simplify target logic before lowering numbers. Confusing behavior is more harmful than strong behavior.
+- The player should lose runs mainly because the defense layout was incomplete or recovery was mismanaged, not because enemy raw stats were overtuned.
+
+## Rough Defense Prototype Stats
+
+- Tuning baseline: the defense network should carry most of the win condition. Player intervention should stabilize mistakes, not replace planning.
+
+## Barrier
+
+- Health: 180
+- Purpose: buy firing time, absorb Bruiser pressure, and let one turret reach expected value.
+- Performance check: one Barrier should comfortably survive a small Crawler pack long enough for a turret to thin it, but should visibly fail if two Bruisers sit on it unsupported.
+
+## Auto Turret
+
+- DPS: 22 sustained single-target damage
+- Range: 6 tiles
+- Target rule: nearest enemy in lane by default, with no complex priority logic in the first sector.
+- Purpose: one turret plus one barrier should solve Wave 1 if placed well, but should not fully solve Wave 2 or Wave 3 without support, repairs, or a second angle.
+
+## Shock Trap
+
+- Cooldown: 10 seconds between activations
+- Purpose: tempo control, not main damage. It should create breathing room for repairs and turret uptime.
+- Performance check: one trap trigger should noticeably blunt a Crawler pulse, but should only soften a Bruiser-led push rather than nullify it.
+
+## Repair Tool And Repair Post
+
+- Player repair speed: 28 health per second while channeling
+- Repair Post passive repair: 8 health per second to its linked local structure or zone target
+- Purpose: player repair is a clutch stabilization tool; Repair Post is long-form sustain that rewards setup.
+- Performance check: a player actively repairing can keep one damaged barrier alive through light pressure or briefly extend it through one Bruiser, but cannot out-repair two Bruisers and a leak pack alone.
+
+## Command Hub
+
+- Durability: 500
+- Purpose: losing the hub should signal multiple compounding failures, not a single accidental leak.
+- Performance check: several Crawlers getting through is painful but not instantly run-ending; repeated Bruiser access or ignored split-lane collapse should be fatal.
+
+## Expected Outcome Checks
+
+- Wave 1 check: one Barrier plus one Auto Turret should beat the opening Crawler groups with minor repair input and survive the final Bruiser if the player helps.
+- Wave 2 check: one lane setup should begin to crack unless supported by repairs, trap timing, or stronger placement. This is desired.
+- Wave 3 check: a player who only built front-line damage should suffer support-line losses once Sappers arrive. This is desired.
+- If Wave 1 feels too harsh, raise Barrier health slightly or reduce Bruiser structure damage before buffing turret DPS.
+- If Wave 3 feels too easy, improve Sapper access or reduce repair safety before increasing raw enemy HP.
+
+## Paper Balance Pass And Player Combat Values
+
+- Balance assumption: use one solid lane anchor as the baseline defense package unless otherwise noted: 1 Barrier, 1 Auto Turret, and player intervention as needed.
+
+## Wave 1 Paper Pass
+
+- Expected composition intent: mostly Crawlers with one Bruiser check near the end.
+- Turret output check: 22 DPS kills one Crawler in about 1.6 seconds and one Bruiser in about 6.4 seconds if uninterrupted.
+- Barrier soak check: one Bruiser dealing 18 every 1.5 seconds removes a 180 health Barrier in about 15 seconds if not repaired.
+- Practical outcome: one Barrier plus one Turret should comfortably process early Crawlers. When the Bruiser arrives, the player can finish the check by repairing the Barrier, body-blocking briefly, or adding sidearm damage.
+- Desired lesson: chokepoint plus baseline firepower works, but unattended melee pressure is still meaningful.
+
+## Wave 2 Paper Pass
+
+- Expected composition intent: thicker Crawler pressure with sustained contact time and at least one Bruiser-backed push.
+- Stress check: a Turret alone cannot kill a full mixed push before contact if lane length is moderate. That is good. The player must either preserve barrier life, time a trap, or add a second support element.
+- Repair check: player repair at 28 HP per second can erase one Bruiser’s 12 DPS equivalent pressure, but cannot keep up with a Bruiser plus concurrent Crawler chip plus positional distractions forever.
+- Practical outcome: shallow one-lane plans begin to crack. Good builds survive by layering time-buying pieces rather than by expecting one gun to erase everything.
+- Desired lesson: defense quality and timing matter more than frantic direct combat.
+
+## Wave 3 Paper Pass
+
+- Expected composition intent: split attention test. Frontline still matters, but Sappers should force infrastructure coverage.
+- Sapper check: at 55 HP, a Turret kills one Sapper in about 2.5 seconds if it gets clear targeting, but the default nearest-target rule means Sappers can still slip value through mixed pressure. That is good.
+- Support-line fragility check: Repair Post passive sustain at 8 HP per second is not enough to ignore Sapper hits. Infrastructure must be screened, repositioned, or actively defended.
+- Practical outcome: players who invested only in the obvious front door should experience functional collapse in support systems before full base death. That is the right escalation.
+- Desired lesson: complete layouts beat brute-force lane DPS.
+
+## Player Combat Values
+
+- Sidearm damage: 14 per shot
+- Fire rate: 2 shots per second
+- Sustained player DPS: 28 if uninterrupted, roughly comparable to one turret but with heavy opportunity cost because shooting means not repairing or repositioning.
+- Range: 4.5 tiles, shorter than turret range so the player must step into danger to contribute damage.
+- Reload or heat rule: after 12 shots, sidearm pauses for 1.2 seconds. This prevents perfect solo carry uptime.
+- Player health baseline: 120
+- Player movement baseline: 1.15 tiles per second. Faster than Bruisers, slightly faster than Sappers, but not enough to casually answer every lane problem.
+- Design intent: the player can finish weakened targets, rescue a failing choke, or pick off a Sapper, but cannot replace missing coverage or poor infrastructure planning.
+
+## Likely Failure Cases
+
+## Leak Overwhelm
+
+- Cause: too little lane coverage, overreliance on one turret, or trap timing wasted early.
+- Player-facing outcome: multiple Crawlers slip through, forcing the player to chase instead of maintain the layout.
+- Lesson taught: coverage and pacing matter more than panic shooting.
+
+## Barrier Collapse
+
+- Cause: Bruiser contact left unchecked, no layered blockers, or the player commits to DPS instead of preserving time-buying structures.
+- Player-facing outcome: the frontline opens suddenly and every following enemy gains efficient pathing.
+- Lesson taught: barriers are time assets that must be protected, not disposable decorations.
+
+## Backline Disruption
+
+- Cause: Sappers reach relay, repair, or economy pieces because all investment was pointed at the frontline.
+- Player-facing outcome: the base still looks alive, but repair throughput, power routing, or production reliability starts failing.
+- Lesson taught: support infrastructure is part of the defense puzzle.
+
+## Hub Attrition
+
+- Cause: repeated leaks, failed recovery after barrier collapse, or ignoring split pressure too long.
+- Player-facing outcome: the player loses from accumulated strategic failure rather than a single surprise event.
+- Lesson taught: recovery windows exist, but they must be used early.
+
+## Recommended Tuning Reactions
+
+- If players are winning Wave 3 by pure sidearm play, reduce sidearm uptime or increase repair opportunity cost before buffing enemies.
+- If players never feel pressure from Sappers, improve approach access or support-line vulnerability before raising Sapper HP.
+- If frontline defense collapses too abruptly, slightly lengthen Barrier survival windows before increasing passive repair.
+
+## Locked Wave 1 To Wave 3 Compositions
+
+- Composition goal: Wave 1 proves baseline lane defense, Wave 2 cracks shallow plans, Wave 3 tests support coverage and recovery discipline.
+
+## Wave 1
+
+- Purpose: teach the player that one competent choke plus light intervention is enough.
+- Spawn structure: 3 pulses over 32 seconds.
+- Pulse A at 0s: 4 Crawlers on main lane.
+- Pulse B at 10s: 5 Crawlers on main lane.
+- Pulse C at 22s: 1 Bruiser plus 3 Crawlers on main lane.
+- Expected player answer: 1 Barrier plus 1 Turret handles most pressure; the player repairs or sidearms during the Bruiser pulse.
+- Failure signal if overtuned: the player loses the choke before the Bruiser arrives or must personally clear most Crawlers.
+
+## Wave 2
+
+- Purpose: punish one-dimensional lane setups and reward layering, trap timing, and repair prioritization.
+- Spawn structure: 4 pulses over 42 seconds.
+- Pulse A at 0s: 5 Crawlers on main lane.
+- Pulse B at 8s: 4 Crawlers on main lane plus 2 Crawlers on side lane.
+- Pulse C at 20s: 1 Bruiser plus 4 Crawlers on main lane.
+- Pulse D at 31s: 1 Bruiser on side lane plus 3 Crawlers split between lanes.
+- Expected player answer: one strong lane is no longer enough. The player should need a trap or second defense angle while using repairs to prevent collapse during Bruiser contact.
+- Failure signal if undertuned: a single front choke with no side coverage clears comfortably without consuming player attention.
+
+## Wave 3
+
+- Purpose: force full-layout thinking, punish exposed support lines, and test whether the player can recover from partial disruption.
+- Spawn structure: 5 pulses over 55 seconds.
+- Pulse A at 0s: 4 Crawlers on main lane and 2 Crawlers on side lane.
+- Pulse B at 12s: 1 Sapper plus 3 Crawlers on side lane.
+- Pulse C at 24s: 1 Bruiser plus 4 Crawlers on main lane.
+- Pulse D at 34s: 1 Sapper on support access route plus 2 Crawlers on side lane.
+- Pulse E at 43s: 1 Bruiser on main lane plus 5 Crawlers split across both lanes.
+- Expected player answer: the player must rotate between frontline stabilization and backline interception. Pure front-DPS builds should suffer support damage before the wave ends.
+- Failure signal if overtuned: one early Sapper hit causes an unrecoverable spiral before the player can meaningfully respond.
+
+## Cross-Wave Validation Checks
+
+- Wave 1 should be solvable with the minimum intended defense package and light player support.
+- Wave 2 should force either secondary coverage, trap discipline, or active repair triage.
+- Wave 3 should create recoverable disruption first and lethal hub pressure second.
+- If these waves validate cleanly, the next tuning layer is economy pacing: starting resources, build costs, and between-wave recovery time.
+
+## Locked Economy Pacing Package
+
+- Economy goal: the player can afford the intended answer to each wave, but cannot safely overbuild every problem at once.
+
+## Starting Economy
+
+- Starting scrap: 140
+- Pre-wave setup window before Wave 1: 25 seconds
+- Intended minimum opening package: 1 Barrier for 30 plus 1 Auto Turret for 80, leaving 30 scrap for either one low-cost utility piece or reserve flexibility.
+- Design intent: the player starts with a strong enough core to solve Wave 1, but not enough surplus to trivialize both lanes immediately.
+
+## Structure Costs
+
+- Barrier: 30 scrap
+- Auto Turret: 80 scrap
+- Shock Trap: 35 scrap
+- Repair Post: 60 scrap
+- Relay Node: 45 scrap
+- Power Tap: 25 scrap
+- Processor: 70 scrap
+- Stockpile: 50 scrap
+
+## Build Time And Placement Rules
+
+- Barrier build time: 3 seconds
+- Auto Turret build time: 6 seconds
+- Shock Trap build time: 2 seconds
+- Repair Post build time: 5 seconds
+- Relay Node build time: 4 seconds
+- Power Tap build time: 2 seconds
+- Sell refund: 70 percent of paid cost between waves only
+- Reposition rule: no free reposition during active waves; rebuilding under pressure is allowed but consumes time and full cost unless the old structure is sold during downtime.
+
+## Wave Income And Recovery
+
+- Wave 1 clear reward: 70 scrap
+- Wave 2 clear reward: 85 scrap
+- Per-enemy salvage: Crawlers 4 scrap, Bruisers 12 scrap, Sappers 10 scrap
+- Between Wave 1 and Wave 2 downtime: 20 seconds
+- Between Wave 2 and Wave 3 downtime: 25 seconds
+- Repair costs no scrap but consumes the player’s time and attention budget.
+- Design intent: rewards plus salvage should let players add one meaningful new answer between waves, not fully solve every future threat.
+
+## Affordability Checks Against Waves 1 To 3
+
+- Before Wave 1, the player can afford Barrier plus Turret and still retain 30 scrap. That is enough for flexibility, but not enough for a second Turret.
+- A clean Wave 1 clear yields 70 reward plus 48 salvage from 12 Crawlers and 1 Bruiser, for about 118 new scrap before considering losses.
+- That means the Wave 2 prep state can realistically add one Turret or one Repair Post plus one Trap while still preserving some reserve for lane correction.
+- A clean Wave 2 clear yields 85 reward plus 72 salvage from 18 Crawlers and 2 Bruisers, for about 157 new scrap before considering losses.
+- That gives enough room to prepare real Wave 3 answers, but only if the player did not overbuy weak structures or suffer heavy rebuild tax.
+- Conclusion: the intended path is affordable, but overbuilding early should reduce Wave 3 resilience. That is the correct pressure curve.
+
+## Tuning Guardrails
+
+- If testers can open with two Turrets plus stable front cover, starting scrap is too high or Turret cost is too low.
+- If Wave 2 cannot be stabilized after a strong Wave 1 clear, either Wave 1 rewards are too low or side-lane answer costs are too high.
+- If Wave 3 is only survivable after near-perfect salvage retention, rebuild tax is too punishing for the intended difficulty band.
+- Default tuning bias: preserve meaningful scarcity rather than comfort. The player should feel one layer short of total security.
+
+## Locked Minimum Intended Build States
+
+- Purpose: define the leanest build states that should still solve the locked waves if the player reads the level correctly and executes with reasonable discipline.
+
+## Before Wave 1
+
+- 1 Barrier on the main choke
+- 1 Auto Turret positioned to cover the same choke but not so far forward that Bruiser contact disables it immediately
+- 30 scrap held in reserve or spent on one low-cost utility choice only if it does not remove the need for player intervention
+- Expected player behavior: maintain the choke, repair during lulls, and personally stabilize the Bruiser pulse rather than expecting full automation
+- Lesson delivered: one competent lane package plus light player support is enough when the threat is legible and concentrated
+
+## Before Wave 2
+
+- Retain the Wave 1 main choke package unless it suffered catastrophic placement failure
+- Add 1 Shock Trap on the side lane or just behind the main choke to catch split pressure and buy repair time
+- Add either 1 second Barrier on the side lane or 1 Repair Post supporting the main choke, but not both in the minimum state
+- Keep at least a small scrap reserve rather than spending to zero; the minimum intended state assumes some correction budget remains
+- Expected player behavior: rotate attention between lanes, trigger trap value deliberately, and prevent side pressure from becoming a front-line collapse
+- Lesson delivered: shallow expansion is not enough; the player must buy time somewhere and protect the original lane plan
+
+## Before Wave 3
+
+- Retain the Wave 2 main choke package and at least one side-lane answer
+- Add 1 Repair Post if it was skipped before, or add 1 Relay Node if the scenario uses support-chain exposure as the Sapper’s target logic
+- Add 1 localized backline protection piece: either a Trap near support access or a Barrier that forces the Sapper to path through player-controlled space
+- Do not assume a second Auto Turret in the minimum intended state unless testing shows the economy is too tight without it
+- Expected player behavior: intercept or delay Sapper pressure, keep the front choke from buckling during Bruiser contact, and recover from one localized disruption without spiraling
+- Lesson delivered: support infrastructure now matters, and resilient coverage beats raw front-loaded DPS
+
+## Interpretation Rules
+
+- Minimum intended means the leanest setup that should pass with competent play, not the safest setup or the most comfortable one
+- If a wave only works when the player preserves every structure at full health, the minimum state is too fragile
+- If a wave is comfortable with no meaningful player movement or repair load, the minimum state is too strong
+- The intended test standard is success with pressure, not success with full security
+
+## Validation Questions
+
+- Can a player who follows the minimum Wave 1 state survive without adding a second lane answer too early?
+- Does the minimum Wave 2 state force meaningful attention splitting without demanding impossible map coverage?
+- Does the minimum Wave 3 state survive one mistake and one partial support disruption, but not repeated neglect?
+- If not, is the issue economy scarcity, wave composition, or structure effectiveness?
+
+## Locked Support Structure Durability Package
+
+- Purpose: define how much disruption support pieces can absorb, how quickly the player can recover them, and what level of loss is still survivable in the Wave 3 minimum state.
+
+## Durability Values
+
+- Barrier health: 240
+- Auto Turret health: 160
+- Shock Trap health: 70
+- Repair Post health: 120
+- Relay Node health: 90
+- Power Tap health: 80
+- Processor health: 100
+- Stockpile health: 110
+- Durability intent: support pieces should die faster than front-line structures, but not so fast that a single brief breach guarantees collapse.
+
+## Repair Rules
+
+- Manual repair rate: 40 health per second while actively repairing
+- Repair interruption rule: taking damage or moving cancels repair immediately
+- Repair Post passive field: restores nearby structures at 8 health per second while powered and not disabled
+- A structure below 25 percent health is considered unstable and should not be assumed to survive another focused hit sequence without intervention
+- Repairing a destroyed structure is impossible; it must be rebuilt at full scrap cost and full build time
+
+## Destruction Consequences
+
+- Destroyed Relay Node: linked support effects in its chain go offline until the node is rebuilt
+- Destroyed Power Tap: any connected support piece requiring local power is disabled until power is restored
+- Destroyed Repair Post: passive sustain is lost immediately, but existing front-line structures remain otherwise functional
+- Destroyed Stockpile: stored reserve capacity is lost, but current carried scrap remains untouched
+- Destruction intent: support losses should create a recovery problem, not an instant fail state, unless the player was already overextended
+
+## Wave 3 Recovery Thresholds
+
+- Wave 3 minimum state should survive one damaged support piece that remains repairable without forcing a full defensive collapse
+- Wave 3 minimum state may survive one destroyed minor support piece such as a Trap or Power Tap, but should become significantly less stable afterward
+- Wave 3 minimum state should not reliably survive simultaneous destruction of a Relay Node and Repair Post unless the player had surplus investment beyond the minimum state
+- A competent player should be able to restore one damaged key support piece during a short pressure break, but not rebuild an entire broken support chain before the next major contact
+- Pass condition for durability tuning: one disruption is recoverable, two overlapping support failures create a probable but not always immediate loss spiral
+
+## Tuning Triggers
+
+- If support pieces die before the player can reasonably see and respond to the threat, raise health or reduce burst access
+- If support disruption barely matters and front-line firepower still solves the wave comfortably, lower support health or increase consequence severity
+- If rebuilding a lost support chain is mandatory for any chance of survival during the same wave, either downtime is too short or support dependency is too binary
+- Default tuning bias: support disruption should force triage and rerouting, not produce unavoidable instant defeat from one hidden failure
+
+## Wave 3 Disruption Paper Simulation
+
+- Simulation baseline: use the locked minimum Wave 3 state, current durability package, predictable wave escalation, and a competent player who rotates between front choke and threatened support space but does not have surplus defenses beyond the minimum.
+
+## Baseline Build State
+
+- Main choke retained: 1 Barrier plus 1 Auto Turret
+- Side-lane answer retained: 1 Shock Trap and either 1 side Barrier or 1 Repair Post from prior wave; Wave 3 minimum assumes at least one side answer remains active
+- Wave 3 addition retained: 1 Repair Post if absent before, or 1 Relay Node if support-chain exposure is active, plus 1 localized backline protection piece
+- No second Auto Turret assumed in the minimum state
+- Economy assumption: the player has enough scrap for one meaningful correction or rebuild choice during Wave 3 pressure, but not enough to replace multiple lost support pieces and front-line losses in the same contact window
+
+## Scenario A: One Damaged Key Support Piece
+
+- Test event: a Sapper or leak reaches one key support piece and leaves it damaged but not destroyed, typically at 25 to 45 percent remaining health
+- Player response: disengage briefly from optimization tasks, clear immediate threat, then manually repair during a short lull or rely on Repair Post sustain if the affected structure remains powered
+- Expected outcome: survivable with strain; front-line posture softens temporarily, but the defense should stabilize if the player reacts promptly
+- Paper sim judgment: passes the intended recovery threshold
+
+## Scenario B: One Destroyed Minor Support Piece
+
+- Test event: one minor support piece such as a Shock Trap or Power Tap is destroyed during split pressure
+- Player response: accept reduced safety, patch the exposed lane manually, and delay rebuild unless the destroyed piece is critical to front-line continuity
+- Expected outcome: still survivable, but map stability degrades and the player loses margin for a second mistake
+- Paper sim judgment: passes, but lands in the intended strain band rather than a clean comfort state
+
+## Scenario C: Relay Node Destroyed
+
+- Test event: a Relay Node is destroyed, taking part of the support chain offline while the front choke remains contested
+- Player response: immediately shift from optimization to triage, protect the front with direct action, and choose between rebuilding the node or holding manually through the next contact
+- Expected outcome: conditionally survivable only if the disabled chain is narrow and the player can cover the lost function with movement, repair timing, or a remaining side answer
+- Paper sim judgment: borderline; this is the first clear place where a hidden fail cascade can appear if one Relay Node controls too much of the support space
+
+## Scenario D: Repair Post Destroyed
+
+- Test event: the Repair Post is destroyed during or just before Bruiser contact, removing passive sustain from the main hold
+- Player response: compensate with manual repair windows, prioritize the most pressured structure, and abandon low-value optimization tasks completely until the contact stabilizes
+- Expected outcome: survivable if the front choke remains structurally intact and the player is not simultaneously answering a second backline failure
+- Paper sim judgment: passes with heavy strain; this supports the intended lesson that support sustain matters but is not the whole defense by itself
+
+## Scenario E: Relay Node and Repair Post Both Lost
+
+- Test event: a Relay Node and Repair Post are both lost within the same pressure window while the player is also containing Bruiser contact at the front
+- Player response: forced into pure emergency play, usually choosing between preserving the choke and restoring support function rather than doing both adequately
+- Expected outcome: probable spiral unless the player had surplus investment, unusually favorable pathing, or a nearly cleared front before the disruption occurred
+- Paper sim judgment: this should fail often, but not instantly; if it becomes immediate unavoidable defeat, the support chain is too binary
+
+## Simulation Readout
+
+- Result: the locked minimum build state and support durability package generally produce the intended one-failure recovery pressure
+- Primary concern: Relay Node dependency is the likeliest hidden fail cascade source because it can convert one breach into multi-system shutdown too quickly
+- Secondary concern: if Power Taps and Relay Nodes overlap responsibility on the same route, one Sapper success may carry too much consequence for a minimum-state player
+- Overall judgment: close to target, but requires explicit map-level support-chain limits to avoid binary collapse behavior
+
+## Recommended Follow-Up Adjustments
+
+- Limit each Relay Node to a small local support cluster rather than a large shared chain
+- Avoid placing Power Tap and Relay Node as stacked single points of failure on the same exposed route in the minimum-path version of the sector
+- If first playtests show instant collapse after one Relay loss, first reduce dependency spread before raising raw health values
+- If first playtests show support disruption barely matters, lower support health slightly or increase the temporary penalties from offline support
+
+## Locked Support-Chain Layout Constraints
+
+- Purpose: prevent one breach from disabling too much of the defensive ecosystem at once, while keeping support routing meaningful and worth protecting.
+
+## Core Constraints
+
+- Each Relay Node may support only a small local cluster, not a large shared chain across multiple pressure zones
+- Default cluster limit: one Relay Node should serve no more than 2 to 3 meaningful support dependencies in the minimum-path layout
+- A Power Tap should power a local pocket only; it should not also be the upstream enabler for another exposed support bottleneck
+- Critical front-line holding pieces must not all depend on the same Relay Node or the same Power Tap
+- At least one meaningful lane answer should remain functional after any single support-node loss in the minimum-state layout
+- Dependency intent: support routing should create triage decisions, not a one-hit full-system shutdown
+
+## Wave 3 Minimum-State Rules
+
+- The minimum Wave 3 path may include one exposed Relay Node and one exposed Power Tap, but they must not both gate the same support cluster
+- If a side lane depends on support infrastructure, that lane must retain either a manual fallback route or an independent low-tier defensive answer after a single support failure
+- The main choke may benefit from support sustain, but its entire stopping power cannot disappear from one backline support kill
+- A player who loses one support node should still have a realistic movement path to intervene before the remaining defense collapses
+- Wave 3 layout success rule: one support breach creates instability, not instant map invalidation
+
+## Failure-Stacking Prohibitions
+
+- Do not stack Relay Node and Power Tap as sequential single points of failure on the same exposed route in the minimum-state version
+- Do not allow one support kill to simultaneously remove sustain, power, and lane control from the same contested space
+- Do not place two critical support nodes so close together that a single unnoticed leak naturally destroys both during the same response window
+- Do not require a full support-chain rebuild during one active Wave 3 contact for the minimum-state player to have any chance of survival
+- Prohibition intent: fail states should come from compounded pressure and poor triage, not invisible dependency math
+
+## Readability and Access Rules
+
+- Support nodes that matter to Wave 3 survival must be readable from the player’s normal operating routes or from a quick response detour
+- A Sapper path to critical support should be interceptable and legible, not a hidden inevitability through off-camera space
+- Travel time from the main work loop to a threatened support cluster must be short enough for a competent player to respond after noticing the breach
+- If a support cluster is intentionally remote, it must provide proportionally lower failure consequence than a central exposed cluster
+- Readability intent: disruption should feel like a visible problem to solve, not a hidden condition discovered only after the defense has already failed
+
+## Layout Tuning Triggers
+
+- If one support-node kill still causes immediate unavoidable collapse, reduce dependency breadth before increasing durability
+- If support disruption becomes too easy to ignore, increase local dependency importance or slightly reduce support durability
+- If players repeatedly fail to identify which node matters, improve route legibility and support-state feedback before changing numbers
+- Default tuning priority: fix support topology first, then durability, then enemy burst access
+
+## Wave 3 Support Topology Sketch
+
+- Purpose: translate the locked support-chain constraints into a playable Wave 3 layout where one breach causes triage pressure, but not full-system shutdown.
+
+## Layout Overview
+
+- Wave 3 uses three local support clusters instead of one shared chain: main choke hold, side-lane catch, and backline utility pocket
+- The player’s main operating route sits between Cluster A and Cluster C, with a short response branch to Cluster B
+- No single support node governs all three clusters
+- The front line remains the visual priority, but support threats are placed close enough to the work loop to be noticed and answered
+
+## Cluster A: Main Choke Hold
+
+- Role: stop the primary Bruiser and Drone pressure long enough for the player to preserve the factory loop
+- Core pieces: 1 Barrier, 1 Auto Turret, 1 Repair Post
+- Support source: one local Power Tap only
+- Critical rule: the Barrier and Auto Turret may share this power source, but the entire choke must not also require a Relay Node to remain functionally alive
+- Failure target: if the Repair Post is lost, the choke becomes harder to hold; if the Power Tap is lost, at least one manual fallback or non-powered obstruction should still buy response time
+
+## Cluster B: Side-Lane Catch
+
+- Role: catch leaks, Sappers, or light split pressure before they reach the backline
+- Core pieces: 1 Shock Trap plus either 1 side Barrier or 1 manual firing position with good sightlines
+- Support source: one small Relay Node cluster with no more than 2 meaningful dependencies
+- Critical rule: this Relay Node may support the Shock Trap and one minor sensor or door function, but not the main choke sustain or primary turret
+- Failure target: if the Relay Node is destroyed, leaks become more dangerous and demand player movement, but the map should not instantly spiral
+
+## Cluster C: Backline Utility Pocket
+
+- Role: sustain local logistics or utility function without determining whether the whole defense lives or dies
+- Core pieces: 1 Processor or logistics utility point, 1 minor powered helper if needed
+- Support source: independent local power or a separate low-consequence support path
+- Critical rule: backline utility may suffer slowdown when disrupted, but must not remove the player’s only surviving lane answer
+- Failure target: utility disruption should hurt economy or convenience first, not instantly erase defensive agency
+
+## Dependency Map
+
+- Cluster A depends on: local Power Tap, local Repair Post, no Relay dependency required for baseline hold
+- Cluster B depends on: one Relay Node, one local trap answer, optional manual support from player position
+- Cluster C depends on: separate local utility support with low collapse consequence
+- Safe loss model: losing any one cluster weakens either hold quality, leak control, or logistics efficiency, but does not remove all three at once
+- Unsafe model to avoid: Relay Node loss disables side catch, main sustain, and utility output in one event
+
+## Sapper Access and Intercept Windows
+
+- Sapper access to Cluster B should exist through a readable flank route that crosses at least one player-visible approach line
+- Sapper access to Cluster A should be rarer and more telegraphed than access to Cluster B
+- Cluster C disruption should come from overflow or missed leaks, not from a direct hidden shortcut behind the player
+- Intercept rule: a competent player must be able to reach Cluster B fast enough to save it after first noticing a breach
+- Pressure intent: Cluster B should be the most contestable support pocket, because it teaches disruption response without instantly deleting the main hold
+
+## Expected Failure Behavior
+
+- If Cluster B fails, the player faces more leaks and higher attention load, but the main choke still functions
+- If Cluster A loses only the Repair Post, the player can still hold by rotating repairs manually
+- If Cluster A loses power, the hold should degrade sharply but still buy a brief manual intervention window
+- If Cluster C fails, the economy slows or rerouting becomes awkward, but survival remains primarily determined by Clusters A and B
+- Target behavior: one cluster failure creates pressure, two cluster failures create probable spiral, three cluster failures produce expected collapse
+
+## Sector Planner Notes
+
+- Place Cluster B near a branch off the player’s normal refinement or transport route so support response competes with factory attention in a readable way
+- Keep Cluster A visually central and Cluster C slightly recessed so the player intuitively understands survival priority
+- Do not mirror all support pockets symmetrically; one intentionally contestable side pocket is enough for Wave 3
+- Wave 3 topology priority: teach layered support defense, not full network optimization complexity
+
+## Wave 3 Lane-by-Lane Placement Draft
+
+- Purpose: place the three support clusters into a readable Wave 3 map flow so support pressure remains visible, interceptable, and non-binary.
+
+## Macro Route Structure
+
+- The player’s normal work loop should run from Backline Utility Loop through a central transit spine into the Main Attack Corridor
+- The Side Intercept Branch should split off that central spine at a visible junction before the player reaches the main choke
+- The player should repeatedly pass the branch decision point during normal upkeep so support threats compete with front-line attention in a readable way
+- No lane should require an isolated dead-end trek so long that support defense feels disconnected from the main play loop
+
+## Lane 1: Main Attack Corridor
+
+- Cluster A sits at the far end of the main corridor as the visual anchor of Wave 3 defense
+- The main choke should be visible from the central spine before full commitment, so the player can assess whether the hold is stable while still able to pivot
+- Place the local Power Tap slightly behind or offset from the Barrier line so it is attackable, but not incidentally destroyed by every front-line breach
+- Place the Repair Post within one short movement beat of the choke so players can rotate repairs without abandoning the lane completely
+- Reserve at least one manual fallback object, corner, or obstruction near the choke that still slows pressure after power loss
+
+## Lane 2: Side Intercept Branch
+
+- Cluster B should sit on a side branch that is near enough to the central spine to be checked quickly, but far enough that ignoring it has real cost
+- The branch entrance should be readable from the player’s normal route, with some visibility into whether enemies are leaking through it
+- Place the Relay Node inside Cluster B, not behind Cluster A, so side-lane disruption remains local and legible
+- The Shock Trap should cover the branch approach before enemies fully enter the backline, creating an intercept pocket rather than a last-second save
+- The player should be able to run from the central branch junction to Cluster B in one short response sprint
+- A competent player arriving promptly should usually be able to save either the Relay Node or the leak-control piece, even if not both
+
+## Lane 3: Backline Utility Loop
+
+- Cluster C should sit behind the central spine, slightly recessed from the main corridor, but not fully hidden from player traffic
+- The utility pocket should connect naturally to the player’s production or transport maintenance route
+- Do not place Cluster C behind a hidden shortcut that lets enemies delete it without first threatening a readable route
+- If enemies reach Cluster C, the player should already have had earlier warning through Side Intercept failure, leak overflow, or visible route breach
+- Utility damage should feel like a consequence of missed containment, not a primary stealth kill condition
+
+## Cluster Placement Summary
+
+- Cluster A: placed at the end of the main corridor, powered locally, readable from central approach
+- Cluster B: placed on the side branch near the central junction, Relay dependency localized, highly contestable
+- Cluster C: placed in the recessed utility loop, tied to logistics rather than primary survival gating
+- The central junction is the key teaching space: it should force repeated choose-frontline-or-support decisions during Wave 3
+
+## Sightline and Readability Rules
+
+- The player should be able to see signs of trouble at Cluster B from the branch entrance or central spine, even if the full pocket is not constantly visible
+- The player should be able to visually reassess Cluster A while moving toward or away from the junction
+- Cluster C can be slightly less exposed visually, but must remain integrated into normal traversal so its state is not forgotten
+- Do not let geometry block all awareness of a support breach until after lane failure has already propagated
+
+## Response-Time Targets
+
+- Central spine to Cluster A: moderate run, because the main choke should feel committed and important
+- Central junction to Cluster B: short sprint, because side support must be realistically defendable after first notice
+- Central spine to Cluster C: very short detour, because upkeep and utility checking should be naturally folded into the work loop
+- If travel time to Cluster B is long enough that the player almost never saves it after noticing danger, the branch is too remote
+- If travel time to Cluster A is so short that front-line commitment disappears, the main corridor has lost its weight
+
+## Placement Failure Checks
+
+- Failure check: can one Sapper route threaten both Cluster B Relay and Cluster A power in the same unnoticed pass? If yes, separate them further
+- Failure check: does ignoring Cluster B for one response window make Cluster C collapse automatically? If yes, reduce path coupling
+- Failure check: can the player notice trouble at Cluster B before the branch is already lost? If no, improve sightline or alert readability
+- Failure check: after Cluster A power loss, is there still a brief playable fallback beat? If no, add obstruction or reduce dependency severity
+- Failure check: does Cluster C matter enough to care about, but not enough to binary-gate survival? Keep it in that middle band
+
+## Sector Planner Build Notes
+
+- Build the central junction first, because that space determines whether Wave 3 support decisions feel readable or annoying
+- Then place Cluster B and test save windows before polishing Cluster C, because side-branch fairness is the highest topology risk
+- Place Cluster A power slightly safer than Cluster B Relay, but more consequential when lost
+- Wave 3 placement priority: preserve player read-response-save loops, not perfect geometric symmetry
+
+## Wave 3 Cluster B Sapper Route Spec
+
+- Purpose: define the exact Sapper attack route into Cluster B so the branch remains contestable, readable, and locally disruptive without causing hidden front-line shutdown.
+
+## Route Identity
+
+- Use one primary Sapper route into Cluster B: a readable flank path that enters from the side of the branch rather than from the main front or a hidden backdoor
+- The route should feel like a pressure lane the player could have anticipated, not a surprise teleport into support infrastructure
+- This route exists to test response discipline at Cluster B, not to create direct access to Cluster A power or Cluster C utility in the same pass
+
+## Path Beats
+
+- Beat 1: Entry lane. The Sapper appears on a visible side approach line that can be seen from either the branch entrance or a nearby central-spine sightline
+- Beat 2: Contest pocket. The route narrows through the Shock Trap zone or a nearby side cover pocket where the player can intercept before the Sapper reaches the Relay Node
+- Beat 3: Relay threat zone. If unopposed, the Sapper reaches the Relay Node and begins the disruption attempt there first
+- Beat 4: Leak continuation. After disabling or damaging the Relay Node, surviving pressure spills deeper past Cluster B toward leak-control failure rather than jumping directly to backline utility destruction
+- Do not allow the route to bypass the contest pocket and instantly touch the Relay Node on first contact
+
+## Detection and Visibility Windows
+
+- First detection window: the player should be able to notice the Sapper during Beat 1 from a normal movement line, without needing a dedicated watch position
+- Second detection window: if the player misses the initial sighting, the contest pocket should produce a strong visual or combat cue before Relay contact
+- Relay contact should be the third awareness moment, not the first
+- If the map only communicates the threat after the Relay is already disabled, the route is unfair and must be revised
+
+## Target Priority
+
+- Primary target: Cluster B Relay Node
+- Secondary target: Shock Trap or side leak-control piece if the Relay is defended or already down
+- Forbidden target path: Cluster A Power Tap should not be the natural next hop from this route
+- Forbidden target path: Cluster C utility should only be threatened after leak overflow, not via direct Sapper priority on the first branch breach
+
+## Player Save Window
+
+- Fast response outcome: player spots the Sapper during Beat 1 or Beat 2 and can usually save both the Relay Node and the leak-control piece
+- Average response outcome: player reacts during late Beat 2 and can usually save either the Relay Node or the leak-control piece, but not always both
+- Late response outcome: player reacts after Relay contact and can contain spillover, but should normally suffer Cluster B disruption first
+- This timing model is correct for Wave 3 because it rewards awareness and movement without demanding perfection
+
+## Failure Boundaries
+
+- Allowed consequence: one missed Sapper response disables Cluster B support and raises leak pressure
+- Not allowed: one missed Sapper response also disables Cluster A baseline hold
+- Not allowed: the Sapper route reaches Cluster C directly before the player has a visible chance to contain the branch failure
+- If one route can cause side-catch loss, front-line collapse, and utility deletion in one short sequence, the topology has over-coupled and must be split
+
+## Sector Planner Notes
+
+- Test this route first with no extra alerts beyond geometry readability; if players still fail unfairly, fix spatial communication before adding UI compensation
+- Keep the route singular and legible in Wave 3; branching multi-entry Sapper patterns should wait for later escalation
+- Wave 3 teaching goal: the player learns to read a flank, rotate quickly, and preserve a local support cluster under pressure
+
+## Wave 3 Cluster B Intercept Window Spec
+
+- Purpose: define the response timing model for the Cluster B Sapper route so support defense produces fair save windows instead of hidden binary losses
+
+## Timing Model
+
+- Start timing at first fair notice, not at spawn time. If the player cannot reasonably perceive the Sapper yet, the intercept clock has not meaningfully started
+- Use three route timing segments: Notice Window, Contest Window, and Relay Contact Window
+- Notice Window: from first fair visibility at Beat 1 until the Sapper fully enters the contest pocket
+- Contest Window: from contest-pocket entry until first meaningful Relay contact attempt
+- Relay Contact Window: from first Relay threat until support disruption is effectively secured if uncontested
+
+## Response Bands
+
+- Fast response band: player notices during the Notice Window and commits immediately
+- Average response band: player notices late in the Notice Window or early in the Contest Window and rotates with a normal decision delay
+- Late response band: player notices only during the Contest Window or at Relay contact and arrives after local damage has begun
+- Missed response band: player never rotates until after Relay disruption and leak escalation are already underway
+
+## Expected Outcomes by Arrival Time
+
+- Fast response outcome: player should usually preserve the Relay Node, preserve the local leak-control piece, and clear the threat with manageable front-line opportunity cost
+- Average response outcome: player should usually preserve either the Relay Node or the leak-control piece, but accept some local degradation or pressure spill
+- Late response outcome: player should usually lose Relay integrity or local support function first, but still retain a meaningful containment play before Cluster C becomes threatened
+- Missed response outcome: Cluster B disruption is secured, leak pressure rises, and the player is pushed into recovery mode rather than instant map death
+
+## Travel and Notice Assumptions
+
+- Assume the player is on a normal upkeep or front-support loop near the central spine when first fair notice occurs
+- Assume the run from the central junction to Cluster B is a short response sprint, not a major redeployment
+- Assume a small but real human decision delay between notice and movement, because players do not pivot instantly on every signal
+- Assume the player may arrive while also weighing the cost of leaving Cluster A under temporary strain; this tradeoff is intended and should remain
+
+## Tuning Thresholds
+
+- If fast responses still frequently fail to save the Relay Node, the intercept window is too short or the first fair notice is too weak
+- If average responses often save everything with little tradeoff, the intercept window is too generous and the branch loses tension
+- If late responses cause immediate Cluster C deletion, consequence propagation is too steep and needs another buffer stage
+- If missed responses collapse both Cluster B and the main hold in the same short sequence, the side branch is over-coupled to front-line survival
+
+## Playtest Validation Rules
+
+- Validate with blind route tests first: do not add extra UI warnings until geometry and route staging have been judged on their own
+- A fair Wave 3 result means most attentive players land in the average band, strong players often hit the fast band, and inattentive players drift into late or missed bands
+- If nearly all players land in late or missed bands, improve branch readability or reduce time-to-Relay rather than compensating with bigger rewards
+- If nearly all players land in fast band with no meaningful cost, the branch is under-pressuring and should demand harder commitment or slightly weaker early visibility
+
+## Cluster B Route Fairness Playtest Checklist
+
+- Purpose: verify whether the Cluster B Sapper route is spatially fair, legible, and correctly sorted into fast, average, late, and missed response bands during real play
+
+## Test Setup Rules
+
+- [ ] Run initial tests without extra UI alerts or compensating callouts
+- [ ] Start testers on a normal central-spine upkeep or front-support loop
+- [ ] Use the same Cluster B Sapper route in repeated runs before trying variants
+- [ ] Record first fair notice, movement start, arrival at contest pocket, and Relay contact timing for each run
+
+## Readability Checks
+
+- [ ] Can the player notice the Sapper from a normal movement line during Beat 1 without dedicated camping?
+- [ ] If the first sighting is missed, does the contest pocket create a second strong awareness cue before Relay contact?
+- [ ] Is Relay contact the third awareness moment rather than the first?
+- [ ] Does the route feel like a readable flank instead of a hidden support deletion path?
+
+## Response Band Classification
+
+- [ ] Fast band: player notices during Notice Window and commits immediately
+- [ ] Average band: player notices late in Notice Window or early in Contest Window and rotates with normal delay
+- [ ] Late band: player notices during Contest Window or at Relay contact and arrives after local damage has started
+- [ ] Missed band: player rotates only after Relay disruption and leak escalation are underway
+- [ ] After multiple runs, do most attentive players land in average, strong players often land in fast, and inattentive players drift into late or missed?
+
+## Outcome Validation
+
+- [ ] Fast responses usually save both the Relay Node and the local leak-control piece
+- [ ] Average responses usually save one major element but not always both
+- [ ] Late responses usually lose Cluster B support first but still retain a meaningful containment play
+- [ ] Missed responses push the player into recovery mode rather than immediate map death
+- [ ] A single missed Sapper response does not also directly erase Cluster A baseline hold or instantly delete Cluster C utility
+
+## Failure Diagnosis
+
+- [ ] If fast responses still fail often, check first fair notice strength and route compression before adjusting rewards or damage numbers
+- [ ] If average responses save everything easily, check whether the route is overexposed or the Relay is too protected
+- [ ] If late responses immediately threaten Cluster C, check whether spillover propagation is too steep
+- [ ] If missed responses collapse both Cluster B and the front line in one short sequence, check for topology over-coupling
+
+## Correction Order
+
+- [ ] Fix geometry readability before adding alert UI
+- [ ] Fix route staging before changing systemic consequence values
+- [ ] Tune timing windows before adding stronger compensation mechanics
+- [ ] Use alert language only if the route remains unfair after spatial fixes
+
+## Cluster B Response Band Metrics
+
+- Purpose: give playtest observers a shared classification rule so each Cluster B run is sorted into the same response band without subjective drift
+
+## Observer Time Stamps
+
+- [ ] Mark Notice Time at the first moment the threat becomes fairly perceivable from normal play, not when it technically spawns
+- [ ] Mark Commit Time when the player clearly starts rotating toward Cluster B or diverts resources with intent to answer the route
+- [ ] Mark Arrival Time when the player reaches the contest pocket or first gains meaningful interception access
+- [ ] Mark Relay Contact Time when the Sapper first meaningfully threatens or contacts the Relay Node
+- [ ] Mark Disruption Secured Time when Cluster B support disruption is effectively locked in if the player does nothing else
+
+## Band Assignment Rules
+
+- [ ] Fast band if Commit Time occurs in the Notice Window and Arrival Time occurs before Relay Contact Time
+- [ ] Average band if Commit Time occurs late in the Notice Window or early in the Contest Window and Arrival Time occurs around first Relay threat
+- [ ] Late band if Commit Time occurs during the Contest Window or at Relay Contact and Arrival Time follows visible local damage or support loss
+- [ ] Missed band if Commit Time occurs after Disruption Secured Time or if the player never meaningfully answers the route
+- [ ] If a run sits between two bands, classify by the later band unless the player had clear interception access earlier and intentionally delayed
+
+## Outcome Tags
+
+- [ ] Tag Relay Saved if the Relay Node remains operational after the intercept
+- [ ] Tag Leak Control Saved if the local leak-control function remains intact
+- [ ] Tag Containment Retained if the player still has a credible recovery line before Cluster C is threatened
+- [ ] Tag Recovery Forced if the player must pivot into cleanup mode after disruption is secured
+- [ ] Tag Frontline Collapse if the Cluster B miss directly causes main-hold instability in the same short sequence
+
+## Interpretation Rules
+
+- [ ] Healthy distribution target: most attentive players land in Average, strong players often reach Fast, inattentive players drift into Late or Missed
+- [ ] If most runs classify as Late or Missed, diagnose readability and route timing before changing consequence values
+- [ ] If most runs classify as Fast with low tradeoff, the route is under-pressuring and should demand stronger commitment
+- [ ] If Fast or Average runs still force recovery too often, the consequence ladder is too punishing for Wave 3
+
+## Cluster B Run Logging Template
+
+- Use one log entry per run
+
+<!---->
+
+- [ ] Run ID:
+- [ ] Tester profile: attentive / typical / inattentive
+- [ ] Starting context: central upkeep / frontline support / other
+- [ ] Notice Time:
+- [ ] Commit Time:
+- [ ] Arrival Time:
+- [ ] Relay Contact Time:
+- [ ] Disruption Secured Time:
+- [ ] Assigned band: fast / average / late / missed
+- [ ] Relay Saved: yes / no
+- [ ] Leak Control Saved: yes / no
+- [ ] Containment Retained: yes / no
+- [ ] Recovery Forced: yes / no
+- [ ] Frontline Collapse: yes / no
+- [ ] Primary failure source: notice / route / timing / consequence / coupling / none
+- [ ] Observer notes:
+
+## Cluster B Fallback Alert Rules
+
+- Use fallback alerts only after repeated tests show the route remains unfair after geometry and staging adjustments
+
+## Trigger Conditions
+
+- [ ] Enable fallback alerts only if most typical players still land in Late or Missed after spatial fixes
+- [ ] Enable fallback alerts only if observer notes show the first fair notice is still being missed for legibility reasons rather than strategic greed
+- [ ] Do not enable fallback alerts just because players dislike the tradeoff of leaving Cluster A
+- [ ] Do not enable fallback alerts if timing is fair but consequence values are too punitive; fix the consequence ladder instead
+
+## Allowed Alert Types
+
+- [ ] Single short audio cue when the Sapper enters the Contest Window
+- [ ] Brief directional indicator toward Cluster B support threat
+- [ ] Short support-status pulse when Relay contact begins
+- [ ] One escalation line if disruption becomes secured and recovery mode has begun
+
+## Alert Design Rules
+
+- [ ] Alerts must point to the threat but not solve the decision; they should improve notice, not erase commitment cost
+- [ ] Use at most one alert per route phase to avoid turning the branch into a scripted tutorial
+- [ ] Do not expose exact enemy position, exact timer, or guaranteed optimal response timing
+- [ ] If alerts shift most typical runs from Missed to Average without making Fast trivial, the fallback layer is working
+
+## Alert Failure Checks
+
+- [ ] If alerts push most strong players into effortless Fast saves, remove or delay the earliest cue
+- [ ] If alerts still leave typical players in Missed, the route problem is probably spatial rather than informational
+- [ ] If alerts create panic rotations that cause larger frontline losses than the original branch, the messaging is overstating the threat
+- [ ] If recovery alerts feel like punishment narration rather than actionable information, cut them back
+
+## Cluster B Playtest Readout Summary
+
+- Use this summary after each batch of 5 to 10 runs
+
+<!---->
+
+- [ ] Batch ID:
+- [ ] Number of runs reviewed:
+- [ ] Tester profile mix: attentive / typical / inattentive
+- [ ] Starting context mix: central upkeep / frontline support / other
+
+## Band Distribution
+
+- [ ] Fast runs:
+- [ ] Average runs:
+- [ ] Late runs:
+- [ ] Missed runs:
+- [ ] Did most typical players land in Average?
+- [ ] Did strong players often reach Fast without making the route trivial?
+- [ ] Did inattentive players drift into Late or Missed without causing instant map death?
+
+## Outcome Pattern
+
+- [ ] Relay Saved count:
+- [ ] Leak Control Saved count:
+- [ ] Containment Retained count:
+- [ ] Recovery Forced count:
+- [ ] Frontline Collapse count:
+- [ ] Did Fast usually save both major elements?
+- [ ] Did Average usually save one major element?
+- [ ] Did Late still preserve a meaningful containment line?
+- [ ] Did Missed create recovery pressure rather than immediate defeat?
+
+## Observer Diagnosis
+
+- [ ] Primary issue pattern: notice / route / timing / consequence / coupling / mixed
+- [ ] What repeated moment caused the branch to fail?
+- [ ] Was the failure informational, spatial, pacing-based, or consequence-based?
+- [ ] Observer confidence: high / medium / low
+
+## Decision
+
+- [ ] Batch status: pass / caution / fail
+- [ ] Recommended next fix area:
+- [ ] What should stay unchanged for the next batch?
+- [ ] One-sentence summary:
+
+## Cluster B Early Batch Thresholds
+
+- These thresholds are for early fairness validation batches of 5 to 10 runs, not final balance signoff
+
+## Pass Threshold
+
+- [ ] Most typical players land in Average across the batch
+- [ ] At least one strong-player run reaches Fast without making the route look trivial
+- [ ] Missed runs still create recovery play rather than immediate defeat
+- [ ] Frontline Collapse appears in no more than one run per early batch unless the missed response was extreme
+
+## Caution Threshold
+
+- [ ] Typical-player results split between Average and Late with no clear center
+- [ ] Fast runs succeed, but only through unusually aggressive anticipation or route memorization
+- [ ] Average runs too often lose both major elements or force recovery
+- [ ] Missed runs occasionally spill into Frontline Collapse faster than intended
+
+## Fail Threshold
+
+- [ ] Most typical players land in Late or Missed after repeated runs
+- [ ] Fast classification is effectively unreachable without pre-knowledge
+- [ ] Average runs frequently collapse into recovery or frontline instability
+- [ ] A single missed response commonly cascades into multi-cluster failure in the same short sequence
+
+## Cluster B First Tuning Response Matrix
+
+- Use this matrix to choose the first fix, not every possible fix
+
+## Notice Failure
+
+- [ ] Signal: most runs drift Late or Missed because players fail to detect the threat in fair time
+- [ ] First fix: strengthen sightline readability and second awareness cues in the contest pocket
+- [ ] Do not first fix with damage reduction or stronger rewards
+- [ ] Escalate to fallback alerts only if readability remains unfair after spatial revisions
+
+## Route Failure
+
+- [ ] Signal: players notice the threat, but the path to meaningful interception is awkward, overlong, or unclear
+- [ ] First fix: adjust route staging, access angle, and contest-pocket usability
+- [ ] Do not patch route failure with louder alerts
+- [ ] Re-test from normal central and frontline loops after each route change
+
+## Timing Failure
+
+- [ ] Signal: players reach the route, but response bands compress too hard or outcomes arrive too quickly
+- [ ] First fix: widen Notice or Contest timing windows before changing outcome severity
+- [ ] Do not assume timing failure is a damage problem if classification is already skewed late
+- [ ] Re-check whether Average becomes the dominant band after timing changes
+
+## Consequence Failure
+
+- [ ] Signal: Fast and Average classifications happen, but outcomes are too punishing or too forgiving for those bands
+- [ ] First fix: tune consequence ladder values, disruption depth, or recovery affordance
+- [ ] Do not change notice geometry if detection and rotation were already fair
+- [ ] Preserve the intended band gradient while softening or sharpening results
+
+## Coupling Failure
+
+- [ ] Signal: a single missed response too often cascades into Cluster A or Cluster C destabilization in the same short sequence
+- [ ] First fix: reduce cross-cluster dependency steepness or add containment buffers
+- [ ] Do not mistake coupling failure for ordinary consequence tuning if the spill reaches other clusters too fast
+- [ ] Re-test missed runs specifically after each coupling adjustment
+
+## Cluster B First Test Batch Plan
+
+- Goal: validate whether Cluster B branch fairness lands in the intended band shape before any corrective tuning
+
+## Batch Size
+
+- [ ] Run 8 total tests in the first batch
+- [ ] Allow expansion to 10 only if the first 8 runs produce mixed or low-confidence results
+- [ ] Do not stop at fewer than 5 runs unless a severe fail pattern is already obvious
+
+## Tester Mix
+
+- [ ] Target mix: 2 attentive, 4 typical, 2 inattentive players
+- [ ] If only 6 runs are available, protect the typical-player share first
+- [ ] Do not over-index on strong-player validation in the first batch; fairness for typical players is the primary read
+
+## Starting Context Coverage
+
+- [ ] Include at least 3 runs starting from central upkeep behavior
+- [ ] Include at least 3 runs starting from frontline support behavior
+- [ ] Use the remaining runs to cover natural variation rather than forced edge cases
+- [ ] Do not script ideal awareness behavior for the tester
+
+## Observer Focus
+
+- [ ] Primary focus: when the player first fairly notices the branch
+- [ ] Secondary focus: whether the path to interception feels clean once notice occurs
+- [ ] Tertiary focus: whether the resulting consequence matches the assigned response band
+
+## Run Conditions
+
+- [ ] Use the current baseline build with no fallback alerts enabled
+- [ ] Do not make between-run tuning adjustments inside the same batch
+- [ ] Allow observers to log but not coach during the run
+
+## Batch Readout Requirement
+
+- [ ] Complete one batch readout before choosing any fix
+- [ ] Name one primary failure type for the batch even if minor secondary issues exist
+- [ ] Choose only one first fix for the next iteration
+
+## Cluster B One-Change-Per-Batch Rule
+
+- Purpose: preserve causality so each retest teaches the team something reliable
+
+<!---->
+
+- [ ] After each batch, change only one primary variable class: notice, route, timing, consequence, or coupling
+- [ ] Supportive cleanup inside the same class is allowed only if it does not change the branch's strategic meaning
+- [ ] Do not combine geometry changes with consequence ladder changes in one batch
+- [ ] Do not combine timing-window changes with fallback alert activation in one batch
+- [ ] If a fix requires cross-class edits, treat one class as primary and defer the rest unless the build is untestable
+- [ ] Only break this rule if the current state is clearly invalid for fairness reading and the batch would otherwise waste test time
+- [ ] If the rule is broken, document exactly what changed and mark the retest as low-confidence
+
+## Cluster B Retest Sequence
+
+- Use this order to protect diagnosis quality after each fix
+
+<!---->
+
+- [ ] Step 1: if notice changed, re-check fair first detection before judging any downstream outcome improvements
+- [ ] Step 2: if route changed, re-check interception cleanliness and travel usability from normal play loops
+- [ ] Step 3: if timing changed, re-check whether Average becomes the dominant typical-player band
+- [ ] Step 4: if consequence changed, re-check whether Fast, Average, Late, and Missed now map to the intended result gradient
+- [ ] Step 5: if coupling changed, re-check missed-run spill behavior across neighboring clusters before re-judging local fairness
+- [ ] After each retest, update the readout, assign one batch status, and decide whether the same class needs one more pass or the next class should be tested
+- [ ] Do not advance to fallback alerts unless notice and route have already been judged fair and the remaining issue is still informational
+
+## Cluster B Iteration Tracker
+
+- Use one entry per batch iteration so tuning history stays auditable
+
+<!---->
+
+- [ ] Batch number:
+- [ ] Build version:
+- [ ] Primary diagnosis class: notice / route / timing / consequence / coupling
+- [ ] Batch status: pass / caution / fail
+- [ ] Single approved change class for next batch:
+- [ ] Specific change applied:
+- [ ] Retest focus:
+- [ ] Result after retest:
+- [ ] Did the dominant failure class change?
+- [ ] Lock / hold / escalate decision:
+- [ ] Notes on what must remain unchanged next batch:
+
+## Cluster B Batch Review Meeting Checklist
+
+- Use this checklist after each batch before approving any new tuning work
+
+<!---->
+
+- [ ] Confirm the batch used one stable build and no mid-batch tuning
+- [ ] Review tester mix and starting-context coverage before reading outcomes
+- [ ] Check whether most typical players landed in the intended Average band
+- [ ] Confirm whether Fast was reachable without pre-knowledge and Missed was survivable
+- [ ] Identify one dominant failure class rather than arguing multiple equal causes
+- [ ] Verify that the proposed next fix stays inside one change class
+- [ ] Decide explicitly: lock, hold for one more pass, or escalate for redesign
+- [ ] Capture one sentence on what should not be changed in the next batch
+
+## Cluster B Fix Approval Rule
+
+- A change is strong enough to lock only when it improves fairness without creating a new dominant failure class
+
+## Lock Criteria
+
+- [ ] The targeted failure class measurably improves in the next retest batch
+- [ ] Typical-player outcomes shift toward the intended Average-centered distribution
+- [ ] No new dominant issue appears in route, timing, consequence, or coupling as a result of the fix
+- [ ] The result repeats across at least two consecutive acceptable batches or one strong batch plus one spot verification batch
+- [ ] The team can name what should stay unchanged because it is now pulling its weight
+
+## Hold Criteria
+
+- [ ] The targeted issue improves, but the batch still sits in caution and needs one confirming pass
+- [ ] The fix helps one context but remains inconsistent across central and frontline starting loops
+- [ ] The result is positive, but observer confidence is still medium or low
+- [ ] A minor secondary issue appears, but it is not yet strong enough to redefine the diagnosis
+
+## Escalation Criteria
+
+- [ ] The batch still fails after the targeted fix, suggesting the diagnosis was wrong or incomplete
+- [ ] The attempted fix clearly creates a new dominant failure class
+- [ ] The branch remains unreadable or unstable enough that one-change retesting no longer gives reliable learning
+- [ ] A fix would require a major scope or structure shift rather than another local tuning pass
+
+## Cluster B First Batch Logging Template
+
+- Use one copy of this template per test run inside Batch 1
+
+<!---->
+
+- [ ] Run number:
+- [ ] Tester type: attentive / typical / inattentive
+- [ ] Starting context: central upkeep / frontline support / other natural variation
+- [ ] First fair notice moment:
+- [ ] Did the player identify the branch in time?
+- [ ] Route to interception felt: clean / awkward / blocked
+- [ ] Timing band reached: Fast / Average / Late / Missed
+- [ ] Resulting consequence severity:
+- [ ] Did the outcome feel fair to a normal player?
+- [ ] Did missed-state spill create trouble in neighboring clusters?
+- [ ] Observer confidence: high / medium / low
+- [ ] One-sentence note:
+
+## Cluster B Post-Batch Decision Template
+
+- Use this after each batch review to close the loop cleanly
+
+<!---->
+
+- [ ] Batch reviewed:
+- [ ] Primary diagnosis class:
+- [ ] Summary of what improved:
+- [ ] Summary of what is still failing:
+- [ ] Decision: lock / hold / escalate
+- [ ] If hold, next single approved change class:
+- [ ] If hold, exact change to test next:
+- [ ] If lock, what must remain unchanged:
+- [ ] If escalate, what local tuning is no longer sufficient:
+- [ ] Owner for next action:
+- [ ] Deadline for next action:
+
+## Cluster B Escalation Triggers
+
+- Escalate Cluster B for deeper redesign when local tuning stops producing reliable fairness gains
+
+<!---->
+
+- [ ] Two consecutive batches fail to improve the same dominant issue after targeted one-class fixes
+- [ ] Fixing notice or route repeatedly shifts the problem but never produces a stable Average-centered outcome
+- [ ] Any successful local fix consistently creates a new dominant issue in another class
+- [ ] The branch can only read fairly when players already know what is coming
+- [ ] Missed-state spill behavior keeps damaging neighboring clusters beyond acceptable survivability
+- [ ] Observer confidence stays low across multiple batches because the branch is too unstable to diagnose cleanly
+- [ ] The required fix would change branch structure, pacing role, or consequence ladder in a major way
+- [ ] If any escalation trigger fires, stop local tuning after the current review and hand the issue back for redesign framing
+
+## Cluster B Redesign Handoff Template
+
+- Use this when Cluster B stops benefiting from local tuning and needs structural review
+
+<!---->
+
+- [ ] Branch version handed off:
+- [ ] Reason for handoff:
+- [ ] Primary dominant failure class:
+- [ ] What has already been tried locally:
+- [ ] What improved temporarily, if anything:
+- [ ] What still fails for a normal player:
+- [ ] Why local tuning is no longer sufficient:
+- [ ] Which structural layer likely needs redesign: notice / route / timing window / consequence ladder / branch role / coupling
+- [ ] What must be preserved because it is working:
+- [ ] Recommended redesign question to answer first:
+- [ ] Lead agent for redesign follow-up: Game Design Agent or Sector Planner
+
+## Cluster B Batch Status Thresholds
+
+- Use these thresholds after batch review to classify the overall status of Cluster B
+
+## Pass
+
+- [ ] Most typical-player outcomes land in the intended Average band
+- [ ] Fast is reachable without prior knowledge, but not dominant enough to imply triviality
+- [ ] Missed remains survivable and does not create unacceptable spill into neighboring clusters
+- [ ] No dominant failure class remains after review
+- [ ] Observer confidence is high enough that the team trusts the result
+
+## Caution
+
+- [ ] The branch is mostly fair, but one issue still needs confirmation or cleanup
+- [ ] Typical-player outcomes are mixed between Average and Late, without a severe failure pattern
+- [ ] A minor dominant issue may still exist, but it appears local and testable with one more one-class pass
+- [ ] Missed is survivable, but spill or readability pressure is still slightly above comfort
+- [ ] Observer confidence is medium, so a confirmation batch is still warranted
+
+## Fail
+
+- [ ] Most typical-player outcomes land in Late or Missed rather than Average
+- [ ] Fast requires pre-knowledge or special play rather than fair reading
+- [ ] Missed creates unacceptable downstream damage or cluster coupling instability
+- [ ] A clear dominant failure class remains unresolved after the tested change
+- [ ] Observer confidence is low because the branch is unstable, unreadable, or inconsistent
+
+## Cluster B First Live Batch Briefing
+
+- Read this to everyone before Batch 1 starts
+
+<!---->
+
+- [ ] We are not testing whether expert players can solve Cluster B. We are testing whether a normal attentive player can read and respond fairly.
+- [ ] Do not coach the player, warn them early, or explain the intended read during the run.
+- [ ] Let natural variation happen. We want to see central, frontline, and other ordinary starting contexts.
+- [ ] Observers should record first fair notice, route quality, timing band, consequence severity, and whether the outcome felt fair.
+- [ ] Do not change the build mid-batch. One batch means one stable version.
+- [ ] After each run, capture one sentence only before discussion. Save interpretation for the review meeting.
+- [ ] Our target is not perfection. Our target is Average-centered fairness with survivable misses and no major spill.
+- [ ] If the same dominant issue keeps appearing, we will diagnose it cleanly rather than stacking multiple fixes.
+- [ ] At the end of the batch, the outcome will be pass, caution, or fail — and that decision will drive the next step.
+
+## Cluster B Batch 1 Review Worksheet
+
+- Use this worksheet after Batch 1 to move from raw runs to one clear decision
+
+<!---->
+
+- [ ] Batch reviewed:
+- [ ] Stable build confirmed:
+- [ ] Tester mix covered attentive / typical / inattentive sufficiently?
+- [ ] Starting contexts covered central upkeep / frontline support / natural variation?
+- [ ] Observed timing pattern: mostly Fast / Average / Late / Missed
+- [ ] Did typical-player runs cluster near the intended Average band?
+- [ ] Were Fast results earned fairly without prior knowledge?
+- [ ] Was Missed survivable without unacceptable spill?
+- [ ] Dominant failure class selected:
+- [ ] Evidence for dominant class from multiple runs:
+- [ ] Batch status: pass / caution / fail
+- [ ] Decision: lock / hold / escalate
+- [ ] If hold, next single approved change class:
+- [ ] If escalate, structural question to hand off:
+- [ ] One sentence on what must remain unchanged:
+
+## Cluster B Dominant Failure Class Rubric
+
+- Pick the dominant class by asking which problem most directly explains why a normal player failed or felt treated unfairly
+
+## Notice
+
+- [ ] Choose Notice when players fail mainly because the branch does not announce itself clearly or early enough
+- [ ] Typical signs: repeated late recognition, missed cues, or confusion about what is happening
+- [ ] Do not choose Notice if players saw the problem in time but could not act on it
+
+## Route
+
+- [ ] Choose Route when players understand the need but the path to interception is awkward, blocked, overly costly, or spatially unclear
+- [ ] Typical signs: detours, congestion, hesitation at entry points, or correct diagnosis followed by failed access
+- [ ] Do not choose Route if the path is workable but the available window is simply too short
+
+## Timing
+
+- [ ] Choose Timing when players recognize the branch and can route into it, but the fair action window is too tight or collapses too quickly
+- [ ] Typical signs: near-success runs repeatedly landing Late, tiny margins, or good reads that still lose
+- [ ] Do not choose Timing if players rarely notice the problem or cannot physically reach the branch
+
+## Consequence
+
+- [ ] Choose Consequence when the branch is readable and interactable, but the penalty for being late or wrong is disproportionate to the warning given
+- [ ] Typical signs: players say the result felt unfair even when they understand why it happened
+- [ ] Do not choose Consequence if the deeper issue is that players were never given a fair chance to respond
+
+## Coupling
+
+- [ ] Choose Coupling when Cluster B becomes unfair mainly because nearby systems, spill states, or cross-cluster dependencies distort the result
+- [ ] Typical signs: the same branch reads differently depending on outside load, neighboring failures, or chain reactions
+- [ ] Do not choose Coupling if the issue can be explained cleanly inside Cluster B itself
+
+## Cluster B One-Page Facilitator Script
+
+- Use this script to keep the Batch 1 review meeting short, evidence-led, and decisive
+
+<!---->
+
+- [ ] Opening: We are here to identify one dominant issue, classify batch status, and choose one next step.
+- [ ] Step 1: Confirm the batch used one stable build and acceptable tester/context coverage.
+- [ ] Step 2: Read raw run notes first. Do not jump to solutions during evidence review.
+- [ ] Step 3: Call the overall timing pattern: Fast, Average, Late, or Missed dominant.
+- [ ] Step 4: Ask which failure class most directly explains unfairness for a normal player. Use the rubric and force one dominant answer.
+- [ ] Step 5: Check pass, caution, and fail thresholds against the observed outcomes.
+- [ ] Step 6: Choose lock, hold, or escalate. If hold, approve only one change class for the next batch.
+- [ ] Step 7: State one sentence on what must remain unchanged so improvements are not accidentally undone.
+- [ ] Closing: Record the owner, next action, and deadline before ending the meeting.
+
+## Cluster B Batch 1 Summary Report Template
+
+- Use this after the live review to capture the result, the diagnosis, and the next approved move in one page
+
+<!---->
+
+- [ ] Batch name and date:
+- [ ] Stable build reviewed:
+- [ ] Batch objective in one sentence:
+- [ ] Tester/context coverage summary:
+
+## Observed Result
+
+- [ ] Dominant timing pattern: Fast / Average / Late / Missed
+- [ ] Typical-player outcome summary:
+- [ ] Attentive-player outcome summary:
+- [ ] Inattentive-player outcome summary:
+- [ ] Was Fast fair?
+- [ ] Was Missed survivable?
+
+## Diagnosis
+
+- [ ] Dominant failure class: Notice / Route / Timing / Consequence / Coupling
+- [ ] Why this is the dominant class in one sentence:
+- [ ] Key evidence from multiple runs:
+- [ ] Secondary symptoms that are not the main cause:
+
+## Decision
+
+- [ ] Batch status: pass / caution / fail
+- [ ] Decision: lock / hold / escalate
+- [ ] One thing that must remain unchanged:
+- [ ] Approved next move in one sentence:
+- [ ] If hold, single approved change class for next batch:
+- [ ] If escalate, structural question to resolve:
+
+## Ownership
+
+- [ ] Owner:
+- [ ] Next action due date:
+- [ ] Dependencies or blockers:
+
+## Cluster B Next-Batch Change Request Template
+
+- Use this only when a batch result is hold and the team is approving one bounded change for the next test pass
+
+<!---->
+
+- [ ] Request title:
+- [ ] Source batch and summary reference:
+- [ ] Owner:
+- [ ] Target next batch date:
+
+## Problem Definition
+
+- [ ] Dominant failure class: Notice / Route / Timing / Consequence / Coupling
+- [ ] Problem statement in one sentence:
+- [ ] Evidence this is the main cause:
+- [ ] What is not being changed yet:
+
+## Approved Change
+
+- [ ] Single change class approved:
+- [ ] Exact change to implement in one sentence:
+- [ ] Why this is the smallest valid change:
+- [ ] Expected player-facing effect:
+- [ ] Expected side effect or risk:
+- [ ] Build/version where this will appear:
+- [ ] Dependencies needed before test:
+
+## Validation Plan
+
+- [ ] What result would count as improvement:
+- [ ] What result would count as no meaningful change:
+- [ ] What result would trigger escalation instead of another hold:
+- [ ] What evidence must be captured in the next batch:
+
+## Cluster B Redesign Escalation Brief
+
+- Use this only when repeated evidence shows the problem is structural and cannot be solved with one bounded next-batch change
+
+<!---->
+
+- [ ] Escalation title:
+- [ ] Source batch or batches reviewed:
+- [ ] Owner preparing brief:
+- [ ] Decision date needed by:
+
+## Why This Is Structural
+
+- [ ] Core problem statement in one sentence:
+- [ ] Why a local tuning pass is not enough:
+- [ ] Evidence across multiple runs or batches:
+- [ ] What symptom keeps recurring:
+- [ ] What root dependency or design assumption appears broken:
+
+## Impact Assessment
+
+- [ ] Player experience impact if unchanged:
+- [ ] Scope or production impact if redesigned:
+- [ ] Risk of not acting now:
+- [ ] Risk of redesigning the wrong layer:
+
+## Decision Options
+
+- [ ] Option A: preserve current structure and accept known limitation
+- [ ] Option B: structural redesign of the affected layer
+- [ ] Option C: cut or replace the affected feature/assumption
+- [ ] Recommended option:
+- [ ] Why this option is the best tradeoff:
+
+## Approval Request
+
+- [ ] What decision is being requested from leadership/user:
+- [ ] What stays frozen until decision is made:
+- [ ] Who should review this brief:
+- [ ] Immediate next step after approval:
+
+## Cluster B Lock / Hold / Escalate Decision Rule
+
+- Use this immediately after the batch summary is completed so the team chooses one outcome and one follow-up artifact
+
+## Lock
+
+- [ ] Choose lock when the batch confirms the intended player behavior is working and no material confusion or failure pattern remains
+- [ ] Expected evidence: success is repeatable, failures are minor, and any remaining issues are wording-level or polish-level only
+- [ ] Follow-up artifact: update the batch summary report and mark the tested element as stable for now
+
+## Hold
+
+- [ ] Choose hold when the core intent is still viable but one bounded issue is blocking reliable success
+- [ ] Expected evidence: a dominant failure class is visible and the team can name one smallest valid change to test next
+- [ ] Follow-up artifact: create one next-batch change request and approve only one bounded change for the next pass
+
+## Escalate
+
+- [ ] Choose escalate when repeated evidence shows the issue is structural, crosses multiple layers, or cannot be corrected with one bounded change
+- [ ] Expected evidence: the same failure persists across runs, local tuning does not resolve it, or the fix would meaningfully change scope, loop, progression, or production complexity
+- [ ] Follow-up artifact: create a redesign escalation brief and freeze related local tuning until the structural decision is made
+
+## Decision Discipline
+
+- [ ] Do not choose more than one outcome for the same batch
+- [ ] Do not approve more than one major change inside a hold decision
+- [ ] If the proposed fix changes the core loop, progression, theme, or scope, treat it as escalate rather than hold
+- [ ] If the team cannot explain the problem in one sentence, gather better evidence before deciding
+
+## Cluster B Post-Batch Meeting Checklist
+
+- Use this in a 10–15 minute review immediately after the batch summary is prepared
+
+## Before the Meeting
+
+- [ ] Confirm the batch worksheet is complete
+- [ ] Confirm the scoring rubric has been applied
+- [ ] Confirm the summary report is filled in with evidence, not opinions
+
+## During the Meeting
+
+- [ ] State the core problem in one sentence
+- [ ] Name the dominant failure class or confirm there is none
+- [ ] Decide whether the result is lock, hold, or escalate
+- [ ] If hold, name one smallest valid next-batch change only
+- [ ] If escalate, identify what layer appears structurally broken
+- [ ] Record the decision before discussing new ideas
+
+## After the Meeting
+
+- [ ] Update the batch summary with the final decision
+- [ ] Create the matching follow-up artifact: none for lock, one change request for hold, one escalation brief for escalate
+- [ ] Freeze unrelated idea generation until the next test or decision point
+
+## Cluster B Consistency Pass
+
+- Use this pass to remove overlap, align naming, and confirm handoffs across all Cluster B testing artifacts
+
+<!---->
+
+- [ ] Check that the same terms are used consistently for batch, change request, escalation, and decision outcome
+- [ ] Check that every artifact clearly states when it should be used
+- [ ] Check that every artifact names its required input and output
+- [ ] Check that no two artifacts ask for the same judgment in slightly different language
+- [ ] Check that the decision rule matches the meeting checklist and follow-up templates exactly
+- [ ] Check that the process stays lean enough to run without creating admin drag
+
+## Cluster B Sample Pilot Flow
+
+- Sample scenario: players are testing whether a sector onboarding sequence teaches the core extraction loop clearly
+
+## Worksheet Outcome
+
+- [ ] Observed pattern: most players understand movement but fail to recognize when and why to bank resources before overextending
+- [ ] Failure class: risk-reward signal is too weak during first extraction cycle
+
+## Rubric Interpretation
+
+- [ ] The issue appears teachable and localized rather than structural
+- [ ] The likely next test should isolate clarity of the banking prompt rather than rework the whole onboarding flow
+
+## Summary Decision
+
+- [ ] Decision: hold
+- [ ] Reason: one dominant issue is blocking reliable success, but the core teaching sequence still appears viable
+
+## Change Request
+
+- [ ] Next-batch change: add one stronger banking prompt at the moment players first carry meaningful loss risk
+- [ ] Change boundary: do not alter sector layout, enemy pressure, or progression economy in the same batch
+
+## Meeting Close
+
+- [ ] Record the hold decision in the batch summary
+- [ ] Approve only the bounded prompt change for the next batch
+
+## Wave 1 Composition
+
+- Lane usage: West Corridor only.
+- Composition: 10 Crawlers total in small groups, then 1 Bruiser near the end.
+- Suggested spawn rhythm: group of 3 Crawlers, short pause, group of 3 Crawlers, short pause, group of 4 Crawlers, then final Bruiser.
+- Teaching purpose: confirm the player understands one chokepoint, one turret, and basic leak cleanup.
+- Expected result: prepared players hold with minor damage; underprepared players suffer a few leaks but should still recover.
+
+## Wave 2 Composition
+
+- Lane usage: West Corridor primary, Vent Breach remains inactive as a true spawn lane but shows warning pressure or movement cues.
+- Composition: 12 Crawlers, 2 Bruisers.
+- Suggested spawn rhythm: 4 Crawlers, 4 Crawlers, 1 Bruiser with 2 trailing Crawlers, short pause, 1 Bruiser with 2 trailing Crawlers.
+- Teaching purpose: pressure the first lane hard enough that the player feels the cost of weak barriers, poor turret angles, or delayed power expansion.
+- Expected result: strong players stabilize and prepare for split attention; weak players survive but enter recovery with visible structural damage.
+
+## Wave 3 Composition
+
+- Lane usage: West Corridor and Vent Breach both active.
+- West Corridor composition: 10 Crawlers and 2 Bruisers in alternating pressure pulses.
+- Vent Breach composition: 4 Crawlers and 2 Sappers arriving in two smaller disruption groups.
+- Suggested spawn rhythm: West opens with Crawlers, Vent activates shortly after with a light disruption group, West sends a Bruiser-led pulse, Vent sends Sapper-supported pressure, then West closes with a final mixed push.
+- Teaching purpose: force the player to split attention, protect support infrastructure, and use direct combat as a patch for incomplete planning.
+- Expected result: good players hold both lanes imperfectly but remain operational; weak players suffer infrastructure disruption and must decide what to save first.
+
+## Composition Intent
+
+- Wave 1 teaches shape and cleanup.
+- Wave 2 teaches durability checks and economy pressure through stronger front-line contact.
+- Wave 3 teaches split attention and support-line vulnerability.
+- Each new enemy role should reveal a specific planning weakness instead of just increasing raw numbers.
+- If playtests show that success depends mostly on player aim rather than lane setup and recovery discipline, reduce enemy leak speed or damage and strengthen the value of structures.

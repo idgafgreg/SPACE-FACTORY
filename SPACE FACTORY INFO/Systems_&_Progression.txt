@@ -1,0 +1,56 @@
+# Systems & Progression
+
+# Systems Direction
+
+- Primary identity: factory management under recurring threat, not a combat game with automation elements.
+- Core pacing: predictable work cycles create planning windows, then defense phases test preparation quality.
+- Desired player skill: improve throughput, layout, and readiness between each incoming threat cycle.
+- Narrative role: support motivation and mood through logs, sector context, and environmental clues rather than long story interruptions.
+
+# Cycle Loop
+
+- Phase 1 — Work Window: scan for resources, route materials, run machines, place buildings, and prepare defenses before the next cycle arrives.
+- Phase 2 — Warning Window: alarms, ship signs, or motion readings announce the next threat with enough lead time for final repositioning and emergency decisions.
+- Phase 3 — Defense Window: alien pressure disrupts production lanes, damages structures, threatens chokepoints, and forces the player to stabilize critical operations.
+- Phase 4 — Recovery Window: repair damage, clear blockages, restore power or flow, and evaluate what failed before the next work cycle begins.
+- Default cadence: one readable threat cycle per in-game day, shift, or operating cycle so players can plan intentionally rather than guess.
+- Escalation pattern: early cycles teach the structure, mid cycles increase lane pressure and enemy durability, later cycles introduce multi-point disruption and recovery strain.
+
+# Progression Skeleton
+
+- Starting player capability: basic scanner, manual extraction, one simple processor, basic conveyor routing, and one entry-level defense option.
+- Early resource set: one common structural resource, one energy or fuel resource, and one rare component that gates better machines or defenses.
+- Early machine chain: extract raw material, move it through transport, refine it, then convert it into build parts, power supply, or ammunition-equivalent support.
+- Early defense set: one placeable barrier, one automated or semi-automated turret/trap, and one emergency player-triggered response tool.
+- Unlock logic: each progression tier should improve either throughput, resilience, warning quality, or recovery efficiency.
+- Tier 1 goal: achieve a stable loop that survives early waves with basic repairs and simple routing.
+- Tier 2 goal: reduce manual friction with better transport, stronger chokepoints, and more dependable production uptime.
+- Tier 3 goal: operate multiple critical lines at once while containing larger disruptions without total collapse.
+
+# Defense Pressure Model
+
+- Threat purpose: force tradeoffs, expose weak layouts, and create urgency without invalidating long-term planning.
+- Pressure target: enemies should threaten routes, power, access, and production continuity more than they threaten constant direct player death.
+- Wave readability: each cycle should communicate likely intensity and rough arrival timing so the player can make meaningful preparation choices.
+- Failure model: losing a wave should cause damage, lost materials, broken lines, or delayed progression rather than immediate campaign-ending punishment every time.
+- Escalation levers: more simultaneous entry points, stronger enemies, longer disruption windows, less safe downtime, and higher repair burden.
+- Fairness rule: if a wave destroys key infrastructure, the recovery path must remain understandable and achievable.
+- Defense success should come mostly from prior preparation, chokepoint design, and redundancy rather than twitch execution alone.
+- Direct combat rule: player weapons and actions should buy time, finish stragglers, and save failing chokepoints, but should not outperform well-built defensive infrastructure.
+- Player combat kit should stay small and readable: one basic sidearm or tool, one emergency support action, and repair/reposition actions during pressure windows.
+
+# First Playable Slice
+
+- Map scope: one compact ship sector with a few resource points, a central processing zone, and 2–3 defendable approaches.
+- Player objective: establish one functioning production line that can survive the first several cycles and fund basic expansion.
+- Minimum content: 3 resource types, 3–4 machines, 2 defense tools, 1 repair action, and 3 escalating threat cycles.
+- Validation goal: confirm that optimizing between predictable waves feels satisfying and that defenses support the factory loop rather than overwhelm it.
+- Cut if needed: extra sectors, advanced enemy types, deep story beats, and any mechanic that does not improve the core cycle.
+- Combat validation goal: verify that direct player action feels helpful in emergencies without replacing the need for planning, chokepoints, and layered defenses.
+
+# Open Design Constraints
+
+- Need naming pass for resources, machines, and threat cycle terminology.
+- Approved decision: use light direct combat, with a simple player defense toolset and defense structures remaining the main answer to incoming waves.
+- Need clearer rule for whether scanning is a one-time discovery mechanic or a recurring optimization tool.
+- Need first pass on failure economy: repair costs, downtime penalties, and recovery pacing.
