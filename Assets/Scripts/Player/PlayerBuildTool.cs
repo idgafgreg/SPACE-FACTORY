@@ -16,6 +16,8 @@ using UnityEngine.Events;
 /// </summary>
 public class PlayerBuildTool : MonoBehaviour
 {
+    public static PlayerBuildTool Instance { get; private set; }
+
     [Header("References")]
     public Camera            buildCamera;
     public BuildSystem       buildSystem;
@@ -39,16 +41,38 @@ public class PlayerBuildTool : MonoBehaviour
     [Header("Feedback — wire to a UI Text's 'text' setter (optional)")]
     public UnityEvent<string> onPlacementReasonChanged;
 
+    [Header("Selection — UIHotbar subscribes to this")]
+    public UnityEvent<BuildableDef> onSelectionChanged = new UnityEvent<BuildableDef>();
+
+    /// <summary>True while a buildable is selected (ghost active). Camera zoom
+    /// and weapon fire check this to avoid fighting build-mode input.</summary>
+    public bool HasSelection => _currentDef != null;
+    public BuildableDef CurrentDef => _currentDef;
+
+    // Middle-mouse is shared with camera orbit: a middle-press that DRAGS
+    // farther than this (pixels) orbits and must not demolish on release.
+    public const float MiddleDragThreshold = 8f;
+
     BuildableDef     _currentDef;
     GameObject       _ghost;
     Renderer         _ghostRenderer;
     PlacementResult  _lastResult = PlacementResult.Success;
+    float            _ghostYaw;                 // build rotation, degrees (scroll = 90° steps)
+    Vector3          _middleDownScreenPos;
 
     static readonly KeyCode[] HotbarKeys =
     {
         KeyCode.Alpha1, KeyCode.Alpha2, KeyCode.Alpha3, KeyCode.Alpha4,
         KeyCode.Alpha5, KeyCode.Alpha6, KeyCode.Alpha7, KeyCode.Alpha8
     };
+
+    void Awake()
+    {
+        if (Instance != null && Instance != this) { Destroy(this); return; }
+        Instance = this;
+    }
+
+    void OnDestroy() { if (Instance == this) Instance = null; }
 
     void Start()
     {
@@ -61,6 +85,7 @@ public class PlayerBuildTool : MonoBehaviour
     void Update()
     {
         ReadHotbar();
+        ReadRotation();
         UpdateGhost();
         HandlePlace();
         HandleRemove();
@@ -73,8 +98,16 @@ public class PlayerBuildTool : MonoBehaviour
     {
         for (int i = 0; i < HotbarKeys.Length && i < buildableDefs.Count; i++)
         {
-            if (Input.GetKeyDown(HotbarKeys[i])) { Select(buildableDefs[i]); return; }
+            if (Input.GetKeyDown(HotbarKeys[i])) { ToggleSlot(i); return; }
         }
+    }
+
+    /// <summary>Select hotbar slot i; re-selecting the active slot deselects
+    /// (so hotbar buttons and number keys both toggle). Used by UIHotbar clicks.</summary>
+    public void ToggleSlot(int i)
+    {
+        if (i < 0 || i >= buildableDefs.Count) return;
+        Select(_currentDef == buildableDefs[i] ? null : buildableDefs[i]);
     }
 
     void Select(BuildableDef def)
@@ -82,9 +115,22 @@ public class PlayerBuildTool : MonoBehaviour
         _currentDef = def;
         _ghost?.SetActive(def != null);
         PublishReason(PlacementResult.Success);
+        onSelectionChanged.Invoke(def);
     }
 
     void ClearSelection() => Select(null);
+
+    // ── Rotation (scroll wheel while a buildable is selected) ─────────────────
+
+    void ReadRotation()
+    {
+        if (_currentDef == null) return;
+        float scroll = Input.GetAxis("Mouse ScrollWheel");
+        if (scroll >  0.0001f) _ghostYaw = Mathf.Repeat(_ghostYaw + 90f, 360f);
+        if (scroll < -0.0001f) _ghostYaw = Mathf.Repeat(_ghostYaw - 90f, 360f);
+    }
+
+    Quaternion GhostRotation => Quaternion.Euler(0f, _ghostYaw, 0f);
 
     // ── Ghost preview ─────────────────────────────────────────────────────────
 
@@ -106,9 +152,10 @@ public class PlayerBuildTool : MonoBehaviour
         _ghost.transform.position = buildSystem != null
             ? buildSystem.SnapToGrid(point)
             : point;
+        _ghost.transform.rotation = GhostRotation;
 
         PlacementResult result = buildSystem != null
-            ? buildSystem.Evaluate(_currentDef, point, Quaternion.identity)
+            ? buildSystem.Evaluate(_currentDef, point, GhostRotation)
             : PlacementResult.Success;
 
         if (result != _lastResult)
@@ -133,9 +180,11 @@ public class PlayerBuildTool : MonoBehaviour
     void HandlePlace()
     {
         if (_currentDef == null || !Input.GetMouseButtonDown(0)) return;
+        if (UnityEngine.EventSystems.EventSystem.current != null &&
+            UnityEngine.EventSystems.EventSystem.current.IsPointerOverGameObject()) return;
         if (!TryGetBuildPoint(out var point)) return;
 
-        PlacementResult result = buildSystem.TryPlace(_currentDef, point, Quaternion.identity, out _);
+        PlacementResult result = buildSystem.TryPlace(_currentDef, point, GhostRotation, out _);
         if (!result.IsSuccess())
         {
             PublishReason(result);
@@ -145,8 +194,13 @@ public class PlayerBuildTool : MonoBehaviour
 
     void HandleRemove()
     {
-        if (!Input.GetMouseButtonDown(2)) return;
-        if (!TryGetBuildPoint(out var point)) return;   // was: Physics.Raycast from camera
+        // Middle mouse is shared with camera orbit: press-and-drag orbits,
+        // a clean press-release (below the drag threshold) demolishes.
+        if (Input.GetMouseButtonDown(2)) _middleDownScreenPos = Input.mousePosition;
+        if (!Input.GetMouseButtonUp(2)) return;
+        if ((Input.mousePosition - _middleDownScreenPos).sqrMagnitude >
+            MiddleDragThreshold * MiddleDragThreshold) return;   // was an orbit drag
+        if (!TryGetBuildPoint(out var point)) return;
         buildSystem?.TryRemoveAt(point);
     }
 

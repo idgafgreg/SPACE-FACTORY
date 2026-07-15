@@ -42,6 +42,13 @@ public class PlayerWeapon : MonoBehaviour
     void Update()
     {
         _cooldown -= Time.deltaTime;
+
+        // Left-click is overloaded: placing buildings (ghost active) and UI
+        // clicks (end screen, hotbar) must not also fire the sidearm.
+        if (PlayerBuildTool.Instance != null && PlayerBuildTool.Instance.HasSelection) return;
+        if (UnityEngine.EventSystems.EventSystem.current != null &&
+            UnityEngine.EventSystems.EventSystem.current.IsPointerOverGameObject()) return;
+
         if (Input.GetMouseButton(0) && _cooldown <= 0f)
         {
             Fire();

@@ -478,6 +478,8 @@ GameObject:
   - component: {fileID: 394591265}
   - component: {fileID: 394591264}
   - component: {fileID: 394591263}
+  - component: {fileID: 394591269}
+  - component: {fileID: 394591268}
   m_Layer: 0
   m_Name: Canvas
   m_TagString: Untagged
@@ -596,6 +598,42 @@ RectTransform:
   m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 0, y: 0}
+--- !u!114 &394591268
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 394591262}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 565c051b2ee5bc44a86981cb8788ede1, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::UIHubHealthBar
+  hub: {fileID: 362845604}
+  hubObjectName: CommandHub
+  width: 320
+  height: 18
+  topMargin: 8
+--- !u!114 &394591269
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 394591262}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1b0e59a54302c9a4c9bbdca9ffa82bf3, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::UIHotbar
+  buildTool: {fileID: 1445036919}
+  weapon: {fileID: 1445036921}
+  inventory: {fileID: 687743531}
+  slotWidth: 86
+  slotHeight: 64
+  slotSpacing: 6
+  bottomMargin: 12
 --- !u!1 &426485288
 GameObject:
   m_ObjectHideFlags: 0
@@ -1536,13 +1574,17 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::CameraFollow
   target: {fileID: 1445036925}
-  offset: {x: 0, y: 22, z: -16}
   lookAtHeightOffset: 1.5
   orbitSensitivity: 500
+  pitchSensitivity: 3
+  minPitch: 20
+  maxPitch: 70
+  orbitSmoothTime: 0.08
   zoomSpeed: 30
   minZoomDistance: 8
   maxZoomDistance: 40
   zoomSmoothTime: 0.2
+  initialOffset: {x: 0, y: 22, z: -16}
 --- !u!81 &746681996
 AudioListener:
   m_ObjectHideFlags: 0
@@ -2269,6 +2311,9 @@ MonoBehaviour:
   invalidMat: {fileID: 2100000, guid: e6c92d4b0f63621429b2668892d5c6a9, type: 2}
   blockedMat: {fileID: 2100000, guid: ca8a57c83cea27e4d9113ba30f4f47ee, type: 2}
   onPlacementReasonChanged:
+    m_PersistentCalls:
+      m_Calls: []
+  onSelectionChanged:
     m_PersistentCalls:
       m_Calls: []
 --- !u!114 &1445036920
@@ -3305,6 +3350,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::UIEndOfRunScreen
   panel: {fileID: 2085094328}
+  menuSceneName: MainMenu
   onResultText:
     m_PersistentCalls:
       m_Calls: []

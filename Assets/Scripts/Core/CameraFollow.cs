@@ -1,62 +1,119 @@
 using UnityEngine;
 
 /// <summary>
-/// Smooth zoomed-out follow camera with right-click orbit and scroll-wheel zoom
-/// (Path of Exile 2-style: zoom moves the camera along its current view axis,
-/// orbit spins it around the target — both keep looking at the target).
-/// Hold right-click and drag horizontally to orbit around the target.
-/// Scroll the mouse wheel to zoom in/out.
+/// Smooth zoomed-out follow camera.
+///
+/// Controls (mousewheel-centric):
+///   Scroll wheel            — zoom (only while NO buildable is selected; with a
+///                             ghost active the wheel rotates the building instead,
+///                             see PlayerBuildTool.ReadRotation).
+///   Middle-mouse drag       — orbit yaw (horizontal) and pitch (vertical).
+///                             A clean middle CLICK (below the shared drag
+///                             threshold) still demolishes via PlayerBuildTool.
+/// Yaw/pitch/zoom all ease smoothly instead of snapping.
 /// </summary>
 public class CameraFollow : MonoBehaviour
 {
     [Header("Target")]
     public Transform target;
 
-    [Header("Positioning")]
-    [Tooltip("Base offset from the target — height and backward distance. Direction is kept; distance is controlled by zoom.")]
-    public Vector3 offset = new Vector3(0f, 22f, -16f);
-
     [Tooltip("Point above the target the camera looks at (y offset).")]
     public float lookAtHeightOffset = 1.5f;
 
-    [Header("Orbit (right-click drag)")]
-    public float orbitSensitivity = 500f;
+    [Header("Orbit (middle-mouse drag)")]
+    [Tooltip("Degrees of yaw per unit of 'Mouse X' delta (mouse axes are already per-frame — no deltaTime).")]
+    public float orbitSensitivity = 5f;
+    [Tooltip("Degrees of pitch per unit of 'Mouse Y' delta.")]
+    public float pitchSensitivity = 3f;
+    public float minPitch         = 20f;
+    public float maxPitch         = 70f;
+    [Tooltip("Seconds to ease into a new orbit angle. Higher = smoother/slower.")]
+    public float orbitSmoothTime  = 0.08f;
 
-    [Header("Zoom (scroll wheel)")]
-    public float zoomSpeed         = 30f;
-    public float minZoomDistance   = 8f;
-    public float maxZoomDistance   = 40f;
-    [Tooltip("Seconds to ease into a new zoom distance. Higher = smoother/slower, lower = snappier.")]
-    public float zoomSmoothTime    = 0.2f;
+    [Header("Zoom (scroll wheel — inactive while placing a building)")]
+    public float zoomSpeed        = 30f;
+    public float minZoomDistance  = 8f;
+    public float maxZoomDistance  = 40f;
+    [Tooltip("Seconds to ease into a new zoom distance.")]
+    public float zoomSmoothTime   = 0.2f;
 
-    float _yaw;
-    float _zoomDistance;        // current, smoothly-eased distance actually applied to the camera
-    float _targetZoomDistance;  // distance the scroll wheel is asking for
-    float _zoomVelocity;        // SmoothDamp state
+    [Header("Initial framing")]
+    [Tooltip("Starting offset used to derive initial yaw/pitch/distance.")]
+    public Vector3 initialOffset = new Vector3(0f, 22f, -16f);
+
+    float _yaw,   _targetYaw,   _yawVelocity;
+    float _pitch, _targetPitch, _pitchVelocity;
+    float _zoomDistance, _targetZoomDistance, _zoomVelocity;
+    bool  _orbiting;
+    Vector3 _middleDownScreenPos;
 
     void Awake()
     {
-        _zoomDistance = _targetZoomDistance = offset.magnitude;
+        _zoomDistance = _targetZoomDistance = initialOffset.magnitude;
+
+        // Derive starting yaw/pitch from the configured offset direction.
+        Vector3 dir = initialOffset.normalized;
+        _targetYaw   = _yaw   = Mathf.Atan2(dir.x, dir.z) * Mathf.Rad2Deg;
+        _targetPitch = _pitch = Mathf.Clamp(
+            Mathf.Asin(Mathf.Clamp(dir.y, -1f, 1f)) * Mathf.Rad2Deg, minPitch, maxPitch);
     }
 
     void LateUpdate()
     {
         if (!target) return;
 
-        if (Input.GetMouseButton(1))
-            _yaw += Input.GetAxis("Mouse X") * orbitSensitivity * Time.deltaTime;
+        ReadOrbitInput();
+        ReadZoomInput();
+
+        _yaw          = Mathf.SmoothDampAngle(_yaw, _targetYaw, ref _yawVelocity, orbitSmoothTime);
+        _pitch        = Mathf.SmoothDamp(_pitch, _targetPitch, ref _pitchVelocity, orbitSmoothTime);
+        _zoomDistance = Mathf.SmoothDamp(_zoomDistance, _targetZoomDistance, ref _zoomVelocity, zoomSmoothTime);
+
+        // Spherical offset from yaw (around Y) and pitch (elevation).
+        Quaternion rot    = Quaternion.Euler(_pitch, _yaw, 0f);
+        Vector3    offset = rot * Vector3.back * _zoomDistance;
+
+        transform.position = target.position + offset;
+        transform.LookAt(target.position + Vector3.up * lookAtHeightOffset);
+    }
+
+    void ReadOrbitInput()
+    {
+        if (Input.GetMouseButtonDown(2))
+        {
+            _middleDownScreenPos = Input.mousePosition;
+            _orbiting = false;
+        }
+
+        if (Input.GetMouseButton(2))
+        {
+            // Engage orbit only after the shared drag threshold so a clean
+            // middle CLICK stays a demolish (PlayerBuildTool checks the same constant).
+            if (!_orbiting &&
+                (Input.mousePosition - _middleDownScreenPos).sqrMagnitude >
+                PlayerBuildTool.MiddleDragThreshold * PlayerBuildTool.MiddleDragThreshold)
+                _orbiting = true;
+
+            if (_orbiting)
+            {
+                _targetYaw   += Input.GetAxis("Mouse X") * orbitSensitivity;
+                _targetPitch  = Mathf.Clamp(
+                    _targetPitch - Input.GetAxis("Mouse Y") * pitchSensitivity,
+                    minPitch, maxPitch);
+            }
+        }
+        else _orbiting = false;
+    }
+
+    void ReadZoomInput()
+    {
+        // While a buildable ghost is active the wheel rotates the building instead.
+        if (PlayerBuildTool.Instance != null && PlayerBuildTool.Instance.HasSelection) return;
 
         float scroll = Input.GetAxis("Mouse ScrollWheel");
         if (Mathf.Abs(scroll) > 0.0001f)
-            _targetZoomDistance = Mathf.Clamp(_targetZoomDistance - scroll * zoomSpeed, minZoomDistance, maxZoomDistance);
-
-        // Ease the applied distance toward the target instead of snapping straight to it.
-        _zoomDistance = Mathf.SmoothDamp(_zoomDistance, _targetZoomDistance, ref _zoomVelocity, zoomSmoothTime);
-
-        Vector3 zoomedOffset  = offset.normalized * _zoomDistance;
-        Vector3 rotatedOffset = Quaternion.Euler(0f, _yaw, 0f) * zoomedOffset;
-        transform.position = target.position + rotatedOffset;
-        transform.LookAt(target.position + Vector3.up * lookAtHeightOffset);
+            _targetZoomDistance = Mathf.Clamp(_targetZoomDistance - scroll * zoomSpeed,
+                minZoomDistance, maxZoomDistance);
     }
 
     /// <summary>Current zoom distance as a 0-1 fraction between min and max — handy for a zoom-level UI indicator.</summary>
