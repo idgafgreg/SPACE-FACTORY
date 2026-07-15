@@ -148,7 +148,8 @@ public class WaveController : MonoBehaviour
         LanePath lane = NextLane();
         if (lane == null) return;
 
-        Vector3 pos = lane.GetPoint(0) + (Vector3)(UnityEngine.Random.insideUnitCircle * 0.4f);
+        Vector2 jitter = UnityEngine.Random.insideUnitCircle * 0.4f;
+        Vector3 pos = lane.GetPoint(0) + new Vector3(jitter.x, 0f, jitter.y);
         var go = Instantiate(prefab, pos, Quaternion.identity);
 
         if (go.TryGetComponent<EnemyBase>(out var enemy))

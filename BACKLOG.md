@@ -11,7 +11,7 @@ Rules for tasks in this file:
 
 ## Now (agent works top-down)
 
-- [ ] Fix enemy Y-jitter on spawn — enemies spawn with vertical jitter/offset.
+- [?] Fix enemy Y-jitter on spawn — enemies spawn with vertical jitter/offset. NEEDS IN-EDITOR VERIFICATION (Unity MCP plan-gated).
       Done-when: spawned enemies rest on ground plane with no vertical pop; no new console errors.
 - [ ] Remove or wire up the dead spawner code path (unused spawner identified in architecture notes).
       Done-when: either deleted with no dangling references, or actively used by wave system.
@@ -31,3 +31,5 @@ Rules for tasks in this file:
 - [ ] (dump ideas here; /backlog-groom promotes them)
 
 ## Agent log (newest first — one line per session: date, task, result, commit)
+
+- 2026-07-14: Y-jitter spawn fix — jitter remapped Vector2→XZ plane in WaveController.SpawnOne and SimpleEnemySpawner.SpawnEnemy; compile unverified (Unity MCP revoked), marked [?].

@@ -61,8 +61,9 @@ public class SimpleEnemySpawner : MonoBehaviour
 
     void SpawnEnemy(LanePath lane)
     {
+        Vector2 jitter = Random.insideUnitCircle * 0.4f;
         Vector3 spawnPos = lane.GetPoint(0)
-            + (Vector3)(Random.insideUnitCircle * 0.4f);
+            + new Vector3(jitter.x, 0f, jitter.y);
 
         float roll   = Random.value;
         GameObject prefab;
