@@ -114,14 +114,15 @@
 - Recovery 2: 2 minutes. The player should feel time pressure but still have enough room to make one meaningful strategic adjustment.
 - Cycle 3 setup window: 2 minutes. Player must finalize a second defensive answer and stabilize throughput before the split-pressure test.
 - Wave 3: 90 seconds. West Corridor remains the main lane while Vent Breach becomes active enough to create likely leaks or repair interruptions.
-- Post-wave success check: hold for 30 additional seconds of low residual pressure so the player proves stability rather than surviving a single spike.
-- Target total session length for the slice: roughly 15 to 18 minutes for a first successful run.
+- After Wave 3 the run continues: waves 1-3 are the teaching arc, not the end of the run.
+- Target length for the teaching arc (cycles 1-3): roughly 15 to 18 minutes on a first successful run.
 
-## Win And Fail Conditions
+## Run Structure And Fail Conditions
 
-- Primary win condition: survive all three waves and keep the Command Hub online through the final stability check.
-- Secondary success condition: maintain at least one active extractor and one active processor at the end, proving economy continuity.
-- Hard fail if the Command Hub is destroyed or disabled beyond recovery during the slice.
+- No win condition: the run is an infinite loop of escalating cycles. Surviving waves 1-3 proves the player has learned the rhythm; the game then keeps generating harder cycles indefinitely.
+- Long-term motivation comes from lots of progression: unlocking new machines, defenses, and upgrades, and expanding the factory and defense network across cycles.
+- Secondary success condition: maintain at least one active extractor and one active processor, proving economy continuity.
+- Hard fail if the Command Hub is destroyed or disabled beyond recovery.
 - Hard fail if both core production functions are lost at once: no active extraction and no active processing with no recovery path.
 - Soft fail state should exist inside the run whenever defense collapse causes long production downtime, but the player can still salvage the sector.
 - Prototype scoring, medals, or grading should be excluded for now. Focus only on comprehension, tension, and recoverability.
@@ -195,7 +196,7 @@
 
 ## Rough Defense Prototype Stats
 
-- Tuning baseline: the defense network should carry most of the win condition. Player intervention should stabilize mistakes, not replace planning.
+- Tuning baseline: the defense network should carry most of the survival burden. Player intervention should stabilize mistakes, not replace planning.
 
 ## Barrier
 

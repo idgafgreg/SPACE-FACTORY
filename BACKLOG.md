@@ -11,9 +11,16 @@ Rules for tasks in this file:
 
 ## Needs human decision
 
-- Wave count / win condition conflict: the locked slice (Sector_Layout_&_Teaching.txt:116-122) is
-  3 waves + a 30s stability check as the WIN condition; the scene ships 5 waves + endless scaling
-  and no win state. Which is truth — endless survival, or the 3-wave slice with a win screen?
+- (none open)
+
+## Decisions (human-made, newest first)
+
+- 2026-07-14: Wave count / win condition RESOLVED — **no win state; the run is an infinite loop
+  with lots of progression**. Doc updated (Sector_Layout_&_Teaching.txt "Run Structure And Fail
+  Conditions"): waves 1-3 are the teaching arc, endless escalating cycles after, long-term
+  motivation from unlocks/upgrades/expansion. Current 5-wave + endlessGrowth scene structure is
+  correct; no win screen needed. Progression system itself is not yet designed — groom should
+  raise tasks for it (unlock/upgrade design first pass, then implementation).
 
 ## Now (agent works top-down)
 
@@ -31,7 +38,8 @@ Rules for tasks in this file:
 
 ## Next (groomed, not yet started)
 
-- [ ] (refill via /backlog-groom)
+- [ ] First pass progression design: what unlocks/upgrades exist across endless cycles (new machines, defenses, upgrades) per 2026-07-14 infinite-loop decision. Write it into SPACE FACTORY INFO/ as a short spec before any implementation task.
+      Done-when: progression spec exists in SPACE FACTORY INFO/; groom converts it into implementation tasks.
 
 ## Ice box (ideas, ungroomed)
 
