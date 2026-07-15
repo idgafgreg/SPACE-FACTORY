@@ -1589,7 +1589,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::CameraFollow
   target: {fileID: 1445036925}
   lookAtHeightOffset: 1.5
-  orbitSensitivity: 500
+  orbitSensitivity: 5
   pitchSensitivity: 3
   minPitch: 20
   maxPitch: 70

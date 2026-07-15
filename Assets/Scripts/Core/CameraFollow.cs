@@ -96,10 +96,16 @@ public class CameraFollow : MonoBehaviour
 
             if (_orbiting)
             {
-                _targetYaw   += Input.GetAxis("Mouse X") * orbitSensitivity;
-                _targetPitch  = Mathf.Clamp(
-                    _targetPitch - Input.GetAxis("Mouse Y") * pitchSensitivity,
-                    minPitch, maxPitch);
+                // Clamp the per-frame step and how far the target may lead the
+                // eased angle: if the target ever gets > 180° ahead,
+                // SmoothDampAngle wraps to the shortest path and the camera
+                // visibly snaps BACKWARDS (this happened when an old scene
+                // still carried the right-click-era sensitivity of 500).
+                float dYaw = Mathf.Clamp(Input.GetAxis("Mouse X") * orbitSensitivity, -30f, 30f);
+                _targetYaw = Mathf.Clamp(_targetYaw + dYaw, _yaw - 150f, _yaw + 150f);
+
+                float dPitch = Mathf.Clamp(-Input.GetAxis("Mouse Y") * pitchSensitivity, -20f, 20f);
+                _targetPitch = Mathf.Clamp(_targetPitch + dPitch, minPitch, maxPitch);
             }
         }
         else _orbiting = false;
