@@ -11,13 +11,14 @@ Rules for tasks in this file:
 
 ## Needs human decision
 
-- Wave 1 setup time: doc conflicts with itself. Pressure plan (Sector_Layout_&_Teaching.txt:109)
-  says Cycle 1 setup = 4 minutes → implemented as prepSeconds 240 (commit 6cd2a78). But the
-  Locked Economy Pacing Package (Sector_Layout_&_Teaching.txt:363) says "Pre-wave setup window
-  before Wave 1: 25 seconds". 25s vs 240s changes the whole opening economy (140 scrap,
-  Barrier+Turret opening package). Which number is truth? Loser line must be fixed in the doc.
+- (none open)
 
 ## Decisions (human-made, newest first)
+
+- 2026-07-14: Wave 1 setup time RESOLVED — **240 seconds wins**. Doc line 363 (Locked Economy
+  Pacing Package) corrected from 25s to 240s to match the pressure plan. Also ruled: player
+  gets enough materials to start → startingConstructionParts 0 → 20 (≈200 HP of manual repair)
+  so the repair tool works during Wave 1; starting scrap stays 140 per locked economy.
 
 - 2026-07-14: Wave count / win condition RESOLVED — **no win state; the run is an infinite loop
   with lots of progression**. Doc updated (Sector_Layout_&_Teaching.txt "Run Structure And Fail
@@ -37,6 +38,10 @@ Rules for tasks in this file:
 - [?] Dead spawner deletion (commit 0b4e4a1) — confirm clean compile.
 - [?] Wave spawn windows 60/75/90s (commit 83cf622) — confirm compile + wave pacing in Play mode.
 - [?] Per-wave prep windows 240/300/240s (commit 6cd2a78) — confirm compile + prep countdown in Play mode.
+- [?] Review-fix batch (2026-07-14 evening) — confirm compile + Play mode: deterministic vent lane
+      counts (min 1 when share > 0), spawn window spans full 60/75/90s, HUD shows remaining count
+      during spawn windows, waves 4-5 = 90s window / 150s prep / 0.35-0.4 vent share (endless inherits),
+      repair tool costs ~0.1 parts/HP (was ~1 part/frame), starting ConstructionParts = 20.
 - [!] End-of-run restart flow after commit 9ca5b95 — never verified; needs live Play-mode session.
       Done-when: restart reloads cleanly — time scale reset, UI panel gone, no duplicate singletons.
 
@@ -50,6 +55,8 @@ Rules for tasks in this file:
 - [ ] (dump ideas here; /backlog-groom promotes them)
 
 ## Agent log (newest first — one line per session: date, task, result, commit)
+
+- 2026-07-14: Review-fix batch (human-directed) — 240s ruled + doc line 363 fixed; starting parts 20; deterministic vent lane queue (consts for lane IDs, per-spawn roll removed); spawn window spans full duration ((n-1) divisor); HUD remaining count during Spawning; waves 4-5 pacing set (90s/150s/0.35-0.4, endless inherits, prep cliff gone); repair-tool 30× overcharge fixed (fractional parts accumulator); _nextDef cache kills double GetWave alloc.
 
 - 2026-07-14: Groomed (verification items sectioned off, win-condition question → Needs human decision). Lane weighting — WaveDef.ventBreachShare + PickLane(); W1 West-only, W2 15% vent, W3 35% vent; scene updated; [?] pending compile check.
 

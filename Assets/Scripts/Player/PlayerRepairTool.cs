@@ -21,6 +21,10 @@ public class PlayerRepairTool : MonoBehaviour
     public KeyCode repairKey           = KeyCode.E;
     public bool    repairOnRightMouse  = false;
 
+    // Fractional parts owed but not yet spent — inventory is integer, per-frame
+    // healing is fractional, so cost accrues here and is spent in whole parts.
+    float _partsOwed;
+
     void Start()
     {
         if (!repairCamera)      repairCamera      = Camera.main;
@@ -51,7 +55,7 @@ public class PlayerRepairTool : MonoBehaviour
 
         float desiredHp      = repairRate * Time.deltaTime;
         int   availableParts = resourceInventory.Get(ResourceTypeId.ConstructionParts);
-        float maxHpFromParts = availableParts / constructionPartCostPerHP;
+        float maxHpFromParts = Mathf.Max(0f, availableParts - _partsOwed) / constructionPartCostPerHP;
         float clampedHp      = Mathf.Min(desiredHp, maxHpFromParts);
 
         float healed = 0f;
@@ -79,8 +83,15 @@ public class PlayerRepairTool : MonoBehaviour
             return;
         }
 
-        int partsUsed = Mathf.CeilToInt(healed * constructionPartCostPerHP);
+        // CeilToInt per frame charged a whole part for every fraction of a part
+        // healed (~1 part/frame → 30× the intended 0.1 parts/HP). Accrue the
+        // exact fractional cost instead and spend whole parts as they add up.
+        _partsOwed += healed * constructionPartCostPerHP;
+        int partsUsed = Mathf.FloorToInt(_partsOwed);
         if (partsUsed > 0)
+        {
             resourceInventory.Spend(ResourceTypeId.ConstructionParts, partsUsed);
+            _partsOwed -= partsUsed;
+        }
     }
 }

@@ -11,7 +11,9 @@ public class StartingResources : MonoBehaviour
     public int startingScrapMetal        = 140;
     public int startingEnergyCells       = 0;
     public int startingCircuitComponents = 0;
-    public int startingConstructionParts = 0;
+    // 20 parts ≈ 200 HP of manual repair (0.1 parts/HP) — enough to use the
+    // repair tool during Wave 1 before the factory produces its own parts.
+    public int startingConstructionParts = 20;
 
     void Start()
     {

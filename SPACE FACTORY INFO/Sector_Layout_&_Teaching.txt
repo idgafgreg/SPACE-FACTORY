@@ -360,7 +360,7 @@
 ## Starting Economy
 
 - Starting scrap: 140
-- Pre-wave setup window before Wave 1: 25 seconds
+- Pre-wave setup window before Wave 1: 240 seconds (4 minutes — matches the Cycle 1 setup window in the Wave Timings And Pressure Plan; an earlier 25-second value here was superseded 2026-07-14)
 - Intended minimum opening package: 1 Barrier for 30 plus 1 Auto Turret for 80, leaving 30 scrap for either one low-cost utility piece or reserve flexibility.
 - Design intent: the player starts with a strong enough core to solve Wave 1, but not enough surplus to trivialize both lanes immediately.
 

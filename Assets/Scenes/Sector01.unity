@@ -1315,16 +1315,16 @@ MonoBehaviour:
     bruisers: 2
     sappers: 2
     spawnSpacing: 0.6
-    spawnWindowSeconds: 0
-    prepSeconds: 0
-    ventBreachShare: -1
+    spawnWindowSeconds: 90
+    prepSeconds: 150
+    ventBreachShare: 0.35
   - crawlers: 10
     bruisers: 3
     sappers: 3
     spawnSpacing: 0.5
-    spawnWindowSeconds: 0
-    prepSeconds: 0
-    ventBreachShare: -1
+    spawnWindowSeconds: 90
+    prepSeconds: 150
+    ventBreachShare: 0.4
   prepDuration: 15
   endlessGrowth: 1.25
   onWaveText:
@@ -1380,7 +1380,7 @@ MonoBehaviour:
   startingScrapMetal: 140
   startingEnergyCells: 0
   startingCircuitComponents: 0
-  startingConstructionParts: 0
+  startingConstructionParts: 20
 --- !u!114 &687743534
 MonoBehaviour:
   m_ObjectHideFlags: 0

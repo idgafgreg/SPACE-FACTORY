@@ -20,6 +20,10 @@ public class WaveController : MonoBehaviour
 
     public enum Phase { Prep, Spawning, Combat }
 
+    // Must match LanePath.laneId values in the scene; GetLane fails loudly (null → round-robin).
+    const string WestLaneId = "WestCorridor";
+    const string VentLaneId = "VentBreach";
+
     [Serializable]
     public class WaveDef
     {
@@ -65,8 +69,10 @@ public class WaveController : MonoBehaviour
 
     SectorLayout _layout;
     WaveDef      _currentDef;
+    WaveDef      _nextDef;
     int          _spawnQueueIndex;
     List<GameObject> _spawnQueue = new List<GameObject>();
+    List<LanePath>   _laneQueue  = new List<LanePath>();
     float        _spawnTimer;
     float        _spawnSpacing;
     int          _laneCursor;
@@ -103,8 +109,8 @@ public class WaveController : MonoBehaviour
     void BeginPrep()
     {
         CurrentPhase  = Phase.Prep;
-        WaveDef next  = GetWave(WaveNumber + 1);
-        PhaseTimeLeft = next.prepSeconds > 0f ? next.prepSeconds : prepDuration;
+        _nextDef      = GetWave(WaveNumber + 1);   // cached; reused by BeginSpawning
+        PhaseTimeLeft = _nextDef.prepSeconds > 0f ? _nextDef.prepSeconds : prepDuration;
     }
 
     void TickPrep()
@@ -118,18 +124,22 @@ public class WaveController : MonoBehaviour
     void BeginSpawning()
     {
         WaveNumber++;
-        WaveDef def = GetWave(WaveNumber);
+        WaveDef def = _nextDef ?? GetWave(WaveNumber);
         _currentDef = def;
+        _nextDef    = null;
 
         _spawnQueue.Clear();
         AddCopies(_spawnQueue, crawlerPrefab, def.crawlers);
         AddCopies(_spawnQueue, bruiserPrefab, def.bruisers);
         AddCopies(_spawnQueue, sapperPrefab,  def.sappers);
         Shuffle(_spawnQueue);
+        AssignLanes(def);
 
         _spawnQueueIndex = 0;
+        // First spawn fires at t=0, so divide by (n-1) to make the release span
+        // the full window: n spawns, last one lands at spawnWindowSeconds.
         float spacing = (def.spawnWindowSeconds > 0f && _spawnQueue.Count > 0)
-            ? def.spawnWindowSeconds / _spawnQueue.Count
+            ? def.spawnWindowSeconds / Mathf.Max(1, _spawnQueue.Count - 1)
             : def.spawnSpacing;
         _spawnSpacing    = Mathf.Max(0.05f, spacing);
         _spawnTimer      = 0f;
@@ -141,7 +151,9 @@ public class WaveController : MonoBehaviour
         _spawnTimer -= Time.deltaTime;
         while (_spawnTimer <= 0f && _spawnQueueIndex < _spawnQueue.Count)
         {
-            SpawnOne(_spawnQueue[_spawnQueueIndex++]);
+            int i = _spawnQueueIndex++;
+            LanePath lane = i < _laneQueue.Count ? _laneQueue[i] : NextLane();
+            SpawnOne(_spawnQueue[i], lane);
             _spawnTimer += _spawnSpacing;
         }
 
@@ -158,11 +170,9 @@ public class WaveController : MonoBehaviour
 
     // ── Spawning helpers ───────────────────────────────────────────────────────
 
-    void SpawnOne(GameObject prefab)
+    void SpawnOne(GameObject prefab, LanePath lane)
     {
-        if (prefab == null) return;
-        LanePath lane = PickLane();
-        if (lane == null) return;
+        if (prefab == null || lane == null) return;
 
         Vector2 jitter = UnityEngine.Random.insideUnitCircle * 0.4f;
         Vector3 pos = lane.GetPoint(0) + new Vector3(jitter.x, 0f, jitter.y);
@@ -176,19 +186,28 @@ public class WaveController : MonoBehaviour
         }
     }
 
-    /// <summary>Lane for the next spawn: weighted West/Vent split when the wave
-    /// defines ventBreachShare >= 0, otherwise legacy round-robin.</summary>
-    LanePath PickLane()
+    /// <summary>Pre-assigns a lane per queued spawn. Deterministic split: exactly
+    /// round(n × ventBreachShare) spawns (minimum 1 when share > 0) route to the
+    /// VentBreach lane, the rest to WestCorridor, order shuffled — a per-spawn
+    /// random roll could leave Wave 2's vent "hint" absent in ~⅓ of runs.
+    /// Leaves the queue empty (→ legacy round-robin) when share is negative or
+    /// either lane is missing.</summary>
+    void AssignLanes(WaveDef def)
     {
-        float share = _currentDef != null ? _currentDef.ventBreachShare : -1f;
-        if (share >= 0f && _layout != null)
-        {
-            LanePath west = _layout.GetLane("WestCorridor");
-            LanePath vent = _layout.GetLane("VentBreach");
-            if (west != null && vent != null)
-                return UnityEngine.Random.value < share ? vent : west;
-        }
-        return NextLane();
+        _laneQueue.Clear();
+        int n = _spawnQueue.Count;
+        if (n == 0 || def.ventBreachShare < 0f || _layout == null) return;
+
+        LanePath west = _layout.GetLane(WestLaneId);
+        LanePath vent = _layout.GetLane(VentLaneId);
+        if (west == null || vent == null) return;
+
+        int ventCount = Mathf.RoundToInt(n * def.ventBreachShare);
+        if (def.ventBreachShare > 0f && ventCount == 0) ventCount = 1;
+        ventCount = Mathf.Min(ventCount, n);
+
+        for (int i = 0; i < n; i++) _laneQueue.Add(i < ventCount ? vent : west);
+        Shuffle(_laneQueue);
     }
 
     LanePath NextLane()
@@ -254,7 +273,7 @@ public class WaveController : MonoBehaviour
         for (int i = 0; i < count; i++) list.Add(prefab);
     }
 
-    static void Shuffle(List<GameObject> list)
+    static void Shuffle<T>(List<T> list)
     {
         for (int i = list.Count - 1; i > 0; i--)
         {
@@ -269,16 +288,19 @@ public class WaveController : MonoBehaviour
     {
         // Cheap key of everything the banner shows — only rebuild the string when it changes
         // (avoids per-frame string allocation / GC churn in Update).
+        // "Remaining" counts unspawned queue too, so the banner stays meaningful
+        // across the long (60-90s) spawn windows where enemies trickle in.
+        int   remaining = EnemiesAlive + (_spawnQueue.Count - _spawnQueueIndex);
         int   secs = Mathf.CeilToInt(PhaseTimeLeft);
-        long  key  = ((long)CurrentPhase << 56) ^ ((long)WaveNumber << 40) ^ ((long)secs << 16) ^ (uint)EnemiesAlive;
+        long  key  = ((long)CurrentPhase << 56) ^ ((long)WaveNumber << 40) ^ ((long)secs << 16) ^ (uint)remaining;
         if (key == _lastTextKey) return;
         _lastTextKey = key;
 
         _lastText = CurrentPhase switch
         {
             Phase.Prep     => $"Wave {WaveNumber + 1} in {secs}s — build & repair",
-            Phase.Spawning => $"Wave {WaveNumber} incoming…",
-            Phase.Combat   => $"Wave {WaveNumber} — {EnemiesAlive} left",
+            Phase.Spawning => $"Wave {WaveNumber} incoming… — {remaining} left",
+            Phase.Combat   => $"Wave {WaveNumber} — {remaining} left",
             _              => string.Empty,
         };
         onWaveText.Invoke(_lastText);
