@@ -4,8 +4,7 @@ using UnityEngine;
 using UnityEngine.Events;
 
 /// <summary>
-/// Drives discrete enemy waves against the Command Hub. Replaces the old
-/// continuous <see cref="SimpleEnemySpawner"/>.
+/// Drives discrete enemy waves against the Command Hub.
 ///
 /// Loop:  Prep (build window) → Spawning (release the wave across lanes) →
 ///        Combat (wait until every enemy is dead) → back to Prep, next wave.
