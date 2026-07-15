@@ -20,18 +20,47 @@ public class MiningDrill : MachineBase
     [Header("Runtime")]
     public ResourceNode assignedNode;
 
+    [Tooltip("How far (m) from the drill base to look for the ResourceNode it sits on.")]
+    public float nodeBindRadius = 1.5f;
+
     float _accumulator;
+
+    void Start() => BindNode();
+
+    public override void OnPlaced() => BindNode();
+
+    /// <summary>
+    /// Binds the nearest ResourceNode under the drill and adopts its resource
+    /// type. Placement requires a node (BuildableDef.requiresResourceNode), but
+    /// nothing ever ASSIGNED it — player-placed drills mined from thin air,
+    /// ignoring node type and yield.
+    /// </summary>
+    void BindNode()
+    {
+        if (assignedNode != null) { outputResource = assignedNode.resourceType; return; }
+
+        float best = nodeBindRadius * nodeBindRadius;
+        foreach (var n in FindObjectsByType<ResourceNode>(FindObjectsSortMode.None))
+        {
+            float d = (n.transform.position - transform.position).sqrMagnitude;
+            if (d < best) { best = d; assignedNode = n; }
+        }
+
+        if (assignedNode != null) outputResource = assignedNode.resourceType;
+        else Debug.LogWarning($"[MiningDrill] no ResourceNode within {nodeBindRadius}m at {transform.position} — drill will not mine.");
+    }
 
     protected override void Tick(float dt)
     {
+        if (assignedNode == null) return;   // no node bound → nothing to mine
+
         _accumulator += unitsPerSecond * dt;
         if (_accumulator < 1f) return;
 
         int whole = (int)_accumulator;
         _accumulator -= whole;
 
-        if (assignedNode != null)
-            whole = assignedNode.Extract(whole);
+        whole = assignedNode.Extract(whole);
 
         if (whole <= 0) return;
 
