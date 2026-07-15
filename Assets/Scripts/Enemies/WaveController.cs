@@ -31,6 +31,10 @@ public class WaveController : MonoBehaviour
         [Tooltip("If > 0, release the whole wave evenly across this many seconds " +
                  "(locked design: 60/75/90 for waves 1-3) and ignore spawnSpacing.")]
         public float spawnWindowSeconds = 0f;
+        [Tooltip("If > 0, build/recovery window before this wave, in seconds. Locked plan: " +
+                 "240 (W1 setup), 300 (W2 = 120 recovery + 180 setup), " +
+                 "240 (W3 = 120 recovery + 120 setup). 0 = use prepDuration.")]
+        public float prepSeconds = 0f;
     }
 
     [Header("Prefabs")]
@@ -94,7 +98,8 @@ public class WaveController : MonoBehaviour
     void BeginPrep()
     {
         CurrentPhase  = Phase.Prep;
-        PhaseTimeLeft = prepDuration;
+        WaveDef next  = GetWave(WaveNumber + 1);
+        PhaseTimeLeft = next.prepSeconds > 0f ? next.prepSeconds : prepDuration;
     }
 
     void TickPrep()
@@ -217,6 +222,7 @@ public class WaveController : MonoBehaviour
             sappers      = Mathf.CeilToInt(baseDef.sappers  * mult),
             spawnSpacing = baseDef.spawnSpacing,
             spawnWindowSeconds = baseDef.spawnWindowSeconds,
+            prepSeconds  = baseDef.prepSeconds,
         };
     }
 

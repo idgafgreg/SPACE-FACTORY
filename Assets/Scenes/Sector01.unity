@@ -1295,26 +1295,31 @@ MonoBehaviour:
     sappers: 0
     spawnSpacing: 0.8
     spawnWindowSeconds: 60
+    prepSeconds: 240
   - crawlers: 6
     bruisers: 1
     sappers: 0
     spawnSpacing: 0.7
     spawnWindowSeconds: 75
+    prepSeconds: 300
   - crawlers: 5
     bruisers: 1
     sappers: 2
     spawnSpacing: 0.7
     spawnWindowSeconds: 90
+    prepSeconds: 240
   - crawlers: 8
     bruisers: 2
     sappers: 2
     spawnSpacing: 0.6
     spawnWindowSeconds: 0
+    prepSeconds: 0
   - crawlers: 10
     bruisers: 3
     sappers: 3
     spawnSpacing: 0.5
     spawnWindowSeconds: 0
+    prepSeconds: 0
   prepDuration: 15
   endlessGrowth: 1.25
   onWaveText:

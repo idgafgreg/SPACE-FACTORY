@@ -20,7 +20,7 @@ Rules for tasks in this file:
       Done-when: restart from end-of-run screen reloads cleanly — time scale reset, UI panel gone, no duplicate singletons.
 - [?] Tune Wave 2+ difficulty to the locked wave table in SPACE FACTORY INFO. Waves 1-3 now release across locked 60/75/90s spawn windows (new WaveDef.spawnWindowSeconds; scene updated). Compile unconfirmed (Unity MCP gated).
       Done-when: wave definitions in code match the design doc numbers exactly.
-- [ ] Close the recovery gap after a wave (player has no way to rebuild/recover between waves).
+- [?] Close the recovery gap after a wave (player has no way to rebuild/recover between waves). Per-wave prep windows added (WaveDef.prepSeconds = 240/300/240 per locked plan; recovery+setup combined into one build phase). Compile unconfirmed (Unity MCP gated).
       Done-when: inter-wave phase exists per design doc; timing matches locked numbers.
 
 ## Next (groomed, not yet started)
@@ -35,6 +35,8 @@ Rules for tasks in this file:
 - [ ] (dump ideas here; /backlog-groom promotes them)
 
 ## Agent log (newest first — one line per session: date, task, result, commit)
+
+- 2026-07-14: Recovery gap — WaveDef.prepSeconds added, prep before waves 1/2/3 = 240/300/240s (doc recovery+setup summed), scene updated; endless inherits; [?] pending compile check.
 
 - 2026-07-14: Restart-verify task blocked (needs Play mode, MCP gated). Wave windows: WaveDef.spawnWindowSeconds added, waves 1-3 = 60/75/90s per locked doc, scene YAML updated; [?] pending compile check. Deviations found → 2 new Next tasks (lane weighting, wave-count/win-condition conflict).
 
