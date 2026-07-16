@@ -20,6 +20,10 @@ public class WaveController : MonoBehaviour
 
     public enum Phase { Prep, Spawning, Combat }
 
+    /// <summary>Endless-wave variety: rolled once per wave past the defined
+    /// list, announced in the prep banner, applied to each spawn.</summary>
+    public enum WaveModifier { None, Swift, Armored, Horde, Volatile }
+
     // Must match LanePath.laneId values in the scene; GetLane fails loudly (null → round-robin).
     const string WestLaneId = "WestCorridor";
     const string VentLaneId = "VentBreach";
@@ -58,6 +62,12 @@ public class WaveController : MonoBehaviour
     [Header("Endless scaling (after the defined waves)")]
     [Tooltip("Each endless wave multiplies the last defined wave's counts by this, per wave past the list.")]
     public float endlessGrowth = 1.25f;
+    [Tooltip("Chance an endless wave rolls NO modifier; the rest split evenly across Swift/Armored/Horde/Volatile.")]
+    [Range(0f, 1f)] public float endlessNoModifierChance = 0.3f;
+
+    /// <summary>Modifier of the current/most recent wave (None during the defined waves).</summary>
+    public WaveModifier CurrentModifier { get; private set; }
+    WaveModifier _nextModifier;
 
     [Header("HUD")]
     public UnityEvent<string> onWaveText = new UnityEvent<string>();
@@ -119,7 +129,23 @@ public class WaveController : MonoBehaviour
     {
         CurrentPhase  = Phase.Prep;
         _nextDef      = GetWave(WaveNumber + 1);   // cached; reused by BeginSpawning
+        _nextModifier = RollModifier(WaveNumber + 1);
+        if (_nextModifier == WaveModifier.Horde)
+        {
+            // Horde mutates counts — safe: endless GetWave returns a fresh copy.
+            _nextDef.crawlers = Mathf.CeilToInt(_nextDef.crawlers * 1.5f);
+            _nextDef.bruisers = Mathf.CeilToInt(_nextDef.bruisers * 1.5f);
+            _nextDef.sappers  = Mathf.CeilToInt(_nextDef.sappers  * 1.5f);
+        }
         PhaseTimeLeft = _nextDef.prepSeconds > 0f ? _nextDef.prepSeconds : prepDuration;
+    }
+
+    /// <summary>Endless waves (past the defined list) roll a modifier; defined waves never do.</summary>
+    WaveModifier RollModifier(int waveNumber)
+    {
+        if (waves != null && waveNumber <= waves.Count) return WaveModifier.None;
+        if (UnityEngine.Random.value < endlessNoModifierChance) return WaveModifier.None;
+        return (WaveModifier)UnityEngine.Random.Range(1, 5);   // Swift..Volatile
     }
 
     void TickPrep()
@@ -136,6 +162,8 @@ public class WaveController : MonoBehaviour
         WaveDef def = _nextDef ?? GetWave(WaveNumber);
         _currentDef = def;
         _nextDef    = null;
+        CurrentModifier = _nextModifier;
+        _nextModifier   = WaveModifier.None;
 
         _spawnQueue.Clear();
         AddCopies(_spawnQueue, crawlerPrefab, def.crawlers);
@@ -209,8 +237,28 @@ public class WaveController : MonoBehaviour
         if (go.TryGetComponent<EnemyBase>(out var enemy))
         {
             enemy.Init(lane);
+            ApplyModifier(enemy);
             if (enemy is Sapper sapper) sapper.supportTarget = FindSupportTarget(pos);
             EnemiesAlive++;
+        }
+    }
+
+    void ApplyModifier(EnemyBase enemy)
+    {
+        switch (CurrentModifier)
+        {
+            case WaveModifier.Swift:
+                enemy.moveSpeedTilesPerSec *= 1.4f;
+                break;
+            case WaveModifier.Armored:
+                if (enemy.TryGetComponent<Health>(out var hp)) hp.ScaleMaxHealth(1.6f);
+                break;
+            case WaveModifier.Horde:
+                if (enemy.TryGetComponent<Health>(out var hordeHp)) hordeHp.ScaleMaxHealth(0.8f);
+                break;   // count increase happened in BeginPrep
+            case WaveModifier.Volatile:
+                enemy.damagePerHit *= 1.5f;
+                break;
         }
     }
 
@@ -326,13 +374,22 @@ public class WaveController : MonoBehaviour
 
         _lastText = CurrentPhase switch
         {
-            Phase.Prep     => $"Wave {WaveNumber + 1} in {secs}s — build & repair{NextLaneLabel()}",
-            Phase.Spawning => $"Wave {WaveNumber} incoming… — {remaining} left",
-            Phase.Combat   => $"Wave {WaveNumber} — {remaining} left",
+            Phase.Prep     => $"Wave {WaveNumber + 1} in {secs}s — build & repair{NextLaneLabel()}{ModifierLabel(_nextModifier)}",
+            Phase.Spawning => $"Wave {WaveNumber} incoming… — {remaining} left{ModifierLabel(CurrentModifier)}",
+            Phase.Combat   => $"Wave {WaveNumber} — {remaining} left{ModifierLabel(CurrentModifier)}",
             _              => string.Empty,
         };
         onWaveText.Invoke(_lastText);
     }
+
+    static string ModifierLabel(WaveModifier m) => m switch
+    {
+        WaveModifier.Swift    => " — SWIFT",
+        WaveModifier.Armored  => " — ARMORED",
+        WaveModifier.Horde    => " — HORDE",
+        WaveModifier.Volatile => " — VOLATILE",
+        _                     => string.Empty,
+    };
 
     /// <summary>Warning-phase telegraph: which gate(s) the NEXT wave will use,
     /// derived from the same vent-share math as AssignLanes.</summary>

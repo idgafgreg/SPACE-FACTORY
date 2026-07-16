@@ -33,4 +33,13 @@ public class Health : MonoBehaviour
         if (amount <= 0f || IsDead) return;
         CurrentHealth = Mathf.Min(CurrentHealth + amount, MaxHealth);
     }
+
+    /// <summary>Multiplies max AND current HP. For scaling freshly spawned
+    /// enemies (wave modifiers) — call before any damage is taken.</summary>
+    public void ScaleMaxHealth(float mult)
+    {
+        if (mult <= 0f) return;
+        _maxHealth    *= mult;
+        CurrentHealth *= mult;
+    }
 }
