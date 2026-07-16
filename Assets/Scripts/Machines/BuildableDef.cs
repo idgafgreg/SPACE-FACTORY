@@ -32,6 +32,8 @@ public class BuildableDef : ScriptableObject
     public bool       requiresResourceNode;
 
     [Header("Progression")]
-    [Tooltip("Waves that must be CLEARED before this unlocks. 0 = available from the start.")]
+    [Tooltip("0 = starting kit. Any other value = locked until purchased at the Workshop.")]
     public int unlockWave;
+    [Tooltip("Scrap price to unlock this structure at the Workshop (only used when unlockWave > 0).")]
+    public int unlockCost = 50;
 }

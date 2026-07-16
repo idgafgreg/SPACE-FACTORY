@@ -18,6 +18,13 @@ public class RunUpgrades : MonoBehaviour
     public float salvageMult      = 1f;
     public int   sidearmBonusShots;
 
+    /// <summary>Structure ids bought at the Workshop this run (run-scoped, resets on reload).</summary>
+    readonly System.Collections.Generic.HashSet<string> _unlockedStructures = new();
+
+    public void UnlockStructure(string id) => _unlockedStructures.Add(id);
+    public static bool IsStructureUnlocked(string id) =>
+        Instance != null && Instance._unlockedStructures.Contains(id);
+
     void Awake()
     {
         if (Instance != null && Instance != this) { Destroy(this); return; }

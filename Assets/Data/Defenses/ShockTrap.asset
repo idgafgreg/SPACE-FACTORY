@@ -22,3 +22,4 @@ MonoBehaviour:
   footprint: {x: 1, y: 1}
   requiresResourceNode: 0
   unlockWave: 1
+  unlockCost: 40

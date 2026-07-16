@@ -15,6 +15,12 @@ Rules for tasks in this file:
 
 ## Decisions (human-made, newest first)
 
+- 2026-07-15 (playtest): prep times ruled DOWN — wave 1 = 40s, all later preps = 30s (240s+ made
+  the game trivially easy; doc updated). Middle-click demolish deemed unnecessary (X mode is the
+  way; middle-click path left in but low-value). Locked hotbar slots now read as EMPTY; unlocks
+  are PURCHASED at the new Workshop (structure near hub, F to open) instead of wave-gated.
+  Menu must boot first (build order fixed). More lanes wanted → EastFlank added (3rd gate, east).
+
 - 2026-07-14: Wave 1 setup time RESOLVED — **240 seconds wins**. Doc line 363 (Locked Economy
   Pacing Package) corrected from 25s to 240s to match the pressure plan. Also ruled: player
   gets enough materials to start → startingConstructionParts 0 → 20 (≈200 HP of manual repair)
@@ -61,6 +67,8 @@ Rules for tasks in this file:
 - [ ] (dump ideas here; /backlog-groom promotes them)
 
 ## Agent log (newest first — one line per session: date, task, result, commit)
+
+- 2026-07-15: Playtest response batch — CRITICAL FIX: enemy AI never followed lanes (AcquireTarget fell back to Hub always → beeline through walls); now HubIfClose(8u radius) + Sapper support-engage radius; verified 4 crawlers walking IN corridor. Preps 40/30s. MainMenu boots first. Locked slots blank. Workshop + UIWorkshopShop: buy unlocks (trap 40/repair 60/relay 50/heavy 120/bulwark 60/turbo 100) + repeatable stat upgrades (80 base ×1.5); replaces wave-gating; purchase verified (-40 scrap → OWNED → slot fills → selectable). EastFlank 3rd lane + east gate + funnel + divider split; waves 4-5 → ALL GATES round-robin; floor re-baked from LIVE wall objects (23).
 
 - 2026-07-15: Progression v4 (full-control session) — endless wave modifiers: rolled in BeginPrep (endless only, 30% none), Horde mutates the endless def copy's counts, others apply per spawn in SpawnOne; banner shows modifier in prep (next) and combat (current). Health.ScaleMaxHealth. Play-verified wave 6 SWIFT exact. Spec's v1-v4 now fully implemented.
 

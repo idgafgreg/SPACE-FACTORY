@@ -53,7 +53,7 @@ public class Bruiser : EnemyBase
         Transform barrier = NearestBarrier();
         if (barrier != null) { _currentTarget = barrier; return; }
 
-        _currentTarget = PlayerInRange() ?? Hub;
+        _currentTarget = PlayerInRange() ?? HubIfClose();
     }
 
     Transform NearestBarrier()

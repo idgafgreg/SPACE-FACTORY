@@ -15,6 +15,9 @@ public abstract class EnemyBase : MonoBehaviour
     public float playerAggroRadius = 0f;
     [Tooltip("How often (s) the enemy re-evaluates its target — lets it switch between hub, structures and player.")]
     public float retargetInterval  = 0.6f;
+    [Tooltip("Distance from the hub at which the enemy stops lane-following and attacks it directly. " +
+             "Targeting the hub from spawn made enemies beeline through walls — lanes exist for a reason.")]
+    public float hubEngageRadius   = 8f;
 
     [Header("Reward")]
     public int scrapReward = 2;
@@ -86,7 +89,18 @@ public abstract class EnemyBase : MonoBehaviour
 
     protected virtual void AcquireTarget()
     {
-        _currentTarget = PlayerInRange() ?? Hub;
+        _currentTarget = PlayerInRange() ?? HubIfClose();
+    }
+
+    /// <summary>The hub, but only once this enemy is within <see cref="hubEngageRadius"/> —
+    /// otherwise null so movement keeps following the lane instead of beelining
+    /// through walls. All subclasses use this as their final fallback.</summary>
+    protected Transform HubIfClose()
+    {
+        var hub = Hub;
+        if (hub == null) return null;
+        return (hub.position - transform.position).sqrMagnitude <= hubEngageRadius * hubEngageRadius
+            ? hub : null;
     }
 
     /// <summary>Returns the player transform if alive and inside <see cref="playerAggroRadius"/>, else null.</summary>

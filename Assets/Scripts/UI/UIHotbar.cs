@@ -52,24 +52,7 @@ public class UIHotbar : MonoBehaviour
             if (_demolishBackground != null)
                 _demolishBackground.color = on ? SlotDemolish : SlotColor;
         });
-        if (WaveController.Instance != null)
-            WaveController.Instance.onWaveCleared.AddListener(AnnounceUnlocks);
         OnSelectionChanged(buildTool.CurrentDef);
-    }
-
-    /// <summary>Pops "UNLOCKED: <name>" over the player for defs whose gate is the just-cleared wave.</summary>
-    void AnnounceUnlocks(int clearedWave)
-    {
-        var player = PlayerController.Instance;
-        Vector3 pos = player != null ? player.transform.position : Vector3.zero;
-        float stagger = 0f;
-        foreach (var def in buildTool.buildableDefs)
-        {
-            if (def == null || def.unlockWave != clearedWave) continue;
-            FloatingText.Spawn(pos + Vector3.up * stagger, "UNLOCKED: " + def.displayName,
-                new Color(0.4f, 0.9f, 1f), 1.3f);
-            stagger += 0.6f;
-        }
     }
 
     void Update()
@@ -86,15 +69,19 @@ public class UIHotbar : MonoBehaviour
                 bool unlocked = _buildSystem == null || _buildSystem.IsUnlocked(def);
                 if (!unlocked)
                 {
-                    _costTexts[i].text  = "wave " + def.unlockWave;
-                    _costTexts[i].color = new Color(0.6f, 0.6f, 0.65f);
-                    if (i < _nameTexts.Count) _nameTexts[i].color = new Color(1f, 1f, 1f, 0.35f);
+                    // Locked = empty-looking slot; the Workshop sells the contents.
+                    _costTexts[i].text = string.Empty;
+                    if (i < _nameTexts.Count) _nameTexts[i].text = string.Empty;
                     continue;
                 }
 
                 _costTexts[i].text  = def.scrapCost + " scrap";
                 _costTexts[i].color = scrap >= def.scrapCost ? TextNormal : TextUnaffordable;
-                if (i < _nameTexts.Count) _nameTexts[i].color = TextNormal;
+                if (i < _nameTexts.Count)
+                {
+                    _nameTexts[i].text  = def.displayName;
+                    _nameTexts[i].color = TextNormal;
+                }
             }
         }
 

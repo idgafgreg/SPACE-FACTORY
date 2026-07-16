@@ -38,9 +38,17 @@ public class Sapper : EnemyBase
 
     protected override void AcquireTarget()
     {
-        if (supportTarget != null) { _currentTarget = supportTarget; return; }
-        _currentTarget = PlayerInRange() ?? Hub;
+        // Engage the support target only once reasonably close — a sapper
+        // beelining across the map to a distant PowerTap clips through walls.
+        if (supportTarget != null &&
+            (supportTarget.position - transform.position).sqrMagnitude <= supportEngageRadius * supportEngageRadius)
+        { _currentTarget = supportTarget; return; }
+
+        _currentTarget = PlayerInRange() ?? HubIfClose();
     }
+
+    [Tooltip("Distance at which the sapper breaks off the lane to attack its support target.")]
+    public float supportEngageRadius = 12f;
 
     // ── Movement: banking flank approach ──────────────────────────────────────
 

@@ -150,11 +150,9 @@ public class PlayerBuildTool : MonoBehaviour
     {
         if (i < 0 || i >= buildableDefs.Count) return;
         var def = buildableDefs[i];
-        if (def != null && buildSystem != null && !buildSystem.IsUnlocked(def))
-        {
-            onPlacementReasonChanged?.Invoke($"{def.displayName} locked — clear wave {def.unlockWave} to unlock");
-            return;
-        }
+        // Locked slots read as empty on the hotbar — clicking one does nothing.
+        // Unlocks are bought at the Workshop.
+        if (def != null && buildSystem != null && !buildSystem.IsUnlocked(def)) return;
         Select(_currentDef == def ? null : def);
     }
 
