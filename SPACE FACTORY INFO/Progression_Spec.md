@@ -27,18 +27,20 @@ intended growth direction.
 - Gives every endless-mode cycle a reward beat, scaling forever.
 - Leak rule: enemies that reach the hub pay NOTHING (kill bounty only).
 
-## Intended growth (not yet implemented — groom into tasks)
+## Intended growth — status 2026-07-15: items 1-3 IMPLEMENTED
 
-1. **Tier-2 structures** (unlock waves 5-8): upgraded turret, wide barrier,
-   area slow field. Same gating mechanism, no new code needed beyond defs.
-2. **Per-run upgrades**: between-wave choice of 1-of-3 small boosts
-   (turret damage +10%, repair cost −20%, drill rate +15%). Needs an
-   upgrade-offer UI and a run-modifier container.
-3. **Endless modifiers**: past wave 5, each wave rolls a modifier
-   (fast crawlers / armored bruisers / double sappers) announced in the
-   prep banner — variety without new content.
+1. **Tier-2 structures** — DONE: Heavy Turret (wave 5, 150 scrap), Bulwark
+   (wave 6, 70), Turbo Drill (wave 7, 120). Prefab variants with tint
+   materials; same gating mechanism.
+2. **Per-run upgrades** — DONE: 1-of-3 offer modal after every cleared wave
+   (RunUpgrades + UIUpgradeOffer). Pool: turret dmg +15%, drill +20%,
+   repair cost −25%, salvage +50%, sidearm +4 shots. Stacks; skippable.
+3. **Endless modifiers** — DONE: waves past the defined list roll
+   Swift (spd ×1.4) / Armored (HP ×1.6) / Horde (count ×1.5, HP ×0.8) /
+   Volatile (dmg ×1.5), 30% none. Announced in the prep banner ahead of
+   time and shown during combat.
 4. **Meta unlocks** (later): persistent across runs once there's a reason
-   to restart voluntarily.
+   to restart voluntarily. NOT implemented — needs a save system first.
 
 ## Tuning notes
 - All numbers here are first-guess tunables. The locked doc constrains the
