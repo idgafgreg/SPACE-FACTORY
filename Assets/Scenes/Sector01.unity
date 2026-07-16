@@ -1974,6 +1974,11 @@ MonoBehaviour:
   onWaveText:
     m_PersistentCalls:
       m_Calls: []
+  waveClearBonusBase: 10
+  waveClearBonusPerWave: 5
+  onWaveCleared:
+    m_PersistentCalls:
+      m_Calls: []
 --- !u!114 &687743531
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -4234,6 +4239,9 @@ MonoBehaviour:
   - {fileID: 11400000, guid: 87820d2d6b002164084dddfa565a814c, type: 2}
   - {fileID: 11400000, guid: b904b2356d627ba42bbb4d7b84bec36f, type: 2}
   - {fileID: 11400000, guid: e92c1914073d9ee49886e80c44311d5d, type: 2}
+  - {fileID: 11400000, guid: 309e9f198d8cbaa4db555bc0d982156c, type: 2}
+  - {fileID: 11400000, guid: 3f3a01759e4e2c14f8ccd419a621cb51, type: 2}
+  - {fileID: 11400000, guid: a9250510c55e66740882ddbcb60860d2, type: 2}
   maxBuildDistance: 12
   gridSize: 1
   placementMask:
