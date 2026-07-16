@@ -298,11 +298,32 @@ public class WaveController : MonoBehaviour
 
         _lastText = CurrentPhase switch
         {
-            Phase.Prep     => $"Wave {WaveNumber + 1} in {secs}s — build & repair",
+            Phase.Prep     => $"Wave {WaveNumber + 1} in {secs}s — build & repair{NextLaneLabel()}",
             Phase.Spawning => $"Wave {WaveNumber} incoming… — {remaining} left",
             Phase.Combat   => $"Wave {WaveNumber} — {remaining} left",
             _              => string.Empty,
         };
         onWaveText.Invoke(_lastText);
+    }
+
+    /// <summary>Warning-phase telegraph: which gate(s) the NEXT wave will use,
+    /// derived from the same vent-share math as AssignLanes.</summary>
+    string NextLaneLabel()
+    {
+        var def = _nextDef;
+        if (def == null) return string.Empty;
+
+        int n = def.crawlers + def.bruisers + def.sappers;
+        if (n <= 0) return string.Empty;
+
+        float share = def.ventBreachShare;
+        if (share < 0f) return " — ALL GATES";
+
+        int vent = Mathf.RoundToInt(n * share);
+        if (share > 0f && vent == 0) vent = 1;
+
+        if (vent <= 0) return " — WEST GATE";
+        if (vent >= n) return " — VENT GATE";
+        return " — WEST + VENT GATES";
     }
 }

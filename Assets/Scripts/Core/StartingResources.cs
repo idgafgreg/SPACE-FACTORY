@@ -3,8 +3,7 @@ using UnityEngine;
 /// <summary>
 /// Seeds ResourceInventory with starting resources once when the playable
 /// scene loads. Attach to any GameSystems root GameObject (alongside
-/// ResourceInventory). Replaces the unused GameEntry/GameConfig boot path for
-/// the single-scene prototype.
+/// ResourceInventory).
 /// </summary>
 public class StartingResources : MonoBehaviour
 {

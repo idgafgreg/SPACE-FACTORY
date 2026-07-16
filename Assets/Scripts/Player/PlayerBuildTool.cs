@@ -157,6 +157,7 @@ public class PlayerBuildTool : MonoBehaviour
         if (def != null) SetDemolishMode(false);   // picking a buildable disarms deconstruct
         _currentDef = def;
         _ghost?.SetActive(def != null);
+        UpdateRangeRing(def);
         PublishReason(PlacementResult.Success);
         onSelectionChanged.Invoke(def);
     }
@@ -186,7 +187,46 @@ public class PlayerBuildTool : MonoBehaviour
         if (!ghostPrefab) return;
         _ghost = Instantiate(ghostPrefab);
         _ghostRenderer = _ghost.GetComponentInChildren<Renderer>();
+        CreateRangeRing();
         _ghost.SetActive(false);
+    }
+
+    // ── Turret range preview ──────────────────────────────────────────────────
+
+    LineRenderer _rangeRing;
+
+    void CreateRangeRing()
+    {
+        var go = new GameObject("RangeRing");
+        go.transform.SetParent(_ghost.transform, false);
+        _rangeRing = go.AddComponent<LineRenderer>();
+        _rangeRing.loop = true;
+        _rangeRing.useWorldSpace = false;
+        _rangeRing.widthMultiplier = 0.1f;
+        _rangeRing.material = new Material(Shader.Find("Sprites/Default"));
+        _rangeRing.startColor = _rangeRing.endColor = new Color(0.3f, 0.85f, 1f, 0.5f);
+        _rangeRing.positionCount = 0;
+        go.SetActive(false);
+    }
+
+    /// <summary>Shows a firing-range circle on the ghost while placing anything
+    /// with an AutoTurret. Hidden for every other buildable.</summary>
+    void UpdateRangeRing(BuildableDef def)
+    {
+        if (_rangeRing == null) return;
+
+        var turret = def != null && def.prefab != null ? def.prefab.GetComponent<AutoTurret>() : null;
+        if (turret == null) { _rangeRing.gameObject.SetActive(false); return; }
+
+        float r = turret.rangeTiles * turret.tileSize;
+        const int segments = 48;
+        _rangeRing.positionCount = segments;
+        for (int i = 0; i < segments; i++)
+        {
+            float a = i / (float)segments * Mathf.PI * 2f;
+            _rangeRing.SetPosition(i, new Vector3(Mathf.Cos(a) * r, 0.08f, Mathf.Sin(a) * r));
+        }
+        _rangeRing.gameObject.SetActive(true);
     }
 
     void UpdateGhost()

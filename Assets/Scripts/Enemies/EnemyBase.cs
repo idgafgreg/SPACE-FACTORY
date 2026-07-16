@@ -31,6 +31,7 @@ public abstract class EnemyBase : MonoBehaviour
     float  _speedMultiplier = 1f;
     float  _slowTimer;
     bool   _removed;
+    bool   _leaked;
 
     protected Transform Hub => SectorLayout.Instance != null ? SectorLayout.Instance.commandHubTransform : null;
 
@@ -163,6 +164,7 @@ public abstract class EnemyBase : MonoBehaviour
 
     protected virtual void OnReachEndOfPath()
     {
+        _leaked = true;   // reaching the hub is not a kill — no scrap reward
         SectorLayout.Instance?.commandHubDamageable?.TakeDamage(damagePerHit);
         _health.ApplyDamage(_health.MaxHealth); // self-destruct on arrival
     }
@@ -185,7 +187,9 @@ public abstract class EnemyBase : MonoBehaviour
 
     protected virtual void OnDied()
     {
+        if (_leaked || scrapReward <= 0) return;   // only kills pay out
         ResourceInventory.Instance?.Add(ResourceTypeId.ScrapMetal, scrapReward);
+        FloatingText.Spawn(transform.position, "+" + scrapReward, new Color(1f, 0.85f, 0.35f), 0.8f);
     }
 
     void OnDestroy()
