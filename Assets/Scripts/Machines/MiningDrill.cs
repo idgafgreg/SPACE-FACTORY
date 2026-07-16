@@ -54,7 +54,7 @@ public class MiningDrill : MachineBase
     {
         if (assignedNode == null) return;   // no node bound → nothing to mine
 
-        _accumulator += unitsPerSecond * dt;
+        _accumulator += unitsPerSecond * RunUpgrades.DrillRateMult * dt;
         if (_accumulator < 1f) return;
 
         int whole = (int)_accumulator;

@@ -706,6 +706,7 @@ GameObject:
   - component: {fileID: 394591268}
   - component: {fileID: 394591270}
   - component: {fileID: 394591271}
+  - component: {fileID: 394591272}
   m_Layer: 0
   m_Name: Canvas
   m_TagString: Untagged
@@ -888,6 +889,18 @@ MonoBehaviour:
   width: 220
   height: 16
   margin: {x: 14, y: 14}
+--- !u!114 &394591272
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 394591262}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c86e1046ffa5b7c4794a92a05a49ef33, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::UIUpgradeOffer
 --- !u!1 &426485288
 GameObject:
   m_ObjectHideFlags: 0
@@ -1911,6 +1924,7 @@ GameObject:
   - component: {fileID: 687743534}
   - component: {fileID: 687743533}
   - component: {fileID: 687743539}
+  - component: {fileID: 687743540}
   m_Layer: 0
   m_Name: GameSystems
   m_TagString: Untagged
@@ -2120,6 +2134,23 @@ MonoBehaviour:
   minRadius: 7
   maxRadius: 30
   crateY: 0.85
+--- !u!114 &687743540
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 687743529}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b685fe0b70b759a4c9f4a57104a6d24a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::RunUpgrades
+  turretDamageMult: 1
+  drillRateMult: 1
+  repairCostMult: 1
+  salvageMult: 1
+  sidearmBonusShots: 0
 --- !u!1 &697946702
 GameObject:
   m_ObjectHideFlags: 0

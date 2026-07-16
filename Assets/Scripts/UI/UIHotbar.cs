@@ -99,7 +99,7 @@ public class UIHotbar : MonoBehaviour
         }
 
         if (_weaponText != null && weapon != null)
-            _weaponText.text = "SIDEARM\n" + weapon.ShotsUntilPause + "/" + weapon.shotsBeforePause;
+            _weaponText.text = "SIDEARM\n" + weapon.ShotsUntilPause + "/" + weapon.EffectiveShotsBeforePause;
     }
 
     void OnSelectionChanged(BuildableDef selected)

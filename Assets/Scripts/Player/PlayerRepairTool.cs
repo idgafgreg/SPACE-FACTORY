@@ -53,9 +53,10 @@ public class PlayerRepairTool : MonoBehaviour
 
         if (resourceInventory.Get(ResourceTypeId.ConstructionParts) <= 0) return;
 
+        float costPerHp      = constructionPartCostPerHP * RunUpgrades.RepairCostMult;
         float desiredHp      = repairRate * Time.deltaTime;
         int   availableParts = resourceInventory.Get(ResourceTypeId.ConstructionParts);
-        float maxHpFromParts = Mathf.Max(0f, availableParts - _partsOwed) / constructionPartCostPerHP;
+        float maxHpFromParts = Mathf.Max(0f, availableParts - _partsOwed) / costPerHp;
         float clampedHp      = Mathf.Min(desiredHp, maxHpFromParts);
 
         float healed = 0f;
@@ -86,7 +87,7 @@ public class PlayerRepairTool : MonoBehaviour
         // CeilToInt per frame charged a whole part for every fraction of a part
         // healed (~1 part/frame → 30× the intended 0.1 parts/HP). Accrue the
         // exact fractional cost instead and spend whole parts as they add up.
-        _partsOwed += healed * constructionPartCostPerHP;
+        _partsOwed += healed * costPerHp;
         int partsUsed = Mathf.FloorToInt(_partsOwed);
         if (partsUsed > 0)
         {

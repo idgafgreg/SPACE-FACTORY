@@ -35,7 +35,7 @@ public class SalvageCrate : MonoBehaviour
         if (player == null || player.IsDead) return;
         if ((player.transform.position - transform.position).sqrMagnitude > pickupRadius * pickupRadius) return;
 
-        int amount = Random.Range(scrapMin, scrapMax + 1);
+        int amount = Mathf.RoundToInt(Random.Range(scrapMin, scrapMax + 1) * RunUpgrades.SalvageMult);
         ResourceInventory.Instance?.Add(ResourceTypeId.ScrapMetal, amount);
         FloatingText.Spawn(transform.position, "+" + amount + " scrap", new Color(1f, 0.85f, 0.35f));
         Destroy(gameObject);

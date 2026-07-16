@@ -43,7 +43,7 @@ public class AutoTurret : DefenseBase, IPowerConsumer
         Health target = FindNearestEnemy();
         if (target == null) return;
 
-        target.ApplyDamage(damagePerShot);
+        target.ApplyDamage(damagePerShot * RunUpgrades.TurretDamageMult);
         _cooldown = 1f / fireRate;
         OnFired(target.transform.position);
     }

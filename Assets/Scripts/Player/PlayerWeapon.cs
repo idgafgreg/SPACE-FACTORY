@@ -22,8 +22,11 @@ public class PlayerWeapon : MonoBehaviour
     [Tooltip("Length of the forced pause once the heat limit is hit.")]
     public float heatPauseDuration = 1.2f;
 
+    /// <summary>Heat capacity including run upgrades (Sidearm Coolant).</summary>
+    public int EffectiveShotsBeforePause => shotsBeforePause + RunUpgrades.SidearmBonusShots;
+
     /// <summary>Shots remaining before the next forced heat pause.</summary>
-    public int ShotsUntilPause => Mathf.Max(0, shotsBeforePause - _shotsSincePause);
+    public int ShotsUntilPause => Mathf.Max(0, EffectiveShotsBeforePause - _shotsSincePause);
 
     [Header("VFX")]
     public Color         bulletColor  = new Color(0.4f, 0.9f, 1f); // cyan
@@ -58,7 +61,7 @@ public class PlayerWeapon : MonoBehaviour
 
             // Every 12th shot the sidearm overheats: force a longer pause and
             // reset the counter. Otherwise the normal per-shot fire interval.
-            if (shotsBeforePause > 0 && _shotsSincePause >= shotsBeforePause)
+            if (shotsBeforePause > 0 && _shotsSincePause >= EffectiveShotsBeforePause)
             {
                 _cooldown        = heatPauseDuration;
                 _shotsSincePause = 0;

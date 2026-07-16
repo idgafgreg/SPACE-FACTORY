@@ -28,6 +28,7 @@ public class UIPauseMenu : MonoBehaviour
     void Update()
     {
         if (!Input.GetKeyDown(KeyCode.Escape)) return;
+        if (UIUpgradeOffer.IsOpen) return;   // upgrade modal owns the screen
 
         // Build-ghost active → this Esc press is "cancel placement", not pause.
         // Checked two ways because script execution order is nondeterministic:
