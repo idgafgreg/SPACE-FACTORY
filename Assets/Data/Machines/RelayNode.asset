@@ -21,3 +21,4 @@ MonoBehaviour:
   requiresPower: 0
   footprint: {x: 1, y: 1}
   requiresResourceNode: 0
+  unlockWave: 3

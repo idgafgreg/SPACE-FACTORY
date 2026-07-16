@@ -62,6 +62,15 @@ public class WaveController : MonoBehaviour
     [Header("HUD")]
     public UnityEvent<string> onWaveText = new UnityEvent<string>();
 
+    [Header("Progression")]
+    [Tooltip("Scrap granted when a wave is cleared: base + perWave × wave number.")]
+    public int waveClearBonusBase    = 10;
+    public int waveClearBonusPerWave = 5;
+    public UnityEvent<int> onWaveCleared = new UnityEvent<int>();   // fires with the cleared wave number
+
+    /// <summary>Number of waves fully cleared — drives BuildableDef.unlockWave gating.</summary>
+    public int WavesCleared { get; private set; }
+
     public int   WaveNumber        { get; private set; }   // 1-based, current/most recent
     public Phase CurrentPhase      { get; private set; }
     public int   EnemiesAlive      { get; private set; }
@@ -165,7 +174,26 @@ public class WaveController : MonoBehaviour
 
     void TickCombat()
     {
-        if (EnemiesAlive <= 0) BeginPrep();
+        if (EnemiesAlive > 0) return;
+        OnWaveCleared();
+        BeginPrep();
+    }
+
+    void OnWaveCleared()
+    {
+        WavesCleared = WaveNumber;
+
+        int bonus = waveClearBonusBase + waveClearBonusPerWave * WaveNumber;
+        if (bonus > 0)
+        {
+            ResourceInventory.Instance?.Add(ResourceTypeId.ScrapMetal, bonus);
+            var hub = SectorLayout.Instance?.commandHubTransform;
+            if (hub != null)
+                FloatingText.Spawn(hub.position, $"WAVE {WaveNumber} CLEARED   +{bonus} scrap",
+                    new Color(0.5f, 1f, 0.6f), 1.5f);
+        }
+
+        onWaveCleared.Invoke(WaveNumber);
     }
 
     // ── Spawning helpers ───────────────────────────────────────────────────────

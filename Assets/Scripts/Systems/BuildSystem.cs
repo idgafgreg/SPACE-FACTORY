@@ -47,6 +47,8 @@ public class BuildSystem : MonoBehaviour
     {
         if (def == null || def.prefab == null) return PlacementResult.DefNotFound;
 
+        if (!IsUnlocked(def)) return PlacementResult.Locked;
+
         if (!Inventory.CanAfford(ResourceTypeId.ScrapMetal, def.scrapCost))
             return PlacementResult.InsufficientScrap;
 
@@ -100,6 +102,14 @@ public class BuildSystem : MonoBehaviour
 
     public bool CanAfford(BuildableDef def) =>
         def != null && Inventory.CanAfford(ResourceTypeId.ScrapMetal, def.scrapCost);
+
+    /// <summary>Wave-gated progression: def.unlockWave waves must be CLEARED.
+    /// Scenes without a WaveController have everything unlocked.</summary>
+    public bool IsUnlocked(BuildableDef def) =>
+        def != null &&
+        (def.unlockWave <= 0 ||
+         WaveController.Instance == null ||
+         def.unlockWave <= WaveController.Instance.WavesCleared);
 
     /// <summary>Cheap pre-check used by ghost preview (skips cost + power checks).</summary>
     public bool IsCellFree(Vector3 worldPos)

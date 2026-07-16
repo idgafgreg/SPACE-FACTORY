@@ -49,14 +49,17 @@ Rules for tasks in this file:
 
 ## Next (groomed, not yet started)
 
-- [ ] First pass progression design: what unlocks/upgrades exist across endless cycles (new machines, defenses, upgrades) per 2026-07-14 infinite-loop decision. Write it into SPACE FACTORY INFO/ as a short spec before any implementation task.
-      Done-when: progression spec exists in SPACE FACTORY INFO/; groom converts it into implementation tasks.
+- [x] First pass progression design — DONE: SPACE FACTORY INFO/Progression_Spec.md written AND v1 slice implemented (wave-gated unlocks: ShockTrap→1, RepairPost→2, RelayNode→3; wave-clear bonus 10+5×N; hotbar lock display; unlock popups). Play-verified.
+- [ ] Progression v2 per spec's "Intended growth": tier-2 structures (waves 5-8 unlocks — needs new defs+prefabs), then between-wave 1-of-3 upgrade offers (needs offer UI + run-modifier container), then endless wave modifiers.
+      Done-when: at least tier-2 defs exist and unlock past wave 5.
 
 ## Ice box (ideas, ungroomed)
 
 - [ ] (dump ideas here; /backlog-groom promotes them)
 
 ## Agent log (newest first — one line per session: date, task, result, commit)
+
+- 2026-07-15: Progression v1 (full-control session) — spec written (Progression_Spec.md); BuildableDef.unlockWave + PlacementResult.Locked + BuildSystem.IsUnlocked; WaveController.WavesCleared + onWaveCleared + clear bonus (10+5×N, popup at hub); hotbar shows locked slots ("wave N", dimmed) + UNLOCKED popups; gates: ShockTrap 1, RepairPost 2, RelayNode 3, rest 0. Play-verified: locked→refused (UI + Evaluate), wave 1 cleared → trap unlocks + bonus paid, RepairPost stays locked.
 
 - 2026-07-15: Polish batch (agent-chosen) — FloatingText reward popups (crate pickups + kill bounties); leak fix: enemies reaching hub no longer pay scrap; wave banner telegraphs next gate (WEST / VENT / WEST+VENT from vent-share math, per doc Warning Window); AutoTurret placement ghost shows firing-range ring; player HP bar bottom-left (120 HP + respawn had NO UI); dead code deleted: DummyEnemyAI, GameEntry, GameConfig, EnemyHealth (GUID-verified zero refs). Play-verified all.
 

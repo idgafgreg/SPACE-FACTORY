@@ -30,4 +30,8 @@ public class BuildableDef : ScriptableObject
     [Header("Placement Rules")]
     public Vector2Int footprint           = Vector2Int.one;
     public bool       requiresResourceNode;
+
+    [Header("Progression")]
+    [Tooltip("Waves that must be CLEARED before this unlocks. 0 = available from the start.")]
+    public int unlockWave;
 }

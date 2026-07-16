@@ -30,9 +30,11 @@ public class UIHotbar : MonoBehaviour
 
     readonly List<Image> _slotBackgrounds = new();
     readonly List<Text>  _costTexts       = new();
+    readonly List<Text>  _nameTexts       = new();
     Image _demolishBackground;
     Text _weaponText;
     Font _font;
+    BuildSystem _buildSystem;
 
     void Start()
     {
@@ -42,6 +44,7 @@ public class UIHotbar : MonoBehaviour
         if (buildTool == null) { enabled = false; return; }
 
         _font = Resources.GetBuiltinResource<Font>("LegacyRuntime.ttf");
+        _buildSystem = BuildSystem.Instance;
         BuildSlots();
         buildTool.onSelectionChanged.AddListener(OnSelectionChanged);
         buildTool.onDemolishModeChanged.AddListener(on =>
@@ -49,20 +52,49 @@ public class UIHotbar : MonoBehaviour
             if (_demolishBackground != null)
                 _demolishBackground.color = on ? SlotDemolish : SlotColor;
         });
+        if (WaveController.Instance != null)
+            WaveController.Instance.onWaveCleared.AddListener(AnnounceUnlocks);
         OnSelectionChanged(buildTool.CurrentDef);
+    }
+
+    /// <summary>Pops "UNLOCKED: <name>" over the player for defs whose gate is the just-cleared wave.</summary>
+    void AnnounceUnlocks(int clearedWave)
+    {
+        var player = PlayerController.Instance;
+        Vector3 pos = player != null ? player.transform.position : Vector3.zero;
+        float stagger = 0f;
+        foreach (var def in buildTool.buildableDefs)
+        {
+            if (def == null || def.unlockWave != clearedWave) continue;
+            FloatingText.Spawn(pos + Vector3.up * stagger, "UNLOCKED: " + def.displayName,
+                new Color(0.4f, 0.9f, 1f), 1.3f);
+            stagger += 0.6f;
+        }
     }
 
     void Update()
     {
-        // Affordability tint (cheap: N text color writes) + weapon heat.
+        // Affordability + lock state (cheap: N text writes) + weapon heat.
         if (inventory != null)
         {
             int scrap = inventory.Get(ResourceTypeId.ScrapMetal);
             for (int i = 0; i < _costTexts.Count && i < buildTool.buildableDefs.Count; i++)
             {
                 var def = buildTool.buildableDefs[i];
-                _costTexts[i].color = def != null && scrap >= def.scrapCost
-                    ? TextNormal : TextUnaffordable;
+                if (def == null) continue;
+
+                bool unlocked = _buildSystem == null || _buildSystem.IsUnlocked(def);
+                if (!unlocked)
+                {
+                    _costTexts[i].text  = "wave " + def.unlockWave;
+                    _costTexts[i].color = new Color(0.6f, 0.6f, 0.65f);
+                    if (i < _nameTexts.Count) _nameTexts[i].color = new Color(1f, 1f, 1f, 0.35f);
+                    continue;
+                }
+
+                _costTexts[i].text  = def.scrapCost + " scrap";
+                _costTexts[i].color = scrap >= def.scrapCost ? TextNormal : TextUnaffordable;
+                if (i < _nameTexts.Count) _nameTexts[i].color = TextNormal;
             }
         }
 
@@ -107,7 +139,7 @@ public class UIHotbar : MonoBehaviour
             _slotBackgrounds.Add(slot.GetComponent<Image>());
 
             AddText(slot, (i + 1).ToString(), 13, TextAnchor.UpperLeft, new Vector2(6f, -3f));
-            AddText(slot, def != null ? def.displayName : "—", 13, TextAnchor.MiddleCenter, Vector2.zero);
+            _nameTexts.Add(AddText(slot, def != null ? def.displayName : "—", 13, TextAnchor.MiddleCenter, Vector2.zero));
             _costTexts.Add(AddText(slot,
                 def != null ? def.scrapCost + " scrap" : "", 11,
                 TextAnchor.LowerCenter, new Vector2(0f, 4f)));

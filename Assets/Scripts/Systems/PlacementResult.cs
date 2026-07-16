@@ -11,6 +11,7 @@ public enum PlacementResult
     Blocked,              // Physics.CheckBox found a Buildable collider in the footprint
     RequiresResourceNode, // def.requiresResourceNode && no node under footprint
     InsufficientPower,    // def.requiresPower && PowerSystem has no spare capacity
+    Locked,               // def.unlockWave waves not yet cleared
 }
 
 public static class PlacementResultExtensions
@@ -27,6 +28,7 @@ public static class PlacementResultExtensions
         PlacementResult.Blocked              => "Tile already occupied",
         PlacementResult.RequiresResourceNode => "Must be on a resource node",
         PlacementResult.InsufficientPower    => "Not enough power capacity",
+        PlacementResult.Locked               => "Not yet unlocked",
         _                                    => "Cannot place here"
     };
 }

@@ -149,7 +149,13 @@ public class PlayerBuildTool : MonoBehaviour
     public void ToggleSlot(int i)
     {
         if (i < 0 || i >= buildableDefs.Count) return;
-        Select(_currentDef == buildableDefs[i] ? null : buildableDefs[i]);
+        var def = buildableDefs[i];
+        if (def != null && buildSystem != null && !buildSystem.IsUnlocked(def))
+        {
+            onPlacementReasonChanged?.Invoke($"{def.displayName} locked — clear wave {def.unlockWave} to unlock");
+            return;
+        }
+        Select(_currentDef == def ? null : def);
     }
 
     void Select(BuildableDef def)
