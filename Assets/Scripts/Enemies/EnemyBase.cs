@@ -44,6 +44,10 @@ public abstract class EnemyBase : MonoBehaviour
     {
         _health          = GetComponent<Health>();
         _health.OnKilled += _ => OnDied();
+
+        // Auto-attach the damage flash so every enemy reads its hits without any
+        // wiring at the damage sites (Track C2 juice).
+        if (GetComponent<HitFlash>() == null) gameObject.AddComponent<HitFlash>();
     }
 
     public void Init(LanePath path)

@@ -68,6 +68,11 @@ public class PlayerController : MonoBehaviour
     {
         if (IsDead || amount <= 0f) return;
         CurrentHealth = Mathf.Max(0f, CurrentHealth - amount);
+
+        // Juice (Track C2): red screen flash + shake when the player is hit.
+        ScreenFlash.Damage(amount);
+        CameraShake.Add(Mathf.Clamp(amount / 40f, 0.1f, 0.5f));
+
         if (CurrentHealth <= 0f) StartCoroutine(RespawnRoutine());
     }
 

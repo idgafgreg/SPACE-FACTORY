@@ -88,15 +88,27 @@ public class PlayerWeapon : MonoBehaviour
 
         Vector3 endpoint = origin + direction * maxRange;
 
+        bool hitSomething = false;
         if (Physics.Raycast(origin, direction, out var hit, maxRange, hitMask))
         {
-            endpoint = hit.point;
+            endpoint     = hit.point;
+            hitSomething = true;
             var health = hit.collider.GetComponentInParent<Health>();
             health?.ApplyDamage(damagePerShot);
         }
 
         Bullet.Spawn(origin, endpoint, bulletSpeed, bulletColor);
         if (shotLine) ShowShotLine(origin, endpoint);
+
+        // Juice (Track C2): muzzle flash on every shot, a spark on hits, and a
+        // light kick of screen shake so shooting has weight.
+        ImpactFX.Muzzle(origin, bulletColor);
+        CameraShake.Add(0.035f);
+        if (hitSomething)
+        {
+            ImpactFX.Impact(endpoint, new Color(1f, 0.75f, 0.3f));
+            CameraShake.Add(0.03f);
+        }
     }
 
     void ShowShotLine(Vector3 from, Vector3 to)

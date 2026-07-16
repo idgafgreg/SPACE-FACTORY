@@ -75,6 +75,10 @@ public class CameraFollow : MonoBehaviour
 
         transform.position = target.position + offset;
         transform.LookAt(target.position + Vector3.up * lookAtHeightOffset);
+
+        // Additive screen shake (trauma-based). Applied after LookAt so only the
+        // position jitters, not the aim — see CameraShake.
+        transform.position += CameraShake.Sample(Time.deltaTime);
     }
 
     void ReadOrbitInput()

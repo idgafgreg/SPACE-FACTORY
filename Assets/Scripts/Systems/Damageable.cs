@@ -24,6 +24,11 @@ public class Damageable : MonoBehaviour
         // Clamp so overkill hits never expose negative HP to UI/listeners.
         CurrentHealth = Mathf.Max(0f, CurrentHealth - amount);
         OnDamaged?.Invoke(CurrentHealth);
+
+        // Juice (Track C2): the hub taking damage shakes the screen, scaled by
+        // how hard the hit was, so breaches feel dangerous.
+        CameraShake.Add(Mathf.Clamp(amount / 120f, 0.05f, 0.4f));
+
         if (CurrentHealth <= 0f) Kill();
     }
 

@@ -66,7 +66,17 @@ public class AutoTurret : DefenseBase, IPowerConsumer
         return best;
     }
 
-    protected virtual void OnFired(Vector3 targetPos) { /* VFX hook */ }
+    static readonly Color TurretShotColor = new Color(1f, 0.55f, 0.2f);
+
+    protected virtual void OnFired(Vector3 targetPos)
+    {
+        // Juice (Track C2): a tracer from the muzzle, a muzzle flash, and a spark
+        // on the target. No screen shake here — many turrets fire at once.
+        Vector3 origin = muzzle ? muzzle.position : transform.position + Vector3.up * 0.6f;
+        Bullet.Spawn(origin, targetPos, 34f, TurretShotColor);
+        ImpactFX.Muzzle(origin, TurretShotColor, 0.22f);
+        ImpactFX.Impact(targetPos, TurretShotColor, 0.35f);
+    }
 
 #if UNITY_EDITOR
     void OnDrawGizmosSelected()
