@@ -75,6 +75,7 @@ public class UIUpgradeOffer : MonoBehaviour
     void Choose(int slot)
     {
         Pool[_offerIdx[slot]].apply();
+        Sfx.Unlock();
         var player = PlayerController.Instance;
         if (player != null)
             FloatingText.Spawn(player.transform.position, Pool[_offerIdx[slot]].name, new Color(0.7f, 0.5f, 1f), 1.2f);

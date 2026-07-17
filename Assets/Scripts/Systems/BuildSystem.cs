@@ -95,6 +95,7 @@ public class BuildSystem : MonoBehaviour
 
         if (placed.TryGetComponent<MachineBase>(out var machine)) machine.OnPlaced();
 
+        Sfx.Place();
         return PlacementResult.Success;
     }
 
@@ -159,6 +160,7 @@ public class BuildSystem : MonoBehaviour
 
         _occupiedCells.Remove(WorldToCell(SnapToGrid(go.transform.position)));
         if (go.TryGetComponent<MachineBase>(out var m)) m.OnDemolished();
+        Sfx.Demolish();
         Destroy(go);
     }
 

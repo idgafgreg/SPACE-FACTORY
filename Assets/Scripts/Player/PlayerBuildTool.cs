@@ -158,7 +158,7 @@ public class PlayerBuildTool : MonoBehaviour
 
     void Select(BuildableDef def)
     {
-        if (def != null) SetDemolishMode(false);   // picking a buildable disarms deconstruct
+        if (def != null) { SetDemolishMode(false); Sfx.UIClick(); }   // picking a buildable disarms deconstruct
         _currentDef = def;
         _ghost?.SetActive(def != null);
         UpdateRangeRing(def);

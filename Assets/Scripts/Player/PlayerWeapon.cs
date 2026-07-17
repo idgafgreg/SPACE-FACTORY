@@ -104,10 +104,12 @@ public class PlayerWeapon : MonoBehaviour
         // light kick of screen shake so shooting has weight.
         ImpactFX.Muzzle(origin, bulletColor);
         CameraShake.Add(0.035f);
+        Sfx.Shot();
         if (hitSomething)
         {
             ImpactFX.Impact(endpoint, new Color(1f, 0.75f, 0.3f));
             CameraShake.Add(0.03f);
+            Sfx.Impact();
         }
     }
 

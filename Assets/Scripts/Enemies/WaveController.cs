@@ -173,6 +173,7 @@ public class WaveController : MonoBehaviour
         AssignLanes(def);
 
         _spawnQueueIndex = 0;
+        Sfx.WaveHorn();   // "they're coming"
         // First spawn fires at t=0, so divide by (n-1) to make the release span
         // the full window: n spawns, last one lands at spawnWindowSeconds.
         float spacing = (def.spawnWindowSeconds > 0f && _spawnQueue.Count > 0)

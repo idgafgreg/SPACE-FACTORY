@@ -26,8 +26,9 @@ public class Damageable : MonoBehaviour
         OnDamaged?.Invoke(CurrentHealth);
 
         // Juice (Track C2): the hub taking damage shakes the screen, scaled by
-        // how hard the hit was, so breaches feel dangerous.
+        // how hard the hit was, so breaches feel dangerous. Deep boom to match.
         CameraShake.Add(Mathf.Clamp(amount / 120f, 0.05f, 0.4f));
+        Sfx.HubHit();
 
         if (CurrentHealth <= 0f) Kill();
     }

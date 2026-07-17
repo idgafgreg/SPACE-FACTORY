@@ -38,6 +38,7 @@ public class SalvageCrate : MonoBehaviour
         int amount = Mathf.RoundToInt(Random.Range(scrapMin, scrapMax + 1) * RunUpgrades.SalvageMult);
         ResourceInventory.Instance?.Add(ResourceTypeId.ScrapMetal, amount);
         FloatingText.Spawn(transform.position, "+" + amount + " scrap", new Color(1f, 0.85f, 0.35f));
+        Sfx.Pickup();
         Destroy(gameObject);
     }
 }

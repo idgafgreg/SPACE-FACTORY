@@ -205,7 +205,8 @@ public abstract class EnemyBase : MonoBehaviour
 
     protected virtual void OnDied()
     {
-        if (_leaked || scrapReward <= 0) return;   // only kills pay out
+        if (_leaked || scrapReward <= 0) return;   // only kills pay out (leaks get the hub boom instead)
+        Sfx.EnemyDie();
         ResourceInventory.Instance?.Add(ResourceTypeId.ScrapMetal, scrapReward);
         FloatingText.Spawn(transform.position, "+" + scrapReward, new Color(1f, 0.85f, 0.35f), 0.8f);
     }

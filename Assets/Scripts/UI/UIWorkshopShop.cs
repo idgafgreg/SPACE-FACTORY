@@ -96,6 +96,7 @@ public class UIWorkshopShop : MonoBehaviour
 
         inv.Spend(ResourceTypeId.ScrapMetal, def.unlockCost);
         RunUpgrades.Instance.UnlockStructure(def.id);
+        Sfx.Unlock();
         var player = PlayerController.Instance;
         if (player != null)
             FloatingText.Spawn(player.transform.position, "UNLOCKED: " + def.displayName, new Color(0.4f, 0.9f, 1f), 1.3f);
@@ -110,6 +111,7 @@ public class UIWorkshopShop : MonoBehaviour
 
         inv.Spend(ResourceTypeId.ScrapMetal, price);
         Upgrades[i].apply();
+        Sfx.Unlock();
         _upgradeCounts[i]++;
         var player = PlayerController.Instance;
         if (player != null)
