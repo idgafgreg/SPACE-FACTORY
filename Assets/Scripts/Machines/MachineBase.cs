@@ -32,6 +32,9 @@ public abstract class MachineBase : MonoBehaviour, IPowerConsumer
     /// <summary>True when the machine has power (or doesn't require it).</summary>
     protected bool IsPowered => !requiresPower || _isPowered;
 
+    /// <summary>Public read for HUD/FX systems that can't touch the protected property.</summary>
+    public bool IsCurrentlyPowered => IsPowered;
+
     // ── Registration ─────────────────────────────────────────────────────────
 
     protected virtual void OnEnable()

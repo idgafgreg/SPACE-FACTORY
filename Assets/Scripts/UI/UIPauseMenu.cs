@@ -54,10 +54,12 @@ public class UIPauseMenu : MonoBehaviour
         _panel.transform.SetAsLastSibling();
         Time.timeScale = 0f;
         IsPaused = true;
+        Sfx.UIClick();
     }
 
     void Resume()
     {
+        Sfx.UIClick();
         _panel?.SetActive(false);
         Time.timeScale = 1f;
         IsPaused = false;

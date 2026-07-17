@@ -39,7 +39,24 @@ public class UIEndOfRunScreen : MonoBehaviour
         float seconds = Time.timeSinceLevelLoad;
         int   mins    = Mathf.FloorToInt(seconds / 60f);
         int   secs    = Mathf.FloorToInt(seconds % 60f);
-        onSurvivalTimeText.Invoke($"Survived: {mins:00}:{secs:00}");
+        var stats = RunStatsTracker.Instance;
+        string survival = $"Survived: {mins:00}:{secs:00}";
+        if (stats != null)
+            survival += $"\nKills {stats.Kills}  ·  Leaks {stats.Leaks}  ·  Scrap +{stats.ScrapEarned}  ·  Wave {stats.PeakWave}";
+        onSurvivalTimeText.Invoke(survival);
+
+        if (playerWon)
+        {
+            Sfx.Unlock();
+            ScreenFlash.Flash(new Color(0.2f, 0.7f, 0.4f), 0.25f, 1.5f);
+        }
+        else
+        {
+            Sfx.Alarm();
+            Sfx.HubHit();
+            ScreenFlash.Flash(new Color(0.55f, 0.05f, 0.05f), 0.35f, 1.2f);
+            CameraShake.Add(0.35f);
+        }
     }
 
     /// <summary>Button hook — opens the confirmation step instead of restarting outright.</summary>

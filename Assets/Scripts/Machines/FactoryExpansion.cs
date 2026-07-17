@@ -21,9 +21,12 @@ public class FactoryExpansion : MonoBehaviour
 {
     [Header("Placement")]
     public float groundY       = 0f;
-    public float searchRadius  = 12f;
+    public float searchRadius  = 10f;
     public int   sampleAngles  = 24;
     public float minLaneClear  = 4f;
+    [Tooltip("Keep the auto-built factory line inside the ship deck.")]
+    public float deckHalfX = 44f;
+    public float deckHalfZ = 24f;
 
     void Start()
     {
@@ -95,7 +98,8 @@ public class FactoryExpansion : MonoBehaviour
         int obstacleMask = LayerMask.GetMask("Buildable");
 
         float bestScore = float.NegativeInfinity;
-        Vector3 best = hubPos + Vector3.right * searchRadius;
+        // Prefer a known open bay SE of hub (inside the ring, clear of corridors).
+        Vector3 best = hubPos + new Vector3(14f, 0f, -6f);
 
         for (int i = 0; i < sampleAngles; i++)
         {
@@ -103,17 +107,21 @@ public class FactoryExpansion : MonoBehaviour
             Vector3 dir = new Vector3(Mathf.Cos(ang), 0f, Mathf.Sin(ang));
             Vector3 cand = hubPos + dir * searchRadius;
             cand.y = groundY;
+            cand.x = Mathf.Clamp(cand.x, -deckHalfX, deckHalfX);
+            cand.z = Mathf.Clamp(cand.z, -deckHalfZ, deckHalfZ);
 
             float laneClear = MinLaneDistance(cand, lanes);
-            // Penalise candidates that overlap walls/structures (ignores ground).
             bool blocked = obstacleMask != 0 &&
                            Physics.CheckSphere(cand + Vector3.up * 0.6f, 3.5f, obstacleMask);
-            float score = laneClear - (blocked ? 1000f : 0f);
+            bool offDeck = Mathf.Abs(cand.x) > deckHalfX - 2f || Mathf.Abs(cand.z) > deckHalfZ - 2f;
+            float score = laneClear - (blocked ? 1000f : 0f) - (offDeck ? 500f : 0f);
 
             if (score > bestScore) { bestScore = score; best = cand; }
         }
 
         best.y = groundY;
+        best.x = Mathf.Clamp(best.x, -deckHalfX, deckHalfX);
+        best.z = Mathf.Clamp(best.z, -deckHalfZ, deckHalfZ);
         return best;
     }
 

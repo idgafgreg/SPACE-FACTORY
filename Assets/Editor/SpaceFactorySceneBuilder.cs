@@ -391,8 +391,9 @@ public static class SpaceFactorySceneBuilder
         crawler.attackRate           = 2.5f;   // rapid bites
         crawler.damagePerHit         = 4f;     // small per bite
         crawler.scrapReward          = 2;
-        crawler.playerAggroRadius    = 9f;     // strongly player-seeking
-        crawler.retargetInterval     = 0.4f;
+        crawler.playerAggroRadius    = 16f;    // strongly player-seeking
+        crawler.barrierEngageRadius  = 4f;
+        crawler.retargetInterval     = 0.35f;
         crawler.weaveAmplitude       = 0.6f;   // serpentine movement
         crawler.weaveFrequency       = 6f;
 
@@ -414,9 +415,10 @@ public static class SpaceFactorySceneBuilder
         bruiser.attackRate           = 0.6f;   // slow, heavy swings
         bruiser.damagePerHit         = 22f;
         bruiser.scrapReward          = 12;
-        bruiser.playerAggroRadius    = 2.2f;   // only notices the player point-blank
-        bruiser.retargetInterval     = 0.8f;
-        bruiser.barrierSearchRadius  = 8f;
+        bruiser.playerAggroRadius    = 10f;
+        bruiser.barrierEngageRadius  = 10f;
+        bruiser.retargetInterval     = 0.7f;
+        bruiser.barrierSearchRadius  = 10f;
         bruiser.structureMask        = 1 << LayerOrWarn("Buildable");
         bruiser.chargeInterval       = 4f;     // charge movement
         bruiser.chargeDuration       = 1.2f;
@@ -442,8 +444,9 @@ public static class SpaceFactorySceneBuilder
         sapper.attackRate           = 1.2f;
         sapper.damagePerHit         = 5f;      // light on impact — corrosion does the work
         sapper.scrapReward          = 10;
-        sapper.playerAggroRadius    = 5f;
-        sapper.retargetInterval     = 0.6f;
+        sapper.playerAggroRadius    = 14f;
+        sapper.barrierEngageRadius  = 4.5f;
+        sapper.retargetInterval     = 0.5f;
         sapper.flankBias            = 0.55f;   // flank movement
         sapper.corrosionDps         = 6f;      // corrosion DoT
         sapper.corrosionDuration    = 4f;

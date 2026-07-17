@@ -81,6 +81,14 @@ public class PlayerController : MonoBehaviour
         IsDead = true;
         characterController.enabled = false;
 
+        DeathBurst.Spawn(transform.position, new Color(0.35f, 0.55f, 1f));
+        ScreenFlash.Flash(new Color(0.15f, 0.05f, 0.25f), 0.35f, 1.4f);
+        CameraShake.Add(0.35f);
+        Sfx.EnemyDie();
+        Sfx.Alarm();
+        FloatingText.Spawn(transform.position + Vector3.up * 2f, "DOWN",
+            new Color(0.7f, 0.45f, 1f), 1.4f);
+
         // Hide all renderers on the player
         foreach (var r in GetComponentsInChildren<Renderer>())
             r.enabled = false;
@@ -94,5 +102,11 @@ public class PlayerController : MonoBehaviour
 
         foreach (var r in GetComponentsInChildren<Renderer>())
             r.enabled = true;
+
+        ScreenFlash.Flash(new Color(0.3f, 0.85f, 0.55f), 0.2f, 2f);
+        CameraShake.Add(0.08f);
+        Sfx.Unlock();
+        FloatingText.Spawn(transform.position + Vector3.up * 2f, "RESPAWNED",
+            new Color(0.5f, 1f, 0.65f), 1.3f);
     }
 }

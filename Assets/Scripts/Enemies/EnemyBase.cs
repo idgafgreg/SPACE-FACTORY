@@ -12,18 +12,29 @@ public abstract class EnemyBase : MonoBehaviour
 
     [Header("Threat / Targeting")]
     [Tooltip("Distance at which this enemy will break off and go for the player. 0 = ignores the player.")]
-    public float playerAggroRadius = 0f;
+    public float playerAggroRadius = 12f;
     [Tooltip("How often (s) the enemy re-evaluates its target — lets it switch between hub, structures and player.")]
     public float retargetInterval  = 0.6f;
     [Tooltip("Distance from the hub at which the enemy stops lane-following and attacks it directly. " +
              "Targeting the hub from spawn made enemies beeline through walls — lanes exist for a reason.")]
     public float hubEngageRadius   = 8f;
+    [Tooltip("How far ahead an enemy will notice and engage a Barrier blocking the lane.")]
+    public float barrierEngageRadius = 4f;
+
+    [Header("Collision")]
+    [Tooltip("Walls + barriers (Buildable layer). Used so enemies slide along hull walls instead of clipping.")]
+    public LayerMask obstacleMask;
+    public float bodyRadius = 0.38f;
 
     [Header("Reward")]
     public int scrapReward = 2;
 
     public LanePath LanePath { get; private set; }
     public bool     IsDead   => _health != null && _health.IsDead;
+    /// <summary>True while this enemy is currently chasing the player.</summary>
+    public bool CurrentTargetIsPlayer =>
+        _currentTarget != null &&
+        _currentTarget.GetComponentInParent<PlayerController>() != null;
 
     protected Transform _currentTarget;
 
@@ -44,6 +55,9 @@ public abstract class EnemyBase : MonoBehaviour
     {
         _health          = GetComponent<Health>();
         _health.OnKilled += _ => OnDied();
+
+        if (obstacleMask.value == 0)
+            obstacleMask = LayerMask.GetMask("Buildable");
 
         // Auto-attach the damage flash so every enemy reads its hits without any
         // wiring at the damage sites (Track C2 juice).
@@ -66,6 +80,11 @@ public abstract class EnemyBase : MonoBehaviour
         _attackCooldown -= dt;
         _retargetTimer  -= dt;
 
+        // Drop a dead / destroyed target immediately so we don't keep walking
+        // into empty space (barriers vanish when smashed).
+        if (_currentTarget != null && !IsValidTarget(_currentTarget))
+            _currentTarget = null;
+
         if (_currentTarget == null || _retargetTimer <= 0f)
         {
             AcquireTarget();
@@ -74,7 +93,7 @@ public abstract class EnemyBase : MonoBehaviour
 
         if (_currentTarget != null)
         {
-            float dist = Vector3.Distance(transform.position, _currentTarget.position);
+            float dist = HorizontalDist(transform.position, _currentTarget.position);
             if (dist > attackRange)
                 MoveTowards(_currentTarget.position);
             else if (_attackCooldown <= 0f)
@@ -93,7 +112,9 @@ public abstract class EnemyBase : MonoBehaviour
 
     protected virtual void AcquireTarget()
     {
-        _currentTarget = PlayerInRange() ?? HubIfClose();
+        // Barriers first — every enemy type must smash chokepoints instead of
+        // walking through them. Then player (if close), then hub.
+        _currentTarget = NearestBarrier() ?? PlayerInRange() ?? HubIfClose();
     }
 
     /// <summary>The hub, but only once this enemy is within <see cref="hubEngageRadius"/> —
@@ -103,7 +124,7 @@ public abstract class EnemyBase : MonoBehaviour
     {
         var hub = Hub;
         if (hub == null) return null;
-        return (hub.position - transform.position).sqrMagnitude <= hubEngageRadius * hubEngageRadius
+        return HorizontalDistSqr(hub.position, transform.position) <= hubEngageRadius * hubEngageRadius
             ? hub : null;
     }
 
@@ -112,9 +133,41 @@ public abstract class EnemyBase : MonoBehaviour
     {
         var p = PlayerController.Instance;
         if (p == null || p.IsDead || playerAggroRadius <= 0f) return null;
-        return Vector3.Distance(transform.position, p.transform.position) <= playerAggroRadius
+        return HorizontalDist(transform.position, p.transform.position) <= playerAggroRadius
             ? p.transform
             : null;
+    }
+
+    /// <summary>Nearest living Barrier within <see cref="barrierEngageRadius"/>.</summary>
+    protected Transform NearestBarrier()
+    {
+        if (barrierEngageRadius <= 0f) return null;
+
+        Collider[] hits = Physics.OverlapSphere(
+            transform.position, barrierEngageRadius, obstacleMask);
+
+        Transform nearest  = null;
+        float     bestDist = float.MaxValue;
+
+        foreach (var col in hits)
+        {
+            var barrier = col.GetComponentInParent<Barrier>();
+            if (barrier == null || barrier.IsDestroyed) continue;
+
+            float d = HorizontalDistSqr(col.transform.position, transform.position);
+            if (d < bestDist) { bestDist = d; nearest = barrier.transform; }
+        }
+        return nearest;
+    }
+
+    static bool IsValidTarget(Transform t)
+    {
+        if (t == null) return false;
+        var barrier = t.GetComponentInParent<Barrier>();
+        if (barrier != null) return !barrier.IsDestroyed;
+        var player = t.GetComponentInParent<PlayerController>();
+        if (player != null) return !player.IsDead;
+        return t.gameObject.activeInHierarchy;
     }
 
     // ── Movement ─────────────────────────────────────────────────────────────
@@ -145,7 +198,7 @@ public abstract class EnemyBase : MonoBehaviour
         Step(dir);
     }
 
-    /// <summary>Applies steering + speed shaping, then advances. Shared by path and chase movement.</summary>
+    /// <summary>Applies steering + speed shaping, then advances with wall/barrier collision.</summary>
     void Step(Vector3 desiredDir)
     {
         if (desiredDir.sqrMagnitude < 1e-4f) return;
@@ -157,7 +210,47 @@ public abstract class EnemyBase : MonoBehaviour
         dir.Normalize();
 
         float speed = moveSpeedTilesPerSec * tileSize * _speedMultiplier * SpeedScale();
-        transform.position += dir * (speed * Time.deltaTime);
+        float step  = speed * Time.deltaTime;
+        if (step <= 0f) return;
+
+        Vector3 origin = transform.position + Vector3.up * 0.5f;
+
+        // Probe ahead — if we hit a Barrier, lock onto it instead of walking through.
+        // If we hit a hull wall, slide along it so enemies stay in corridors.
+        if (obstacleMask.value != 0 &&
+            Physics.SphereCast(origin, bodyRadius, dir, out RaycastHit hit, step + 0.15f, obstacleMask,
+                QueryTriggerInteraction.Ignore))
+        {
+            var barrier = hit.collider.GetComponentInParent<Barrier>();
+            if (barrier != null && !barrier.IsDestroyed)
+            {
+                _currentTarget = barrier.transform;
+                _retargetTimer = retargetInterval;
+                // Close enough to swing? Hit now. Otherwise just stop this frame.
+                if (HorizontalDist(transform.position, barrier.transform.position) <= attackRange &&
+                    _attackCooldown <= 0f)
+                    Attack(barrier.transform);
+                return;
+            }
+
+            // Wall: project movement onto the wall plane (slide).
+            Vector3 slide = Vector3.ProjectOnPlane(dir, hit.normal);
+            slide.y = 0f;
+            if (slide.sqrMagnitude > 1e-4f)
+            {
+                slide.Normalize();
+                // Second probe so we don't still clip into a corner.
+                if (!Physics.SphereCast(origin, bodyRadius, slide, out _, step + 0.05f, obstacleMask,
+                        QueryTriggerInteraction.Ignore))
+                {
+                    transform.position += slide * step;
+                    transform.forward   = slide;
+                }
+            }
+            return;
+        }
+
+        transform.position += dir * step;
         transform.forward   = dir;
     }
 
@@ -176,7 +269,12 @@ public abstract class EnemyBase : MonoBehaviour
     }
 
     /// <summary>Deliver this enemy's hit to the target. Override for slam/AoE/corrosion.</summary>
-    protected virtual void DealDamage(Transform target) => DamageRouter.Apply(target, damagePerHit);
+    protected virtual void DealDamage(Transform target)
+    {
+        DamageRouter.Apply(target, damagePerHit);
+        ImpactFX.Impact(target.position + Vector3.up * 0.35f,
+            new Color(1f, 0.55f, 0.25f), 0.28f);
+    }
 
     // ── End of path ──────────────────────────────────────────────────────────
 
@@ -184,6 +282,13 @@ public abstract class EnemyBase : MonoBehaviour
     {
         _leaked = true;   // reaching the hub is not a kill — no scrap reward
         SectorLayout.Instance?.commandHubDamageable?.TakeDamage(damagePerHit);
+
+        FloatingText.Spawn(transform.position + Vector3.up * 2f, "LEAKED",
+            new Color(0.85f, 0.25f, 1f), 1.3f);
+        RunStatsTracker.NotifyLeak();
+        Sfx.Alarm();
+        ScreenFlash.Flash(new Color(0.45f, 0.1f, 0.55f), 0.14f, 2.5f);
+
         _health.ApplyDamage(_health.MaxHealth); // self-destruct on arrival
     }
 
@@ -193,6 +298,9 @@ public abstract class EnemyBase : MonoBehaviour
     {
         _speedMultiplier = Mathf.Min(_speedMultiplier, factor);
         _slowTimer       = Mathf.Max(_slowTimer, duration);
+        var pulse = GetComponent<SlowPulse>();
+        if (pulse == null) pulse = gameObject.AddComponent<SlowPulse>();
+        pulse.Refresh(duration);
     }
 
     void UpdateSlow()
@@ -205,10 +313,25 @@ public abstract class EnemyBase : MonoBehaviour
 
     protected virtual void OnDied()
     {
+        // Visual death always — even leaks leave a stain on the hub approach.
+        Color tint = _leaked
+            ? new Color(0.55f, 0.15f, 0.7f)
+            : new Color(0.85f, 0.2f, 0.15f);
+        DeathBurst.Spawn(transform.position, tint);
+
+        var volatileMark = GetComponent<EnemyVolatileMark>();
+        if (volatileMark != null && !_leaked)
+            volatileMark.Detonate(transform.position);
+
         if (_leaked || scrapReward <= 0) return;   // only kills pay out (leaks get the hub boom instead)
         Sfx.EnemyDie();
         ResourceInventory.Instance?.Add(ResourceTypeId.ScrapMetal, scrapReward);
-        FloatingText.Spawn(transform.position, "+" + scrapReward, new Color(1f, 0.85f, 0.35f), 0.8f);
+        string label = gameObject.name.Replace("(Clone)", "").Trim();
+        FloatingText.Spawn(transform.position, $"+{scrapReward}  {label}",
+            new Color(1f, 0.85f, 0.35f), 1.05f);
+        KillFeed.Report(scrapReward, label);
+        RunStatsTracker.NotifyKill();
+        CameraShake.Add(0.04f);
     }
 
     void OnDestroy()
@@ -220,4 +343,17 @@ public abstract class EnemyBase : MonoBehaviour
 
     /// <summary>External damage passthrough (AutoTurret, PlayerWeapon via Health component).</summary>
     public void ApplyDamage(float amount) => _health?.ApplyDamage(amount);
+
+    static float HorizontalDist(Vector3 a, Vector3 b)
+    {
+        a.y = b.y = 0f;
+        return Vector3.Distance(a, b);
+    }
+
+    static float HorizontalDistSqr(Vector3 a, Vector3 b)
+    {
+        float dx = a.x - b.x;
+        float dz = a.z - b.z;
+        return dx * dx + dz * dz;
+    }
 }

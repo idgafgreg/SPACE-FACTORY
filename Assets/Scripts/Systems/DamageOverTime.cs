@@ -11,6 +11,7 @@ public class DamageOverTime : MonoBehaviour
 {
     float _dps;
     float _remaining;
+    float _drip;
 
     /// <summary>Apply or refresh the effect (keeps the higher dps / longer duration).</summary>
     public void Refresh(float dps, float duration)
@@ -26,5 +27,12 @@ public class DamageOverTime : MonoBehaviour
         float dt = Time.deltaTime;
         _remaining -= dt;
         DamageRouter.Apply(this, _dps * dt);
+
+        // Green corrosion drips so sapper rot reads after the hit toast fades.
+        _drip -= dt;
+        if (_drip > 0f) return;
+        _drip = 0.45f;
+        ImpactFX.Impact(transform.position + Vector3.up * 0.6f,
+            new Color(0.4f, 0.95f, 0.35f), 0.22f);
     }
 }

@@ -8,7 +8,9 @@ using UnityEngine;
 public class StartingResources : MonoBehaviour
 {
     public int startingScrapMetal        = 140;
-    public int startingEnergyCells       = 0;
+    // Enough for early sidearm fire before the energy line comes online
+    // (PlayerWeapon spends 1 cell every 3 shots).
+    public int startingEnergyCells       = 18;
     public int startingCircuitComponents = 0;
     // 20 parts ≈ 200 HP of manual repair (0.1 parts/HP) — enough to use the
     // repair tool during Wave 1 before the factory produces its own parts.

@@ -78,8 +78,20 @@ public class PowerSystem : MonoBehaviour
     /// <summary>
     /// Read-only check used by BuildSystem before placing a requiresPower structure.
     /// Does NOT register the consumer — registration happens via OnEnable.
+    /// Uses committed usage of ALL registered consumers (not only currently powered
+    /// ones) so rapid multi-place can't oversubscribe the grid before LateUpdate.
     /// </summary>
-    public bool HasCapacityFor(float usage) => AvailablePower >= usage;
+    public bool HasCapacityFor(float usage)
+    {
+        float committed = 0f;
+        for (int i = 0; i < _consumers.Count; i++)
+        {
+            var c = _consumers[i];
+            if (c == null) continue;
+            committed += Mathf.Max(0f, c.PowerUsage);
+        }
+        return committed + usage <= maxPower + 0.001f;
+    }
 
     // Legacy overload used by older MachineBase call-sites.
     public bool HasPower(MachineBase machine) => HasCapacityFor(machine.powerUsage);

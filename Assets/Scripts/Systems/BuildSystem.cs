@@ -96,6 +96,9 @@ public class BuildSystem : MonoBehaviour
         if (placed.TryGetComponent<MachineBase>(out var machine)) machine.OnPlaced();
 
         Sfx.Place();
+        ImpactFX.Impact(snapped + Vector3.up * 0.3f, new Color(0.45f, 0.9f, 1f), 0.55f);
+        CameraShake.Add(0.05f);
+        FloatingText.Spawn(snapped, def.displayName, new Color(0.55f, 0.95f, 1f), 0.95f);
         return PlacementResult.Success;
     }
 
@@ -150,17 +153,28 @@ public class BuildSystem : MonoBehaviour
     {
         if (!go) return;
 
+        Vector3 pos = go.transform.position;
+        int refund = 0;
+
         // Deconstruct refunds the full build cost — placement mistakes are free.
         if (go.TryGetComponent<Buildable>(out var marker))
         {
             var def = buildableDefs?.GetById(marker.Id);
             if (def != null && def.scrapCost > 0)
-                Inventory.Add(ResourceTypeId.ScrapMetal, def.scrapCost);
+            {
+                refund = def.scrapCost;
+                Inventory.Add(ResourceTypeId.ScrapMetal, refund);
+            }
         }
 
-        _occupiedCells.Remove(WorldToCell(SnapToGrid(go.transform.position)));
+        _occupiedCells.Remove(WorldToCell(SnapToGrid(pos)));
         if (go.TryGetComponent<MachineBase>(out var m)) m.OnDemolished();
         Sfx.Demolish();
+        ImpactFX.Impact(pos + Vector3.up * 0.3f, new Color(1f, 0.45f, 0.25f), 0.65f);
+        CameraShake.Add(0.06f);
+        if (refund > 0)
+            FloatingText.Spawn(pos + Vector3.up, $"+{refund} scrap",
+                new Color(1f, 0.85f, 0.4f), 1.05f);
         Destroy(go);
     }
 

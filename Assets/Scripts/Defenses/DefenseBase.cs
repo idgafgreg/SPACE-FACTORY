@@ -28,7 +28,13 @@ public abstract class DefenseBase : MonoBehaviour
         CurrentHealth = Mathf.Min(CurrentHealth + amount, maxHealth);
     }
 
-    protected virtual void OnDamaged(float amount) { }
+    protected virtual void OnDamaged(float amount)
+    {
+        // Sparks + light shake so barriers/turrets read as taking hits in a swarm.
+        ImpactFX.Impact(transform.position + Vector3.up * 0.7f,
+            new Color(1f, 0.55f, 0.2f), 0.35f);
+        CameraShake.Add(Mathf.Clamp(amount / 120f, 0.02f, 0.08f));
+    }
 
     void HandleDestroyed()
     {
@@ -43,5 +49,14 @@ public abstract class DefenseBase : MonoBehaviour
     /// Without this, a structure killed by an enemy (e.g. a Bruiser destroying
     /// a Barrier) would leave its tile permanently un-buildable.
     /// </summary>
-    protected virtual void OnDestroyed() => BuildSystem.Instance?.FreeCellAt(transform.position);
+    protected virtual void OnDestroyed()
+    {
+        ImpactFX.Impact(transform.position + Vector3.up * 0.5f,
+            new Color(1f, 0.45f, 0.2f), 0.9f);
+        CameraShake.Add(0.1f);
+        Sfx.Demolish();
+        FloatingText.Spawn(transform.position + Vector3.up, "DESTROYED",
+            new Color(1f, 0.4f, 0.25f), 1.15f);
+        BuildSystem.Instance?.FreeCellAt(transform.position);
+    }
 }

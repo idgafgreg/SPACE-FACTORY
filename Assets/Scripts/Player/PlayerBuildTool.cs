@@ -56,6 +56,10 @@ public class PlayerBuildTool : MonoBehaviour
     /// and weapon fire check this to avoid fighting build-mode input.</summary>
     public bool HasSelection => _currentDef != null;
     public BuildableDef CurrentDef => _currentDef;
+    /// <summary>Active ghost transform while placing; null when hidden.</summary>
+    public Transform GhostTransform =>
+        _ghost != null && _ghost.activeInHierarchy ? _ghost.transform : null;
+    public float GhostYawDegrees => _ghostYaw;
 
     // Middle-mouse is shared with camera orbit: a middle-press that DRAGS
     // farther than this (pixels) orbits and must not demolish on release.
@@ -127,7 +131,13 @@ public class PlayerBuildTool : MonoBehaviour
         if (UnityEngine.EventSystems.EventSystem.current != null &&
             UnityEngine.EventSystems.EventSystem.current.IsPointerOverGameObject()) return;
         if (!TryGetBuildPoint(out var point)) return;
-        buildSystem?.TryRemoveAt(point);
+        if (buildSystem == null) return;
+        if (!buildSystem.TryRemoveAt(point))
+        {
+            FloatingText.Spawn(point + Vector3.up * 1.2f, "NOTHING TO DEMOLISH",
+                new Color(1f, 0.6f, 0.35f), 0.95f);
+            Sfx.DryFire();
+        }
     }
 
     /// <summary>Frame on which Esc cleared a build selection — lets UIPauseMenu
@@ -162,6 +172,7 @@ public class PlayerBuildTool : MonoBehaviour
         _currentDef = def;
         _ghost?.SetActive(def != null);
         UpdateRangeRing(def);
+        UpdateFlowArrow(def);
         PublishReason(PlacementResult.Success);
         onSelectionChanged.Invoke(def);
     }
@@ -192,12 +203,14 @@ public class PlayerBuildTool : MonoBehaviour
         _ghost = Instantiate(ghostPrefab);
         _ghostRenderer = _ghost.GetComponentInChildren<Renderer>();
         CreateRangeRing();
+        CreateFlowArrow();
         _ghost.SetActive(false);
     }
 
     // ── Turret range preview ──────────────────────────────────────────────────
 
     LineRenderer _rangeRing;
+    LineRenderer _flowArrow;
 
     void CreateRangeRing()
     {
@@ -210,6 +223,21 @@ public class PlayerBuildTool : MonoBehaviour
         _rangeRing.material = new Material(Shader.Find("Sprites/Default"));
         _rangeRing.startColor = _rangeRing.endColor = new Color(0.3f, 0.85f, 1f, 0.5f);
         _rangeRing.positionCount = 0;
+        go.SetActive(false);
+    }
+
+    void CreateFlowArrow()
+    {
+        var go = new GameObject("FlowArrow");
+        go.transform.SetParent(_ghost.transform, false);
+        _flowArrow = go.AddComponent<LineRenderer>();
+        _flowArrow.useWorldSpace = false;
+        _flowArrow.widthMultiplier = 0.14f;
+        _flowArrow.material = new Material(Shader.Find("Sprites/Default"));
+        _flowArrow.startColor = _flowArrow.endColor = new Color(0.35f, 0.9f, 1f, 0.85f);
+        _flowArrow.positionCount = 2;
+        _flowArrow.SetPosition(0, new Vector3(0f, 0.2f, -0.45f));
+        _flowArrow.SetPosition(1, new Vector3(0f, 0.2f, 0.55f));
         go.SetActive(false);
     }
 
@@ -231,6 +259,14 @@ public class PlayerBuildTool : MonoBehaviour
             _rangeRing.SetPosition(i, new Vector3(Mathf.Cos(a) * r, 0.08f, Mathf.Sin(a) * r));
         }
         _rangeRing.gameObject.SetActive(true);
+    }
+
+    void UpdateFlowArrow(BuildableDef def)
+    {
+        if (_flowArrow == null) return;
+        bool relay = def != null && def.prefab != null &&
+                     def.prefab.GetComponent<ConveyorBelt>() != null;
+        _flowArrow.gameObject.SetActive(relay);
     }
 
     void UpdateGhost()
@@ -264,6 +300,9 @@ public class PlayerBuildTool : MonoBehaviour
                 _                                 => invalidMat
             };
         }
+
+        UpdateRangeRing(_currentDef);
+        UpdateFlowArrow(_currentDef);
     }
 
     // ── Place / Remove ────────────────────────────────────────────────────────
@@ -279,6 +318,10 @@ public class PlayerBuildTool : MonoBehaviour
         if (!result.IsSuccess())
         {
             PublishReason(result);
+            Sfx.DryFire();
+            ScreenFlash.Flash(new Color(0.45f, 0.1f, 0.08f), 0.08f, 3f);
+            FloatingText.Spawn(point + Vector3.up, result.ToMessage(),
+                new Color(1f, 0.45f, 0.35f), 1.05f);
             Debug.Log($"[BuildTool] Cannot place {_currentDef.id}: {result.ToMessage()}");
         }
     }
@@ -314,6 +357,14 @@ public class PlayerBuildTool : MonoBehaviour
     /// instead, which is what a "max build distance" should mean anyway and
     /// is camera-position-independent.
     /// </summary>
+    /// <summary>Public for HUD overlays that follow the ghost.</summary>
+    public bool TryGetGhostWorldPoint(out Vector3 point)
+    {
+        if (!TryGetBuildPoint(out point)) return false;
+        if (buildSystem != null) point = buildSystem.SnapToGrid(point);
+        return true;
+    }
+
     bool TryGetBuildPoint(out Vector3 point)
     {
         point = default;

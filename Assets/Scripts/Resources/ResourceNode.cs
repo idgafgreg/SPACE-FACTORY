@@ -1,3 +1,4 @@
+using System;
 using UnityEngine;
 
 /// <summary>
@@ -11,8 +12,21 @@ public class ResourceNode : MonoBehaviour
     [Tooltip("Total units available; -1 = infinite")]
     public int totalYield = -1;
 
+    [Tooltip("Richness multiplier applied to drill extraction rate. 1 = baseline scrap vein; " +
+             "1.5–2.5 = richer deposits farther from the hub.")]
+    public float yieldMultiplier = 1f;
+
+    [Tooltip("Optional display label for the playtest / HUD (e.g. 'Rich Scrap', 'Circuit Vein').")]
+    public string qualityLabel = "";
+
     public bool IsInfinite => totalYield < 0;
     public bool IsDepleted { get; private set; }
+    public int Remaining => IsInfinite ? int.MaxValue : _remaining;
+    public float RemainingNormalized =>
+        IsInfinite || totalYield <= 0 ? 1f : Mathf.Clamp01(_remaining / (float)totalYield);
+
+    /// <summary>Fired once when a finite vein hits zero.</summary>
+    public event Action<ResourceNode> OnDepleted;
 
     int _remaining;
 
@@ -33,7 +47,12 @@ public class ResourceNode : MonoBehaviour
             if (_remaining <= 0)
             {
                 _remaining = 0;
-                IsDepleted = true;
+                if (!IsDepleted)
+                {
+                    IsDepleted = true;
+                    OnDepleted?.Invoke(this);
+                    VeinDepletionFX.Notify(this);
+                }
             }
         }
         return extracted;

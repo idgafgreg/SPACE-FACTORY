@@ -14,9 +14,12 @@ public class SalvageSpawner : MonoBehaviour
     public int maxActiveCrates  = 6;
 
     [Header("Placement (around the hub at origin)")]
-    public float minRadius = 7f;
-    public float maxRadius = 20f;
+    public float minRadius = 8f;
+    public float maxRadius = 28f;
     public float crateY    = 0.85f;
+    [Tooltip("Keep crates on the ship deck (half-extents).")]
+    public float deckHalfX = 46f;
+    public float deckHalfZ = 26f;
 
     WaveController.Phase _lastPhase = WaveController.Phase.Prep;
     int _activeCrates;
@@ -42,9 +45,24 @@ public class SalvageSpawner : MonoBehaviour
     {
         if (_activeCrates >= maxActiveCrates) return;
 
-        Vector2 dir = Random.insideUnitCircle.normalized;
-        float dist  = Random.Range(minRadius, maxRadius);
-        Vector3 pos = new Vector3(dir.x * dist, crateY, dir.y * dist);
+        Vector3 pos = Vector3.zero;
+        int mask = LayerMask.GetMask("Buildable");
+        bool placed = false;
+        for (int attempt = 0; attempt < 16; attempt++)
+        {
+            Vector2 dir = Random.insideUnitCircle.normalized;
+            float dist  = Random.Range(minRadius, maxRadius);
+            pos = new Vector3(dir.x * dist, crateY, dir.y * dist);
+            pos.x = Mathf.Clamp(pos.x, -deckHalfX, deckHalfX);
+            pos.z = Mathf.Clamp(pos.z, -deckHalfZ, deckHalfZ);
+
+            if (mask == 0 || !Physics.CheckSphere(pos, 0.6f, mask, QueryTriggerInteraction.Ignore))
+            {
+                placed = true;
+                break;
+            }
+        }
+        if (!placed) pos = new Vector3(0f, crateY, 10f); // fallback near hub bow bay
 
         var go = GameObject.CreatePrimitive(PrimitiveType.Cube);
         go.name = "SalvageCrate";

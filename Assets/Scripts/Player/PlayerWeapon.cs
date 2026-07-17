@@ -22,11 +22,17 @@ public class PlayerWeapon : MonoBehaviour
     [Tooltip("Length of the forced pause once the heat limit is hit.")]
     public float heatPauseDuration = 1.2f;
 
+    [Header("Energy Ammo (factory sink)")]
+    [Tooltip("Spend 1 Energy Cell every this many shots. 0 = free fire.")]
+    public int shotsPerEnergyCell = 3;
+
     /// <summary>Heat capacity including run upgrades (Sidearm Coolant).</summary>
     public int EffectiveShotsBeforePause => shotsBeforePause + RunUpgrades.SidearmBonusShots;
 
     /// <summary>Shots remaining before the next forced heat pause.</summary>
     public int ShotsUntilPause => Mathf.Max(0, EffectiveShotsBeforePause - _shotsSincePause);
+
+    int _shotsSinceEnergy;
 
     [Header("VFX")]
     public Color         bulletColor  = new Color(0.4f, 0.9f, 1f); // cyan
@@ -36,6 +42,7 @@ public class PlayerWeapon : MonoBehaviour
 
     float _cooldown;
     int   _shotsSincePause;
+    float _lowEnergyWarnAt = -999f;
 
     void Start()
     {
@@ -56,6 +63,14 @@ public class PlayerWeapon : MonoBehaviour
 
         if (Input.GetMouseButton(0) && _cooldown <= 0f)
         {
+            if (!TrySpendEnergy())
+            {
+                Sfx.DryFire();
+                WarnLowEnergy(empty: true);
+                _cooldown = 0.25f;
+                return;
+            }
+
             Fire();
             _shotsSincePause++;
 
@@ -65,12 +80,46 @@ public class PlayerWeapon : MonoBehaviour
             {
                 _cooldown        = heatPauseDuration;
                 _shotsSincePause = 0;
+                FloatingText.Spawn(transform.position + Vector3.up * 2f, "OVERHEAT",
+                    new Color(1f, 0.55f, 0.2f), 1.15f);
+                ScreenFlash.Flash(new Color(0.55f, 0.25f, 0.08f), 0.1f, 2.5f);
+                Sfx.Warning();
             }
             else
             {
                 _cooldown = 1f / fireRate;
             }
         }
+    }
+
+    /// <summary>True if the shot is free or an Energy Cell was spent.</summary>
+    bool TrySpendEnergy()
+    {
+        if (shotsPerEnergyCell <= 0) return true;
+        _shotsSinceEnergy++;
+        if (_shotsSinceEnergy < shotsPerEnergyCell) return true;
+
+        var inv = ResourceInventory.Instance;
+        if (inv == null || !inv.Spend(ResourceTypeId.EnergyCells, 1))
+        {
+            _shotsSinceEnergy = shotsPerEnergyCell; // keep blocking until powered
+            return false;
+        }
+        _shotsSinceEnergy = 0;
+
+        int cells = inv.Get(ResourceTypeId.EnergyCells);
+        if (cells <= 3) WarnLowEnergy(empty: false);
+        return true;
+    }
+
+    void WarnLowEnergy(bool empty)
+    {
+        if (Time.unscaledTime < _lowEnergyWarnAt) return;
+        _lowEnergyWarnAt = Time.unscaledTime + 2.2f;
+        string msg = empty ? "NO ENERGY CELLS" : "ENERGY LOW — BUILD PROCESSORS";
+        FloatingText.Spawn(transform.position + Vector3.up * 2f, msg,
+            new Color(1f, 0.55f, 0.25f), 1.2f);
+        ScreenFlash.Flash(new Color(0.35f, 0.12f, 0.05f), 0.1f, 2.5f);
     }
 
     void Fire()

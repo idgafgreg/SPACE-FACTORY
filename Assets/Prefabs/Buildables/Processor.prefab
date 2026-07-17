@@ -34,7 +34,8 @@ Transform:
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
-  m_Children: []
+  m_Children:
+  - {fileID: 5099810915954864111}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!33 &6556013799736842821
@@ -73,7 +74,7 @@ MeshRenderer:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 38332120582324189}
-  m_Enabled: 1
+  m_Enabled: 0
   m_CastShadows: 1
   m_ReceiveShadows: 1
   m_DynamicOccludee: 1
@@ -138,6 +139,8 @@ MonoBehaviour:
     outputAmount: 1
     processTime: 5
   inputBufferCapacity: 20
+  outputBelt: {fileID: 0}
+  outputReceiver: {fileID: 0}
 --- !u!114 &822708656476062303
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -163,3 +166,85 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: eb3c581a7d7ae364fba7f3e757c80f80, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::BuildableHealthLink
+--- !u!1001 &4705296786692720644
+PrefabInstance:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    serializedVersion: 3
+    m_TransformParent: {fileID: 2062359533396983978}
+    m_Modifications:
+    - target: {fileID: -8679921383154817045, guid: 9440ac24959c6ae4cad2270419439b83, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: -8679921383154817045, guid: 9440ac24959c6ae4cad2270419439b83, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: -8679921383154817045, guid: 9440ac24959c6ae4cad2270419439b83, type: 3}
+      propertyPath: m_LocalPosition.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: -8679921383154817045, guid: 9440ac24959c6ae4cad2270419439b83, type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: -8679921383154817045, guid: 9440ac24959c6ae4cad2270419439b83, type: 3}
+      propertyPath: m_LocalRotation.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: -8679921383154817045, guid: 9440ac24959c6ae4cad2270419439b83, type: 3}
+      propertyPath: m_LocalRotation.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: -8679921383154817045, guid: 9440ac24959c6ae4cad2270419439b83, type: 3}
+      propertyPath: m_LocalRotation.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: -8679921383154817045, guid: 9440ac24959c6ae4cad2270419439b83, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: -8679921383154817045, guid: 9440ac24959c6ae4cad2270419439b83, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: -8679921383154817045, guid: 9440ac24959c6ae4cad2270419439b83, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 919132149155446097, guid: 9440ac24959c6ae4cad2270419439b83, type: 3}
+      propertyPath: m_Name
+      value: ArtPlaceholder
+      objectReference: {fileID: 0}
+    m_RemovedComponents: []
+    m_RemovedGameObjects: []
+    m_AddedGameObjects: []
+    m_AddedComponents:
+    - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: 9440ac24959c6ae4cad2270419439b83, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 6226804357302131883}
+  m_SourcePrefab: {fileID: 100100000, guid: 9440ac24959c6ae4cad2270419439b83, type: 3}
+--- !u!4 &5099810915954864111 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: -8679921383154817045, guid: 9440ac24959c6ae4cad2270419439b83, type: 3}
+  m_PrefabInstance: {fileID: 4705296786692720644}
+  m_PrefabAsset: {fileID: 0}
+--- !u!1 &5588399439687873877 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 919132149155446097, guid: 9440ac24959c6ae4cad2270419439b83, type: 3}
+  m_PrefabInstance: {fileID: 4705296786692720644}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &6226804357302131883
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5588399439687873877}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9804718fdeb0bfa40b88387658474c12, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::ArtPlaceholderMarker

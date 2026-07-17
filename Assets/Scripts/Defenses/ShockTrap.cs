@@ -27,7 +27,16 @@ public class ShockTrap : DefenseBase
             triggered = true;
         }
 
-        if (triggered) _cd = cooldown;
+        if (triggered)
+        {
+            _cd = cooldown;
+            ImpactFX.Impact(transform.position + Vector3.up * 0.4f,
+                new Color(0.35f, 0.9f, 1f), radius * 0.55f);
+            Sfx.Scan(); // sharp electric tick from the SFX bank
+            CameraShake.Add(0.04f);
+            FloatingText.Spawn(transform.position + Vector3.up, "SHOCK",
+                new Color(0.45f, 0.95f, 1f), 0.9f);
+        }
     }
 
 #if UNITY_EDITOR

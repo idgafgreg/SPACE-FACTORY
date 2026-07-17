@@ -24,6 +24,9 @@ public class PlayerRepairTool : MonoBehaviour
     // Fractional parts owed but not yet spent — inventory is integer, per-frame
     // healing is fractional, so cost accrues here and is spent in whole parts.
     float _partsOwed;
+    float _sparkTimer;
+    float _sfxTimer;
+    float _noPartsToast;
 
     void Start()
     {
@@ -51,7 +54,17 @@ public class PlayerRepairTool : MonoBehaviour
         var health     = hit.collider.GetComponentInParent<Health>();
         var damageable = hit.collider.GetComponentInParent<Damageable>();
 
-        if (resourceInventory.Get(ResourceTypeId.ConstructionParts) <= 0) return;
+        if (resourceInventory.Get(ResourceTypeId.ConstructionParts) <= 0)
+        {
+            if (Time.unscaledTime >= _noPartsToast)
+            {
+                _noPartsToast = Time.unscaledTime + 1.4f;
+                FloatingText.Spawn(hit.point + Vector3.up * 0.8f, "NEED CONSTRUCTION PARTS",
+                    new Color(1f, 0.55f, 0.3f), 1.05f);
+                Sfx.DryFire();
+            }
+            return;
+        }
 
         float costPerHp      = constructionPartCostPerHP * RunUpgrades.RepairCostMult;
         float desiredHp      = repairRate * Time.deltaTime;
@@ -93,6 +106,22 @@ public class PlayerRepairTool : MonoBehaviour
         {
             resourceInventory.Spend(ResourceTypeId.ConstructionParts, partsUsed);
             _partsOwed -= partsUsed;
+        }
+
+        if (healed <= 0f) return;
+
+        // Weld spark + soft tick so repair feels like work, not silent math.
+        _sparkTimer -= Time.deltaTime;
+        if (_sparkTimer <= 0f)
+        {
+            ImpactFX.Impact(hit.point, new Color(0.45f, 0.95f, 1f), 0.28f);
+            _sparkTimer = 0.12f;
+        }
+        _sfxTimer -= Time.deltaTime;
+        if (_sfxTimer <= 0f)
+        {
+            Sfx.Place();
+            _sfxTimer = 0.28f;
         }
     }
 }

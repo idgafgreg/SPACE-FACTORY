@@ -70,6 +70,8 @@ public class UIUpgradeOffer : MonoBehaviour
         Time.timeScale = 0f;
         _open = true;
         IsOpen = true;
+        Sfx.WaveHorn();
+        ScreenFlash.Flash(new Color(0.45f, 0.3f, 0.7f), 0.18f, 2f);
     }
 
     void Choose(int slot)

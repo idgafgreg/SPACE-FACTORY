@@ -32,14 +32,15 @@ public class CameraFollow : MonoBehaviour
 
     [Header("Zoom (scroll wheel — inactive while placing a building)")]
     public float zoomSpeed        = 30f;
-    public float minZoomDistance  = 8f;
-    public float maxZoomDistance  = 40f;
+    public float minZoomDistance  = 6f;
+    public float maxZoomDistance  = 28f;
     [Tooltip("Seconds to ease into a new zoom distance.")]
     public float zoomSmoothTime   = 0.2f;
 
     [Header("Initial framing")]
     [Tooltip("Starting offset used to derive initial yaw/pitch/distance.")]
-    public Vector3 initialOffset = new Vector3(0f, 22f, -16f);
+    // Closer framing = more corridor pressure (Barotrauma-ish), less empty gray void.
+    public Vector3 initialOffset = new Vector3(0f, 14f, -11f);
 
     float _yaw,   _targetYaw,   _yawVelocity;
     float _pitch, _targetPitch, _pitchVelocity;
@@ -133,4 +134,17 @@ public class CameraFollow : MonoBehaviour
 
     /// <summary>Current yaw angle — used by PlayerController for camera-relative movement.</summary>
     public float Yaw => _yaw;
+
+    /// <summary>
+    /// Snap framing back toward the default offset (Home key). Keeps a short ease
+    /// so the recenter doesn't hard-cut.
+    /// </summary>
+    public void ResetFraming()
+    {
+        Vector3 dir = initialOffset.normalized;
+        _targetYaw = Mathf.Atan2(dir.x, dir.z) * Mathf.Rad2Deg;
+        _targetPitch = Mathf.Clamp(
+            Mathf.Asin(Mathf.Clamp(dir.y, -1f, 1f)) * Mathf.Rad2Deg, minPitch, maxPitch);
+        _targetZoomDistance = Mathf.Clamp(initialOffset.magnitude, minZoomDistance, maxZoomDistance);
+    }
 }

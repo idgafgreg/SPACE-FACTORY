@@ -38,11 +38,19 @@ public class Sapper : EnemyBase
 
     protected override void AcquireTarget()
     {
+        // Barriers always first — sappers must not walk through chokepoints.
+        Transform barrier = NearestBarrier();
+        if (barrier != null) { _currentTarget = barrier; return; }
+
         // Engage the support target only once reasonably close — a sapper
         // beelining across the map to a distant PowerTap clips through walls.
-        if (supportTarget != null &&
-            (supportTarget.position - transform.position).sqrMagnitude <= supportEngageRadius * supportEngageRadius)
-        { _currentTarget = supportTarget; return; }
+        if (supportTarget != null)
+        {
+            float dx = supportTarget.position.x - transform.position.x;
+            float dz = supportTarget.position.z - transform.position.z;
+            if (dx * dx + dz * dz <= supportEngageRadius * supportEngageRadius)
+            { _currentTarget = supportTarget; return; }
+        }
 
         _currentTarget = PlayerInRange() ?? HubIfClose();
     }
@@ -64,6 +72,10 @@ public class Sapper : EnemyBase
     {
         DamageRouter.Apply(target, damagePerHit);
 
+        ImpactFX.Impact(target.position + Vector3.up * 0.4f,
+            new Color(0.45f, 0.95f, 0.35f), 0.4f);
+        Sfx.Impact();
+
         var owner = DamageRouter.ResolveOwner(target);
         if (owner == null) return;
         if (owner.GetComponent<PlayerController>() != null) return; // corrosion rots structures, not the player
@@ -71,5 +83,8 @@ public class Sapper : EnemyBase
         var dot = owner.GetComponent<DamageOverTime>();
         if (dot == null) dot = owner.AddComponent<DamageOverTime>();
         dot.Refresh(corrosionDps, corrosionDuration);
+
+        FloatingText.Spawn(owner.transform.position + Vector3.up * 1.4f, "CORRODE",
+            new Color(0.5f, 1f, 0.4f), 0.85f);
     }
 }

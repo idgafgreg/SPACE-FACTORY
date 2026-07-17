@@ -84,13 +84,17 @@ public class Processor : MachineBase, IItemReceiver
     {
         if (amount <= 0) return;
 
-        if (outputBelt != null && outputBelt.CanCarry)
+        var belt = ResolveOutputBelt();
+        if (belt != null)
         {
-            for (int i = 0; i < amount; i++) outputBelt.PushItem(type);
-            return;
+            int accepted = 0;
+            for (int i = 0; i < amount; i++)
+                if (belt.TryAcceptItem(type)) accepted++;
+                else break;
+            int overflow = amount - accepted;
+            if (overflow > 0) ResourceInventory.Instance?.Add(type, overflow);
         }
-
-        if (outputReceiver is IItemReceiver receiver)
+        else if (outputReceiver is IItemReceiver receiver)
         {
             int accepted = 0;
             for (int i = 0; i < amount; i++)
@@ -99,9 +103,44 @@ public class Processor : MachineBase, IItemReceiver
 
             int overflow = amount - accepted;
             if (overflow > 0) ResourceInventory.Instance?.Add(type, overflow);
-            return;
+        }
+        else
+        {
+            ResourceInventory.Instance?.Add(type, amount);
         }
 
-        ResourceInventory.Instance?.Add(type, amount);
+        OnEmitFx(type, amount);
+    }
+
+    ConveyorBelt ResolveOutputBelt()
+    {
+        if (outputBelt != null && outputBelt.CanCarry) return outputBelt;
+
+        // Player-built processors often leave outputBelt null — find a nearby relay.
+        ConveyorBelt best = null;
+        float bestScore = float.MaxValue;
+        foreach (var col in Physics.OverlapSphere(transform.position, 1.3f))
+        {
+            var b = col.GetComponentInParent<ConveyorBelt>();
+            if (b == null || !b.CanCarry) continue;
+            Vector3 intake = b.startPoint != null ? b.startPoint.position : b.transform.position;
+            float score = (intake - transform.position).sqrMagnitude;
+            if (score < bestScore) { bestScore = score; best = b; }
+        }
+        return best;
+    }
+
+    void OnEmitFx(ResourceTypeId type, int amount)
+    {
+        Color tint = type switch
+        {
+            ResourceTypeId.EnergyCells       => new Color(1f, 0.9f, 0.35f),
+            ResourceTypeId.CircuitComponents => new Color(0.4f, 0.9f, 1f),
+            ResourceTypeId.ConstructionParts => new Color(0.75f, 0.8f, 0.85f),
+            _                                => new Color(0.9f, 0.7f, 0.4f),
+        };
+        ImpactFX.Impact(transform.position + Vector3.up * 0.9f, tint, 0.35f);
+        if (amount > 0)
+            FloatingText.Spawn(transform.position, $"+{amount}", tint, 0.75f);
     }
 }

@@ -67,6 +67,8 @@ public class WaveController : MonoBehaviour
 
     /// <summary>Modifier of the current/most recent wave (None during the defined waves).</summary>
     public WaveModifier CurrentModifier { get; private set; }
+    /// <summary>Modifier rolled for the upcoming wave (visible during Prep).</summary>
+    public WaveModifier NextModifier => _nextModifier;
     WaveModifier _nextModifier;
 
     [Header("HUD")]
@@ -229,19 +231,28 @@ public class WaveController : MonoBehaviour
 
     void SpawnOne(GameObject prefab, LanePath lane)
     {
-        if (prefab == null || lane == null) return;
+        if (prefab == null || lane == null)
+        {
+            Debug.LogWarning("[WaveController] SpawnOne skipped — null prefab or lane.");
+            return;
+        }
 
         Vector2 jitter = UnityEngine.Random.insideUnitCircle * 0.4f;
         Vector3 pos = lane.GetPoint(0) + new Vector3(jitter.x, 0f, jitter.y);
         var go = Instantiate(prefab, pos, Quaternion.identity);
+        EnemySpawnPuff.At(pos);
 
-        if (go.TryGetComponent<EnemyBase>(out var enemy))
+        if (!go.TryGetComponent<EnemyBase>(out var enemy))
         {
-            enemy.Init(lane);
-            ApplyModifier(enemy);
-            if (enemy is Sapper sapper) sapper.supportTarget = FindSupportTarget(pos);
-            EnemiesAlive++;
+            Debug.LogError($"[WaveController] Prefab '{prefab.name}' has no EnemyBase — destroying orphan.");
+            Destroy(go);
+            return;
         }
+
+        enemy.Init(lane);
+        ApplyModifier(enemy);
+        if (enemy is Sapper sapper) sapper.supportTarget = FindSupportTarget(pos);
+        EnemiesAlive++;
     }
 
     void ApplyModifier(EnemyBase enemy)
@@ -261,19 +272,30 @@ public class WaveController : MonoBehaviour
                 enemy.damagePerHit *= 1.5f;
                 break;
         }
+
+        EnemyModifierTint.Apply(enemy, CurrentModifier);
     }
 
-    /// <summary>Pre-assigns a lane per queued spawn. Deterministic split: exactly
-    /// round(n × ventBreachShare) spawns (minimum 1 when share > 0) route to the
-    /// VentBreach lane, the rest to WestCorridor, order shuffled — a per-spawn
-    /// random roll could leave Wave 2's vent "hint" absent in ~⅓ of runs.
-    /// Leaves the queue empty (→ legacy round-robin) when share is negative or
-    /// either lane is missing.</summary>
+    /// <summary>Pre-assigns a lane per queued spawn.
+    /// ventBreachShare &gt;= 0: teaching arc — West + Vent only (deterministic split).
+    /// ventBreachShare &lt; 0: all available gates, round-robin then shuffled.</summary>
     void AssignLanes(WaveDef def)
     {
         _laneQueue.Clear();
         int n = _spawnQueue.Count;
-        if (n == 0 || def.ventBreachShare < 0f || _layout == null) return;
+        if (n == 0 || _layout == null) return;
+
+        if (def.ventBreachShare < 0f)
+        {
+            // All gates — fill then shuffle for even pressure.
+            for (int i = 0; i < n; i++)
+            {
+                var lane = NextLane();
+                if (lane != null) _laneQueue.Add(lane);
+            }
+            Shuffle(_laneQueue);
+            return;
+        }
 
         LanePath west = _layout.GetLane(WestLaneId);
         LanePath vent = _layout.GetLane(VentLaneId);
@@ -403,13 +425,17 @@ public class WaveController : MonoBehaviour
         if (n <= 0) return string.Empty;
 
         float share = def.ventBreachShare;
-        if (share < 0f) return " — ALL GATES";
+        if (share < 0f)
+        {
+            int gates = _layout?.lanes != null ? _layout.lanes.Length : 0;
+            return gates >= 5 ? " — ALL 5 GATES" : " — ALL GATES";
+        }
 
         int vent = Mathf.RoundToInt(n * share);
         if (share > 0f && vent == 0) vent = 1;
 
-        if (vent <= 0) return " — WEST GATE";
-        if (vent >= n) return " — VENT GATE";
-        return " — WEST + VENT GATES";
+        if (vent <= 0) return " — PORT GATE";
+        if (vent >= n) return " — AFT VENT";
+        return " — PORT + AFT VENT";
     }
 }

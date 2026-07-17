@@ -86,7 +86,13 @@ public class UIHotbar : MonoBehaviour
         }
 
         if (_weaponText != null && weapon != null)
-            _weaponText.text = "SIDEARM\n" + weapon.ShotsUntilPause + "/" + weapon.EffectiveShotsBeforePause;
+        {
+            int energy = inventory != null ? inventory.Get(ResourceTypeId.EnergyCells) : 0;
+            _weaponText.text = "SIDEARM\n" +
+                               weapon.ShotsUntilPause + "/" + weapon.EffectiveShotsBeforePause +
+                               "\n⚡" + energy;
+            _weaponText.color = energy > 0 ? TextNormal : TextUnaffordable;
+        }
     }
 
     void OnSelectionChanged(BuildableDef selected)

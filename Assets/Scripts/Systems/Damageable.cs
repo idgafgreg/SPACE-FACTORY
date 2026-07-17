@@ -42,6 +42,14 @@ public class Damageable : MonoBehaviour
     void Kill()
     {
         IsDead = true;
+        DeathBurst.Spawn(transform.position, new Color(0.9f, 0.2f, 0.15f));
+        ImpactFX.Impact(transform.position + Vector3.up, new Color(1f, 0.3f, 0.15f), 2.2f);
+        ScreenFlash.Flash(new Color(0.6f, 0.05f, 0.05f), 0.4f, 1.1f);
+        CameraShake.Add(0.45f);
+        Sfx.Alarm();
+        Sfx.Demolish();
+        FloatingText.Spawn(transform.position + Vector3.up * 3f, "HUB DESTROYED",
+            new Color(1f, 0.25f, 0.2f), 1.8f);
         OnDestroyed?.Invoke();
     }
 }

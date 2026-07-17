@@ -47,9 +47,36 @@ public static class SectorRuntimeBootstrap
 
         var go = new GameObject("SectorRuntime");
         go.AddComponent<SectorRuntimeMarker>();
+        go.AddComponent<SceneScanCache>();
+
+        // Curated release-facing runtime stack. This used to attach 71
+        // independent overlays, hints, pulses, labels and procedural dressers.
+        // They competed for the same screen/world space and made the sector
+        // look like a debug sandbox. Keep only systems with a clear job.
         go.AddComponent<AtmosphereController>();
         go.AddComponent<ScreenFlash>();
-        go.AddComponent<PlaytestOverlay>();
         go.AddComponent<FactoryExpansion>();
+        go.AddComponent<MachineWorkingFX>();
+        go.AddComponent<ShipInteriorUpgrade>();
+        go.AddComponent<ArtPlaceholderFitter>();
+        go.AddComponent<CameraFramingTune>();
+        go.AddComponent<FactoryReadabilityPass>();
+        go.AddComponent<RuntimeArtBackfill>();
+        go.AddComponent<ConveyorFlowFX>();
+        go.AddComponent<DemolishHighlight>();
+        go.AddComponent<WorkshopBeacon>();
+        go.AddComponent<WaveStartSting>();
+
+        // Scanner + vitals live on the player.
+        var player = Object.FindAnyObjectByType<PlayerController>();
+        if (player != null)
+        {
+            if (player.GetComponent<PlayerScanner>() == null)
+                player.gameObject.AddComponent<PlayerScanner>();
+            if (player.GetComponent<PlayerFootDust>() == null)
+                player.gameObject.AddComponent<PlayerFootDust>();
+            if (player.GetComponent<PlayerArtAttach>() == null)
+                player.gameObject.AddComponent<PlayerArtAttach>();
+        }
     }
 }

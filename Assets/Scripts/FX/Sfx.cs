@@ -22,6 +22,7 @@ public class Sfx : MonoBehaviour
     readonly List<AudioSource> _pool = new();
     int _next;
     readonly Dictionary<string, AudioClip> _clips = new();
+    AudioSource _ambient;
 
     static Sfx Instance
     {
@@ -38,13 +39,28 @@ public class Sfx : MonoBehaviour
                 src.spatialBlend = 0f;   // 2D — camera is far above the field
                 _instance._pool.Add(src);
             }
+            _instance._ambient = go.AddComponent<AudioSource>();
+            _instance._ambient.playOnAwake = false;
+            _instance._ambient.loop        = true;
+            _instance._ambient.spatialBlend = 0f;
+            _instance._ambient.clip        = MakeAmbientHum();
             return _instance;
         }
     }
 
+    void ApplyAmbient(float volume01)
+    {
+        if (_ambient == null) return;
+        float v = Mathf.Clamp01(volume01) * masterVolume * 0.35f;
+        _ambient.volume = v;
+        if (v > 0.001f && !_ambient.isPlaying) _ambient.Play();
+        if (v <= 0.001f && _ambient.isPlaying) _ambient.Stop();
+    }
+
     // ── Public one-liners ─────────────────────────────────────────────────────
 
-    public static void Shot()      => Play("shot",      MakeShot,      0.35f, 0.12f);
+    public static void Shot()       => Play("shot",      MakeShot,      0.35f, 0.12f);
+    public static void TurretShot() => Play("turretShot", MakeTurretShot, 0.18f, 0.10f);
     public static void Impact()    => Play("impact",    MakeImpact,    0.30f, 0.15f);
     public static void EnemyDie()  => Play("enemyDie",  MakeEnemyDie,  0.45f, 0.10f);
     public static void Pickup()    => Play("pickup",    MakePickup,    0.50f, 0.05f);
@@ -54,6 +70,14 @@ public class Sfx : MonoBehaviour
     public static void Unlock()    => Play("unlock",    MakeUnlock,    0.55f, 0.00f);
     public static void HubHit()    => Play("hubHit",    MakeHubHit,    0.55f, 0.08f);
     public static void UIClick()   => Play("uiClick",   MakeUIClick,   0.40f, 0.04f);
+    public static void Warning()   => Play("warning",   MakeWarning,   0.50f, 0.00f);
+    public static void Scan()      => Play("scan",      MakeScan,      0.45f, 0.00f);
+    public static void DryFire()   => Play("dryFire",   MakeDryFire,   0.35f, 0.05f);
+    public static void Skitter()   => Play("skitter",   MakeSkitter,   0.25f, 0.18f);
+    public static void Alarm()     => Play("alarm",     MakeAlarm,     0.55f, 0.00f);
+
+    /// <summary>Starts/stops the looping ship-hum AmbientSource (volume 0–1).</summary>
+    public static void SetAmbient(float volume01) => Instance.ApplyAmbient(volume01);
 
     // ── Playback ─────────────────────────────────────────────────────────────
 
@@ -108,6 +132,13 @@ public class Sfx : MonoBehaviour
         float f = Mathf.Lerp(1400f, 500f, t / 0.09f);
         float square = Mathf.Sign(Mathf.Sin(2f * Mathf.PI * f * t));
         return (square * 0.7f + Noise() * 0.3f) * Env(t, 0.09f, 3f);
+    });
+
+    // Soft high tick for auto-turrets (quieter / shorter than player shot).
+    static AudioClip MakeTurretShot() => Bake("turretShot", 0.05f, t =>
+    {
+        float f = Mathf.Lerp(2200f, 900f, t / 0.05f);
+        return Mathf.Sin(2f * Mathf.PI * f * t) * Env(t, 0.05f, 4f) * 0.55f;
     });
 
     // Spark: filtered-ish noise snap.
@@ -168,4 +199,46 @@ public class Sfx : MonoBehaviour
     // UI tick.
     static AudioClip MakeUIClick() => Bake("uiClick", 0.035f, t =>
         Mathf.Sin(2f * Mathf.PI * 1800f * t) * Env(t, 0.035f, 2f) * 0.7f);
+
+    // Warning: short siren chirp used in the prep countdown.
+    static AudioClip MakeWarning() => Bake("warning", 0.35f, t =>
+    {
+        float f = Mathf.Lerp(420f, 780f, Mathf.PingPong(t * 6f, 1f));
+        return Mathf.Sin(2f * Mathf.PI * f * t) * Env(t, 0.35f, 1.2f) * 0.75f;
+    });
+
+    // Scan: rising sonar ping.
+    static AudioClip MakeScan() => Bake("scan", 0.45f, t =>
+    {
+        float f = Mathf.Lerp(380f, 1400f, t / 0.45f);
+        return Mathf.Sin(2f * Mathf.PI * f * t) * Env(t, 0.45f, 1.8f) * 0.7f;
+    });
+
+    // Dry fire: empty click.
+    static AudioClip MakeDryFire() => Bake("dryFire", 0.06f, t =>
+        Noise() * Env(t, 0.06f, 5f) * 0.55f);
+
+    // Distant alien skitter: filtered noise bursts.
+    static AudioClip MakeSkitter() => Bake("skitter", 0.18f, t =>
+    {
+        float burst = Mathf.Sin(2f * Mathf.PI * 28f * t);
+        return Noise() * Env(t, 0.18f, 2.5f) * Mathf.Abs(burst) * 0.7f;
+    });
+
+    // Alarm: harsher two-tone for final warning seconds.
+    static AudioClip MakeAlarm() => Bake("alarm", 0.5f, t =>
+    {
+        float f = t % 0.25f < 0.125f ? 880f : 660f;
+        return Mathf.Sin(2f * Mathf.PI * f * t) * Env(t, 0.5f, 1.1f) * 0.65f;
+    });
+
+    // Looping ship-hull hum (low detuned sines + soft noise bed).
+    static AudioClip MakeAmbientHum() => Bake("ambientHum", 2.0f, t =>
+    {
+        float a = Mathf.Sin(2f * Mathf.PI * 55f * t);
+        float b = Mathf.Sin(2f * Mathf.PI * 58.5f * t);
+        float c = Mathf.Sin(2f * Mathf.PI * 110f * t) * 0.25f;
+        float bed = Noise() * 0.04f;
+        return (a + b) * 0.22f + c + bed;
+    });
 }

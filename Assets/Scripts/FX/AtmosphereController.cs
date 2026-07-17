@@ -14,33 +14,44 @@ using UnityEngine;
 public class AtmosphereController : MonoBehaviour
 {
     [Header("Fog")]
-    public Color fogColor    = new Color(0.03f, 0.05f, 0.07f);
-    public float fogStart    = 22f;
-    public float fogEnd      = 72f;
+    // Tighter fog = Barotrauma/Dead Space corridor pressure (was too open/gray).
+    public Color fogColor    = new Color(0.035f, 0.05f, 0.07f);
+    public float fogStart    = 14f;
+    public float fogEnd      = 52f;
 
     [Header("Ambient")]
-    public Color ambientColor = new Color(0.10f, 0.12f, 0.16f);
+    public Color ambientColor = new Color(0.12f, 0.14f, 0.17f);
 
     [Header("Sun (directional light)")]
     public float sunIntensity = 0.35f;
-    public Color sunColor     = new Color(0.55f, 0.62f, 0.78f);
+    public Color sunColor     = new Color(0.5f, 0.58f, 0.72f);
 
     [Header("Player light")]
-    public Color playerLightColor = new Color(1f, 0.86f, 0.62f);
-    public float playerLightRange = 14f;
-    public float playerLightBase  = 2.1f;
-    public float flickerAmount    = 0.22f;
-    public float flickerSpeed     = 11f;
+    public Color playerLightColor = new Color(1f, 0.82f, 0.55f);
+    public float playerLightRange = 12f;
+    public float playerLightBase  = 2.6f;
+    public float flickerAmount    = 0.28f;
+    public float flickerSpeed     = 13f;
 
     [Header("Hub light")]
-    public Color hubLightColor = new Color(0.45f, 0.62f, 0.95f);
-    public float hubLightRange = 18f;
-    public float hubLightBase  = 1.6f;
-    public Color hubAlarmColor = new Color(0.95f, 0.25f, 0.2f);
+    public Color hubLightColor = new Color(0.4f, 0.7f, 1f);
+    public float hubLightRange = 16f;
+    public float hubLightBase  = 2.2f;
+    public Color hubAlarmColor = new Color(1f, 0.2f, 0.15f);
+
+    static AtmosphereController _instance;
+    static float _alarmLevel;
 
     Light _playerLight;
     Light _hubLight;
     float _flickerSeed;
+
+    /// <summary>0 = calm prep, 1 = imminent breach. Driven by ThreatTelegraph.</summary>
+    public static void SetAlarmLevel(float level01) => _alarmLevel = Mathf.Clamp01(level01);
+
+    void Awake() => _instance = this;
+
+    void OnDestroy() { if (_instance == this) _instance = null; }
 
     void Start()
     {
@@ -49,6 +60,7 @@ public class AtmosphereController : MonoBehaviour
         SetupPlayerLight();
         SetupHubLight();
         _flickerSeed = Random.value * 100f;
+        Sfx.SetAmbient(0.45f);
     }
 
     void ApplyGlobal()
@@ -60,14 +72,28 @@ public class AtmosphereController : MonoBehaviour
         RenderSettings.fogEndDistance   = fogEnd;
 
         RenderSettings.ambientMode  = UnityEngine.Rendering.AmbientMode.Flat;
-        RenderSettings.ambientLight = ambientColor;
+        // Force readable values (ignore stale serialized component fields).
+        RenderSettings.ambientLight = new Color(0.12f, 0.14f, 0.17f);
+        ambientColor = RenderSettings.ambientLight;
+        fogStart = 14f;
+        fogEnd = 52f;
+        sunIntensity = Mathf.Max(sunIntensity, 0.35f);
 
         var cam = Camera.main;
         if (cam != null)
         {
             cam.clearFlags      = CameraClearFlags.SolidColor;
             cam.backgroundColor = fogColor;
+            // Slightly tighter FOV sells corridor pressure vs open RTS void.
+            if (cam.orthographic) { /* leave */ }
+            else cam.fieldOfView = Mathf.Clamp(cam.fieldOfView, 40f, 52f);
+            if (cam.fieldOfView > 52f || cam.fieldOfView < 35f)
+                cam.fieldOfView = 48f;
         }
+
+        // Soft shadow distance so hull plates catch light nearby.
+        QualitySettings.shadowDistance = 55f;
+        QualitySettings.shadows = ShadowQuality.All;
     }
 
     void SetupSun()
@@ -117,23 +143,25 @@ public class AtmosphereController : MonoBehaviour
 
     void Update()
     {
+        float alarm = _alarmLevel;
+        float flickerBoost = Mathf.Lerp(1f, 2.4f, alarm);
+
         if (_playerLight != null)
         {
-            float n = Mathf.PerlinNoise(Time.time * flickerSpeed, _flickerSeed);
-            _playerLight.intensity = playerLightBase * (1f - flickerAmount * (1f - n));
+            float n = Mathf.PerlinNoise(Time.time * flickerSpeed * flickerBoost, _flickerSeed);
+            float baseFlicker = flickerAmount * (1f + alarm);
+            _playerLight.intensity = playerLightBase * (1f - baseFlicker * (1f - n));
+            // Cool the player light toward emergency white-blue as alarm rises.
+            _playerLight.color = Color.Lerp(playerLightColor, new Color(0.75f, 0.85f, 1f), alarm * 0.5f);
         }
 
         if (_hubLight != null)
         {
-            bool combat = WaveController.Instance != null &&
-                          WaveController.Instance.CurrentPhase != WaveController.Phase.Prep &&
-                          WaveController.Instance.EnemiesAlive > 0;
-
-            if (combat)
+            if (alarm > 0.05f)
             {
-                float pulse = 0.5f + 0.5f * Mathf.Sin(Time.time * 6f);
-                _hubLight.color     = Color.Lerp(hubLightColor, hubAlarmColor, pulse);
-                _hubLight.intensity = hubLightBase * (1f + 0.4f * pulse);
+                float pulse = 0.5f + 0.5f * Mathf.Sin(Time.time * Mathf.Lerp(3f, 9f, alarm));
+                _hubLight.color     = Color.Lerp(hubLightColor, hubAlarmColor, alarm * pulse);
+                _hubLight.intensity = hubLightBase * (1f + 0.7f * alarm * pulse);
             }
             else
             {
@@ -141,5 +169,8 @@ public class AtmosphereController : MonoBehaviour
                 _hubLight.intensity = hubLightBase;
             }
         }
+
+        // Fog pulls in slightly during alarm so the edges feel closer.
+        RenderSettings.fogEndDistance = Mathf.Lerp(fogEnd, fogEnd * 0.72f, alarm);
     }
 }
