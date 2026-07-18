@@ -15,7 +15,6 @@ public class ThreatTelegraph : MonoBehaviour
 
     float _nextBeep;
     float _nextSkitter;
-    bool  _hornPlayed;
     WaveController.Phase _lastPhase;
 
     void Update()
@@ -26,7 +25,6 @@ public class ThreatTelegraph : MonoBehaviour
         // Reset when a new prep starts.
         if (wc.CurrentPhase == WaveController.Phase.Prep && _lastPhase != WaveController.Phase.Prep)
         {
-            _hornPlayed = false;
             _nextBeep = 0f;
             _nextSkitter = 0f;
         }

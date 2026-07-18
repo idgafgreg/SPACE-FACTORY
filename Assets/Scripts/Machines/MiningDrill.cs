@@ -103,7 +103,7 @@ public class MiningDrill : MachineBase
         }
         else
         {
-            ResourceInventory.Instance.Add(outputResource, whole);
+            ResourceInventory.Instance?.Add(outputResource, whole);
         }
         SpawnIcon();
 

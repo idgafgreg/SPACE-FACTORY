@@ -1,7 +1,7 @@
 using UnityEngine;
 
 /// <summary>
-/// Enemy death juice: a short gore-ish burst of dark spheres + point light,
+/// Enemy death juice: a short burst of faceted debris + point light,
 /// plus a lingering deck stain that fades. Spawned from <see cref="EnemyBase.OnDied"/>.
 /// </summary>
 public static class DeathBurst
@@ -13,14 +13,9 @@ public static class DeathBurst
 
         for (int i = 0; i < bits; i++)
         {
-            var go = GameObject.CreatePrimitive(PrimitiveType.Sphere);
-            go.name = "DeathBit";
-            Object.Destroy(go.GetComponent<Collider>());
-            go.transform.position = pos + Vector3.up * 0.5f;
-            go.transform.localScale = Vector3.one * Random.Range(0.12f, 0.28f);
-
             var mat = new Material(Shader.Find("Standard")) { color = tint * 0.55f };
-            go.GetComponent<Renderer>().sharedMaterial = mat;
+            var go = RuntimeVisualPrimitives.CreateShard(
+                "DeathBit", pos + Vector3.up * 0.5f, Random.Range(0.12f, 0.28f), mat);
 
             var bit = go.AddComponent<DeathBit>();
             Vector3 vel = Random.onUnitSphere;
@@ -28,17 +23,13 @@ public static class DeathBurst
             bit.Init(vel.normalized * Random.Range(3f, 7f), Random.Range(0.35f, 0.7f));
         }
 
-        // Deck stain — fades alpha then dies (keep flat cylinder proportions).
-        var stain = GameObject.CreatePrimitive(PrimitiveType.Cylinder);
-        stain.name = "DeathStain";
-        Object.Destroy(stain.GetComponent<Collider>());
-        stain.transform.position = new Vector3(pos.x, 0.02f, pos.z);
-        stain.transform.localScale = new Vector3(1.2f, 0.02f, 1.2f);
-        var sMat = new Material(Shader.Find("Standard"))
+        // Flat deck decal fades after the burst.
+        var sMat = new Material(Shader.Find("Sprites/Default"))
         {
             color = new Color(tint.r * 0.25f, tint.g * 0.08f, tint.b * 0.08f, 0.85f)
         };
-        stain.GetComponent<Renderer>().sharedMaterial = sMat;
+        var stain = RuntimeVisualPrimitives.CreateDeckDecal(
+            "DeathStain", new Vector3(pos.x, 0.02f, pos.z), 1.2f, sMat);
         var fade = stain.AddComponent<StainFade>();
         fade.Init(4.5f, sMat);
     }
@@ -66,7 +57,7 @@ public class StainFade : MonoBehaviour
             var c = _start; c.a = _start.a * k;
             _mat.color = c;
             float s = Mathf.Lerp(0.4f, 1.2f, k);
-            transform.localScale = new Vector3(s, 0.02f, s);
+            transform.localScale = new Vector3(s, s, 1f);
         }
         if (_age >= _life) Destroy(gameObject);
     }

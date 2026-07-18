@@ -8,9 +8,11 @@ public class ArtPlaceholderMarker : MonoBehaviour
 
     [HideInInspector] public bool sourcePoseCaptured;
     [HideInInspector] public Vector3 sourceLocalPosition;
+    [HideInInspector] public Quaternion sourceLocalRotation = Quaternion.identity;
     [HideInInspector] public Vector3 sourceLocalScale = Vector3.one;
 
     [HideInInspector] public bool fitted;
     [HideInInspector] public Vector3 stableLocalPosition;
+    [HideInInspector] public Quaternion stableLocalRotation = Quaternion.identity;
     [HideInInspector] public Vector3 stableLocalScale = Vector3.one;
 }

@@ -16,6 +16,11 @@ public class CameraFollow : MonoBehaviour
 {
     [Header("Target")]
     public Transform target;
+    [Tooltip("Optional nearby point of interest kept partially in frame.")]
+    public Transform framingInterest;
+    [Range(0f, 0.5f)] public float framingInterestWeight = 0.28f;
+    public float framingInterestFadeStart = 12f;
+    public float framingInterestFadeEnd = 25f;
 
     [Tooltip("Point above the target the camera looks at (y offset).")]
     public float lookAtHeightOffset = 1.5f;
@@ -74,8 +79,19 @@ public class CameraFollow : MonoBehaviour
         Quaternion rot    = Quaternion.Euler(_pitch, _yaw, 0f);
         Vector3    offset = rot * Vector3.back * _zoomDistance;
 
-        transform.position = target.position + offset;
-        transform.LookAt(target.position + Vector3.up * lookAtHeightOffset);
+        Vector3 focus = target.position;
+        if (framingInterest != null)
+        {
+            Vector3 towardInterest = framingInterest.position - target.position;
+            towardInterest.y = 0f;
+            float distance = towardInterest.magnitude;
+            float fade = 1f - Mathf.InverseLerp(
+                framingInterestFadeStart, framingInterestFadeEnd, distance);
+            focus += towardInterest * (framingInterestWeight * fade);
+        }
+
+        transform.position = focus + offset;
+        transform.LookAt(focus + Vector3.up * lookAtHeightOffset);
 
         // Additive screen shake (trauma-based). Applied after LookAt so only the
         // position jitters, not the aim — see CameraShake.
@@ -146,5 +162,21 @@ public class CameraFollow : MonoBehaviour
         _targetPitch = Mathf.Clamp(
             Mathf.Asin(Mathf.Clamp(dir.y, -1f, 1f)) * Mathf.Rad2Deg, minPitch, maxPitch);
         _targetZoomDistance = Mathf.Clamp(initialOffset.magnitude, minZoomDistance, maxZoomDistance);
+    }
+
+    /// <summary>
+    /// Applies the default framing immediately. Used once at scene startup so
+    /// the entire world does not appear to grow while the camera eases from
+    /// stale serialized settings.
+    /// </summary>
+    public void SnapFraming()
+    {
+        ResetFraming();
+        _yaw = _targetYaw;
+        _pitch = _targetPitch;
+        _zoomDistance = _targetZoomDistance;
+        _yawVelocity = 0f;
+        _pitchVelocity = 0f;
+        _zoomVelocity = 0f;
     }
 }

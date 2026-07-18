@@ -8,7 +8,7 @@ using UnityEngine;
 /// </summary>
 public class ShipInteriorUpgrade : MonoBehaviour
 {
-    const int UpgradeVersion = 13;
+    const int UpgradeVersion = 45;
 
     static Material _deckMat;
     static Material _hullMat;
@@ -44,19 +44,46 @@ public class ShipInteriorUpgrade : MonoBehaviour
         var marker = root.AddComponent<InteriorUpgradeVersion>();
         marker.version = UpgradeVersion;
 
+        // Clean release pass: materials, lights, lane-facing trim, sparse beams, hub ring.
+        // Avoid overlapping wall modules / kickplates that caused warping clutter.
         ReskinMapSurfaces();
+        EnsureMapWallsVisible();
+        BuildVoidBackdrop(root.transform);
         BuildHazardRing(root.transform);
+        BuildLaneDeckStripes(root.transform);
         BuildCorridorLights(root.transform);
-        SkinWallsWithModules(root.transform);
+        BuildWallBaseTrim(root.transform);
+        BuildWallAccentRails(root.transform);
+        BuildHangingBeams(root.transform);
+        BuildHubDeckPad(root.transform);
+        BuildHubFloodLight(root.transform);
+    }
+
+    static void EnsureMapWallsVisible()
+    {
+        foreach (var r in FindObjectsByType<Renderer>(FindObjectsInactive.Exclude))
+        {
+            if (r == null) continue;
+            if (r.GetComponentInParent<ArtPlaceholderMarker>() != null) continue;
+            if (r.GetComponentInParent<Buildable>() != null) continue;
+            if (r.GetComponentInParent<MachineBase>() != null) continue;
+            if (r.GetComponentInParent<DefenseBase>() != null) continue;
+            if (r.GetComponentInParent<EnemyBase>() != null) continue;
+            if (r.GetComponentInParent<PlayerController>() != null) continue;
+            string n = r.gameObject.name.ToLowerInvariant();
+            if (n.Contains("wall") || n.Contains("hull") || n.Contains("bulkhead")
+                || n.Contains("corr_") || n.StartsWith("corr") || n.Contains("ring_"))
+                r.enabled = true;
+        }
     }
 
     void EnsureMaterials()
     {
         if (_texturesReady && _deckMat != null) return;
 
-        // Deck warmer/lighter vs cooler darker hull — Factorio value separation.
-        var deckTex = MakePlateTexture(128, new Color(0.22f, 0.24f, 0.27f), new Color(0.32f, 0.34f, 0.38f), 32);
-        var hullTex = MakePlateTexture(128, new Color(0.11f, 0.13f, 0.16f), new Color(0.06f, 0.07f, 0.09f), 24);
+        // Stronger deck/wall value split for iso readability (Factorio cue).
+        var deckTex = MakePlateTexture(128, new Color(0.34f, 0.36f, 0.40f), new Color(0.48f, 0.50f, 0.54f), 24);
+        var hullTex = MakePlateTexture(128, new Color(0.10f, 0.12f, 0.16f), new Color(0.05f, 0.06f, 0.08f), 18);
         var hazardTex = MakeHazardTexture(64);
 
         _deckMat = new Material(Shader.Find("Standard")) { name = "RuntimeDeck" };
@@ -72,11 +99,14 @@ public class ShipInteriorUpgrade : MonoBehaviour
         _hullMat.color = Color.white;
         _hullMat.SetFloat("_Metallic", 0.75f);
         _hullMat.SetFloat("_Glossiness", 0.42f);
+        _hullMat.EnableKeyword("_EMISSION");
+        _hullMat.SetColor("_EmissionColor", new Color(0.025f, 0.035f, 0.05f));
 
         _trimMat = new Material(Shader.Find("Standard")) { name = "RuntimeTrim" };
-        _trimMat.color = new Color(0.25f, 0.4f, 0.5f);
+        _trimMat.color = new Color(0.32f, 0.48f, 0.58f);
         _trimMat.EnableKeyword("_EMISSION");
-        _trimMat.SetColor("_EmissionColor", new Color(0.2f, 0.55f, 0.75f) * 0.55f);
+        // Hotter emission so lane trim/fixtures read under iso + fog.
+        _trimMat.SetColor("_EmissionColor", new Color(0.25f, 0.7f, 0.95f) * 1.15f);
         _trimMat.SetFloat("_Metallic", 0.4f);
         _trimMat.SetFloat("_Glossiness", 0.6f);
 
@@ -85,7 +115,7 @@ public class ShipInteriorUpgrade : MonoBehaviour
         _hazardMat.mainTextureScale = new Vector2(4f, 1f);
         _hazardMat.color = Color.white;
         _hazardMat.EnableKeyword("_EMISSION");
-        _hazardMat.SetColor("_EmissionColor", new Color(0.6f, 0.35f, 0.05f) * 0.35f);
+        _hazardMat.SetColor("_EmissionColor", new Color(0.75f, 0.42f, 0.08f) * 0.55f);
 
         _pipeMat = new Material(Shader.Find("Standard")) { name = "RuntimePipe" };
         _pipeMat.color = new Color(0.42f, 0.38f, 0.34f);
@@ -122,6 +152,7 @@ public class ShipInteriorUpgrade : MonoBehaviour
             bool isFloor = path.Contains("floor") || path.Contains("deck") || path.Contains("ground")
                            || (r is MeshRenderer && r.bounds.size.y < 0.4f && r.bounds.size.x > 8f);
             bool isWall = path.Contains("wall") || path.Contains("hull") || path.Contains("bulkhead")
+                          || path.Contains("corr") || path.Contains("ring_") || path.Contains("ring ")
                           || (layer == LayerMask.NameToLayer("Buildable") && r.bounds.size.y > 1.2f
                               && go.GetComponent<Buildable>() == null
                               && go.GetComponentInParent<DefenseBase>() == null
@@ -186,8 +217,8 @@ public class ShipInteriorUpgrade : MonoBehaviour
         var hub = SectorLayout.Instance != null ? SectorLayout.Instance.commandHubTransform : null;
         if (hub == null) return;
 
-        const int segments = 16;
-        float radius = 3.8f;
+        const int segments = 12;
+        float radius = 2.55f;
         for (int i = 0; i < segments; i++)
         {
             float a0 = (i / (float)segments) * Mathf.PI * 2f;
@@ -202,9 +233,49 @@ public class ShipInteriorUpgrade : MonoBehaviour
             go.transform.SetParent(parent, false);
             Destroy(go.GetComponent<Collider>());
             go.transform.position = mid;
-            go.transform.localScale = new Vector3(0.3f, 0.025f, len * 0.92f);
+            go.transform.localScale = new Vector3(0.14f, 0.02f, len * 0.78f);
             go.transform.rotation = Quaternion.LookRotation(p1 - p0, Vector3.up);
             go.GetComponent<Renderer>().sharedMaterial = _hazardMat;
+        }
+    }
+
+    void BuildLaneDeckStripes(Transform parent)
+    {
+        // Factorio cue: slightly darker walkway strip so lanes read from iso.
+        var layout = SectorLayout.Instance;
+        if (layout == null || layout.lanes == null) return;
+
+        var stripeMat = new Material(_deckMat);
+        stripeMat.color = new Color(0.72f, 0.76f, 0.82f);
+        stripeMat.SetFloat("_Metallic", 0.65f);
+        stripeMat.EnableKeyword("_EMISSION");
+        stripeMat.SetColor("_EmissionColor", new Color(0.08f, 0.14f, 0.2f));
+
+        foreach (var lane in layout.lanes)
+        {
+            if (lane == null || lane.PointCount < 2) continue;
+            for (int i = 0; i < lane.PointCount - 1; i++)
+            {
+                Vector3 a = lane.GetPoint(i);
+                Vector3 b = lane.GetPoint(i + 1);
+                Vector3 dir = b - a;
+                dir.y = 0f;
+                float len = dir.magnitude;
+                if (len < 0.4f) continue;
+                dir /= len;
+
+                Vector3 mid = (a + b) * 0.5f;
+                mid.y = RuntimeVisualPrimitives.FindDeckY(mid, a.y) + 0.025f;
+
+                var stripe = GameObject.CreatePrimitive(PrimitiveType.Cube);
+                stripe.name = "LaneDeckStripe";
+                stripe.transform.SetParent(parent, false);
+                Destroy(stripe.GetComponent<Collider>());
+                stripe.transform.position = mid;
+                stripe.transform.localScale = new Vector3(1.55f, 0.02f, Mathf.Min(len * 0.95f, 6f));
+                stripe.transform.rotation = Quaternion.LookRotation(dir, Vector3.up);
+                stripe.GetComponent<Renderer>().sharedMaterial = stripeMat;
+            }
         }
     }
 
@@ -217,25 +288,146 @@ public class ShipInteriorUpgrade : MonoBehaviour
         foreach (var lane in layout.lanes)
         {
             if (lane == null || lane.PointCount < 2) continue;
-            for (int i = 1; i < lane.PointCount; i += 4)
+            for (int i = 0; i < lane.PointCount; i += 2)
             {
                 Vector3 p = lane.GetPoint(i);
-                // Invisible light source — emissive cubes read as floating cyan bars in iso.
-                var fixture = new GameObject("CeilingLight");
+                // Slightly lower so iso camera catches the glowing plate.
+                Vector3 pos = p + Vector3.up * 2.35f;
+                var fixture = GameObject.CreatePrimitive(PrimitiveType.Cube);
+                fixture.name = "CeilingLight";
                 fixture.transform.SetParent(parent, false);
-                fixture.transform.position = p + Vector3.up * 2.9f;
+                Destroy(fixture.GetComponent<Collider>());
+                fixture.transform.position = pos;
+                fixture.transform.localScale = new Vector3(0.75f, 0.08f, 0.75f);
+                fixture.GetComponent<Renderer>().sharedMaterial = _trimMat;
 
                 var light = fixture.AddComponent<Light>();
                 light.type = LightType.Point;
-                light.range = 8f;
-                light.intensity = 1.05f;
+                light.range = 13f;
+                light.intensity = 2.35f;
                 light.shadows = LightShadows.None;
                 light.color = (lit % 2 == 0)
-                    ? new Color(0.55f, 0.8f, 1f)
-                    : new Color(1f, 0.55f, 0.25f);
+                    ? new Color(0.6f, 0.82f, 1f)
+                    : new Color(1f, 0.62f, 0.35f);
                 lit++;
             }
         }
+    }
+
+    void BuildWallBaseTrim(Transform parent)
+    {
+        // Lane-side skirting facing the walkway — visible from iso, not buried in walls.
+        var layout = SectorLayout.Instance;
+        if (layout == null || layout.lanes == null) return;
+
+        foreach (var lane in layout.lanes)
+        {
+            if (lane == null || lane.PointCount < 2) continue;
+            for (int i = 0; i < lane.PointCount - 1; i++)
+            {
+                Vector3 a = lane.GetPoint(i);
+                Vector3 b = lane.GetPoint(i + 1);
+                Vector3 dir = b - a;
+                dir.y = 0f;
+                float len = dir.magnitude;
+                if (len < 0.5f) continue;
+                dir /= len;
+                Vector3 side = Vector3.Cross(Vector3.up, dir);
+
+                for (int s = -1; s <= 1; s += 2)
+                {
+                    Vector3 mid = (a + b) * 0.5f + side * (s * 2.25f);
+                    mid.y = RuntimeVisualPrimitives.FindDeckY(mid, a.y) + 0.12f;
+
+                    var trim = GameObject.CreatePrimitive(PrimitiveType.Cube);
+                    trim.name = "WallBaseTrim";
+                    trim.transform.SetParent(parent, false);
+                    Destroy(trim.GetComponent<Collider>());
+                    trim.transform.position = mid;
+                    trim.transform.localScale = new Vector3(0.16f, 0.22f, Mathf.Min(len * 0.92f, 5.5f));
+                    trim.transform.rotation = Quaternion.LookRotation(dir, Vector3.up);
+                    trim.GetComponent<Renderer>().sharedMaterial = _trimMat;
+                }
+            }
+        }
+    }
+
+    void BuildWallAccentRails(Transform parent)
+    {
+        // Mid-height emissive rail — reads as corridor structure from iso.
+        var layout = SectorLayout.Instance;
+        if (layout == null || layout.lanes == null) return;
+
+        foreach (var lane in layout.lanes)
+        {
+            if (lane == null || lane.PointCount < 2) continue;
+            for (int i = 0; i < lane.PointCount - 1; i += 2)
+            {
+                Vector3 a = lane.GetPoint(i);
+                Vector3 b = lane.GetPoint(i + 1);
+                Vector3 dir = b - a;
+                dir.y = 0f;
+                float len = dir.magnitude;
+                if (len < 0.5f) continue;
+                dir /= len;
+                Vector3 side = Vector3.Cross(Vector3.up, dir);
+
+                for (int s = -1; s <= 1; s += 2)
+                {
+                    Vector3 mid = (a + b) * 0.5f + side * (s * 2.3f);
+                    mid.y = RuntimeVisualPrimitives.FindDeckY(mid, a.y) + 1.15f;
+
+                    var rail = GameObject.CreatePrimitive(PrimitiveType.Cube);
+                    rail.name = "WallAccentRail";
+                    rail.transform.SetParent(parent, false);
+                    Destroy(rail.GetComponent<Collider>());
+                    rail.transform.position = mid;
+                    rail.transform.localScale = new Vector3(0.08f, 0.1f, Mathf.Min(len * 0.88f, 5f));
+                    rail.transform.rotation = Quaternion.LookRotation(dir, Vector3.up);
+                    rail.GetComponent<Renderer>().sharedMaterial = _trimMat;
+                }
+            }
+        }
+    }
+
+    void BuildHubDeckPad(Transform parent)
+    {
+        var hub = SectorLayout.Instance != null ? SectorLayout.Instance.commandHubTransform : null;
+        if (hub == null) return;
+
+        var pad = GameObject.CreatePrimitive(PrimitiveType.Cylinder);
+        pad.name = "HubDeckPad";
+        pad.transform.SetParent(parent, false);
+        Destroy(pad.GetComponent<Collider>());
+        pad.transform.position = hub.position + Vector3.up * 0.02f;
+        pad.transform.localScale = new Vector3(5.2f, 0.03f, 5.2f);
+        var mat = new Material(_deckMat);
+        mat.color = new Color(0.85f, 0.9f, 1f);
+        mat.SetFloat("_Metallic", 0.7f);
+        mat.EnableKeyword("_EMISSION");
+        mat.SetColor("_EmissionColor", new Color(0.2f, 0.45f, 0.7f) * 0.45f);
+        pad.GetComponent<Renderer>().sharedMaterial = mat;
+    }
+
+    void BuildHubFloodLight(Transform parent)
+    {
+        var hub = SectorLayout.Instance != null ? SectorLayout.Instance.commandHubTransform : null;
+        if (hub == null) return;
+
+        var fixture = GameObject.CreatePrimitive(PrimitiveType.Cube);
+        fixture.name = "HubFloodLight";
+        fixture.transform.SetParent(parent, false);
+        Destroy(fixture.GetComponent<Collider>());
+        fixture.transform.position = hub.position + Vector3.up * 3.1f;
+        fixture.transform.localScale = new Vector3(1.1f, 0.1f, 1.1f);
+        fixture.GetComponent<Renderer>().sharedMaterial = _trimMat;
+
+        var light = fixture.AddComponent<Light>();
+        light.type = LightType.Point;
+        light.range = 18f;
+        light.intensity = 3.2f;
+        light.color = new Color(0.55f, 0.78f, 1f);
+        light.shadows = LightShadows.None;
     }
 
     void BuildHangingBeams(Transform parent)
@@ -261,13 +453,13 @@ public class ShipInteriorUpgrade : MonoBehaviour
                 if (dir.sqrMagnitude < 0.01f) continue;
                 dir.Normalize();
 
-                // Longitudinal beam only (cross-bars read as floating cyan junk near the hub).
+                // Longitudinal beam only — dark silhouette, not cyan junk.
                 var beam = GameObject.CreatePrimitive(PrimitiveType.Cube);
                 beam.name = "HangBeam";
                 beam.transform.SetParent(parent, false);
                 Destroy(beam.GetComponent<Collider>());
-                beam.transform.position = mid;
-                beam.transform.localScale = new Vector3(0.28f, 0.14f, Mathf.Min(len * 0.85f, 5f));
+                beam.transform.position = mid + Vector3.down * 0.35f;
+                beam.transform.localScale = new Vector3(0.22f, 0.12f, Mathf.Min(len * 0.8f, 4.5f));
                 beam.transform.rotation = Quaternion.LookRotation(dir, Vector3.up);
                 beam.GetComponent<Renderer>().sharedMaterial = _ceilMat;
             }
@@ -377,30 +569,67 @@ public class ShipInteriorUpgrade : MonoBehaviour
         foreach (var lane in layout.lanes)
         {
             if (lane == null || lane.PointCount < 2) continue;
-            for (int i = 1; i < lane.PointCount - 1; i += 3)
+            int i = Mathf.Clamp(lane.PointCount / 2, 1, lane.PointCount - 1);
+            Vector3 p = lane.GetPoint(i);
+            Vector3 ahead = lane.GetPoint(Mathf.Min(i + 1, lane.PointCount - 1)) - p;
+            ahead.y = 0f;
+            Vector3 side = Vector3.Cross(Vector3.up, ahead.normalized);
+            if (side.sqrMagnitude < 0.01f) side = Vector3.right;
+            side.Normalize();
+
+            int s = (laneIndex & 1) == 0 ? 1 : -1;
+            Vector3 pos = p + side * (s * 3.02f) + Vector3.up * 0.04f;
+            Quaternion rot = Quaternion.LookRotation(-side * s, Vector3.up);
+            float floorY = RuntimeVisualPrimitives.FindDeckY(pos, p.y);
+            pos.y = floorY;
+
+            var go = Instantiate(
+                wallModel,
+                pos,
+                rot * wallModel.transform.rotation,
+                parent);
+            go.name = "WallDetail";
+            go.transform.localScale = wallModel.transform.localScale;
+            foreach (var col in go.GetComponentsInChildren<Collider>())
+                Destroy(col);
+            FitWallDetail(go, pos);
+
+            foreach (var renderer in go.GetComponentsInChildren<Renderer>())
             {
-                Vector3 p = lane.GetPoint(i);
-                Vector3 ahead = lane.GetPoint(Mathf.Min(i + 1, lane.PointCount - 1)) - p;
-                ahead.y = 0f;
-                Vector3 side = Vector3.Cross(Vector3.up, ahead.normalized);
-                if (side.sqrMagnitude < 0.01f) side = Vector3.right;
-                side.Normalize();
-
-                // One alternating service panel per interval. The previous pass
-                // stamped both sides at every waypoint and layered a corridor
-                // prefab on top, producing overlaps and wall seams.
-                int s = ((laneIndex + i / 3) & 1) == 0 ? 1 : -1;
-                Vector3 pos = p + side * (s * 3.02f) + Vector3.up * 0.04f;
-                Quaternion rot = Quaternion.LookRotation(-side * s, Vector3.up);
-
-                var go = Instantiate(wallModel, pos, rot, parent);
-                go.name = "WallDetail";
-                go.transform.localScale = Vector3.one;
-                foreach (var col in go.GetComponentsInChildren<Collider>())
-                    Destroy(col);
+                if (renderer.sharedMaterial == null
+                    || !renderer.sharedMaterial.HasProperty("_Color")) continue;
+                var block = new MaterialPropertyBlock();
+                renderer.GetPropertyBlock(block);
+                block.SetColor("_Color", Color.Lerp(
+                    renderer.sharedMaterial.color,
+                    new Color(0.42f, 0.52f, 0.62f), 0.18f));
+                renderer.SetPropertyBlock(block);
             }
             laneIndex++;
         }
+    }
+
+    static void FitWallDetail(GameObject go, Vector3 anchor)
+    {
+        var renderers = go.GetComponentsInChildren<Renderer>();
+        if (renderers.Length == 0) return;
+
+        Bounds bounds = renderers[0].bounds;
+        for (int i = 1; i < renderers.Length; i++) bounds.Encapsulate(renderers[i].bounds);
+        if (bounds.size.y < 0.0001f) return;
+
+        // Normalize the authored wall while preserving its real proportions.
+        float heightScale = 2.2f / bounds.size.y;
+        go.transform.localScale = Vector3.Scale(
+            go.transform.localScale * heightScale,
+            new Vector3(1f, 0.32f, 1f));
+
+        bounds = renderers[0].bounds;
+        for (int i = 1; i < renderers.Length; i++) bounds.Encapsulate(renderers[i].bounds);
+        go.transform.position += new Vector3(
+            anchor.x - bounds.center.x,
+            anchor.y - bounds.min.y,
+            anchor.z - bounds.center.z);
     }
 
     void FallbackWallTrim(Transform parent)

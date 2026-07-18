@@ -51,8 +51,12 @@ public class ConveyorBelt : MonoBehaviour, IItemReceiver
     }
 
     readonly List<ConveyorItem> _items = new();
+    static GameObject _sharedIconTemplate;
     bool _linkedDownstream;
     float _relinkTimer;
+    bool _artLocked;
+    Vector3 _lastFitStart;
+    Vector3 _lastFitEnd;
 
     void Awake() => EnsureEndpoints();
 
@@ -164,6 +168,29 @@ public class ConveyorBelt : MonoBehaviour, IItemReceiver
                 y,
                 Mathf.Lerp(origin.z, p.z, 0.45f));
         }
+
+        MaybeRefitArt();
+    }
+
+    void MaybeRefitArt()
+    {
+        if (startPoint == null || endPoint == null) return;
+        var art = transform.Find("ArtPlaceholder");
+        if (art == null) return;
+
+        Vector3 s = startPoint.position;
+        Vector3 e = endPoint.position;
+        // Only refit when the span actually changed — periodic relink used to
+        // thrash belt (and visually nearby) scales every 1.5s.
+        if (_artLocked
+            && (s - _lastFitStart).sqrMagnitude < 0.0004f
+            && (e - _lastFitEnd).sqrMagnitude < 0.0004f)
+            return;
+
+        ArtPlaceholderFitter.Refit(art);
+        _lastFitStart = s;
+        _lastFitEnd = e;
+        _artLocked = true;
     }
 
     /// <summary>
@@ -184,11 +211,33 @@ public class ConveyorBelt : MonoBehaviour, IItemReceiver
         if (!startPoint || !endPoint) return false;
         if (_items.Count >= maxItems) return false;
 
+        float beltLength = Vector3.Distance(startPoint.position, endPoint.position);
+        float entrySpacing = Mathf.Min(0.25f, 0.32f / Mathf.Max(0.01f, beltLength));
+        if (_items.Count > 0 && _items[_items.Count - 1].t < entrySpacing)
+            return false;
+
         GameObject icon;
         Color tint = ResourceTint(resource);
-        if (itemIconPrefab != null)
+
+        if (itemIconPrefab == null)
+        {
+            if (_sharedIconTemplate == null)
+            {
+                foreach (var belt in FindObjectsByType<ConveyorBelt>(FindObjectsInactive.Exclude))
+                {
+                    if (belt == null || belt.itemIconPrefab == null) continue;
+                    _sharedIconTemplate = belt.itemIconPrefab;
+                    break;
+                }
+            }
+            itemIconPrefab = _sharedIconTemplate;
+        }
+
+        if (itemIconPrefab != null && !RuntimeVisualPrimitives.IsSpherePrefab(itemIconPrefab))
         {
             icon = Instantiate(itemIconPrefab, startPoint.position, Quaternion.identity);
+            icon.SetActive(true);
+            icon.name = "CargoIcon";
             var r = icon.GetComponentInChildren<Renderer>();
             if (r != null)
             {
@@ -198,13 +247,9 @@ public class ConveyorBelt : MonoBehaviour, IItemReceiver
         }
         else
         {
-            // Runtime fallback so player-built relays still show moving cargo.
-            icon = GameObject.CreatePrimitive(PrimitiveType.Sphere);
-            Destroy(icon.GetComponent<Collider>());
-            icon.transform.position = startPoint.position;
-            icon.transform.localScale = Vector3.one * 0.22f;
             var mat = new Material(Shader.Find("Standard")) { color = tint };
-            icon.GetComponent<Renderer>().sharedMaterial = mat;
+            icon = RuntimeVisualPrimitives.CreateShard(
+                "ResourceChip", startPoint.position, 0.16f, mat);
         }
 
         _items.Add(new ConveyorItem
@@ -247,12 +292,23 @@ public class ConveyorBelt : MonoBehaviour, IItemReceiver
         // Convert world-units/sec to t/sec
         float tPerSec = (speedTilesPerSecond * tileSize) / distWorld;
 
-        for (int i = _items.Count - 1; i >= 0; i--)
+        float minSpacingT = Mathf.Min(0.25f, 0.32f / distWorld);
+        int i = 0;
+        while (i < _items.Count)
         {
             var item = _items[i];
-            item.t += tPerSec * Time.deltaTime;
+            if (item.go == null)
+            {
+                _items.RemoveAt(i);
+                continue;
+            }
 
-            if (item.t >= 1f)
+            float nextT = item.t + tPerSec * Time.deltaTime;
+            if (i > 0)
+                nextT = Mathf.Min(nextT, _items[i - 1].t - minSpacingT);
+            item.t = Mathf.Max(0f, nextT);
+
+            if (i == 0 && item.t >= 1f)
             {
                 // Hold at the end while a full/busy receiver rejects — don't dump
                 // refined-path cargo into the raw stockpile and skip the factory.
@@ -260,16 +316,19 @@ public class ConveyorBelt : MonoBehaviour, IItemReceiver
                 {
                     item.t = 0.98f;
                     item.go.transform.position = endPoint.position;
+                    i++;
                     continue;
                 }
                 Destroy(item.go);
                 _items.RemoveAt(i);
+                continue;
             }
             else
             {
                 item.go.transform.position =
                     Vector3.Lerp(startPoint.position, endPoint.position, item.t);
             }
+            i++;
         }
     }
 

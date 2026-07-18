@@ -54,20 +54,35 @@ public static class SectorRuntimeBootstrap
         // They competed for the same screen/world space and made the sector
         // look like a debug sandbox. Keep only systems with a clear job.
         go.AddComponent<AtmosphereController>();
+        go.AddComponent<PostFXBootstrap>();
         go.AddComponent<ScreenFlash>();
         go.AddComponent<FactoryExpansion>();
         go.AddComponent<MachineWorkingFX>();
+        go.AddComponent<ConveyorFlowFX>();
         go.AddComponent<ShipInteriorUpgrade>();
+        go.AddComponent<PlaceholderPropDressing>();
         go.AddComponent<ArtPlaceholderFitter>();
         go.AddComponent<CameraFramingTune>();
         go.AddComponent<FactoryReadabilityPass>();
         go.AddComponent<RuntimeArtBackfill>();
-        go.AddComponent<ConveyorFlowFX>();
+        go.AddComponent<MachineIdentityTint>();
+        go.AddComponent<EnemyArtPulse>();
+        go.AddComponent<DefenseReadyGlow>();
         go.AddComponent<DemolishHighlight>();
         go.AddComponent<WorkshopBeacon>();
         go.AddComponent<WaveStartSting>();
+        go.AddComponent<VisualCleanupPass>();
+        go.AddComponent<AmbientDustMotes>();
 
-        // Scanner + vitals live on the player.
+        // Minimal gameplay HUD — enough to feel like a shippable loop, not a
+        // debug sandwich of 40 overlays.
+        go.AddComponent<PowerHud>();
+        go.AddComponent<HubHealthOnGui>();
+        go.AddComponent<WorldHealthBars>();
+        go.AddComponent<PrepCountdownHud>();
+        go.AddComponent<BuildGhostCostHud>();
+
+        // Player-local systems must live on the player so attach/fit can't miss.
         var player = Object.FindAnyObjectByType<PlayerController>();
         if (player != null)
         {

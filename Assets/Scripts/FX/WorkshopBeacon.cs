@@ -17,19 +17,20 @@ public class WorkshopBeacon : MonoBehaviour
         _light = go.GetComponent<Light>();
         if (_light == null) _light = go.AddComponent<Light>();
         _light.type = LightType.Point;
-        _light.range = 8f;
+        _light.range = 7f;
         _light.color = new Color(1f, 0.75f, 0.35f);
-        _light.intensity = 1.6f;
+        _light.intensity = 1.25f;
+        _light.shadows = LightShadows.None;
     }
 
     void Update()
     {
         if (_light != null)
-            _light.intensity = 1.3f + 0.5f * Mathf.Sin(Time.time * 2.2f);
+            _light.intensity = 1.1f + 0.25f * Mathf.Sin(Time.time * 1.8f);
 
         _tipAt -= Time.deltaTime;
         if (_tipAt > 0f) return;
-        _tipAt = 55f;
+        _tipAt = 90f;
 
         var wc = WaveController.Instance;
         if (wc == null || wc.CurrentPhase != WaveController.Phase.Prep) return;

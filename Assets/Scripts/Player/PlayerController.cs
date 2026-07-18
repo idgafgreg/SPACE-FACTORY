@@ -100,8 +100,18 @@ public class PlayerController : MonoBehaviour
         IsDead             = false;
         characterController.enabled = true;
 
-        foreach (var r in GetComponentsInChildren<Renderer>())
-            r.enabled = true;
+        // Only show ArtPlaceholder — re-enabling every renderer brings back the
+        // yellow capsule Visual/Torso primitives under the astronaut.
+        var art = transform.Find("ArtPlaceholder");
+        foreach (var r in GetComponentsInChildren<Renderer>(true))
+        {
+            if (r == null) continue;
+            bool underArt = art != null && (r.transform == art || r.transform.IsChildOf(art));
+            bool blob = r.name.Contains("BlobShadow");
+            r.enabled = underArt || blob;
+        }
+        var attach = GetComponent<PlayerArtAttach>();
+        if (attach != null) attach.Refresh();
 
         ScreenFlash.Flash(new Color(0.3f, 0.85f, 0.55f), 0.2f, 2f);
         CameraShake.Add(0.08f);

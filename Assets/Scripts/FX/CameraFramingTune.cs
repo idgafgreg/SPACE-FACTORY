@@ -6,16 +6,26 @@ using UnityEngine;
 /// </summary>
 public class CameraFramingTune : MonoBehaviour
 {
+    CameraFollow _camera;
+
     void Start()
     {
         var cam = FindAnyObjectByType<CameraFollow>();
         if (cam == null) return;
+        _camera = cam;
 
-        cam.initialOffset = new Vector3(0f, 13f, -10f);
-        cam.minZoomDistance = 6f;
-        cam.maxZoomDistance = 26f;
-        cam.minPitch = 28f;
-        cam.maxPitch = 65f;
-        cam.ResetFraming();
+        // Closer industrial composition — Factorio-like readability at the hub.
+        cam.initialOffset = new Vector3(0f, 12.2f, -8.2f);
+        cam.minZoomDistance = 7f;
+        cam.maxZoomDistance = 28f;
+        cam.minPitch = 34f;
+        cam.maxPitch = 66f;
+        cam.lookAtHeightOffset = 0.9f;
+        cam.framingInterest = null;
+        cam.framingInterestWeight = 0f;
+        var view = cam.GetComponent<Camera>();
+        if (view != null) view.fieldOfView = 44f;
+        cam.SnapFraming();
+        enabled = false;
     }
 }

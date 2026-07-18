@@ -15,22 +15,22 @@ public class AtmosphereController : MonoBehaviour
 {
     [Header("Fog")]
     // Tighter fog = Barotrauma/Dead Space corridor pressure (was too open/gray).
-    public Color fogColor    = new Color(0.035f, 0.05f, 0.07f);
-    public float fogStart    = 14f;
-    public float fogEnd      = 52f;
+    public Color fogColor    = new Color(0.05f, 0.07f, 0.09f);
+    public float fogStart    = 16f;
+    public float fogEnd      = 55f;
 
     [Header("Ambient")]
-    public Color ambientColor = new Color(0.12f, 0.14f, 0.17f);
+    public Color ambientColor = new Color(0.26f, 0.29f, 0.34f);
 
     [Header("Sun (directional light)")]
-    public float sunIntensity = 0.35f;
-    public Color sunColor     = new Color(0.5f, 0.58f, 0.72f);
+    public float sunIntensity = 0.82f;
+    public Color sunColor     = new Color(0.62f, 0.70f, 0.86f);
 
     [Header("Player light")]
-    public Color playerLightColor = new Color(1f, 0.82f, 0.55f);
-    public float playerLightRange = 12f;
-    public float playerLightBase  = 2.6f;
-    public float flickerAmount    = 0.28f;
+    public Color playerLightColor = new Color(1f, 0.84f, 0.58f);
+    public float playerLightRange = 13f;
+    public float playerLightBase  = 2.5f;
+    public float flickerAmount    = 0.06f;
     public float flickerSpeed     = 13f;
 
     [Header("Hub light")]
@@ -73,11 +73,8 @@ public class AtmosphereController : MonoBehaviour
 
         RenderSettings.ambientMode  = UnityEngine.Rendering.AmbientMode.Flat;
         // Force readable values (ignore stale serialized component fields).
-        RenderSettings.ambientLight = new Color(0.12f, 0.14f, 0.17f);
+        RenderSettings.ambientLight = ambientColor;
         ambientColor = RenderSettings.ambientLight;
-        fogStart = 14f;
-        fogEnd = 52f;
-        sunIntensity = Mathf.Max(sunIntensity, 0.35f);
 
         var cam = Camera.main;
         if (cam != null)
@@ -91,15 +88,15 @@ public class AtmosphereController : MonoBehaviour
                 cam.fieldOfView = 48f;
         }
 
-        // Soft shadow distance so hull plates catch light nearby.
-        QualitySettings.shadowDistance = 55f;
+        QualitySettings.shadowDistance = 60f;
         QualitySettings.shadows = ShadowQuality.All;
+        QualitySettings.antiAliasing = Mathf.Max(QualitySettings.antiAliasing, 2);
     }
 
     void SetupSun()
     {
         Light sun = null;
-        foreach (var l in FindObjectsByType<Light>(FindObjectsSortMode.None))
+        foreach (var l in FindObjectsByType<Light>(FindObjectsInactive.Exclude))
             if (l.type == LightType.Directional) { sun = l; break; }
 
         if (sun == null) return;
@@ -111,13 +108,16 @@ public class AtmosphereController : MonoBehaviour
     void SetupPlayerLight()
     {
         var player = PlayerController.Instance;
+        if (player == null) player = FindAnyObjectByType<PlayerController>();
         if (player == null) return;
 
-        var go = new GameObject("PlayerLight");
-        go.transform.SetParent(player.transform, false);
+        var existing = player.transform.Find("PlayerLight");
+        var go = existing != null ? existing.gameObject : new GameObject("PlayerLight");
+        if (existing == null) go.transform.SetParent(player.transform, false);
         go.transform.localPosition = new Vector3(0f, 3.5f, 0f);
 
-        _playerLight = go.AddComponent<Light>();
+        _playerLight = go.GetComponent<Light>();
+        if (_playerLight == null) _playerLight = go.AddComponent<Light>();
         _playerLight.type      = LightType.Point;
         _playerLight.color     = playerLightColor;
         _playerLight.range     = playerLightRange;
@@ -130,11 +130,13 @@ public class AtmosphereController : MonoBehaviour
         var hub    = layout != null ? layout.commandHubTransform : null;
         if (hub == null) return;
 
-        var go = new GameObject("HubLight");
-        go.transform.SetParent(hub, false);
+        var existing = hub.Find("HubLight");
+        var go = existing != null ? existing.gameObject : new GameObject("HubLight");
+        if (existing == null) go.transform.SetParent(hub, false);
         go.transform.localPosition = new Vector3(0f, 4f, 0f);
 
-        _hubLight = go.AddComponent<Light>();
+        _hubLight = go.GetComponent<Light>();
+        if (_hubLight == null) _hubLight = go.AddComponent<Light>();
         _hubLight.type      = LightType.Point;
         _hubLight.color     = hubLightColor;
         _hubLight.range     = hubLightRange;
@@ -143,6 +145,9 @@ public class AtmosphereController : MonoBehaviour
 
     void Update()
     {
+        if (_playerLight == null) SetupPlayerLight();
+        if (_hubLight == null) SetupHubLight();
+
         float alarm = _alarmLevel;
         float flickerBoost = Mathf.Lerp(1f, 2.4f, alarm);
 

@@ -60,7 +60,7 @@ public static class ShipMapRebuild
 
         DestroyNamed("Walls");
         DestroyNamed("Lanes");
-        foreach (var n in Object.FindObjectsByType<ResourceNode>(FindObjectsSortMode.None))
+        foreach (var n in Object.FindObjectsByType<ResourceNode>(FindObjectsInactive.Exclude))
             Undo.DestroyObjectImmediate(n.gameObject);
 
         var wallsRoot = new GameObject("Walls");
@@ -186,7 +186,7 @@ public static class ShipMapRebuild
         Physics.SyncTransforms();
         int fixedVeins = 0;
         var wallsT = wallsRoot.transform;
-        foreach (var n in Object.FindObjectsByType<ResourceNode>(FindObjectsSortMode.None))
+        foreach (var n in Object.FindObjectsByType<ResourceNode>(FindObjectsInactive.Exclude))
         {
             float need = Mathf.Max(1.4f, n.transform.localScale.x * 0.65f);
             if (OverlapsWall(n.transform.position, need, wallsT))
@@ -284,7 +284,7 @@ public static class ShipMapRebuild
         Vector3 drillPos = new Vector3(14f, 0.6f, 5f);
         Vector3 procPos  = new Vector3(8f, 0.5f, 5f);
 
-        foreach (var drill in Object.FindObjectsByType<MiningDrill>(FindObjectsSortMode.None))
+        foreach (var drill in Object.FindObjectsByType<MiningDrill>(FindObjectsInactive.Exclude))
         {
             if (!drill.name.Contains("Starter")) continue;
             Undo.RecordObject(drill.transform, "Move starter drill");
@@ -295,7 +295,7 @@ public static class ShipMapRebuild
             EditorUtility.SetDirty(drill);
         }
 
-        foreach (var proc in Object.FindObjectsByType<Processor>(FindObjectsSortMode.None))
+        foreach (var proc in Object.FindObjectsByType<Processor>(FindObjectsInactive.Exclude))
         {
             if (!proc.name.Contains("Starter")) continue;
             Undo.RecordObject(proc.transform, "Move starter processor");

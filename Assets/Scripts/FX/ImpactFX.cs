@@ -4,7 +4,7 @@ using UnityEngine;
 /// <summary>
 /// Runtime-built impact and muzzle flashes — no prefabs or scene edits needed
 /// (same self-contained approach as <see cref="Bullet"/>). Each burst is a
-/// short-lived emissive sphere plus a fading point light that the attached
+/// short-lived emissive shard plus a fading point light that the attached
 /// <see cref="TransientFx"/> animates and cleans up.
 /// </summary>
 public static class ImpactFX
@@ -21,13 +21,8 @@ public static class ImpactFX
 
     static void Spawn(Vector3 pos, Color color, float scale, float life, float lightIntensity)
     {
-        var go = GameObject.CreatePrimitive(PrimitiveType.Sphere);
-        go.name = "ImpactFX";
-        Object.Destroy(go.GetComponent<Collider>());
-
-        go.transform.position   = pos;
-        go.transform.localScale = Vector3.one * scale;
-        go.GetComponent<Renderer>().sharedMaterial = GetMaterial(color);
+        var go = RuntimeVisualPrimitives.CreateShard(
+            "ImpactFX", pos, scale, GetMaterial(color));
 
         var lightGo = new GameObject("FxLight");
         lightGo.transform.SetParent(go.transform, false);

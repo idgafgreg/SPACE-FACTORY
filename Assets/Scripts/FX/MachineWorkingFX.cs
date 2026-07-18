@@ -27,6 +27,10 @@ public class MachineWorkingFX : MonoBehaviour
 
     void Update()
     {
+        // Domain reload can preserve the component while clearing managed
+        // fields, so do not rely on Awake having initialized this.
+        if (_mpb == null) _mpb = new MaterialPropertyBlock();
+
         _scanTimer -= Time.deltaTime;
         if (_scanTimer <= 0f)
         {
@@ -44,6 +48,7 @@ public class MachineWorkingFX : MonoBehaviour
             float pulse = working ? 0.55f + 0.45f * Mathf.Sin(t * 6f + e.phase) : 0f;
             Color glow = Color.Lerp(e.baseColor, Color.white, pulse * 0.35f);
 
+            _mpb.Clear();
             e.renderer.GetPropertyBlock(_mpb);
             _mpb.SetColor(ColorId, glow);
             if (e.renderer.sharedMaterial != null && e.renderer.sharedMaterial.HasProperty(EmissionId))
@@ -59,12 +64,30 @@ public class MachineWorkingFX : MonoBehaviour
             ? SceneScanCache.Instance.Drills
             : FindObjectsByType<MiningDrill>(FindObjectsInactive.Exclude);
         foreach (var drill in drills)
-            if (drill != null) Add(drill.GetComponentInChildren<Renderer>(), drill, null);
+            if (drill != null) Add(PickArtRenderer(drill.transform), drill, null);
         var procs = SceneScanCache.Instance != null
             ? SceneScanCache.Instance.Processors
             : FindObjectsByType<Processor>(FindObjectsInactive.Exclude);
         foreach (var proc in procs)
-            if (proc != null) Add(proc.GetComponentInChildren<Renderer>(), null, proc);
+            if (proc != null) Add(PickArtRenderer(proc.transform), null, proc);
+    }
+
+    static Renderer PickArtRenderer(Transform host)
+    {
+        if (host == null) return null;
+        var art = host.Find("ArtPlaceholder");
+        if (art != null)
+        {
+            var r = art.GetComponentInChildren<Renderer>();
+            if (r != null) return r;
+        }
+        foreach (var r in host.GetComponentsInChildren<Renderer>())
+        {
+            if (r == null || !r.enabled) continue;
+            if (r.name.Contains("Plinth") || r.name.Contains("Blob")) continue;
+            return r;
+        }
+        return null;
     }
 
     void Add(Renderer r, MiningDrill drill, Processor proc)

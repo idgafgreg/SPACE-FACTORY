@@ -13,7 +13,7 @@ public class PlaceholderPropDressing : MonoBehaviour
         "Prop_Computer", "Prop_AccessPoint"
     };
 
-    const int PropDressVersion = 2;
+    const int PropDressVersion = 9;
     float _retryAt = 0.9f;
 
     void Start() => Dress();
@@ -46,23 +46,25 @@ public class PlaceholderPropDressing : MonoBehaviour
             ? SectorLayout.Instance.commandHubTransform.position
             : Vector3.zero;
 
-        // Hub clutter cluster
-        Spawn(PropNames[0], hub + new Vector3(3.2f, 0f, 2.4f), root.transform, 1.1f, 25f);
-        Spawn(PropNames[1], hub + new Vector3(-2.6f, 0f, 3.0f), root.transform, 1f, 80f);
-        Spawn(PropNames[1], hub + new Vector3(-3.1f, 0f, 2.4f), root.transform, 0.9f, 10f);
-        Spawn(PropNames[2], hub + new Vector3(4.0f, 0f, -1.8f), root.transform, 1f, 180f);
-        Spawn(PropNames[3], hub + new Vector3(-4.2f, 0f, -0.5f), root.transform, 0.85f, 90f);
-        Spawn(PropNames[4], hub + new Vector3(1.5f, 2.6f, 3.5f), root.transform, 1.2f, 0f);
-        Spawn(PropNames[5], hub + new Vector3(0f, 0.1f, -3.8f), root.transform, 0.7f, 45f);
+        // Sparse hub props — lived-in, not a junkyard.
+        Spawn(PropNames[0], hub + new Vector3(3.8f, 0f, 2.8f), root.transform, 0.9f, 25f);
+        Spawn(PropNames[1], hub + new Vector3(-3.8f, 0f, 2.5f), root.transform, 0.85f, 80f);
+        Spawn(PropNames[2], hub + new Vector3(-4.2f, 0f, -1.8f), root.transform, 0.9f, 180f);
+        Spawn(PropNames[6], hub + new Vector3(2.6f, 0f, -3.4f), root.transform, 0.95f, 210f);
 
-        // Scatter along lanes
+        // Three props per lane — lived-in corridors without junk piles.
         var layout = SectorLayout.Instance;
         if (layout == null || layout.lanes == null) return;
         int n = 0;
         foreach (var lane in layout.lanes)
         {
             if (lane == null || lane.PointCount < 2) continue;
-            for (int i = 1; i < lane.PointCount - 1; i += 2)
+            int[] idxs = {
+                Mathf.Clamp(lane.PointCount / 5, 1, lane.PointCount - 1),
+                Mathf.Clamp(lane.PointCount / 2, 1, lane.PointCount - 1),
+                Mathf.Clamp((lane.PointCount * 4) / 5, 1, lane.PointCount - 1)
+            };
+            foreach (int i in idxs)
             {
                 Vector3 p = lane.GetPoint(i);
                 Vector3 ahead = lane.GetPoint(Mathf.Min(i + 1, lane.PointCount - 1)) - p;
@@ -72,23 +74,33 @@ public class PlaceholderPropDressing : MonoBehaviour
                 side.Normalize();
 
                 string prop = PropNames[n % PropNames.Length];
-                float sideOff = (n % 2 == 0) ? 2.4f : -2.4f;
-                Spawn(prop, p + side * sideOff, root.transform, 0.85f + (n % 3) * 0.08f, n * 37f);
+                float sideOff = (n % 2 == 0) ? 2.15f : -2.15f;
+                Spawn(prop, p + side * sideOff, root.transform, 0.85f, n * 53f);
                 n++;
-                if (n > 48) return;
             }
         }
     }
 
     static void Spawn(string resourcesPath, Vector3 pos, Transform parent, float scale, float yaw)
     {
+        foreach (var machine in FindObjectsByType<MachineBase>(FindObjectsInactive.Exclude))
+            if (machine != null && (machine.transform.position - pos).sqrMagnitude < 2.25f)
+                return;
+        foreach (var defense in FindObjectsByType<DefenseBase>(FindObjectsInactive.Exclude))
+            if (defense != null && (defense.transform.position - pos).sqrMagnitude < 2.25f)
+                return;
+
         var prefab = Resources.Load<GameObject>("ArtPlaceholders/" + resourcesPath);
         if (prefab == null) return;
-        var go = Instantiate(prefab, pos, Quaternion.Euler(0f, yaw, 0f), parent);
+        float floorY = RuntimeVisualPrimitives.FindDeckY(pos, pos.y);
+        pos.y = floorY;
+        Quaternion rotation = Quaternion.Euler(0f, yaw, 0f) * prefab.transform.rotation;
+        var go = Instantiate(prefab, pos, rotation, parent);
         go.name = resourcesPath;
-        go.transform.localScale = Vector3.one * scale;
+        go.transform.localScale = prefab.transform.localScale;
         foreach (var c in go.GetComponentsInChildren<Collider>())
             Destroy(c);
+        FitProp(go, resourcesPath, floorY, scale);
 
         // Built-in RP safety: force Standard if URP mats slipped in
         foreach (var r in go.GetComponentsInChildren<Renderer>())
@@ -108,5 +120,39 @@ public class PlaceholderPropDressing : MonoBehaviour
             }
             r.sharedMaterials = mats;
         }
+    }
+
+    static void FitProp(GameObject go, string resourcePath, float groundY, float sizeMultiplier)
+    {
+        var renderers = go.GetComponentsInChildren<Renderer>();
+        if (renderers.Length == 0) return;
+
+        float targetHeight = resourcePath switch
+        {
+            "Prop_Locker" => 1.7f,
+            "Prop_Shelves_WideTall" => 1.75f,
+            "Prop_Computer" => 1.05f,
+            _ => 0.8f,
+        };
+        float targetWidth = resourcePath switch
+        {
+            "Prop_Shelves_WideTall" => 1.6f,
+            "Prop_Computer" => 1.2f,
+            _ => 0.9f,
+        };
+        targetHeight *= sizeMultiplier;
+        targetWidth *= sizeMultiplier;
+
+        Bounds bounds = renderers[0].bounds;
+        for (int i = 1; i < renderers.Length; i++) bounds.Encapsulate(renderers[i].bounds);
+        float horizontal = Mathf.Max(bounds.size.x, bounds.size.z);
+        if (bounds.size.y < 0.0001f || horizontal < 0.0001f) return;
+
+        float factor = Mathf.Min(targetHeight / bounds.size.y, targetWidth / horizontal);
+        go.transform.localScale *= Mathf.Clamp(factor, 0.01f, 500f);
+
+        bounds = renderers[0].bounds;
+        for (int i = 1; i < renderers.Length; i++) bounds.Encapsulate(renderers[i].bounds);
+        go.transform.position += Vector3.up * (groundY - bounds.min.y);
     }
 }
