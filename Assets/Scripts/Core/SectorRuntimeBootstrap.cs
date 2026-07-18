@@ -56,6 +56,7 @@ public static class SectorRuntimeBootstrap
         go.AddComponent<AtmosphereController>();
         go.AddComponent<PostFXBootstrap>();
         go.AddComponent<SpaceBackdrop>();
+        go.AddComponent<FloorZoning>();
         go.AddComponent<ScreenFlash>();
         go.AddComponent<FactoryExpansion>();
         go.AddComponent<MachineWorkingFX>();
