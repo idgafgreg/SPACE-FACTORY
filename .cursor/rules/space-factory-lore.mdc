@@ -1,0 +1,32 @@
+---
+description: Consult lore/ research before design, atmosphere, narrative, or gameplay-feel work on SPACE FACTORY
+alwaysApply: true
+---
+
+# SPACE FACTORY — Use Lore Research
+
+Before proposing or implementing ideas that affect **tone, atmosphere, narrative, enemy/hive fantasy, factory pressure, environmental storytelling, audio/visual mood, comps, or asset choices**, read the lore corpus first.
+
+## Required reading order (keep it light)
+
+1. `lore/INDEX.md` — active thematic pillars and last research run
+2. `lore/README.md` — north star + folder layout
+3. Latest `lore/YYYY-MM-DD/summary.md` — headline takeaways
+4. Deeper files only as needed: `articles.md`, `videos.md`, `reviews-comps.md`, `stories.md`, `assets-tools.md`
+5. `lore/wishlist-paywalled.md` — before recommending paid assets/tools
+
+## How to use it
+
+- Prefer lore-backed motifs (workplace-as-trap, biomass using ship systems, factory-tied threat, lonely industrial dread) over generic sci-fi or cozy factory tropes.
+- Cite which lore note shaped a suggestion when it materially changes design or art direction.
+- Do **not** paste copyrighted fiction into the game; use motif/summary notes and original writing.
+- Do **not** buy paywalled assets; point at the wishlist.
+- Pure mechanical bugfixes with no mood/design impact may skip lore.
+
+## Game identity (do not drift)
+
+Horror-infused **factory management** on a broken far-future ship under hive-alien pressure. Tone: sad, lonely, fear. Factory layout is primary; defense disrupts without replacing the loop. Story secondary to atmosphere and systems.
+
+## Lore git policy
+
+Commit lore research updates directly to `main`. Do not create `lore/daily-*` branches.

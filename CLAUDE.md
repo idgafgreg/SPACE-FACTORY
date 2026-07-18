@@ -4,6 +4,19 @@
 
 You are working on a **Unity project** used to build games or interactive experiences. Unity is a cross-platform game engine that uses C# for scripting and organizes content into scenes, prefabs, and assets.
 
+## Lore Research (SPACE FACTORY)
+
+This game is horror-infused factory management on a broken far-future ship. Before proposing or implementing ideas that affect **tone, atmosphere, narrative, hive/enemy fantasy, factory pressure, environmental storytelling, audio/visual mood, comps, or asset choices**, consult the compiled research in `lore/`:
+
+1. Read `lore/INDEX.md`, then `lore/README.md`, then the latest `lore/YYYY-MM-DD/summary.md`.
+2. Open topic files (`articles.md`, `videos.md`, `reviews-comps.md`, `stories.md`, `assets-tools.md`) only as needed.
+3. Check `lore/wishlist-paywalled.md` before recommending paid assets or tools — do not purchase; list for later.
+4. Prefer lore-backed motifs (workplace-as-trap, biomass using ship systems, factory-tied threat, lonely industrial dread) over generic sci-fi or cozy factory tropes.
+5. Cite which lore note shaped a material design suggestion. Do not paste copyrighted fiction into the game.
+6. Pure mechanical bugfixes with no mood/design impact may skip lore.
+
+Also see `AGENTS.md` and `.cursor/rules/space-factory-lore.mdc` for the same policy.
+
 ## Understanding Unity Projects
 
 Unity projects are often **large, messy, and difficult to parse**:

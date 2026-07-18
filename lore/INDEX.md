@@ -20,8 +20,12 @@ Rolling map of useful themes. Updated by daily research runs.
 - Still Wakes the Deep / Self-Contained (workplace horror)
 - ROUTINE, Haze, Site 17 (adjacent industrial/sci-fi horror)
 
+## Branch policy
+
+All lore research commits go to the default branch (`main`). Do **not** open `lore/daily-*` branches for further updates.
+
 ## Last run
 
 - Date: 2026-07-17
-- Branch: `lore/daily-2026-07-17`
+- Landed on: `main` (via merge from `lore/daily-2026-07-17`)
 - Focus weight: horror-first, balanced across articles / videos / reviews / stories / assets / tools
