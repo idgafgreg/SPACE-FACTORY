@@ -55,6 +55,7 @@ public static class SectorRuntimeBootstrap
         // look like a debug sandbox. Keep only systems with a clear job.
         go.AddComponent<AtmosphereController>();
         go.AddComponent<PostFXBootstrap>();
+        go.AddComponent<SpaceBackdrop>();
         go.AddComponent<ScreenFlash>();
         go.AddComponent<FactoryExpansion>();
         go.AddComponent<MachineWorkingFX>();
