@@ -1,14 +1,19 @@
 using UnityEngine;
 
 /// <summary>
-/// Soft emissive pulse on drills/processors while they are producing — sells
-/// the factory as alive. Scans the scene periodically and drives a
-/// MaterialPropertyBlock on each machine's renderer.
+/// Working-state feedback for drills/processors: the machine's identity lamp
+/// (see <see cref="MachineIdentityTint"/>) breathes while producing, and a
+/// small spark burst pops on a steady tick — the factory reads as alive from
+/// across the map without touching the body tint.
+///
+/// Deliberately does NOT write _Color on machine bodies: MachineIdentityTint
+/// owns that block value, and an earlier version of this script kept erasing
+/// the accent tint every frame by rebuilding the block from the raw material.
 /// </summary>
 public class MachineWorkingFX : MonoBehaviour
 {
-    static readonly int ColorId = Shader.PropertyToID("_Color");
     static readonly int EmissionId = Shader.PropertyToID("_EmissionColor");
+    const float SparkInterval = 1.15f;
 
     float _scanTimer;
     readonly System.Collections.Generic.List<Entry> _entries = new();
@@ -16,19 +21,17 @@ public class MachineWorkingFX : MonoBehaviour
 
     class Entry
     {
-        public Renderer renderer;
-        public Color baseColor;
         public MiningDrill drill;
         public Processor processor;
+        public Renderer lamp;
+        public Color lampAccent;
+        public ParticleSystem sparks;
         public float phase;
+        public float nextSpark;
     }
-
-    void Awake() => _mpb = new MaterialPropertyBlock();
 
     void Update()
     {
-        // Domain reload can preserve the component while clearing managed
-        // fields, so do not rely on Awake having initialized this.
         if (_mpb == null) _mpb = new MaterialPropertyBlock();
 
         _scanTimer -= Time.deltaTime;
@@ -41,19 +44,25 @@ public class MachineWorkingFX : MonoBehaviour
         float t = Time.time;
         foreach (var e in _entries)
         {
-            if (e.renderer == null) continue;
             bool working = (e.drill != null && e.drill.isActiveAndEnabled && e.drill.assignedNode != null)
                         || (e.processor != null && e.processor.IsProcessing);
 
-            float pulse = working ? 0.55f + 0.45f * Mathf.Sin(t * 6f + e.phase) : 0f;
-            Color glow = Color.Lerp(e.baseColor, Color.white, pulse * 0.35f);
+            if (e.lamp != null)
+            {
+                float pulse = working ? 0.5f + 0.5f * Mathf.Sin(t * 5f + e.phase) : 0f;
+                _mpb.Clear();
+                e.lamp.GetPropertyBlock(_mpb);
+                // Base 1.45 matches the lamp material; breathe up to ~2.3
+                // while producing so the LED visibly beats under bloom.
+                _mpb.SetColor(EmissionId, e.lampAccent * (1.45f + 0.85f * pulse));
+                e.lamp.SetPropertyBlock(_mpb);
+            }
 
-            _mpb.Clear();
-            e.renderer.GetPropertyBlock(_mpb);
-            _mpb.SetColor(ColorId, glow);
-            if (e.renderer.sharedMaterial != null && e.renderer.sharedMaterial.HasProperty(EmissionId))
-                _mpb.SetColor(EmissionId, e.baseColor * (0.2f + pulse));
-            e.renderer.SetPropertyBlock(_mpb);
+            if (working && e.sparks != null && t >= e.nextSpark)
+            {
+                e.nextSpark = t + SparkInterval + Random.value * 0.3f;
+                e.sparks.Emit(5);
+            }
         }
     }
 
@@ -64,42 +73,63 @@ public class MachineWorkingFX : MonoBehaviour
             ? SceneScanCache.Instance.Drills
             : FindObjectsByType<MiningDrill>(FindObjectsInactive.Exclude);
         foreach (var drill in drills)
-            if (drill != null) Add(PickArtRenderer(drill.transform), drill, null);
+            if (drill != null) Add(drill.transform, drill, null);
         var procs = SceneScanCache.Instance != null
             ? SceneScanCache.Instance.Processors
             : FindObjectsByType<Processor>(FindObjectsInactive.Exclude);
         foreach (var proc in procs)
-            if (proc != null) Add(PickArtRenderer(proc.transform), null, proc);
+            if (proc != null) Add(proc.transform, null, proc);
     }
 
-    static Renderer PickArtRenderer(Transform host)
+    void Add(Transform host, MiningDrill drill, Processor proc)
     {
-        if (host == null) return null;
         var art = host.Find("ArtPlaceholder");
+        var lampT = art != null ? art.Find("IdentityLamp") : null;
+        var lamp = lampT != null ? lampT.GetComponent<Renderer>() : null;
+        Color accent = Color.white;
+        if (lamp != null && lamp.sharedMaterial != null)
+        {
+            var em = lamp.sharedMaterial.GetColor(EmissionId);
+            accent = em.maxColorComponent > 0f ? em / em.maxColorComponent : Color.white;
+        }
+
+        // One tiny burst-only spark system per machine, parented to the art.
+        ParticleSystem sparks = null;
         if (art != null)
         {
-            var r = art.GetComponentInChildren<Renderer>();
-            if (r != null) return r;
+            var existing = art.Find("WorkSparks");
+            if (existing != null) sparks = existing.GetComponent<ParticleSystem>();
+            else
+            {
+                var go = new GameObject("WorkSparks");
+                go.transform.SetParent(art, false);
+                go.transform.position = host.position + Vector3.up * 1.1f;
+                sparks = go.AddComponent<ParticleSystem>();
+                var main = sparks.main;
+                main.startLifetime = 0.45f;
+                main.startSpeed = 1.6f;
+                main.startSize = 0.09f;
+                main.startColor = new Color(1f, 0.8f, 0.4f);
+                main.gravityModifier = 0.7f;
+                main.maxParticles = 40;
+                var emission = sparks.emission;
+                emission.rateOverTime = 0f; // burst-only via Emit()
+                var shape = sparks.shape;
+                shape.shapeType = ParticleSystemShapeType.Sphere;
+                shape.radius = 0.12f;
+                var rend = go.GetComponent<ParticleSystemRenderer>();
+                rend.material = new Material(Shader.Find("Particles/Standard Unlit"));
+                rend.shadowCastingMode = UnityEngine.Rendering.ShadowCastingMode.Off;
+            }
         }
-        foreach (var r in host.GetComponentsInChildren<Renderer>())
-        {
-            if (r == null || !r.enabled) continue;
-            if (r.name.Contains("Plinth") || r.name.Contains("Blob")) continue;
-            return r;
-        }
-        return null;
-    }
 
-    void Add(Renderer r, MiningDrill drill, Processor proc)
-    {
-        if (r == null) return;
-        var mat = r.sharedMaterial;
         _entries.Add(new Entry
         {
-            renderer = r,
-            baseColor = mat != null && mat.HasProperty(ColorId) ? mat.color : Color.gray,
             drill = drill,
             processor = proc,
+            lamp = lamp,
+            lampAccent = accent,
+            sparks = sparks,
             phase = Random.value * 10f,
         });
     }
