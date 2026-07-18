@@ -1,33 +1,127 @@
+using System.Collections.Generic;
 using UnityEngine;
 
 /// <summary>
-/// Soft red rim on living enemies so threats read against the industrial deck
-/// (Dead Space / tower-defense silhouette cue).
+/// Threat readability: every living enemy gets a small HDR red "eye" chip
+/// (the hostile counterpart of the machine identity lamps) plus a smooth red
+/// emissive pulse on its body. The old version wrote sub-visible emission
+/// through property blocks onto materials whose _EMISSION keyword was never
+/// enabled — nothing rendered at all.
 /// </summary>
 public class EnemyArtPulse : MonoBehaviour
 {
+    static readonly int EmissionId = Shader.PropertyToID("_EmissionColor");
+    static readonly Color ThreatRed = new Color(1f, 0.22f, 0.15f);
+
     float _scan;
+    Material _eyeMat;
+    MaterialPropertyBlock _mpb;
+    readonly List<Entry> _entries = new();
+
+    class Entry
+    {
+        public EnemyBase enemy;
+        public Renderer[] bodies;
+        public float phase;
+    }
 
     void Update()
     {
-        _scan -= Time.deltaTime;
-        if (_scan > 0f) return;
-        _scan = 1.25f;
+        if (_mpb == null) _mpb = new MaterialPropertyBlock();
 
-        float pulse = 0.12f + 0.08f * Mathf.Sin(Time.time * 3.5f);
-        foreach (var e in FindObjectsByType<EnemyBase>(FindObjectsInactive.Exclude))
+        _scan -= Time.deltaTime;
+        if (_scan <= 0f)
         {
-            if (e == null || e.IsDead) continue;
-            var art = e.transform.Find("ArtPlaceholder");
-            if (art == null) continue;
-            foreach (var r in art.GetComponentsInChildren<Renderer>())
+            _scan = 1.25f;
+            Rescan();
+        }
+
+        float t = Time.time;
+        foreach (var e in _entries)
+        {
+            if (e.enemy == null || e.enemy.IsDead) continue;
+            float pulse = 0.35f + 0.25f * Mathf.Sin(t * 4f + e.phase);
+            foreach (var r in e.bodies)
             {
                 if (r == null) continue;
-                var block = new MaterialPropertyBlock();
-                r.GetPropertyBlock(block);
-                block.SetColor("_EmissionColor", new Color(1f, 0.2f, 0.15f) * pulse);
-                r.SetPropertyBlock(block);
+                _mpb.Clear();
+                r.GetPropertyBlock(_mpb);
+                _mpb.SetColor(EmissionId, ThreatRed * pulse);
+                r.SetPropertyBlock(_mpb);
             }
         }
+    }
+
+    void Rescan()
+    {
+        _entries.RemoveAll(e => e.enemy == null || e.enemy.IsDead);
+
+        var list = SceneScanCache.Instance != null
+            ? SceneScanCache.Instance.Enemies
+            : FindObjectsByType<EnemyBase>(FindObjectsInactive.Exclude);
+        foreach (var enemy in list)
+        {
+            if (enemy == null || enemy.IsDead) continue;
+            bool known = false;
+            foreach (var e in _entries)
+                if (e.enemy == enemy) { known = true; break; }
+            if (known) continue;
+
+            var host = enemy.transform;
+            var art = host.Find("ArtPlaceholder");
+            var artRoot = art != null ? art : host;
+
+            var bodies = new List<Renderer>();
+            foreach (var r in artRoot.GetComponentsInChildren<Renderer>())
+            {
+                if (r == null || r.gameObject.name == "ThreatEye") continue;
+                // Property-block emission is ignored unless the material has
+                // the _EMISSION keyword — instance it once and switch it on.
+                var m = r.material;
+                m.EnableKeyword("_EMISSION");
+                bodies.Add(r);
+            }
+
+            if (artRoot.Find("ThreatEye") == null)
+            {
+                var eye = GameObject.CreatePrimitive(PrimitiveType.Cube);
+                eye.name = "ThreatEye";
+                Destroy(eye.GetComponent<Collider>());
+                eye.transform.SetParent(artRoot, false);
+                var b = new Bounds(host.position, Vector3.one);
+                foreach (var r in bodies) { b = r.bounds; break; }
+                foreach (var r in bodies) b.Encapsulate(r.bounds);
+                eye.transform.position = new Vector3(b.center.x, b.max.y + 0.06f, b.center.z);
+                eye.transform.rotation = Quaternion.identity;
+                float s = Mathf.Clamp(b.size.x * 0.22f, 0.1f, 0.3f);
+                var pls = artRoot.lossyScale;
+                eye.transform.localScale = new Vector3(
+                    s / Mathf.Max(pls.x, 0.01f),
+                    0.05f / Mathf.Max(pls.y, 0.01f),
+                    s / Mathf.Max(pls.z, 0.01f));
+                eye.GetComponent<Renderer>().sharedMaterial = EyeMaterial();
+            }
+
+            _entries.Add(new Entry
+            {
+                enemy = enemy,
+                bodies = bodies.ToArray(),
+                phase = Random.value * 10f,
+            });
+        }
+    }
+
+    Material EyeMaterial()
+    {
+        if (_eyeMat != null) return _eyeMat;
+        _eyeMat = new Material(Shader.Find("Standard"))
+        {
+            name = "ThreatEye",
+            color = Color.black
+        };
+        _eyeMat.EnableKeyword("_EMISSION");
+        // Hotter than the machine lamps: threats should out-glow the factory.
+        _eyeMat.SetColor(EmissionId, ThreatRed * 2.4f);
+        return _eyeMat;
     }
 }
