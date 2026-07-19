@@ -2,12 +2,16 @@
 
 Assets and tools found during lore research that require purchase. **Do not buy until funded.** Prices are approximate store listing prices at discovery time and may change.
 
-Last updated: 2026-07-17
+Last updated: 2026-07-19
 
 | Priority | Item | Est. price | Link | Why it fits SPACE FACTORY | Notes |
 |----------|------|------------|------|---------------------------|-------|
 | High | POLYGON - Sci-Fi Horror Pack (Synty) | ~$149.99 | https://assetstore.unity.com/packages/3d/environments/sci-fi/polygon-sci-fi-horror-pack-art-by-synty-340952 | Modular ship interiors, infestation/growth props, horror sci-fi cast | Stylized POLYGON look — confirm art direction fit before buy |
 | High | Modular Horror Kit: Industrial Edition | ~$23 | https://assetstore.unity.com/packages/3d/environments/industrial/modular-horror-kit-industrial-edition-342062 | Cheap industrial horror corridors, traps, creatures, URP | Good prototype kit; Dec 2025 release |
+| High | Bionic structures | ~$9.90 | https://assetstore.unity.com/packages/3d/environments/bionic-structures-163649 | Low-cost organic outgrowths/cocoons for hive-on-metal kitbash | Added 2026-07-19; URP/HDRP shaders noted on store page |
+| Medium | Alien Biomass Planet | ~$49.99 | https://assetstore.unity.com/packages/3d/environments/sci-fi/alien-biomass-planet-212722 | Animated biomass meshes, hue master shader, slime SFX | Added 2026-07-19; planet-surface bias — cherry-pick props onto ship decks |
+| Medium | Bio Horror / Sci-fi Environment | ~$59.99 | https://assetstore.unity.com/packages/3d/environments/fantasy/bio-horror-sci-fi-environment-248164 | Infestation props + sci-fi bio-horror demo (URP/HDRP) | Added 2026-07-19; verify style vs our industrial palette |
+| Medium | Underground - Modular Abandoned Basement & Bunker (URP) | ~$49.99 | https://assetstore.unity.com/packages/3d/environments/industrial/underground-modular-abandoned-basement-bunker-environment-urp-321052 | Modular abandoned interiors, pipes, leak/dirt decals | Added 2026-07-19; bunker not ship — useful for utility decks |
 | Medium | Horror Factory / Backrooms Environment | (check store) | https://assetstore.unity.com/packages/3d/environments/industrial/horror-factory-backrooms-environment-266858 | Claustrophobic industrial modular rooms/pipes | More backrooms than ship — cherry-pick props |
 | Medium | SciFi Industrial Level Kit 2.0 | ~$70 | https://assetstore.unity.com/packages/3d/environments/sci-fi/scifi-industrial-level-kit-2-0-116761 | 1000+ modular industrial/sci-fi prefabs | Older Unity baseline — verify URP upgrade cost |
 | Medium | Volumetric Fog & Mist 2 | (check store) | Unity Asset Store (Kronnect) — see video https://www.youtube.com/watch?v=a-3miTmB-Zk | Strong fog for damaged sectors / dread | Try open-source URP volumetrics first |
@@ -18,4 +22,5 @@ Last updated: 2026-07-17
 
 - Prefer **one** environment kit that matches art direction over stacking three similar packs.
 - Try free/post-process/volumetric OSS paths before fog purchases.
+- Prefer cheap biomass kitbash (**Bionic structures**) before $50+ infestation packs if only prototyping growth props.
 - Re-check prices and Unity version compatibility on purchase day.
