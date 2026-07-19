@@ -1,20 +1,22 @@
 using UnityEngine;
 
 /// <summary>
-/// Light story beats via world text near known landmarks — no cutscenes,
-/// supports the lonely-ship mood without interrupting the factory loop.
+/// Light story beats via world text near landmarks — lonely ship mood without
+/// cutscenes or interrupting the factory loop (lore: horror from routine).
 /// </summary>
 public class EnvironmentalLore : MonoBehaviour
 {
-    static readonly (string name, string line)[] Beats =
+    static readonly (string anchor, Vector3 offset, string line)[] Beats =
     {
-        ("Workshop", "OLD CREW LEFT THE LATHES WARM"),
-        ("CommandHub", "HULL BREACH LOGGED — SECTOR SEALED"),
-        ("PowerCore", "GRID RUNNING ON EMERGENCY TAP"),
+        ("CommandHub", new Vector3(-5.2f, 2.1f, 4.4f), "SHIFT LOG — STILL WAITING ON RELIEF"),
+        ("CommandHub", new Vector3(0f, 2.4f, 0f), "HULL BREACH LOGGED — SECTOR SEALED"),
+        ("Workshop", new Vector3(0f, 2.0f, 0f), "OLD CREW LEFT THE LATHES WARM"),
+        ("CommandHub", new Vector3(3f, 2.0f, -2f), "RATIONS: THREE DAYS. COFFEE: GONE."),
+        ("Workshop", new Vector3(1.5f, 1.8f, 0.5f), "REPAIR TICKET #441 — NEVER CLOSED"),
     };
 
     int _index;
-    float _timer = 8f;
+    float _timer = 6f;
 
     void Update()
     {
@@ -23,19 +25,19 @@ public class EnvironmentalLore : MonoBehaviour
         if (_index >= Beats.Length) { enabled = false; return; }
 
         var beat = Beats[_index++];
-        _timer = 18f + _index * 4f;
+        _timer = 16f + _index * 3f;
 
-        Transform at = null;
-        if (beat.name == "CommandHub" && SectorLayout.Instance != null)
-            at = SectorLayout.Instance.commandHubTransform;
-        if (at == null)
-        {
-            var go = GameObject.Find(beat.name);
-            if (go != null) at = go.transform;
-        }
-        if (at == null) return;
+        Vector3 at = ResolveAnchor(beat.anchor) + beat.offset;
+        FloatingText.Spawn(at, beat.line, new Color(0.7f, 0.78f, 0.88f), 2.6f);
+    }
 
-        FloatingText.Spawn(at.position + Vector3.up * 2.2f,
-            beat.line, new Color(0.65f, 0.75f, 0.85f), 2.4f);
+    static Vector3 ResolveAnchor(string name)
+    {
+        if (name == "CommandHub" && SectorLayout.Instance != null
+            && SectorLayout.Instance.commandHubTransform != null)
+            return SectorLayout.Instance.commandHubTransform.position;
+
+        var go = GameObject.Find(name);
+        return go != null ? go.transform.position : Vector3.zero;
     }
 }

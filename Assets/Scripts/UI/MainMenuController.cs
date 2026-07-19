@@ -3,9 +3,8 @@ using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 
 /// <summary>
-/// Main menu logic. Finds its buttons by name under the same Canvas and wires
-/// them in code (same pattern as HudWiring — no persistent listeners to break).
-/// Scene: "MainMenu". Play loads the gameplay scene.
+/// Main menu logic. Finds buttons by name and wires them in code.
+/// Atmosphere / terminal chrome is applied by <see cref="MainMenuAtmosphere"/>.
 /// </summary>
 public class MainMenuController : MonoBehaviour
 {
@@ -13,7 +12,8 @@ public class MainMenuController : MonoBehaviour
 
     void Awake()
     {
-        Time.timeScale = 1f;   // arriving from a paused/ended run must not freeze the menu
+        Time.timeScale = 1f; // arriving from a paused/ended run must not freeze the menu
+        MainMenuAtmosphere.Ensure();
 
         Wire("PlayButton", () => SceneManager.LoadScene(gameSceneName));
         Wire("QuitButton", () =>

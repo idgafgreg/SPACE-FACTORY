@@ -27,6 +27,7 @@ public class FloatingText : MonoBehaviour
         ft._mesh.anchor      = TextAnchor.MiddleCenter;
         ft._mesh.color       = color;
         ft._color            = color;
+        ShipTerminalUI.ApplyFont(ft._mesh);
     }
 
     void LateUpdate()

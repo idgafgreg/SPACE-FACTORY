@@ -37,7 +37,7 @@ public class WorldHealthBars : MonoBehaviour
             // Skip player if they somehow have Health — PlayerController is separate.
             if (h.GetComponent<PlayerController>() != null) continue;
             DrawBar(cam, h.transform.position + Vector3.up * 1.6f, h.NormalizedHP,
-                new Color(0.95f, 0.25f, 0.2f));
+                ShipPalette.HubAlarm);
         }
 
         foreach (var d in _defs)
@@ -46,7 +46,7 @@ public class WorldHealthBars : MonoBehaviour
             float n = d.CurrentHealth / d.maxHealth;
             if (n >= 0.995f) continue;
             DrawBar(cam, d.transform.position + Vector3.up * 1.8f, n,
-                new Color(1f, 0.7f, 0.2f));
+                ShipPalette.Amber);
         }
 
         var hub = SectorLayout.Instance != null
@@ -57,7 +57,7 @@ public class WorldHealthBars : MonoBehaviour
             float n = hub.CurrentHealth / hub.maxHealth;
             if (n < 0.995f)
                 DrawBar(cam, hub.transform.position + Vector3.up * 3.2f, n,
-                    new Color(0.35f, 0.75f, 1f));
+                    ShipPalette.HubCalm);
         }
     }
 
@@ -70,10 +70,11 @@ public class WorldHealthBars : MonoBehaviour
         float y = Screen.height - sp.y;
         float w = 42f, h = 5f;
         fill.a = 0.85f;
-        GUI.DrawTexture(new Rect(x - w * 0.5f, y, w, h), _white, ScaleMode.StretchToFill,
-            true, 0f, new Color(0f, 0f, 0f, 0.4f), 0f, 0f);
+        var tex = _white != null ? _white : ShipTerminalUI.White;
+        GUI.DrawTexture(new Rect(x - w * 0.5f, y, w, h), tex, ScaleMode.StretchToFill,
+            true, 0f, ShipTerminalUI.BarTrack, 0f, 0f);
         GUI.DrawTexture(new Rect(x - w * 0.5f + 1f, y + 1f, (w - 2f) * Mathf.Clamp01(norm), h - 2f),
-            _white, ScaleMode.StretchToFill, true, 0f, fill, 0f, 0f);
+            tex, ScaleMode.StretchToFill, true, 0f, fill, 0f, 0f);
     }
 
     void Ensure()

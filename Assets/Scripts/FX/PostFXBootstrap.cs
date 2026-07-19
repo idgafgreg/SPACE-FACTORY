@@ -28,13 +28,13 @@ public class PostFXBootstrap : MonoBehaviour
 
     [Header("Grade")]
     [Tooltip("How much the shadow floor is lifted; keeps darks readable.")]
-    public float shadowLift = 0.06f;
-    public float postExposure = 0.15f;
-    public float contrast = 12f;
-    public float saturation = 8f;
+    public float shadowLift = 0.05f;
+    public float postExposure = 0.12f;
+    public float contrast = 14f;
+    public float saturation = 6f;
 
     [Header("Vignette")]
-    public float vignetteIntensity = 0.28f;
+    public float vignetteIntensity = 0.32f;
 
     // TransparentFX is a built-in layer that ships with every project, so the
     // volume/layer pairing can never break on a fresh checkout.
@@ -85,13 +85,21 @@ public class PostFXBootstrap : MonoBehaviour
         grade.postExposure.Override(postExposure);
         grade.contrast.Override(contrast);
         grade.saturation.Override(saturation);
-        // Lift only the shadows toward a cold blue so the deck stays moody but
-        // stops reading as pure black mud.
-        grade.lift.Override(new Vector4(shadowLift * 0.9f, shadowLift, shadowLift * 1.25f, 0f));
+        // Haze-style grade: sick-green shadows, amber mids, steel highlights.
+        var lift = ShipPalette.GradeLift;
+        lift.x *= shadowLift / 0.05f;
+        lift.y *= shadowLift / 0.05f;
+        lift.z *= shadowLift / 0.05f;
+        grade.lift.Override(lift);
+        grade.gamma.Override(ShipPalette.GradeGamma);
+        grade.gain.Override(ShipPalette.GradeGain);
+        grade.temperature.Override(-8f); // slight cool steel
+        grade.tint.Override(6f);         // push green into the midtones
 
         var vignette = profile.AddSettings<Vignette>();
         vignette.intensity.Override(vignetteIntensity);
-        vignette.smoothness.Override(0.45f);
+        vignette.smoothness.Override(0.48f);
+        vignette.color.Override(ShipPalette.SickGreenDeep);
 
         var ao = profile.AddSettings<AmbientOcclusion>();
         ao.mode.Override(AmbientOcclusionMode.ScalableAmbientObscurance);

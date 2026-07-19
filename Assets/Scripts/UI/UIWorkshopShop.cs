@@ -53,7 +53,7 @@ public class UIWorkshopShop : MonoBehaviour
     {
         var go = GameObject.Find(workshopObjectName);
         if (go != null) _workshop = go.transform;
-        _font = Resources.GetBuiltinResource<Font>("LegacyRuntime.ttf");
+        _font = ShipTerminalUI.Mono;
         BuildHint();
     }
 
@@ -147,9 +147,9 @@ public class UIWorkshopShop : MonoBehaviour
         rt.anchoredPosition = new Vector2(0f, 120f);
         rt.sizeDelta = new Vector2(400f, 26f);
         _hint = go.AddComponent<Text>();
-        _hint.font = _font; _hint.fontSize = 15; _hint.color = new Color(0.8f, 0.9f, 1f);
+        _hint.font = _font; _hint.fontSize = 14; _hint.color = ShipTerminalUI.TextAmber;
         _hint.alignment = TextAnchor.MiddleCenter;
-        _hint.text = "[F]  Workshop";
+        _hint.text = "[F]  WORKSHOP TERMINAL";
         _hint.raycastTarget = false;
         _hint.enabled = false;
     }
@@ -166,17 +166,17 @@ public class UIWorkshopShop : MonoBehaviour
         rt.SetParent(transform, false);
         rt.sizeDelta = new Vector2(680f, 90f + 34f * Mathf.Max(_lockedDefs.Count, Upgrades.Count));
         rt.anchoredPosition = Vector2.zero;
-        _panel.GetComponent<Image>().color = new Color(0.1f, 0.12f, 0.16f, 0.96f);
+        _panel.GetComponent<Image>().color = ShipTerminalUI.PanelBg;
 
-        var title = MakeText("Title", rt, "WORKSHOP", 22, new Vector2(660f, 34f),
+        var title = MakeText("Title", rt, "[WORKSHOP]  FABRICATION TERMINAL", 18, new Vector2(660f, 34f),
             new Vector2(0f, rt.sizeDelta.y * 0.5f - 26f));
         title.alignment = TextAnchor.MiddleCenter;
-        title.color = new Color(1f, 0.8f, 0.4f);
+        title.color = ShipTerminalUI.TextAmber;
 
         float top = rt.sizeDelta.y * 0.5f - 60f;
 
-        var colA = MakeText("UnlockHeader", rt, "UNLOCKS", 15, new Vector2(300f, 24f), new Vector2(-170f, top));
-        colA.alignment = TextAnchor.MiddleCenter; colA.color = new Color(0.6f, 0.9f, 0.7f);
+        var colA = MakeText("UnlockHeader", rt, "UNLOCKS", 14, new Vector2(300f, 24f), new Vector2(-170f, top));
+        colA.alignment = TextAnchor.MiddleCenter; colA.color = ShipTerminalUI.TextGood;
         for (int i = 0; i < _lockedDefs.Count; i++)
         {
             int idx = i;
@@ -185,8 +185,8 @@ public class UIWorkshopShop : MonoBehaviour
             _unlockLabels.Add(label);
         }
 
-        var colB = MakeText("UpgradeHeader", rt, "UPGRADES (repeatable)", 15, new Vector2(300f, 24f), new Vector2(170f, top));
-        colB.alignment = TextAnchor.MiddleCenter; colB.color = new Color(0.75f, 0.6f, 1f);
+        var colB = MakeText("UpgradeHeader", rt, "UPGRADES  (REPEATABLE)", 14, new Vector2(300f, 24f), new Vector2(170f, top));
+        colB.alignment = TextAnchor.MiddleCenter; colB.color = ShipTerminalUI.TextPrimary;
         for (int i = 0; i < Upgrades.Count; i++)
         {
             int idx = i;
@@ -204,7 +204,7 @@ public class UIWorkshopShop : MonoBehaviour
         rt.SetParent(parent, false);
         rt.sizeDelta = new Vector2(310f, 30f);
         rt.anchoredPosition = pos;
-        go.GetComponent<Image>().color = new Color(0.18f, 0.22f, 0.28f);
+        go.GetComponent<Image>().color = ShipTerminalUI.SlotIdle;
         var btn = go.GetComponent<Button>();
         btn.onClick.AddListener(onClick);
         var t = MakeText("Label", rt, "", 12, new Vector2(300f, 30f), Vector2.zero);
@@ -220,7 +220,7 @@ public class UIWorkshopShop : MonoBehaviour
         rt.sizeDelta = rectSize;
         rt.anchoredPosition = pos;
         var t = go.AddComponent<Text>();
-        t.font = _font; t.fontSize = size; t.color = Color.white; t.text = content;
+        t.font = _font; t.fontSize = size; t.color = ShipTerminalUI.TextPrimary; t.text = content;
         t.raycastTarget = false;
         return t;
     }

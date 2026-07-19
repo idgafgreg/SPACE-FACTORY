@@ -1,20 +1,15 @@
 using UnityEngine;
 
 /// <summary>
-/// Spawns free-pack props near hub / along walls so the sector reads as a
-/// lived-in derelict instead of empty primitives. Runtime-only.
+/// Lived-in workplace dressing: a lonely shift nest at the hub, sparse
+/// corridor clutter, and workshop leftovers. Supports sad/lonely mood before
+/// combat (lore/2026-07-17 — "props that look worked in").
+/// Runtime-only; colliders stripped so props never block pathing.
 /// </summary>
 public class PlaceholderPropDressing : MonoBehaviour
 {
-    static readonly string[] PropNames =
-    {
-        "Prop_Crate", "Prop_Barrel1", "Prop_Locker",
-        "Prop_Shelves_WideTall", "Prop_Fan_Small", "pipe-large-valve",
-        "Prop_Computer", "Prop_AccessPoint"
-    };
-
-    const int PropDressVersion = 9;
-    float _retryAt = 0.9f;
+    const int PropDressVersion = 10;
+    float _retryAt = 1.05f;
 
     void Start() => Dress();
 
@@ -46,24 +41,79 @@ public class PlaceholderPropDressing : MonoBehaviour
             ? SectorLayout.Instance.commandHubTransform.position
             : Vector3.zero;
 
-        // Sparse hub props — lived-in, not a junkyard.
-        Spawn(PropNames[0], hub + new Vector3(3.8f, 0f, 2.8f), root.transform, 0.9f, 25f);
-        Spawn(PropNames[1], hub + new Vector3(-3.8f, 0f, 2.5f), root.transform, 0.85f, 80f);
-        Spawn(PropNames[2], hub + new Vector3(-4.2f, 0f, -1.8f), root.transform, 0.9f, 180f);
-        Spawn(PropNames[6], hub + new Vector3(2.6f, 0f, -3.4f), root.transform, 0.95f, 210f);
+        DressHubNest(hub, root.transform);
+        DressWorkshop(root.transform);
+        DressCorridors(root.transform);
+        DressBayDebris(root.transform);
+    }
 
-        // Three props per lane — lived-in corridors without junk piles.
+    /// <summary>
+    /// Abandoned crew station — desk, chair, mug, locker. Loneliness reads first.
+    /// </summary>
+    void DressHubNest(Vector3 hub, Transform root)
+    {
+        // Nest sits off the main approach so it doesn't fight the factory loop.
+        Vector3 nest = hub + new Vector3(-5.2f, 0f, 4.4f);
+
+        Spawn("Prop_Desk_Small", nest, root, 1.0f, 200f);
+        Spawn("Prop_Chair", nest + new Vector3(0.15f, 0f, -0.85f), root, 0.95f, 15f);
+        Spawn("Prop_Mug", nest + new Vector3(0.35f, 0f, 0.1f), root, 1.1f, 40f, skipClearance: true);
+        Spawn("Prop_Locker", nest + new Vector3(-1.4f, 0f, 0.6f), root, 0.95f, 110f);
+        Spawn("Prop_Computer", nest + new Vector3(0.9f, 0f, 0.55f), root, 0.85f, 225f);
+        Spawn("desk_computerScreen", nest + new Vector3(0.45f, 0f, 0.05f), root, 0.7f, 200f, skipClearance: true);
+
+        // Dim personal lamp — warm vs the ship cyan, "still on" loneliness cue.
+        var lamp = new GameObject("ShiftNestLamp");
+        lamp.transform.SetParent(root, false);
+        lamp.transform.position = nest + new Vector3(0.2f, 1.55f, 0.15f);
+        var light = lamp.AddComponent<Light>();
+        light.type = LightType.Point;
+        light.range = 4.2f;
+        light.intensity = 1.05f;
+        light.color = new Color(1f, 0.72f, 0.45f);
+        light.shadows = LightShadows.None;
+
+        // Small crates as "personal stash" — not a junkyard.
+        Spawn("Prop_Crate", nest + new Vector3(1.8f, 0f, -1.1f), root, 0.75f, 35f);
+        Spawn("Prop_Barrel1", nest + new Vector3(-2.1f, 0f, -0.8f), root, 0.8f, 70f);
+    }
+
+    void DressWorkshop(Transform root)
+    {
+        var workshop = GameObject.Find("Workshop");
+        if (workshop == null) return;
+        Vector3 w = workshop.transform.position;
+
+        Spawn("Prop_Shelves_WideTall", w + new Vector3(-1.8f, 0f, 1.2f), root, 0.9f, 90f);
+        Spawn("Prop_Barrel2_Open", w + new Vector3(1.6f, 0f, -0.9f), root, 0.85f, 160f);
+        Spawn("Prop_Crate_Tarp", w + new Vector3(2.2f, 0f, 1.0f), root, 0.8f, 45f);
+        Spawn("Prop_Fan_Small", w + new Vector3(-0.5f, 0f, -1.6f), root, 0.9f, 0f);
+        Spawn("Prop_AccessPoint", w + new Vector3(0.8f, 0f, 1.8f), root, 0.85f, 180f);
+    }
+
+    void DressCorridors(Transform root)
+    {
         var layout = SectorLayout.Instance;
         if (layout == null || layout.lanes == null) return;
+
+        string[] wallProps =
+        {
+            "Prop_Crate", "Prop_Barrel1", "Prop_Locker",
+            "Prop_Barrel2_Open", "pipe-large-valve", "Prop_Crate_Tarp"
+        };
+
         int n = 0;
         foreach (var lane in layout.lanes)
         {
             if (lane == null || lane.PointCount < 2) continue;
-            int[] idxs = {
-                Mathf.Clamp(lane.PointCount / 5, 1, lane.PointCount - 1),
-                Mathf.Clamp(lane.PointCount / 2, 1, lane.PointCount - 1),
-                Mathf.Clamp((lane.PointCount * 4) / 5, 1, lane.PointCount - 1)
+
+            // Two props mid-corridor, pressed to the wall — lived-in, not cluttered.
+            int[] idxs =
+            {
+                Mathf.Clamp(lane.PointCount / 3, 1, lane.PointCount - 1),
+                Mathf.Clamp((lane.PointCount * 2) / 3, 1, lane.PointCount - 1)
             };
+
             foreach (int i in idxs)
             {
                 Vector3 p = lane.GetPoint(i);
@@ -73,36 +123,75 @@ public class PlaceholderPropDressing : MonoBehaviour
                 if (side.sqrMagnitude < 0.01f) side = Vector3.right;
                 side.Normalize();
 
-                string prop = PropNames[n % PropNames.Length];
-                float sideOff = (n % 2 == 0) ? 2.15f : -2.15f;
-                Spawn(prop, p + side * sideOff, root.transform, 0.85f, n * 53f);
+                // Farther from lane center so modular wall skins + walkway stay clear.
+                float sideOff = (n % 2 == 0) ? 2.55f : -2.55f;
+                string prop = wallProps[n % wallProps.Length];
+                Spawn(prop, p + side * sideOff, root, 0.82f, n * 47f);
                 n++;
             }
+
+            // Gate mouth: one crate / barrel at spawn — "someone tried to barricade".
+            Vector3 gate = lane.GetPoint(0);
+            Vector3 inDir = (lane.GetPoint(1) - gate);
+            inDir.y = 0f;
+            if (inDir.sqrMagnitude > 0.01f) inDir.Normalize();
+            Vector3 gateSide = Vector3.Cross(Vector3.up, inDir);
+            Spawn(wallProps[(n + 2) % wallProps.Length],
+                gate + gateSide * 2.4f + inDir * 1.2f, root, 0.8f, n * 33f);
+            n++;
         }
     }
 
-    static void Spawn(string resourcesPath, Vector3 pos, Transform parent, float scale, float yaw)
+    void DressBayDebris(Transform root)
     {
-        foreach (var machine in FindObjectsByType<MachineBase>(FindObjectsInactive.Exclude))
-            if (machine != null && (machine.transform.position - pos).sqrMagnitude < 2.25f)
-                return;
-        foreach (var defense in FindObjectsByType<DefenseBase>(FindObjectsInactive.Exclude))
-            if (defense != null && (defense.transform.position - pos).sqrMagnitude < 2.25f)
-                return;
+        // One quiet prop near each vein — salvage left mid-job.
+        int i = 0;
+        foreach (var node in FindObjectsByType<ResourceNode>(FindObjectsInactive.Exclude))
+        {
+            if (node == null) continue;
+            // Skip hub vein — nest already dresses that area.
+            if (node.transform.position.sqrMagnitude < 80f) continue;
+
+            string prop = (i % 2 == 0) ? "Prop_Crate" : "Prop_Barrel1";
+            Vector3 offset = new Vector3(
+                (i % 2 == 0) ? 1.8f : -1.8f,
+                0f,
+                (i % 3 == 0) ? 1.4f : -1.4f);
+            Spawn(prop, node.transform.position + offset, root, 0.78f, i * 61f);
+            i++;
+            if (i >= 6) break; // keep sparse
+        }
+    }
+
+    static void Spawn(string resourcesPath, Vector3 pos, Transform parent, float scale, float yaw,
+        bool skipClearance = false)
+    {
+        if (!skipClearance)
+        {
+            foreach (var machine in FindObjectsByType<MachineBase>(FindObjectsInactive.Exclude))
+                if (machine != null && (machine.transform.position - pos).sqrMagnitude < 2.25f)
+                    return;
+            foreach (var defense in FindObjectsByType<DefenseBase>(FindObjectsInactive.Exclude))
+                if (defense != null && (defense.transform.position - pos).sqrMagnitude < 2.25f)
+                    return;
+        }
 
         var prefab = Resources.Load<GameObject>("ArtPlaceholders/" + resourcesPath);
         if (prefab == null) return;
+
         float floorY = RuntimeVisualPrimitives.FindDeckY(pos, pos.y);
-        pos.y = floorY;
+        // Mug / screen sit on the desk surface, not the deck.
+        bool onDesk = resourcesPath is "Prop_Mug" or "desk_computerScreen";
+        pos.y = onDesk ? floorY + 0.92f : floorY;
+
         Quaternion rotation = Quaternion.Euler(0f, yaw, 0f) * prefab.transform.rotation;
         var go = Instantiate(prefab, pos, rotation, parent);
         go.name = resourcesPath;
         go.transform.localScale = prefab.transform.localScale;
         foreach (var c in go.GetComponentsInChildren<Collider>())
             Destroy(c);
-        FitProp(go, resourcesPath, floorY, scale);
+        FitProp(go, resourcesPath, pos.y, scale);
 
-        // Built-in RP safety: force Standard if URP mats slipped in
         foreach (var r in go.GetComponentsInChildren<Renderer>())
         {
             var mats = r.sharedMaterials;
@@ -132,12 +221,23 @@ public class PlaceholderPropDressing : MonoBehaviour
             "Prop_Locker" => 1.7f,
             "Prop_Shelves_WideTall" => 1.75f,
             "Prop_Computer" => 1.05f,
+            "Prop_Desk_Small" => 0.95f,
+            "Prop_Chair" => 0.95f,
+            "Prop_Mug" => 0.18f,
+            "desk_computerScreen" => 0.45f,
+            "Prop_Fan_Small" => 0.7f,
+            "Prop_AccessPoint" => 1.1f,
+            "Prop_Crate_Tarp" => 0.85f,
+            "Prop_Barrel2_Open" => 0.9f,
             _ => 0.8f,
         };
         float targetWidth = resourcePath switch
         {
             "Prop_Shelves_WideTall" => 1.6f,
             "Prop_Computer" => 1.2f,
+            "Prop_Desk_Small" => 1.35f,
+            "Prop_Mug" => 0.22f,
+            "desk_computerScreen" => 0.55f,
             _ => 0.9f,
         };
         targetHeight *= sizeMultiplier;

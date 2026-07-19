@@ -1,0 +1,5 @@
+Share Tech Mono
+Copyright 2012 The Share Tech Mono Project Authors
+Licensed under the SIL Open Font License, Version 1.1
+https://scripts.sil.org/OFL
+Source: https://github.com/google/fonts/tree/main/ofl/sharetechmono

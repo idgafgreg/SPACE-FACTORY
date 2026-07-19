@@ -37,8 +37,11 @@ public static class SectorRuntimeBootstrap
         var wave = Object.FindAnyObjectByType<WaveController>();
         if (wave == null)
         {
-            // Not a sector scene (e.g. MainMenu) — make sure the mood fog is off.
-            RenderSettings.fog = false;
+            // Main menu gets its own atmosphere; other non-sector scenes stay clear.
+            if (SceneManager.GetActiveScene().name == "MainMenu")
+                MainMenuAtmosphere.Ensure();
+            else
+                RenderSettings.fog = false;
             return;
         }
 
@@ -63,6 +66,7 @@ public static class SectorRuntimeBootstrap
         go.AddComponent<ConveyorFlowFX>();
         go.AddComponent<ShipInteriorUpgrade>();
         go.AddComponent<PlaceholderPropDressing>();
+        go.AddComponent<EnvironmentalLore>();
         go.AddComponent<ArtPlaceholderFitter>();
         go.AddComponent<CameraFramingTune>();
         go.AddComponent<FactoryReadabilityPass>();

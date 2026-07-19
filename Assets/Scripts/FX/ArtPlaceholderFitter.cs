@@ -153,10 +153,12 @@ public class ArtPlaceholderFitter : MonoBehaviour
         if (parent.name == "CommandHub") return 2.55f;
         if (parent.name == "Workshop") return 1.4f;
         if (parent.GetComponent<AutoTurret>() != null) return 1.15f;
-        if (parent.GetComponent<Barrier>() != null) return 1.35f;
+        if (parent.GetComponent<Barrier>() != null)
+            return parent.name.Contains("Bulwark") ? 1.85f : 1.35f;
         if (parent.GetComponent<ShockTrap>() != null) return 0.45f;
         if (parent.GetComponent<RepairPost>() != null) return 1.2f;
-        if (parent.GetComponent<MiningDrill>() != null) return 1.35f;
+        if (parent.GetComponent<MiningDrill>() != null)
+            return parent.name.Contains("Turbo") ? 1.7f : 1.35f;
         if (parent.GetComponent<Processor>() != null) return 1.45f;
         if (parent.GetComponent<PowerTap>() != null) return 1.1f;
         if (parent.GetComponent<ResourceNode>() != null) return 0.85f;

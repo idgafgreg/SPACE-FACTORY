@@ -31,7 +31,11 @@ public class RuntimeArtBackfill : MonoBehaviour
         foreach (var belt in FindObjectsByType<ConveyorBelt>(FindObjectsInactive.Exclude))
         {
             if (belt == null) continue;
-            EnsureArt(belt.gameObject, "ArtPlaceholders/conveyor");
+            // Player RelayNodes use a junction mesh; auto belts keep the long conveyor.
+            string beltArt = belt.name.Contains("Relay")
+                ? "ArtPlaceholders/conveyor-junction-t"
+                : "ArtPlaceholders/conveyor";
+            EnsureArt(belt.gameObject, beltArt);
             EnsureBlobShadow(belt.transform, 1.0f);
         }
 
@@ -100,16 +104,18 @@ public class RuntimeArtBackfill : MonoBehaviour
 
     static string PickMachineModel(MachineBase m)
     {
-        if (m is MiningDrill) return m.name.Contains("Turbo") || m.name.Contains("Energy")
-            ? "ArtPlaceholders/machine-fortified" : "ArtPlaceholders/machine";
+        // Keep silhouettes unique per role (matches PlaceholderArtApplier).
+        if (m is MiningDrill)
+            return m.name.Contains("Turbo") || m.name.Contains("Energy")
+                ? "ArtPlaceholders/crane-magnet"
+                : "ArtPlaceholders/hopper-high-round";
         if (m is Processor)
         {
             if (m.name.Contains("Reactor")) return "ArtPlaceholders/pipe-large-valve";
-            if (m.name.Contains("Refiner")) return "ArtPlaceholders/machine-fortified";
-            return "ArtPlaceholders/machine-window";
+            return "ArtPlaceholders/robot-arm-a";
         }
         if (m is PowerTap) return "ArtPlaceholders/pipe-large-valve";
-        return "ArtPlaceholders/machine";
+        return "ArtPlaceholders/hopper-high-round";
     }
 
     static string PickDefenseModel(DefenseBase d)
@@ -117,10 +123,12 @@ public class RuntimeArtBackfill : MonoBehaviour
         if (d is AutoTurret)
             return d.name.Contains("Heavy") ? "ArtPlaceholders/turret_double" : "ArtPlaceholders/turret_single";
         if (d is Barrier)
-            return d.name.Contains("Bulwark") ? "ArtPlaceholders/machine" : "ArtPlaceholders/machine-fortified";
+            return d.name.Contains("Bulwark")
+                ? "ArtPlaceholders/structure-yellow-tall"
+                : "ArtPlaceholders/structure-yellow-short";
         if (d is ShockTrap) return "ArtPlaceholders/Prop_Mine";
         if (d is RepairPost) return "ArtPlaceholders/machine-window";
-        return "ArtPlaceholders/machine";
+        return "ArtPlaceholders/structure-yellow-short";
     }
 
     static string PickEnemyModel(EnemyBase e)

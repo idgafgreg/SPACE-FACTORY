@@ -22,11 +22,11 @@ public class UIHotbar : MonoBehaviour
     public float slotSpacing = 6f;
     public float bottomMargin = 12f;
 
-    static readonly Color SlotColor       = new Color(0.10f, 0.12f, 0.16f, 0.85f);
-    static readonly Color SlotSelected    = new Color(0.20f, 0.45f, 0.30f, 0.95f);
-    static readonly Color SlotDemolish    = new Color(0.55f, 0.18f, 0.15f, 0.95f);
-    static readonly Color TextNormal      = Color.white;
-    static readonly Color TextUnaffordable = new Color(1f, 0.45f, 0.4f);
+    static readonly Color SlotColor        = ShipTerminalUI.SlotIdle;
+    static readonly Color SlotSelected     = ShipTerminalUI.SlotActive;
+    static readonly Color SlotDemolish     = ShipTerminalUI.SlotDemo;
+    static readonly Color TextNormal       = ShipTerminalUI.TextPrimary;
+    static readonly Color TextUnaffordable = ShipTerminalUI.TextWarn;
 
     readonly List<Image> _slotBackgrounds = new();
     readonly List<Text>  _costTexts       = new();
@@ -43,7 +43,7 @@ public class UIHotbar : MonoBehaviour
         if (!weapon)    weapon    = FindAnyObjectByType<PlayerWeapon>();
         if (buildTool == null) { enabled = false; return; }
 
-        _font = Resources.GetBuiltinResource<Font>("LegacyRuntime.ttf");
+        _font = ShipTerminalUI.Mono;
         _buildSystem = BuildSystem.Instance;
         BuildSlots();
         buildTool.onSelectionChanged.AddListener(OnSelectionChanged);
@@ -75,11 +75,11 @@ public class UIHotbar : MonoBehaviour
                     continue;
                 }
 
-                _costTexts[i].text  = def.scrapCost + " scrap";
+                _costTexts[i].text  = def.scrapCost + " SCRAP";
                 _costTexts[i].color = scrap >= def.scrapCost ? TextNormal : TextUnaffordable;
                 if (i < _nameTexts.Count)
                 {
-                    _nameTexts[i].text  = def.displayName;
+                    _nameTexts[i].text  = def.displayName.ToUpperInvariant();
                     _nameTexts[i].color = TextNormal;
                 }
             }
@@ -90,7 +90,7 @@ public class UIHotbar : MonoBehaviour
             int energy = inventory != null ? inventory.Get(ResourceTypeId.EnergyCells) : 0;
             _weaponText.text = "SIDEARM\n" +
                                weapon.ShotsUntilPause + "/" + weapon.EffectiveShotsBeforePause +
-                               "\n⚡" + energy;
+                               "\nE " + energy;
             _weaponText.color = energy > 0 ? TextNormal : TextUnaffordable;
         }
     }
@@ -144,12 +144,12 @@ public class UIHotbar : MonoBehaviour
         demoSlot.gameObject.AddComponent<Button>().onClick
             .AddListener(() => buildTool.ToggleDemolishMode());
         AddText(demoSlot, "X", 13, TextAnchor.UpperLeft, new Vector2(6f, -3f));
-        AddText(demoSlot, "Deconstruct", 13, TextAnchor.MiddleCenter, Vector2.zero);
-        AddText(demoSlot, "full refund", 11, TextAnchor.LowerCenter, new Vector2(0f, 4f));
+        AddText(demoSlot, "SCRAP", 13, TextAnchor.MiddleCenter, Vector2.zero);
+        AddText(demoSlot, "FULL REFUND", 11, TextAnchor.LowerCenter, new Vector2(0f, 4f));
 
         // Sidearm slot (display only) on the far right.
         var weaponSlot = MakeSlot(root.transform, "WeaponSlot", x0 + (n + 1) * (slotWidth + slotSpacing));
-        _weaponText = AddText(weaponSlot, "SIDEARM", 13, TextAnchor.MiddleCenter, Vector2.zero);
+        _weaponText = AddText(weaponSlot, "SIDEARM", 12, TextAnchor.MiddleCenter, Vector2.zero);
     }
 
     RectTransform MakeSlot(Transform parent, string name, float x)
