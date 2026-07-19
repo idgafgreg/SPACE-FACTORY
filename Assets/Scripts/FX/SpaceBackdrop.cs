@@ -49,9 +49,22 @@ public class SpaceBackdrop : MonoBehaviour
     /// </summary>
     void SpawnDeckWindows()
     {
-        var frameMat = new Material(Shader.Find("Standard")) { color = Color.black };
+        // Steel frame with a restrained cool glow — reads as a machined window
+        // surround, not another bright green light strip.
+        var frameMat = new Material(Shader.Find("Standard"))
+        {
+            color = new Color(0.28f, 0.32f, 0.38f)
+        };
+        frameMat.SetFloat("_Metallic", 0.85f);
+        frameMat.SetFloat("_Glossiness", 0.6f);
         frameMat.EnableKeyword("_EMISSION");
-        frameMat.SetColor("_EmissionColor", new Color(0.35f, 0.85f, 1f) * 1.4f);
+        frameMat.SetColor("_EmissionColor", new Color(0.30f, 0.55f, 0.75f) * 0.35f);
+
+        // Faint reflective sheen streak so the panel reads as glass, not a hole.
+        var glassMat = new Material(Shader.Find("Sprites/Default"))
+        {
+            color = new Color(0.6f, 0.8f, 1f, 0.10f)
+        };
 
         // Fixed ring of candidate spots around the hub; skip any that already
         // hold scenery/machines so a panel never pokes through a building.
@@ -65,7 +78,7 @@ public class SpaceBackdrop : MonoBehaviour
         int placed = 0;
         foreach (var s in spots)
         {
-            if (placed >= 4) break;
+            if (placed >= 3) break;
             // Anything but bare deck at this spot? Skip. The probe floats well
             // clear of the deck surface so the floor itself never rejects a
             // spot. Lane-steering volumes (Ring_*/Corr_*) are invisible enemy
@@ -89,14 +102,33 @@ public class SpaceBackdrop : MonoBehaviour
             win.transform.SetParent(transform, false);
             win.transform.position = s + Vector3.up * 0.03f;
             win.transform.rotation = Quaternion.Euler(90f, 0f, 0f);
-            win.transform.localScale = new Vector3(2.2f, 5.5f, 1f);
-            var wm = new Material(Shader.Find("Sprites/Default")) { mainTexture = _mat.mainTexture };
+            win.transform.localScale = new Vector3(1.9f, 4.6f, 1f);
+            // Cool glass tint over the stars — "space seen through a blue-lit
+            // pane," not a black void-colored gap in the deck.
+            var wm = new Material(Shader.Find("Sprites/Default"))
+            {
+                mainTexture = _mat.mainTexture,
+                color = new Color(0.55f, 0.72f, 1f, 1f)
+            };
             wm.mainTextureScale = new Vector2(0.35f, 0.9f);
             wm.mainTextureOffset = new Vector2(placed * 0.31f, placed * 0.17f);
             var wr = win.GetComponent<Renderer>();
             wr.sharedMaterial = wm;
             wr.shadowCastingMode = UnityEngine.Rendering.ShadowCastingMode.Off;
             wr.receiveShadows = false;
+
+            // Diagonal sheen bar — a moving-highlight cue that a solid pane is there.
+            var sheen = GameObject.CreatePrimitive(PrimitiveType.Quad);
+            sheen.name = "WindowSheen";
+            Destroy(sheen.GetComponent<Collider>());
+            sheen.transform.SetParent(win.transform, false);
+            sheen.transform.localPosition = new Vector3(0.1f, 0.05f, -0.02f);
+            sheen.transform.localRotation = Quaternion.Euler(0f, 0f, 22f);
+            sheen.transform.localScale = new Vector3(0.22f, 1.3f, 1f);
+            var sr = sheen.GetComponent<Renderer>();
+            sr.sharedMaterial = glassMat;
+            sr.shadowCastingMode = UnityEngine.Rendering.ShadowCastingMode.Off;
+            sr.receiveShadows = false;
 
             for (int i = 0; i < 4; i++)
             {
@@ -135,7 +167,7 @@ public class SpaceBackdrop : MonoBehaviour
             name = "Starfield"
         };
         var px = new Color[S * S];
-        var deep = new Color(0.012f, 0.02f, 0.047f); // near-black navy
+        var deep = ShipPalette.VoidShell; // sick-green void, not navy sci-fi blue
         for (int i = 0; i < px.Length; i++) px[i] = deep;
 
         var rng = new System.Random(12345); // stable field between runs

@@ -33,20 +33,22 @@ public class UIPlayerHealthBar : MonoBehaviour
             _label.text = "RESPAWNING…";
             return;
         }
-        _shownDead = false;
+        // Dead→alive: force a refresh so the label leaves "RESPAWNING…" even when
+        // the player respawns to the same health fraction they died at (full→full).
+        if (_shownDead) { _shownDead = false; _shownFraction = -1f; }
 
         float frac = p.maxHealth > 0f ? p.CurrentHealth / p.maxHealth : 0f;
         if (Mathf.Approximately(frac, _shownFraction)) return;
         _shownFraction = frac;
 
         _fill.rectTransform.anchorMax = new Vector2(Mathf.Clamp01(frac), 1f);
-        _fill.color = Color.Lerp(new Color(0.75f, 0.2f, 0.15f), new Color(0.25f, 0.55f, 0.85f), frac);
-        _label.text = "YOU  " + Mathf.CeilToInt(p.CurrentHealth) + " / " + Mathf.CeilToInt(p.maxHealth);
+        _fill.color = Color.Lerp(ShipPalette.HubAlarm, ShipTerminalUI.TextGood, frac);
+        _label.text = "[VITAL]  " + Mathf.CeilToInt(p.CurrentHealth) + " / " + Mathf.CeilToInt(p.maxHealth);
     }
 
     void Build()
     {
-        var font = Resources.GetBuiltinResource<Font>("LegacyRuntime.ttf");
+        var font = ShipTerminalUI.Mono;
 
         var frame = new GameObject("PlayerHealthBar", typeof(RectTransform), typeof(Image));
         var rt = (RectTransform)frame.transform;
@@ -55,7 +57,7 @@ public class UIPlayerHealthBar : MonoBehaviour
         rt.pivot = new Vector2(0f, 0f);
         rt.anchoredPosition = margin;
         rt.sizeDelta = new Vector2(width, height);
-        frame.GetComponent<Image>().color = new Color(0f, 0f, 0f, 0.6f);
+        frame.GetComponent<Image>().color = ShipTerminalUI.PanelBg;
 
         var fillGo = new GameObject("Fill", typeof(RectTransform), typeof(Image));
         var fillRt = (RectTransform)fillGo.transform;
@@ -73,7 +75,7 @@ public class UIPlayerHealthBar : MonoBehaviour
         labelRt.anchorMin = Vector2.zero; labelRt.anchorMax = Vector2.one;
         labelRt.offsetMin = labelRt.offsetMax = Vector2.zero;
         _label = labelGo.AddComponent<Text>();
-        _label.font = font; _label.fontSize = 11; _label.color = Color.white;
+        _label.font = font; _label.fontSize = 11; _label.color = ShipTerminalUI.TextPrimary;
         _label.alignment = TextAnchor.MiddleCenter;
         _label.raycastTarget = false;
     }

@@ -1,80 +1,132 @@
 using UnityEngine;
 
 /// <summary>
-/// Floor readability pass: translucent hazard stripes down the enemy
-/// corridors (the gaps between the authored Ring_*/Corr_* steering walls) so
-/// attack routes read at a glance, plus procedural grime blotches that break
-/// the uniform deck tiling (Mindustry/Riftbreaker floors are never clean).
+/// Factorio-style floor language: hazard-striped attack corridors, hub pad,
+/// resource bay pads, and grime so the deck reads as a worked ship floor
+/// instead of one flat grey plane.
 ///
-/// Corridor rectangles are hardcoded to the authored Sector01 lane layout —
-/// the map is static and rebuilt only by ShipMapRebuild.
+/// Prefer live <see cref="SectorLayout"/> lane geometry; fall back to the
+/// authored Sector01 rectangles if layout is missing.
 /// </summary>
 public class FloorZoning : MonoBehaviour
 {
-    // 0.18 tuned against the pale corridor floor material — anything lower
-    // washes out entirely under the hub light pool.
-    static readonly Color LaneTint = new Color(0.95f, 0.5f, 0.2f, 0.18f);
+    static readonly Color LaneWarm = new Color(ShipPalette.Amber.r, ShipPalette.Amber.g, ShipPalette.Amber.b, 1f);
+    static readonly Color HubCool = new Color(ShipPalette.HubCalm.r, ShipPalette.HubCalm.g, ShipPalette.HubCalm.b, 1f);
+    static readonly Color BayScrap = new Color(0.95f, 0.55f, 0.22f, 1f);
+    static readonly Color BayEnergy = new Color(1f, 0.92f, 0.35f, 1f);
+    static readonly Color BayCircuit = new Color(0.35f, 0.85f, 1f, 1f);
+
+    static Texture2D _hazardTex;
+    static Texture2D _grimeTex;
+    static Texture2D _padRingTex;
 
     void Start()
     {
         SpawnLaneStripes();
+        SpawnHubPad();
+        SpawnBayPads();
         SpawnGrime();
     }
 
     void SpawnLaneStripes()
     {
-        var mat = new Material(Shader.Find("Sprites/Default")) { color = LaneTint };
+        var hazardMat = DecalMat(HazardTexture(), LaneWarm, 0.28f);
+        var edgeMat = SolidMat(new Color(1f, 0.78f, 0.25f, 0.4f));
 
-        // (center.x, center.z, width.x, width.z) in world units.
-        var lanes = new[]
+        var layout = SectorLayout.Instance;
+        if (layout != null && layout.lanes != null && layout.lanes.Length > 0)
         {
-            (x: -22f, z: 0f,    w: 20f,  l: 4.5f), // port corridor
-            (x: 22f,  z: 0f,    w: 20f,  l: 4.5f), // starboard corridor
-            (x: 0f,   z: 14f,   w: 4.5f, l: 16f),  // bow corridor
-            (x: 0f,   z: -14f,  w: 4.5f, l: 16f),  // vent corridor
-            (x: 25f,  z: -13f,  w: 16f,  l: 4.5f), // engineering approach
-        };
-        foreach (var lane in lanes)
+            foreach (var lane in layout.lanes)
+            {
+                if (lane == null || lane.PointCount < 2) continue;
+                for (int i = 0; i < lane.PointCount - 1; i++)
+                {
+                    Vector3 a = lane.GetPoint(i);
+                    Vector3 b = lane.GetPoint(i + 1);
+                    a.y = b.y = 0f;
+                    float len = Vector3.Distance(a, b);
+                    if (len < 0.4f) continue;
+
+                    Vector3 mid = (a + b) * 0.5f;
+                    Vector3 dir = (b - a) / len;
+                    Vector3 side = Vector3.Cross(Vector3.up, dir);
+
+                    // Narrow hazard walkway under the attack path — edging, not carpet.
+                    SpawnDeckStrip("LaneStripe", mid, dir, len * 0.96f, 2.2f, 0.022f, hazardMat);
+
+                    // Bright edge ticks so corridor width reads under fog.
+                    for (int s = -1; s <= 1; s += 2)
+                        SpawnDeckStrip("LaneEdge", mid + side * (s * 1.72f), dir,
+                            len * 0.94f, 0.11f, 0.028f, edgeMat);
+                }
+            }
+            return;
+        }
+
+        // Fallback: hardcoded Sector01 bays (ShipMapRebuild layout).
+        SpawnFlatQuad("LaneStripe", new Vector3(-22f, 0.022f, 0f), 20f, 4.2f, hazardMat);
+        SpawnFlatQuad("LaneStripe", new Vector3(22f, 0.022f, 0f), 20f, 4.2f, hazardMat);
+        SpawnFlatQuad("LaneStripe", new Vector3(0f, 0.022f, 14f), 4.2f, 16f, hazardMat);
+        SpawnFlatQuad("LaneStripe", new Vector3(0f, 0.022f, -14f), 4.2f, 16f, hazardMat);
+        SpawnFlatQuad("LaneStripe", new Vector3(25f, 0.022f, -13f), 16f, 4.2f, hazardMat);
+    }
+
+    void SpawnHubPad()
+    {
+        Transform hub = null;
+        if (SectorLayout.Instance != null)
+            hub = SectorLayout.Instance.commandHubTransform;
+        if (hub == null)
         {
-            var quad = GameObject.CreatePrimitive(PrimitiveType.Quad);
-            quad.name = "LaneStripe";
-            Destroy(quad.GetComponent<Collider>());
-            quad.transform.SetParent(transform, false);
-            quad.transform.position = new Vector3(lane.x, 0.025f, lane.z);
-            quad.transform.rotation = Quaternion.Euler(90f, 0f, 0f);
-            quad.transform.localScale = new Vector3(lane.w, lane.l, 1f);
-            var r = quad.GetComponent<Renderer>();
-            r.sharedMaterial = mat;
-            r.shadowCastingMode = UnityEngine.Rendering.ShadowCastingMode.Off;
-            r.receiveShadows = false;
+            var go = GameObject.Find("CommandHub");
+            if (go != null) hub = go.transform;
+        }
+        if (hub == null) return;
+
+        var padMat = DecalMat(PadRingTexture(), HubCool, 0.32f);
+        var ringMat = SolidMat(new Color(0.45f, 0.95f, 1f, 0.28f));
+        Vector3 p = hub.position;
+        SpawnFlatQuad("HubPad", new Vector3(p.x, 0.018f, p.z), 7.4f, 7.4f, padMat);
+        SpawnFlatQuad("HubPadRing", new Vector3(p.x, 0.016f, p.z), 8.1f, 8.1f, ringMat);
+    }
+
+    void SpawnBayPads()
+    {
+        foreach (var node in FindObjectsByType<ResourceNode>(FindObjectsInactive.Exclude))
+        {
+            if (node == null) continue;
+            Color c = node.resourceType switch
+            {
+                ResourceTypeId.EnergyCells => BayEnergy,
+                ResourceTypeId.CircuitComponents => BayCircuit,
+                _ => BayScrap
+            };
+            var mat = DecalMat(PadRingTexture(), c, 0.3f);
+            float s = 3.1f + node.transform.localScale.x * 0.35f;
+            Vector3 p = node.transform.position;
+            SpawnFlatQuad("BayPad", new Vector3(p.x, 0.019f, p.z), s, s, mat);
         }
     }
 
     void SpawnGrime()
     {
-        var tex = GrimeTexture();
-        var mat = new Material(Shader.Find("Sprites/Default"))
-        {
-            mainTexture = tex,
-            color = new Color(0f, 0f, 0f, 0.55f) // texture alpha carries the shape
-        };
-
-        var rng = new System.Random(777); // deterministic dressing
+        var mat = DecalMat(GrimeTexture(), Color.black, 0.75f);
+        var rng = new System.Random(777);
         int placed = 0;
-        for (int i = 0; i < 40 && placed < 14; i++)
+        for (int i = 0; i < 48 && placed < 18; i++)
         {
             float x = (float)(rng.NextDouble() * 56.0 - 28.0);
             float z = (float)(rng.NextDouble() * 44.0 - 22.0);
-            // Keep splotches off the hub pad centre.
-            if (x * x + z * z < 36f) continue;
+            if (x * x + z * z < 42f) continue;
 
+            float s = 1.8f + (float)rng.NextDouble() * 2.8f;
+            float yaw = (float)(rng.NextDouble() * 360.0);
             var quad = GameObject.CreatePrimitive(PrimitiveType.Quad);
             quad.name = "GrimeDecal";
             Destroy(quad.GetComponent<Collider>());
             quad.transform.SetParent(transform, false);
-            quad.transform.position = new Vector3(x, 0.02f, z);
-            quad.transform.rotation = Quaternion.Euler(90f, (float)(rng.NextDouble() * 360.0), 0f);
-            float s = 1.6f + (float)rng.NextDouble() * 2.6f;
+            quad.transform.position = new Vector3(x, 0.015f, z);
+            quad.transform.rotation = Quaternion.Euler(90f, yaw, 0f);
             quad.transform.localScale = new Vector3(s, s, 1f);
             var r = quad.GetComponent<Renderer>();
             r.sharedMaterial = mat;
@@ -84,11 +136,118 @@ public class FloorZoning : MonoBehaviour
         }
     }
 
-    /// <summary>Soft irregular blotch with alpha falloff — scorch/oil stain.</summary>
+    /// <summary>Oriented deck strip (cube) — reliable under iso camera.</summary>
+    void SpawnDeckStrip(string name, Vector3 mid, Vector3 dir, float length, float width,
+        float y, Material mat)
+    {
+        if (length < 0.2f || width < 0.05f) return;
+        var go = GameObject.CreatePrimitive(PrimitiveType.Cube);
+        go.name = name;
+        Destroy(go.GetComponent<Collider>());
+        go.transform.SetParent(transform, false);
+        mid.y = y;
+        go.transform.position = mid;
+        go.transform.rotation = Quaternion.LookRotation(dir, Vector3.up);
+        go.transform.localScale = new Vector3(width, 0.02f, length);
+        var r = go.GetComponent<Renderer>();
+        r.sharedMaterial = mat;
+        r.shadowCastingMode = UnityEngine.Rendering.ShadowCastingMode.Off;
+        r.receiveShadows = false;
+    }
+
+    /// <summary>Axis-aligned floor quad (hub / bay pads).</summary>
+    void SpawnFlatQuad(string name, Vector3 pos, float sizeX, float sizeZ, Material mat)
+    {
+        var quad = GameObject.CreatePrimitive(PrimitiveType.Quad);
+        quad.name = name;
+        Destroy(quad.GetComponent<Collider>());
+        quad.transform.SetParent(transform, false);
+        quad.transform.position = pos;
+        quad.transform.rotation = Quaternion.Euler(90f, 0f, 0f);
+        quad.transform.localScale = new Vector3(sizeX, sizeZ, 1f);
+        var r = quad.GetComponent<Renderer>();
+        r.sharedMaterial = mat;
+        r.shadowCastingMode = UnityEngine.Rendering.ShadowCastingMode.Off;
+        r.receiveShadows = false;
+    }
+
+    static Material DecalMat(Texture2D tex, Color tint, float alphaScale)
+    {
+        var mat = new Material(Shader.Find("Sprites/Default"));
+        if (tex != null)
+        {
+            mat.mainTexture = tex;
+            // Texture alpha carries shape; tint.a * scale sets strength.
+            mat.color = new Color(tint.r, tint.g, tint.b, Mathf.Clamp01(alphaScale));
+        }
+        else
+        {
+            mat.color = new Color(tint.r, tint.g, tint.b, Mathf.Clamp01(alphaScale));
+        }
+        return mat;
+    }
+
+    static Material SolidMat(Color c)
+    {
+        return new Material(Shader.Find("Sprites/Default")) { color = c };
+    }
+
+    static Texture2D HazardTexture()
+    {
+        if (_hazardTex != null) return _hazardTex;
+        const int S = 64;
+        _hazardTex = new Texture2D(S, S, TextureFormat.RGBA32, false)
+        {
+            wrapMode = TextureWrapMode.Repeat,
+            filterMode = FilterMode.Bilinear,
+            name = "FloorHazard"
+        };
+        for (int y = 0; y < S; y++)
+        for (int x = 0; x < S; x++)
+        {
+            bool stripe = ((x + y) / 10) % 2 == 0;
+            _hazardTex.SetPixel(x, y, stripe
+                ? new Color(1f, 0.85f, 0.2f, 0.7f)
+                : new Color(0.08f, 0.07f, 0.06f, 0.45f));
+        }
+        _hazardTex.Apply();
+        // Stretch stripes along corridor length when used on a cube (tiling via scale).
+        _hazardTex.wrapMode = TextureWrapMode.Repeat;
+        return _hazardTex;
+    }
+
+    static Texture2D PadRingTexture()
+    {
+        if (_padRingTex != null) return _padRingTex;
+        const int S = 128;
+        _padRingTex = new Texture2D(S, S, TextureFormat.RGBA32, false)
+        {
+            wrapMode = TextureWrapMode.Clamp,
+            filterMode = FilterMode.Bilinear,
+            name = "FloorPadRing"
+        };
+        float cx = S * 0.5f;
+        for (int y = 0; y < S; y++)
+        for (int x = 0; x < S; x++)
+        {
+            float d = Vector2.Distance(new Vector2(x, y), new Vector2(cx, cx)) / cx;
+            float a = 0f;
+            if (d < 0.92f) a = 0.28f * (1f - d * 0.45f);
+            if (d > 0.72f && d < 0.88f) a = 0.9f;
+            if (d > 0.95f) a = 0f;
+            if (d < 0.7f && ((x + y) % 18 < 2 || Mathf.Abs(x - y) % 22 < 2))
+                a = Mathf.Max(a, 0.4f);
+            _padRingTex.SetPixel(x, y, new Color(1f, 1f, 1f, a));
+        }
+        _padRingTex.Apply();
+        return _padRingTex;
+    }
+
     static Texture2D GrimeTexture()
     {
+        if (_grimeTex != null) return _grimeTex;
         const int S = 128;
-        var tex = new Texture2D(S, S, TextureFormat.RGBA32, true)
+        _grimeTex = new Texture2D(S, S, TextureFormat.RGBA32, true)
         {
             wrapMode = TextureWrapMode.Clamp,
             filterMode = FilterMode.Bilinear,
@@ -96,7 +255,6 @@ public class FloorZoning : MonoBehaviour
         };
         var px = new Color[S * S];
         var rng = new System.Random(42);
-        // A few overlapping soft discs make an irregular blotch.
         var blobs = new (float x, float y, float r)[5];
         for (int i = 0; i < blobs.Length; i++)
             blobs[i] = (S * (0.35f + 0.3f * (float)rng.NextDouble()),
@@ -113,8 +271,8 @@ public class FloorZoning : MonoBehaviour
             }
             px[y * S + x] = new Color(1f, 1f, 1f, a * a * 0.9f);
         }
-        tex.SetPixels(px);
-        tex.Apply(true);
-        return tex;
+        _grimeTex.SetPixels(px);
+        _grimeTex.Apply(true);
+        return _grimeTex;
     }
 }

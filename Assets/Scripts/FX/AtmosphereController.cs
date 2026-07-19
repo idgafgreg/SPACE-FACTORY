@@ -1,43 +1,38 @@
 using UnityEngine;
 
 /// <summary>
-/// Horror/atmosphere mood pass (plan Track B1), applied entirely at runtime so
-/// no scene-file surgery is needed. Darkens the sector, wraps it in cold fog so
-/// the map edges fall into darkness, dims and cools the directional "sun", and
-/// gives the player a warm pool of light plus a colder emergency light at the
-/// hub. A subtle flicker on the player light sells the isolation; the hub light
-/// pulses red while a wave is active.
-///
+/// Horror/atmosphere mood pass — fog, ambient, sun, player/hub lights.
+/// Palette from <see cref="ShipPalette"/> (steel / amber / sick green).
 /// Spawned by <see cref="SectorRuntimeBootstrap"/> only in the sector scene.
-/// All settings are re-applied on scene load, so a restart keeps the mood.
 /// </summary>
 public class AtmosphereController : MonoBehaviour
 {
     [Header("Fog")]
-    // Tighter fog = Barotrauma/Dead Space corridor pressure (was too open/gray).
-    public Color fogColor    = new Color(0.05f, 0.07f, 0.09f);
-    public float fogStart    = 16f;
-    public float fogEnd      = 55f;
+    public Color fogColor = ShipPalette.Fog;
+    public float fogStart = 12f;
+    public float fogEnd = 44f;
 
     [Header("Ambient")]
-    public Color ambientColor = new Color(0.26f, 0.29f, 0.34f);
+    // Dark ambient so the deck between light pools falls into industrial gloom —
+    // pooled lamp/player/hub light is what reads (lore: lonely industrial dread).
+    public Color ambientColor = new Color(0.12f, 0.15f, 0.14f);
 
     [Header("Sun (directional light)")]
-    public float sunIntensity = 0.82f;
-    public Color sunColor     = new Color(0.62f, 0.70f, 0.86f);
+    public float sunIntensity = 0.5f;
+    public Color sunColor = ShipPalette.Sun;
 
     [Header("Player light")]
-    public Color playerLightColor = new Color(1f, 0.84f, 0.58f);
+    public Color playerLightColor = ShipPalette.PlayerLamp;
     public float playerLightRange = 13f;
-    public float playerLightBase  = 2.5f;
-    public float flickerAmount    = 0.06f;
-    public float flickerSpeed     = 13f;
+    public float playerLightBase = 2.55f;
+    public float flickerAmount = 0.07f;
+    public float flickerSpeed = 13f;
 
     [Header("Hub light")]
-    public Color hubLightColor = new Color(0.4f, 0.7f, 1f);
+    public Color hubLightColor = ShipPalette.HubCalm;
     public float hubLightRange = 16f;
-    public float hubLightBase  = 2.2f;
-    public Color hubAlarmColor = new Color(1f, 0.2f, 0.15f);
+    public float hubLightBase = 2.15f;
+    public Color hubAlarmColor = ShipPalette.HubAlarm;
 
     static AtmosphereController _instance;
     static float _alarmLevel;
@@ -55,6 +50,14 @@ public class AtmosphereController : MonoBehaviour
 
     void Start()
     {
+        // Re-bind defaults in case an old scene serialized gray values.
+        fogColor = ShipPalette.Fog;
+        ambientColor = new Color(0.12f, 0.15f, 0.14f);
+        sunColor = ShipPalette.Sun;
+        playerLightColor = ShipPalette.PlayerLamp;
+        hubLightColor = ShipPalette.HubCalm;
+        hubAlarmColor = ShipPalette.HubAlarm;
+
         ApplyGlobal();
         SetupSun();
         SetupPlayerLight();
@@ -65,27 +68,22 @@ public class AtmosphereController : MonoBehaviour
 
     void ApplyGlobal()
     {
-        RenderSettings.fog          = true;
-        RenderSettings.fogMode      = FogMode.Linear;
-        RenderSettings.fogColor     = fogColor;
+        RenderSettings.fog = true;
+        RenderSettings.fogMode = FogMode.Linear;
+        RenderSettings.fogColor = fogColor;
         RenderSettings.fogStartDistance = fogStart;
-        RenderSettings.fogEndDistance   = fogEnd;
+        RenderSettings.fogEndDistance = fogEnd;
 
-        RenderSettings.ambientMode  = UnityEngine.Rendering.AmbientMode.Flat;
-        // Force readable values (ignore stale serialized component fields).
+        RenderSettings.ambientMode = UnityEngine.Rendering.AmbientMode.Flat;
         RenderSettings.ambientLight = ambientColor;
-        ambientColor = RenderSettings.ambientLight;
 
         var cam = Camera.main;
         if (cam != null)
         {
-            cam.clearFlags      = CameraClearFlags.SolidColor;
+            cam.clearFlags = CameraClearFlags.SolidColor;
             cam.backgroundColor = fogColor;
-            // Slightly tighter FOV sells corridor pressure vs open RTS void.
-            if (cam.orthographic) { /* leave */ }
-            else cam.fieldOfView = Mathf.Clamp(cam.fieldOfView, 40f, 52f);
-            if (cam.fieldOfView > 52f || cam.fieldOfView < 35f)
-                cam.fieldOfView = 48f;
+            if (!cam.orthographic)
+                cam.fieldOfView = Mathf.Clamp(cam.fieldOfView, 40f, 50f);
         }
 
         QualitySettings.shadowDistance = 60f;
@@ -101,8 +99,8 @@ public class AtmosphereController : MonoBehaviour
 
         if (sun == null) return;
         sun.intensity = sunIntensity;
-        sun.color     = sunColor;
-        sun.shadows   = LightShadows.Soft;
+        sun.color = sunColor;
+        sun.shadows = LightShadows.Soft;
     }
 
     void SetupPlayerLight()
@@ -118,16 +116,16 @@ public class AtmosphereController : MonoBehaviour
 
         _playerLight = go.GetComponent<Light>();
         if (_playerLight == null) _playerLight = go.AddComponent<Light>();
-        _playerLight.type      = LightType.Point;
-        _playerLight.color     = playerLightColor;
-        _playerLight.range     = playerLightRange;
+        _playerLight.type = LightType.Point;
+        _playerLight.color = playerLightColor;
+        _playerLight.range = playerLightRange;
         _playerLight.intensity = playerLightBase;
     }
 
     void SetupHubLight()
     {
         var layout = SectorLayout.Instance;
-        var hub    = layout != null ? layout.commandHubTransform : null;
+        var hub = layout != null ? layout.commandHubTransform : null;
         if (hub == null) return;
 
         var existing = hub.Find("HubLight");
@@ -137,9 +135,9 @@ public class AtmosphereController : MonoBehaviour
 
         _hubLight = go.GetComponent<Light>();
         if (_hubLight == null) _hubLight = go.AddComponent<Light>();
-        _hubLight.type      = LightType.Point;
-        _hubLight.color     = hubLightColor;
-        _hubLight.range     = hubLightRange;
+        _hubLight.type = LightType.Point;
+        _hubLight.color = hubLightColor;
+        _hubLight.range = hubLightRange;
         _hubLight.intensity = hubLightBase;
     }
 
@@ -156,8 +154,9 @@ public class AtmosphereController : MonoBehaviour
             float n = Mathf.PerlinNoise(Time.time * flickerSpeed * flickerBoost, _flickerSeed);
             float baseFlicker = flickerAmount * (1f + alarm);
             _playerLight.intensity = playerLightBase * (1f - baseFlicker * (1f - n));
-            // Cool the player light toward emergency white-blue as alarm rises.
-            _playerLight.color = Color.Lerp(playerLightColor, new Color(0.75f, 0.85f, 1f), alarm * 0.5f);
+            // Alarm pulls amber worker light toward sick emergency white-green.
+            _playerLight.color = Color.Lerp(playerLightColor,
+                new Color(0.7f, 0.9f, 0.75f), alarm * 0.55f);
         }
 
         if (_hubLight != null)
@@ -165,17 +164,20 @@ public class AtmosphereController : MonoBehaviour
             if (alarm > 0.05f)
             {
                 float pulse = 0.5f + 0.5f * Mathf.Sin(Time.time * Mathf.Lerp(3f, 9f, alarm));
-                _hubLight.color     = Color.Lerp(hubLightColor, hubAlarmColor, alarm * pulse);
+                _hubLight.color = Color.Lerp(hubLightColor, hubAlarmColor, alarm * pulse);
                 _hubLight.intensity = hubLightBase * (1f + 0.7f * alarm * pulse);
             }
             else
             {
-                _hubLight.color     = hubLightColor;
-                _hubLight.intensity = hubLightBase;
+                // Slow sick-green breathe while calm — ship is alive, not cozy.
+                float breathe = 0.92f + 0.08f * Mathf.Sin(Time.time * 0.7f);
+                _hubLight.color = hubLightColor;
+                _hubLight.intensity = hubLightBase * breathe;
             }
         }
 
-        // Fog pulls in slightly during alarm so the edges feel closer.
-        RenderSettings.fogEndDistance = Mathf.Lerp(fogEnd, fogEnd * 0.72f, alarm);
+        // Fog pulls in and gets greener during alarm.
+        RenderSettings.fogEndDistance = Mathf.Lerp(fogEnd, fogEnd * 0.7f, alarm);
+        RenderSettings.fogColor = Color.Lerp(fogColor, ShipPalette.SickGreenDeep, alarm * 0.35f);
     }
 }

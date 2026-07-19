@@ -8,7 +8,7 @@ using UnityEngine;
 /// </summary>
 public class ShipInteriorUpgrade : MonoBehaviour
 {
-    const int UpgradeVersion = 45;
+    const int UpgradeVersion = 53;
 
     static Material _deckMat;
     static Material _hullMat;
@@ -20,7 +20,22 @@ public class ShipInteriorUpgrade : MonoBehaviour
     static bool _texturesReady;
     static int _matsVersion = -1;
 
+    bool _hubDressed;
+    Transform _upgradeRoot;
+
     void Start() => Upgrade();
+
+    void Update()
+    {
+        // The command hub's ArtPlaceholder is backfilled a frame or two after
+        // Start, so the hub shell can't be dressed in the one-shot Upgrade pass.
+        // Retry until the art exists, then stop.
+        if (_hubDressed) return;
+        if (Time.timeSinceLevelLoad < 1.3f) return;
+        var root = _upgradeRoot != null ? _upgradeRoot : transform.Find("InteriorUpgradeRoot");
+        if (root == null) return;
+        _hubDressed = BuildHubShell(root);
+    }
 
     public void Upgrade()
     {
@@ -44,10 +59,9 @@ public class ShipInteriorUpgrade : MonoBehaviour
         var marker = root.AddComponent<InteriorUpgradeVersion>();
         marker.version = UpgradeVersion;
 
-        // Clean release pass: materials, lights, lane-facing trim, sparse beams, hub ring.
-        // Avoid overlapping wall modules / kickplates that caused warping clutter.
+        // Clean release pass: materials on the authored cubes, lights, lane trim, hub ring.
+        // Modular FBX skinning removed — panel scale is unreliable, authored cubes ARE the walls.
         ReskinMapSurfaces();
-        EnsureMapWallsVisible();
         BuildVoidBackdrop(root.transform);
         BuildHazardRing(root.transform);
         BuildLaneDeckStripes(root.transform);
@@ -57,23 +71,100 @@ public class ShipInteriorUpgrade : MonoBehaviour
         BuildHangingBeams(root.transform);
         BuildHubDeckPad(root.transform);
         BuildHubFloodLight(root.transform);
+        _upgradeRoot = root.transform;
+        _hubDressed = BuildHubShell(root.transform);
     }
 
-    static void EnsureMapWallsVisible()
+    /// <summary>Turn the white placeholder command hub into a dark-metal structure
+    /// with amber lit windows and a calm beacon — reads as a command post, not a blob.</summary>
+    bool BuildHubShell(Transform parent)
     {
-        foreach (var r in FindObjectsByType<Renderer>(FindObjectsInactive.Exclude))
+        var hubGo = GameObject.Find("CommandHub");
+        if (hubGo == null) return false;
+        var art = hubGo.transform.Find("ArtPlaceholder");
+        if (art == null) return false;
+
+        var rends = art.GetComponentsInChildren<Renderer>();
+        Bounds b = new Bounds(art.position, Vector3.zero);
+        bool has = false;
+        foreach (var r in rends)
         {
             if (r == null) continue;
-            if (r.GetComponentInParent<ArtPlaceholderMarker>() != null) continue;
-            if (r.GetComponentInParent<Buildable>() != null) continue;
-            if (r.GetComponentInParent<MachineBase>() != null) continue;
-            if (r.GetComponentInParent<DefenseBase>() != null) continue;
-            if (r.GetComponentInParent<EnemyBase>() != null) continue;
-            if (r.GetComponentInParent<PlayerController>() != null) continue;
-            string n = r.gameObject.name.ToLowerInvariant();
-            if (n.Contains("wall") || n.Contains("hull") || n.Contains("bulkhead")
-                || n.Contains("corr_") || n.StartsWith("corr") || n.Contains("ring_"))
-                r.enabled = true;
+            var block = new MaterialPropertyBlock();
+            r.GetPropertyBlock(block);
+            block.SetColor("_Color", new Color(0.16f, 0.17f, 0.19f)); // dark steel
+            block.SetFloat("_Metallic", 0.85f);
+            block.SetFloat("_Glossiness", 0.45f);
+            r.SetPropertyBlock(block);
+            if (!has) { b = r.bounds; has = true; }
+            else b.Encapsulate(r.bounds);
+        }
+        if (!has) return false;
+
+        var winMat = new Material(Shader.Find("Standard"))
+        {
+            name = "HubWindow",
+            color = new Color(0.04f, 0.03f, 0.02f)
+        };
+        winMat.EnableKeyword("_EMISSION");
+        winMat.SetColor("_EmissionColor", ShipPalette.Amber * 1.25f);
+
+        float y = b.center.y + b.size.y * 0.10f;
+        float hx = b.extents.x, hz = b.extents.z;
+        float bandH = b.size.y * 0.26f;
+        AddHubWindow(parent, new Vector3(b.center.x, y, b.center.z + hz + 0.02f),
+            new Vector3(hx * 1.35f, bandH, 0.05f), winMat);
+        AddHubWindow(parent, new Vector3(b.center.x, y, b.center.z - hz - 0.02f),
+            new Vector3(hx * 1.35f, bandH, 0.05f), winMat);
+        AddHubWindow(parent, new Vector3(b.center.x + hx + 0.02f, y, b.center.z),
+            new Vector3(0.05f, bandH, hz * 1.35f), winMat);
+        AddHubWindow(parent, new Vector3(b.center.x - hx - 0.02f, y, b.center.z),
+            new Vector3(0.05f, bandH, hz * 1.35f), winMat);
+
+        // Calm sick-green beacon on the roof — the ship is alive, watching.
+        var beacon = GameObject.CreatePrimitive(PrimitiveType.Cube);
+        beacon.name = "HubBeacon";
+        Destroy(beacon.GetComponent<Collider>());
+        beacon.transform.SetParent(parent, false);
+        beacon.transform.position = new Vector3(b.center.x, b.max.y + 0.18f, b.center.z);
+        beacon.transform.localScale = new Vector3(0.18f, 0.32f, 0.18f);
+        var bm = new Material(Shader.Find("Standard")) { color = Color.black };
+        bm.EnableKeyword("_EMISSION");
+        bm.SetColor("_EmissionColor", ShipPalette.HubCalm * 1.4f);
+        var br = beacon.GetComponent<Renderer>();
+        br.sharedMaterial = bm;
+        br.shadowCastingMode = UnityEngine.Rendering.ShadowCastingMode.Off;
+        return true;
+    }
+
+    void AddHubWindow(Transform parent, Vector3 pos, Vector3 scale, Material mat)
+    {
+        var w = GameObject.CreatePrimitive(PrimitiveType.Cube);
+        w.name = "HubWindow";
+        Destroy(w.GetComponent<Collider>());
+        w.transform.SetParent(parent, false);
+        w.transform.position = pos;
+        w.transform.localScale = scale;
+        var r = w.GetComponent<Renderer>();
+        r.sharedMaterial = mat;
+        r.shadowCastingMode = UnityEngine.Rendering.ShadowCastingMode.Off;
+        r.receiveShadows = false;
+    }
+
+    /// <summary>
+    /// Cube Hull_/Corr_/Ring_ stay as colliders only — modular panels are the visible ship.
+    /// </summary>
+    static void HidePrimitiveHullCubes()
+    {
+        var walls = GameObject.Find("Walls");
+        if (walls == null) return;
+        foreach (Transform t in walls.transform)
+        {
+            if (t == null) continue;
+            string n = t.name;
+            if (!(n.StartsWith("Hull_") || n.StartsWith("Corr_") || n.StartsWith("Ring_"))) continue;
+            var r = t.GetComponent<Renderer>();
+            if (r != null) r.enabled = false;
         }
     }
 
@@ -81,32 +172,31 @@ public class ShipInteriorUpgrade : MonoBehaviour
     {
         if (_texturesReady && _deckMat != null) return;
 
-        // Stronger deck/wall value split for iso readability (Factorio cue).
-        var deckTex = MakePlateTexture(128, new Color(0.34f, 0.36f, 0.40f), new Color(0.48f, 0.50f, 0.54f), 24);
-        var hullTex = MakePlateTexture(128, new Color(0.10f, 0.12f, 0.16f), new Color(0.05f, 0.06f, 0.08f), 18);
+        // Steel deck / sick-green hull split (Haze palette via ShipPalette).
+        var deckTex = MakePlateTexture(128, ShipPalette.DeckDark, ShipPalette.DeckLight, 24);
+        var hullTex = MakePlateTexture(128, ShipPalette.HullLight, ShipPalette.HullDark, 18);
         var hazardTex = MakeHazardTexture(64);
 
         _deckMat = new Material(Shader.Find("Standard")) { name = "RuntimeDeck" };
         _deckMat.mainTexture = deckTex;
         _deckMat.mainTextureScale = new Vector2(8f, 8f);
         _deckMat.color = Color.white;
-        _deckMat.SetFloat("_Metallic", 0.55f);
-        _deckMat.SetFloat("_Glossiness", 0.35f);
+        _deckMat.SetFloat("_Metallic", 0.58f);
+        _deckMat.SetFloat("_Glossiness", 0.32f);
 
         _hullMat = new Material(Shader.Find("Standard")) { name = "RuntimeHull" };
         _hullMat.mainTexture = hullTex;
         _hullMat.mainTextureScale = new Vector2(2f, 2f);
         _hullMat.color = Color.white;
-        _hullMat.SetFloat("_Metallic", 0.75f);
-        _hullMat.SetFloat("_Glossiness", 0.42f);
+        _hullMat.SetFloat("_Metallic", 0.78f);
+        _hullMat.SetFloat("_Glossiness", 0.4f);
         _hullMat.EnableKeyword("_EMISSION");
-        _hullMat.SetColor("_EmissionColor", new Color(0.025f, 0.035f, 0.05f));
+        _hullMat.SetColor("_EmissionColor", ShipPalette.SickGreenDeep * 1.4f);
 
         _trimMat = new Material(Shader.Find("Standard")) { name = "RuntimeTrim" };
-        _trimMat.color = new Color(0.32f, 0.48f, 0.58f);
+        _trimMat.color = Color.Lerp(ShipPalette.SteelDark, ShipPalette.SickGreen, 0.45f);
         _trimMat.EnableKeyword("_EMISSION");
-        // Hotter emission so lane trim/fixtures read under iso + fog.
-        _trimMat.SetColor("_EmissionColor", new Color(0.25f, 0.7f, 0.95f) * 1.15f);
+        _trimMat.SetColor("_EmissionColor", ShipPalette.TrimEmit * 0.32f);
         _trimMat.SetFloat("_Metallic", 0.4f);
         _trimMat.SetFloat("_Glossiness", 0.6f);
 
@@ -115,20 +205,20 @@ public class ShipInteriorUpgrade : MonoBehaviour
         _hazardMat.mainTextureScale = new Vector2(4f, 1f);
         _hazardMat.color = Color.white;
         _hazardMat.EnableKeyword("_EMISSION");
-        _hazardMat.SetColor("_EmissionColor", new Color(0.75f, 0.42f, 0.08f) * 0.55f);
+        _hazardMat.SetColor("_EmissionColor", ShipPalette.HazardEmit * 0.6f);
 
         _pipeMat = new Material(Shader.Find("Standard")) { name = "RuntimePipe" };
-        _pipeMat.color = new Color(0.42f, 0.38f, 0.34f);
+        _pipeMat.color = ShipPalette.Pipe;
         _pipeMat.SetFloat("_Metallic", 0.9f);
         _pipeMat.SetFloat("_Glossiness", 0.5f);
 
         _voidMat = new Material(Shader.Find("Standard")) { name = "RuntimeVoid" };
-        _voidMat.color = new Color(0.03f, 0.035f, 0.05f);
+        _voidMat.color = ShipPalette.VoidShell;
         _voidMat.SetFloat("_Metallic", 0.2f);
         _voidMat.SetFloat("_Glossiness", 0.05f);
 
         _ceilMat = new Material(Shader.Find("Standard")) { name = "RuntimeCeil" };
-        _ceilMat.mainTexture = MakePlateTexture(64, new Color(0.12f, 0.13f, 0.15f), new Color(0.18f, 0.19f, 0.22f), 16);
+        _ceilMat.mainTexture = MakePlateTexture(64, ShipPalette.HullDark, ShipPalette.HullLight, 16);
         _ceilMat.mainTextureScale = new Vector2(2f, 2f);
         _ceilMat.color = Color.white;
         _ceilMat.SetFloat("_Metallic", 0.6f);
@@ -246,10 +336,10 @@ public class ShipInteriorUpgrade : MonoBehaviour
         if (layout == null || layout.lanes == null) return;
 
         var stripeMat = new Material(_deckMat);
-        stripeMat.color = new Color(0.72f, 0.76f, 0.82f);
+        stripeMat.color = Color.Lerp(ShipPalette.Steel, ShipPalette.SickGreen, 0.25f);
         stripeMat.SetFloat("_Metallic", 0.65f);
         stripeMat.EnableKeyword("_EMISSION");
-        stripeMat.SetColor("_EmissionColor", new Color(0.08f, 0.14f, 0.2f));
+        stripeMat.SetColor("_EmissionColor", ShipPalette.TrimEmit * 0.06f);
 
         foreach (var lane in layout.lanes)
         {
@@ -291,24 +381,20 @@ public class ShipInteriorUpgrade : MonoBehaviour
             for (int i = 0; i < lane.PointCount; i += 2)
             {
                 Vector3 p = lane.GetPoint(i);
-                // Slightly lower so iso camera catches the glowing plate.
+                // Invisible light anchor — no floating plate (iso game has no real ceiling).
                 Vector3 pos = p + Vector3.up * 2.35f;
-                var fixture = GameObject.CreatePrimitive(PrimitiveType.Cube);
-                fixture.name = "CeilingLight";
+                var fixture = new GameObject("CorridorLight");
                 fixture.transform.SetParent(parent, false);
-                Destroy(fixture.GetComponent<Collider>());
                 fixture.transform.position = pos;
-                fixture.transform.localScale = new Vector3(0.75f, 0.08f, 0.75f);
-                fixture.GetComponent<Renderer>().sharedMaterial = _trimMat;
 
                 var light = fixture.AddComponent<Light>();
                 light.type = LightType.Point;
-                light.range = 13f;
-                light.intensity = 2.35f;
+                light.range = 9f;
+                light.intensity = 1.5f;
                 light.shadows = LightShadows.None;
                 light.color = (lit % 2 == 0)
-                    ? new Color(0.6f, 0.82f, 1f)
-                    : new Color(1f, 0.62f, 0.35f);
+                    ? Color.Lerp(ShipPalette.SickGreen, Color.white, 0.35f)
+                    : ShipPalette.Amber;
                 lit++;
             }
         }
@@ -333,10 +419,14 @@ public class ShipInteriorUpgrade : MonoBehaviour
                 if (len < 0.5f) continue;
                 dir /= len;
                 Vector3 side = Vector3.Cross(Vector3.up, dir);
+                Vector3 laneMid = (a + b) * 0.5f;
 
                 for (int s = -1; s <= 1; s += 2)
                 {
-                    Vector3 mid = (a + b) * 0.5f + side * (s * 2.25f);
+                    // Only skirt sides that actually have a wall — no floating trim over open floor.
+                    if (!WallToSide(laneMid, side * s, 3.5f)) continue;
+
+                    Vector3 mid = laneMid + side * (s * 2.25f);
                     mid.y = RuntimeVisualPrimitives.FindDeckY(mid, a.y) + 0.12f;
 
                     var trim = GameObject.CreatePrimitive(PrimitiveType.Cube);
@@ -371,10 +461,14 @@ public class ShipInteriorUpgrade : MonoBehaviour
                 if (len < 0.5f) continue;
                 dir /= len;
                 Vector3 side = Vector3.Cross(Vector3.up, dir);
+                Vector3 laneMid = (a + b) * 0.5f;
 
                 for (int s = -1; s <= 1; s += 2)
                 {
-                    Vector3 mid = (a + b) * 0.5f + side * (s * 2.3f);
+                    // Rails hang on real walls only — otherwise they float in open air.
+                    if (!WallToSide(laneMid, side * s, 3.5f)) continue;
+
+                    Vector3 mid = laneMid + side * (s * 2.3f);
                     mid.y = RuntimeVisualPrimitives.FindDeckY(mid, a.y) + 1.15f;
 
                     var rail = GameObject.CreatePrimitive(PrimitiveType.Cube);
@@ -390,6 +484,23 @@ public class ShipInteriorUpgrade : MonoBehaviour
         }
     }
 
+    /// <summary>True if an authored wall (Hull_/Corr_/Ring_ or child of "Walls") sits within
+    /// maxDist of the lane centre along sideDir — used to gate lane-side trim so nothing floats.</summary>
+    static bool WallToSide(Vector3 laneMid, Vector3 sideDir, float maxDist)
+    {
+        Vector3 origin = laneMid + Vector3.up * 1.0f;
+        var hits = Physics.RaycastAll(origin, sideDir.normalized, maxDist, ~0,
+            QueryTriggerInteraction.Ignore);
+        foreach (var h in hits)
+        {
+            var t = h.collider.transform;
+            string n = t.name;
+            if (n.StartsWith("Hull_") || n.StartsWith("Corr_") || n.StartsWith("Ring_")) return true;
+            if (t.parent != null && t.parent.name == "Walls") return true;
+        }
+        return false;
+    }
+
     void BuildHubDeckPad(Transform parent)
     {
         var hub = SectorLayout.Instance != null ? SectorLayout.Instance.commandHubTransform : null;
@@ -402,10 +513,10 @@ public class ShipInteriorUpgrade : MonoBehaviour
         pad.transform.position = hub.position + Vector3.up * 0.02f;
         pad.transform.localScale = new Vector3(5.2f, 0.03f, 5.2f);
         var mat = new Material(_deckMat);
-        mat.color = new Color(0.85f, 0.9f, 1f);
+        mat.color = Color.Lerp(ShipPalette.Steel, ShipPalette.SickGreen, 0.3f);
         mat.SetFloat("_Metallic", 0.7f);
         mat.EnableKeyword("_EMISSION");
-        mat.SetColor("_EmissionColor", new Color(0.2f, 0.45f, 0.7f) * 0.45f);
+        mat.SetColor("_EmissionColor", ShipPalette.TrimEmit * 0.12f);
         pad.GetComponent<Renderer>().sharedMaterial = mat;
     }
 
@@ -414,19 +525,16 @@ public class ShipInteriorUpgrade : MonoBehaviour
         var hub = SectorLayout.Instance != null ? SectorLayout.Instance.commandHubTransform : null;
         if (hub == null) return;
 
-        var fixture = GameObject.CreatePrimitive(PrimitiveType.Cube);
-        fixture.name = "HubFloodLight";
+        // Invisible light anchor — no floating plate over the hub.
+        var fixture = new GameObject("HubFloodLight");
         fixture.transform.SetParent(parent, false);
-        Destroy(fixture.GetComponent<Collider>());
         fixture.transform.position = hub.position + Vector3.up * 3.1f;
-        fixture.transform.localScale = new Vector3(1.1f, 0.1f, 1.1f);
-        fixture.GetComponent<Renderer>().sharedMaterial = _trimMat;
 
         var light = fixture.AddComponent<Light>();
         light.type = LightType.Point;
-        light.range = 18f;
-        light.intensity = 3.2f;
-        light.color = new Color(0.55f, 0.78f, 1f);
+        light.range = 15f;
+        light.intensity = 2.2f;
+        light.color = ShipPalette.HubCalm;
         light.shadows = LightShadows.None;
     }
 
@@ -766,8 +874,8 @@ public class ShipInteriorUpgrade : MonoBehaviour
         {
             bool stripe = ((x + y) / 8) % 2 == 0;
             tex.SetPixel(x, y, stripe
-                ? new Color(0.95f, 0.75f, 0.1f)
-                : new Color(0.08f, 0.08f, 0.08f));
+                ? ShipPalette.Amber
+                : ShipPalette.SteelDark);
         }
         tex.Apply();
         return tex;

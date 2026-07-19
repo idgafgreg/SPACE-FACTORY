@@ -9,10 +9,10 @@ using UnityEngine;
 /// </summary>
 public class ConveyorFlowFX : MonoBehaviour
 {
-    const float StripWidth = 0.42f;
-    const float ChevronLength = 1.4f;   // world units per arrow repeat
-    const float BusySpeed = 1.9f;       // texture repeats per second
-    const float IdleSpeed = 0.25f;
+    const float StripWidth = 0.52f;
+    const float ChevronLength = 1.15f;  // world units per arrow repeat
+    const float BusySpeed = 2.2f;       // texture repeats per second
+    const float IdleSpeed = 0.35f;
 
     float _scanTimer;
     static Texture2D _chevronTex;
@@ -21,7 +21,8 @@ public class ConveyorFlowFX : MonoBehaviour
     class Entry
     {
         public ConveyorBelt belt;
-        public LineRenderer line;
+        public LineRenderer baseLine;   // dark belt body
+        public LineRenderer line;        // scrolling chevrons on top
         public Light glow;
         public float scroll;
     }
@@ -41,6 +42,7 @@ public class ConveyorFlowFX : MonoBehaviour
             if (!e.belt.startPoint || !e.belt.endPoint)
             {
                 e.line.enabled = false;
+                if (e.baseLine) e.baseLine.enabled = false;
                 if (e.glow) e.glow.enabled = false;
                 continue;
             }
@@ -54,6 +56,17 @@ public class ConveyorFlowFX : MonoBehaviour
             e.line.enabled = true;
             e.line.SetPosition(0, a);
             e.line.SetPosition(1, b);
+
+            if (e.baseLine != null)
+            {
+                e.baseLine.enabled = true;
+                // Dark belt body sits a hair below the chevrons and extends past
+                // each end so the belt reads as a solid lane, not floating arrows.
+                Vector3 ba = a - dir.normalized * 0.25f - Vector3.up * 0.02f;
+                Vector3 bb = b + dir.normalized * 0.25f - Vector3.up * 0.02f;
+                e.baseLine.SetPosition(0, ba);
+                e.baseLine.SetPosition(1, bb);
+            }
 
             bool busy = e.belt.CanCarry;
             e.scroll += Time.deltaTime * (busy ? BusySpeed : IdleSpeed);
@@ -102,17 +115,36 @@ public class ConveyorFlowFX : MonoBehaviour
 
             var go = new GameObject("BeltFlow");
             go.transform.SetParent(transform, false);
+            go.transform.rotation = Quaternion.Euler(90f, 0f, 0f);
+
+            // Dark belt body underneath — a solid lane the chevrons ride on.
+            var baseGo = new GameObject("BeltBase");
+            baseGo.transform.SetParent(go.transform, false);
+            var baseLr = baseGo.AddComponent<LineRenderer>();
+            baseLr.positionCount = 2;
+            baseLr.widthMultiplier = StripWidth * 1.25f;
+            baseLr.alignment = LineAlignment.TransformZ;
+            baseLr.material = new Material(Shader.Find("Sprites/Default"))
+            {
+                // Mid steel — lighter than the deck so the belt reads as a raised
+                // metal lane; dark-on-dark base was invisible against the floor.
+                color = new Color(0.24f, 0.26f, 0.29f, 1f)
+            };
+            baseLr.numCapVertices = 2;
+            baseLr.sortingOrder = 0;
+            baseLr.shadowCastingMode = UnityEngine.Rendering.ShadowCastingMode.Off;
+            baseLr.receiveShadows = false;
 
             var lr = go.AddComponent<LineRenderer>();
             lr.positionCount = 2;
             lr.widthMultiplier = StripWidth;
             lr.textureMode = LineTextureMode.Tile;
             lr.alignment = LineAlignment.TransformZ;          // lie flat on deck
-            go.transform.rotation = Quaternion.Euler(90f, 0f, 0f);
             lr.material = new Material(Shader.Find("Sprites/Default"))
             {
                 mainTexture = ChevronTexture()
             };
+            lr.sortingOrder = 1;
             lr.shadowCastingMode = UnityEngine.Rendering.ShadowCastingMode.Off;
             lr.receiveShadows = false;
 
@@ -125,7 +157,7 @@ public class ConveyorFlowFX : MonoBehaviour
             light.intensity = 0.5f;
             light.shadows = LightShadows.None;
 
-            _entries.Add(new Entry { belt = belt, line = lr, glow = light });
+            _entries.Add(new Entry { belt = belt, baseLine = baseLr, line = lr, glow = light });
         }
     }
 

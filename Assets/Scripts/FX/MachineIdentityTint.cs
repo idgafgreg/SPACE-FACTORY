@@ -65,6 +65,13 @@ public class MachineIdentityTint : MonoBehaviour
         if (art == null) return;
         if (art.Find(LampName) != null) return; // already dressed
 
+        // Dark steel hull + a hue hint — the machine body stays darker than a lit
+        // lamp and brighter than the deck. Identity is carried by the HDR chip,
+        // not by painting the whole body a saturated accent (which read as toys
+        // and competed with the floor glow). `strength` scales only the hint.
+        Color hull = new Color(0.19f, 0.21f, 0.25f);
+        Color body = Color.Lerp(hull, accent, Mathf.Clamp01(strength * 0.35f));
+
         var bounds = new Bounds(art.position, Vector3.zero);
         bool hasBounds = false;
         foreach (var r in art.GetComponentsInChildren<Renderer>())
@@ -72,9 +79,7 @@ public class MachineIdentityTint : MonoBehaviour
             if (r == null) continue;
             var block = new MaterialPropertyBlock();
             r.GetPropertyBlock(block);
-            var mat = r.sharedMaterial;
-            Color baseCol = mat != null && mat.HasProperty("_Color") ? mat.color : Color.white;
-            block.SetColor("_Color", Color.Lerp(baseCol, accent, strength));
+            block.SetColor("_Color", body);
             r.SetPropertyBlock(block);
 
             if (!hasBounds) { bounds = r.bounds; hasBounds = true; }
