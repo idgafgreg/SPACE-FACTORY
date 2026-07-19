@@ -6,18 +6,20 @@ Rolling map of useful themes. Updated by daily research runs.
 
 | Pillar | What to mine | Status |
 |--------|----------------|--------|
-| Workplace as trap | Isolation baked into the job, not contrived lockdown | Strong leads 2026-07-17 |
-| Industrial biomass / hive | Threat uses vents, heat, logistics; ship becomes habitat | Strong leads 2026-07-17 |
-| Factory pressure = identity | Enemies tied to production loop (Factorio pollution lesson) | Strong leads 2026-07-17 |
-| Diegetic dread | Diegetic UI, failing systems, environmental storytelling | Seeded 2026-07-17 |
-| Lonely worker fantasy | Rustic space labor, patched ship, schedule vs survival | Seeded 2026-07-17 |
+| Workplace as trap | Isolation baked into the job, not contrived lockdown | Strong — authenticity research 2026-07-19 (Still Wakes) |
+| Industrial biomass / hive | Threat uses vents, heat, logistics; ship becomes habitat | Strong — infection-via-process fiction 2026-07-19 |
+| Factory pressure = identity | Enemies tied to production loop (Factorio pollution lesson) | Strong; watch Substructure / anti-comp Biofactory |
+| Diegetic dread | Diegetic UI, failing systems, environmental storytelling | **Upgraded 2026-07-19** — Intensity Director / menace gauge pacing |
+| Lonely worker fantasy | Rustic space labor, patched ship, schedule vs survival | Strong — recovery beats + lived-in labor props |
 
 ## Comp watchlist
 
 - Factorio (pressure tied to factory growth)
-- Dead Space (industrial ship body-horror)
-- Alien: Isolation (isolation + AI pacing)
+- Dead Space / Dead Space remake (industrial ship body-horror + Intensity Director)
+- Alien: Isolation (isolation + Director/menace pacing)
 - Still Wakes the Deep / Self-Contained (workplace horror)
+- Substructure (factory + descent dread — watch)
+- Biofactory (hive-as-factory **anti-comp** — do not drift)
 - ROUTINE, Haze, Site 17 (adjacent industrial/sci-fi horror)
 
 ## Branch policy
@@ -26,6 +28,7 @@ All lore research commits go to the default branch (`main`). Do **not** open `lo
 
 ## Last run
 
-- Date: 2026-07-17
-- Landed on: `main` (via merge from `lore/daily-2026-07-17`)
-- Focus weight: horror-first, balanced across articles / videos / reviews / stories / assets / tools
+- Date: 2026-07-19
+- Landed on: `main`
+- Focus weight: horror pacing systems + workplace authenticity + factory/hive comps; balanced articles / videos / reviews / stories / assets
+- Prior run: 2026-07-17
