@@ -30,3 +30,5 @@ Horror-infused **factory management** on a broken far-future ship under hive-ali
 ## Lore git policy
 
 Commit lore research updates directly to `main`. Do not create `lore/daily-*` branches.
+
+Daily cloud runs must remind the owner to sync locally — add a **Local sync** section to that day's `summary.md` and to `lore/INDEX.md` with `git pull origin main` (cwd: `D:\new project\SPACE FACTORY`).

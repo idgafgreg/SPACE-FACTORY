@@ -26,6 +26,15 @@ Rolling map of useful themes. Updated by daily research runs.
 
 All lore research commits go to the default branch (`main`). Do **not** open `lore/daily-*` branches for further updates.
 
+## Local sync
+
+Cloud agent updates GitHub only. To download the latest lore to the local project folder:
+
+```powershell
+cd "D:\new project\SPACE FACTORY"
+git pull origin main
+```
+
 ## Last run
 
 - Date: 2026-07-19

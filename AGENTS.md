@@ -20,3 +20,12 @@ Skip lore only for pure mechanical bugfixes with no design/mood impact.
 ## Lore git policy
 
 Commit all lore research and wishlist updates directly to `main`. Do not create `lore/daily-*` branches for further runs.
+
+## Local sync reminder (required in each digest)
+
+The cloud agent cannot write to the owner's PC. At the end of every daily run, include a clear **Local sync** note in both `lore/YYYY-MM-DD/summary.md` and `lore/INDEX.md` with:
+
+```powershell
+cd "D:\new project\SPACE FACTORY"
+git pull origin main
+```

@@ -4,6 +4,13 @@ Daily online research compiled to strengthen lore, atmosphere, comps, software, 
 
 **Git:** Commit lore updates directly to `main` (default branch). No more `lore/daily-*` branches.
 
+**Local sync (owner):** The daily cloud agent only updates GitHub. After each run, download lore to this machine with:
+
+```powershell
+cd "D:\new project\SPACE FACTORY"
+git pull origin main
+```
+
 **Agents:** Cursor, Claude, and other agentic tools must consult this folder when improving game ideas (tone, systems fantasy, assets, mood). Policy is baked into:
 
 - `.cursor/rules/space-factory-lore.mdc` (Cursor, always on)
