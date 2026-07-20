@@ -82,3 +82,14 @@ Horror from routine: scanner lags when the ship is under pressure.
 - Calm mid-prep (AlarmLevel below threshold): normal 8s cooldown
 - `ScanCooldownHud` shows **SIGNAL DEGRADED** (ready) / `DEG Xs` (charging)
 - Tunables on `PlayerScanner`: `alarmDegradeThreshold`, `degradedCooldownMult`
+
+## Horror-clock VentBreach decay (L20, 2026-07-20)
+
+Still Wakes / Intensity Director roller coaster on one tagged zone (`VentBreach`):
+
+- Target decay = `min(0.78, WavesCleared * 0.26)` — wave-1 prep (~0) calmer than wave-3 prep (~0.52+)
+- On wave clear: ease ~5.5s down to `12%` of the new target (residual wrongness), then rebuild at `0.12/s`
+- Zone corridor lamps: stress from decay; up to `45%` may go fully dark at max decay; most restore on ease
+- Global fog end pulls in with `max(AlarmLevel, ZoneDecay * 0.72)`; sick-green tint uses zone at `0.42`
+- Standing in the vent approach while calm: ambient dips toward `0.28` at full decay
+- Component: `HorrorClock` (bootstrap); does not replace ThreatTelegraph final telegraph

@@ -1,4 +1,4 @@
-using UnityEngine;
+﻿using UnityEngine;
 using UnityEngine.SceneManagement;
 
 /// <summary>
@@ -70,6 +70,7 @@ public static class SectorRuntimeBootstrap
         go.AddComponent<WallSeamSealer>();
         go.AddComponent<MapEdgeGuard>();
         go.AddComponent<PlaceholderPropDressing>();
+        go.AddComponent<BiomassEncroachment>();
 
         go.AddComponent<EnvironmentalLore>();
         go.AddComponent<ArtPlaceholderFitter>();
@@ -83,7 +84,9 @@ public static class SectorRuntimeBootstrap
         go.AddComponent<WorkshopBeacon>();
         go.AddComponent<WaveStartSting>();
         go.AddComponent<ThreatTelegraph>();
+        go.AddComponent<HorrorClock>();
         go.AddComponent<RecoveryBeat>();
+
         go.AddComponent<VisualCleanupPass>();
         go.AddComponent<AmbientDustMotes>();
 

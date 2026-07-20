@@ -18,6 +18,12 @@ public class LampFlicker : MonoBehaviour
     [Tooltip("Average seconds between brownout stutters.")]
     public float stutterEvery = 45f;
 
+    /// <summary>L20 HorrorClock: 0..1 extra stress for VentBreach-zone fixtures.</summary>
+    [System.NonSerialized] public float zoneStress;
+
+    /// <summary>L20 HorrorClock: lamp is fully dead until restored after clear ease.</summary>
+    [System.NonSerialized] public bool forceDead;
+
     Light _light;
     float _base;
     float _seed;
@@ -39,9 +45,15 @@ public class LampFlicker : MonoBehaviour
     {
         if (_light == null) return;
 
-        float alarm = AtmosphereController.AlarmLevel;
+        if (forceDead)
+        {
+            _light.intensity = 0f;
+            return;
+        }
+
+        float alarm = Mathf.Max(AtmosphereController.AlarmLevel, zoneStress);
         float dip = dipAmount * (1f + alarm * 0.8f);
-        float n = Mathf.PerlinNoise(Time.time * dipSpeed, _seed);
+        float n = Mathf.PerlinNoise(Time.time * dipSpeed * (1f + zoneStress), _seed);
         float k = 1f - dip * (1f - n);
 
         _nextStutter -= Time.deltaTime;

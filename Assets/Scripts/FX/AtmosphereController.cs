@@ -206,8 +206,11 @@ public class AtmosphereController : MonoBehaviour
             }
         }
 
-        // Fog pulls in and gets greener during alarm.
-        RenderSettings.fogEndDistance = Mathf.Lerp(fogEnd, fogEnd * 0.7f, alarm);
-        RenderSettings.fogColor = Color.Lerp(fogColor, ShipPalette.SickGreenDeep, alarm * 0.35f);
+        // Fog pulls in and gets greener during alarm — and from L20 VentBreach horror-clock decay.
+        float zone = HorrorClock.ZoneDecay01;
+        float pull = Mathf.Max(alarm, zone * 0.72f);
+        RenderSettings.fogEndDistance = Mathf.Lerp(fogEnd, fogEnd * 0.62f, pull);
+        RenderSettings.fogColor = Color.Lerp(fogColor, ShipPalette.SickGreenDeep,
+            Mathf.Max(alarm * 0.35f, zone * 0.42f));
     }
 }

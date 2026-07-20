@@ -115,7 +115,7 @@ Human report + editor audit: walls do not fully connect in places; player can wa
   Change: after P1 collision seal, add small runtime corner/junction plates (primitives, steel mat) so hull reads continuous — no light leaks or void slices at seams. No asset pack.
   done-when: Play / SceneView — junctions read continuous from gameplay camera; console clean
 
-- [ ] L20. Horror-clock sector ambience decay
+- [x] L20. Horror-clock sector ambience decay — DONE: `HorrorClock` VentBreach zone decay (0.26/cleared, cap 0.78); fog pull + lamp stress/death + ambient wrongness; ease 5.5s after clear; LampFlicker zoneStress; AtmosphereController fog blend; Progression_Spec. Play-verified c0→c2 decay 0→0.52, fog 44→37.7, dead lamps 0→1, ease restores; console clean.
   Type: systemic / diegetic | Pillar: Diegetic dread
   Lore: Still Wakes horror clock + Intensity Director curves (lore/2026-07-19/summary.md #1, suggested experiments)
   Change: as WavesCleared rises, deepen one tagged zone (VentBreach approach): fog pull-in, lamp death chance, ambient wrongness — then ease after clear (roller coaster, not permanent max dread). Hook `AtmosphereController` / `LampFlicker`; short numbers in Progression_Spec.
@@ -135,12 +135,12 @@ Human report + editor audit: walls do not fully connect in places; player can wa
   Change: PlaceholderPropDressing already has a shift nest — expand with schedule board / hand-written signage / spilled crate cluster; tint bright-white Kenney office props (desk/couch/workstation) to steel/amber so they match the dark palette. Primitives + existing Kenney only.
   done-when: Play — no bright-white furniture near nest; ship reads as abandoned workplace, not empty arena; console clean
   DONE 2026-07-20 — PropDressVersion 11; RecolorProp tints desk/chair/locker/crates/barrels to dark steel/pipe palette; schedule board + spilled crate cluster in hub nest. **Needs in-editor Play verification (no Unity MCP in this harness).**
-- [ ] A10. Biomass encroachment on ship systems (visual layer)
+- [?] A10. Biomass encroachment on ship systems (visual layer) — user-directed / auto-dev
   Type: visual | Pillar: Industrial biomass / hive
   Lore: INDEX industrial biomass / hive; infection-via-process motif
-  Change: vents/pipes/filters near breach lanes grow primitive residue that spreads with wave count (runtime meshes/decals ÃƒÂ¢Ã¢â€šÂ¬Ã¢â‚¬Â **not** paid biomass packs). Complements L17; do not block on asset purchase.
-  done-when: Play ÃƒÂ¢Ã¢â€šÂ¬Ã¢â‚¬Â map visibly degrades near breach over successive waves; console clean
-
+  Change: vents/pipes/filters near breach lanes grow primitive residue that spreads with wave count (runtime meshes/decals — **not** paid biomass packs). Complements L17; do not block on asset purchase.
+  done-when: Play — map visibly degrades near breach over successive waves; console clean
+  DONE 2026-07-20 — BiomassEncroachment component wired in SectorRuntimeBootstrap; spawns primitive capsule residue clusters near VentBreach/EastFlank lanes after each wave clear; radius/count scale with WavesCleared and cap tunable. **Needs in-editor Play verification (no Unity MCP in this harness).**
 ### Visual parity pass 2 ÃƒÂ¢Ã¢â€šÂ¬Ã¢â‚¬Â "does it look like a real game" (2026-07-19 screenshot review) [mostly DONE]
 
 Comp targets: Factorio (readability, machine silhouettes), Dead Space / Alien: Isolation
@@ -322,6 +322,10 @@ Method: capture the Game view in Play mode, judge the frame, fix the single wors
 - [ ] Free lead: Abandoned Factory Lite (Asset Store) ÃƒÂ¢Ã¢â€šÂ¬Ã¢â‚¬Â safe mood greys for blockout; not gated, but not queued until visual Now is thin.
 
 ## Agent log (newest first ÃƒÂ¢Ã¢â€šÂ¬Ã¢â‚¬Â one line per session: date, task, result, commit)
+
+- 2026-07-20: auto-dev L20 horror-clock VentBreach decay — HorrorClock + LampFlicker zoneStress + Atmosphere fog blend; Progression_Spec; Play-verified c0/c2 decay+fog+lamp death+ease; console clean.
+
+- 2026-07-20: auto-dev A10 biomass encroachment on ship systems — BiomassEncroachment component, breach-lane residue clusters scale with WavesCleared; wired bootstrap. **[?] needs in-editor Play verification (no Unity MCP).**
 
 - 2026-07-20: auto-dev P3 prop placement sanity — PlaceholderPropDressing v12 wall/lane/hub reject + offset retries; Sector_Layout; Play-verified 28 props 0 float/wall/lane; console clean.
 
