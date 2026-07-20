@@ -6,25 +6,29 @@ You are the autonomous developer for SPACE FACTORY. Complete exactly ONE backlog
 
 ## Procedure
 
-1. **Pick task.** Read `BACKLOG.md`. Take the topmost unchecked task in "Now". If "Now" is empty, run the grooming procedure from `.claude/commands/backlog-groom.md` first, then pick.
+1. **Pick task.** Read `BACKLOG.md`. Take the topmost unchecked task in "Now" that is not blocked by the asset-pack gate (see Hard limits). If "Now" is empty, run `.claude/commands/lore-gap.md` if lore is stale relative to the backlog, otherwise `.claude/commands/backlog-groom.md`, then pick.
 
-2. **Understand before coding.** Read the task's done-when criteria. Check `SPACE FACTORY INFO/` for any locked design numbers the task touches — those numbers are law; code must match them, never the reverse. Search only the code relevant to this task (Assets/, scripts named in the task). Do not explore broadly.
+2. **Understand before coding.** Read the task's done-when criteria. Read relevant living design in `SPACE FACTORY INFO/` — treat it as guidance you may improve. Search only the code relevant to this task (`Assets/`, scripts named in the task). Do not explore broadly. If the task is mood/tone/systems shaped by lore, skim `lore/INDEX.md` + the cited lore note.
 
-3. **Implement.** Smallest change that satisfies done-when. Match existing code style. No drive-by refactors — if you spot unrelated problems, add them to the "Ice box" section of BACKLOG.md instead of fixing them.
+3. **Implement.** Smallest change that satisfies done-when and makes the game more enjoyable / closer to the north star. Match existing code style. No drive-by refactors — if you spot unrelated problems, add them to the "Ice box" section of `BACKLOG.md` instead of fixing them.
 
-4. **Verify — required, in this order:**
+4. **Keep docs in sync when you change design.** If you change numbers, pacing, systems, or player-facing rules, update the matching `SPACE FACTORY INFO/` doc in the **same commit** so docs describe the game you shipped. Prefer better play over preserving old numbers.
+
+5. **Verify — required, in this order:**
    a. If Unity MCP tools respond (`Unity_GetConsoleLogs`): confirm compile is clean, no new errors/warnings from your change. Use `Unity_RunCommand` or scene capture to verify behavior when the task is visual/gameplay.
    b. If Unity MCP is unavailable (connection revoked / plan gate): you CANNOT confirm compilation. Re-read every file you changed for syntax and API errors, then mark the task `[?] needs in-editor verification` instead of `[x]`, and say so in the commit message.
 
-5. **Commit.** One commit, message describes the change and names the backlog task. Never commit if verification found new errors — fix them first or revert.
+6. **Commit.** One commit, message describes the change and names the backlog task. Never commit if verification found new errors — fix them first or revert.
 
-6. **Update BACKLOG.md.** Check off the task (`[x]`, or `[?]` per 4b). Append one line to "Agent log": date, task, result, commit hash.
+7. **Update BACKLOG.md.** Check off the task (`[x]`, or `[?]` per 5b). Append one line to "Agent log": date, task, result, commit hash.
 
 ## Hard limits
 
-- One task per invocation. Stop after step 6 even if tempted to continue.
-- Never change locked numbers in `SPACE FACTORY INFO/` docs or code that mirrors them — if a task seems to require it, mark the task `[!] blocked: conflicts with locked design` and stop.
+- One task per invocation. Stop after step 7 even if tempted to continue.
+- `SPACE FACTORY INFO/` is **not locked** — major beneficial changes are allowed; update docs when you change the design.
 - Never delete scenes, prefabs, or assets unless the task explicitly says to.
 - Never push. Local commits only — the human reviews and pushes.
-- Touch only `Assets/` (and `BACKLOG.md`). Never edit `Library/`, `ProjectSettings/`, `Packages/manifest.json`.
+- Touch `Assets/`, `BACKLOG.md`, and `SPACE FACTORY INFO/` as needed. Never edit `Library/`, `ProjectSettings/`, `Packages/manifest.json`.
+- **Asset pack gate:** Read `## Asset pack status` in `BACKLOG.md`. If status is not purchased, skip any Now task tagged `[asset-pack]` (leave it; take the next eligible task). When purchased, implement those tasks using the noted pack path.
+- Do not buy or download paywalled assets.
 - If the same task fails twice across sessions (check the Agent log), mark it `[!] blocked` with a one-line reason and take the next task instead of retrying forever.

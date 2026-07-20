@@ -21,11 +21,16 @@ Before proposing or implementing ideas that affect **tone, atmosphere, narrative
 - Cite which lore note shaped a suggestion when it materially changes design or art direction.
 - Do **not** paste copyrighted fiction into the game; use motif/summary notes and original writing.
 - Do **not** buy paywalled assets; point at the wishlist.
+- After updating `wishlist-paywalled.md` or free leads in any `assets-tools.md`, run `lore/sync-assets-sheet.ps1` so `lore/assets-wishlist.csv` stays in sync for the Google Sheet (`lore/GOOGLE-SHEET.md`).
 - Pure mechanical bugfixes with no mood/design impact may skip lore.
 
 ## Game identity (do not drift)
 
 Horror-infused **factory management** on a broken far-future ship under hive-alien pressure. Tone: sad, lonely, fear. Factory layout is primary; defense disrupts without replacing the loop. Story secondary to atmosphere and systems.
+
+## Autonomous cycle (when improving the game from lore)
+
+Use `/lore-gap` → `/auto-dev` → `/bug-pass` against `BACKLOG.md` (see `AGENTS.md`). `SPACE FACTORY INFO/` is living design — beneficial changes allowed; keep docs in sync. Until `BACKLOG.md` Asset pack status is purchased, prefer work that needs no paid pack.
 
 ## Lore git policy
 
