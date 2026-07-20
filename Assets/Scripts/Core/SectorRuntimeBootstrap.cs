@@ -90,6 +90,7 @@ public static class SectorRuntimeBootstrap
         go.AddComponent<HubHealthOnGui>();
         go.AddComponent<WorldHealthBars>();
         go.AddComponent<PrepCountdownHud>();
+        go.AddComponent<ScanCooldownHud>();
         go.AddComponent<BuildGhostCostHud>();
 
         // Player-local systems must live on the player so attach/fit can't miss.

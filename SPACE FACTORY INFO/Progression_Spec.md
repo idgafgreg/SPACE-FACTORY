@@ -73,3 +73,12 @@ Still Wakes recovery beats: decorate prep gaps with sad routine, not victory UI.
 - `RecoveryBeat` on wave clear: ambient dip to 0.22, `AlarmLevel` 0, cold steel flash (no green cheer)
 - One rotating shift-log line + calm tip: repair / seal lane / keep line running
 - Wave-clear scrap popup muted to amber scrap notice (not green `WAVE CLEARED`)
+
+## Scanner lag under menace (L19, 2026-07-20)
+
+Horror from routine: scanner lags when the ship is under pressure.
+
+- When `AtmosphereController.AlarmLevel >= 0.35` (late prep / combat), `PlayerScanner` cooldown = base 8s * **1.75**
+- Calm mid-prep (AlarmLevel below threshold): normal 8s cooldown
+- `ScanCooldownHud` shows **SIGNAL DEGRADED** (ready) / `DEG Xs` (charging)
+- Tunables on `PlayerScanner`: `alarmDegradeThreshold`, `degradedCooldownMult`

@@ -79,11 +79,12 @@ Code reality: `ThreatTelegraph` only escalates the last ~10s of Prep; `ventBreac
   done-when: Play ÃƒÂ¢Ã¢â€šÂ¬Ã¢â‚¬Â clear a wave ÃƒÂ¢Ã¢â‚¬Â Ã¢â‚¬â„¢ quiet lonely beat, no green victory flash; tip still readable; console clean
   DONE 2026-07-20 — RecoveryBeat lonely shift-log + tip; no green victory flash; AlarmLevel 0; wired in bootstrap; Play-verified.
 
-- [ ] L19. Scanner lag under rising menace
+- [x] L19. Scanner lag under rising menace
   Type: mechanical / diegetic | Pillar: Diegetic dread
   Lore: horror from routine ÃƒÂ¢Ã¢â€šÂ¬Ã¢â‚¬Â scanner lag (lore/2026-07-17/summary.md #4)
   Change: when `AtmosphereController.AlarmLevel` exceeds a threshold (late prep / combat), stretch `PlayerScanner` cooldown and show a diegetic "SIGNAL DEGRADED" state on `ScanCooldownHud`. Calm mid-prep unchanged.
   done-when: Play ÃƒÂ¢Ã¢â€šÂ¬Ã¢â‚¬Â calm prep scan = normal CD; late-prep/combat = longer CD + degraded HUD tag; console clean
+  DONE 2026-07-20 — AlarmLevel>=0.35 stretches scan CD x1.75; ScanCooldownHud SIGNAL DEGRADED; calm mid-prep normal; Play-verified.
 
 ### Remaining visual (cap ~30% of Now ÃƒÂ¢Ã¢â€šÂ¬Ã¢â‚¬Â after systemic above)
 
@@ -280,6 +281,8 @@ Method: capture the Game view in Play mode, judge the frame, fix the single wors
 - [ ] Free lead: Abandoned Factory Lite (Asset Store) ÃƒÂ¢Ã¢â€šÂ¬Ã¢â‚¬Â safe mood greys for blockout; not gated, but not queued until visual Now is thin.
 
 ## Agent log (newest first ÃƒÂ¢Ã¢â€šÂ¬Ã¢â‚¬Â one line per session: date, task, result, commit)
+
+- 2026-07-20: auto-dev L19 scanner lag under rising menace — PlayerScanner EffectiveCooldown from AlarmLevel; ScanCooldownHud SIGNAL DEGRADED; wired HUD; Progression_Spec; Play-verified calm 8s / hot 14s.
 
 - 2026-07-20: auto-dev L18 lonely recovery beat — RecoveryBeat rewrite (shift log + calm tip, cold flash, no cheer); wired bootstrap; muted wave-clear scrap popup; Progression_Spec; Play-verified.
 
