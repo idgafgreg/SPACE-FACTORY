@@ -97,7 +97,7 @@ Human report + editor audit: walls do not fully connect in places; player can wa
   Change: audit `Walls/*` junctions (editor found ~6 seam pairs e.g. Hull_Bow_L↔Corr_Bow_L, Corr_Vent_L↔Ring_SW). Add thin BoxCollider fillers or nudge wall scales so CharacterController cannot slip between segments. Keep lane gate openings intact.
   done-when: Play — walk every perimeter + corridor junction; zero slip-throughs at former seams; gates still passable; console clean
 
-- [ ] P2. Map-edge fall barrier + killplane recovery
+- [x] P2. Map-edge fall barrier + killplane recovery — DONE: `MapEdgeGuard` 4 Ground-lip Buildable rails + killY/-off-bounds soft recover via `PlayerController.SoftRecoverToHub` (`[NAV] EDGE LOCK`); VoidHull stays visual (lane spawns ±40); Sector_Layout note; wired bootstrap. Play-verified: 4/4 rail rays, 6/6 lane starts clear, Update recover to hub; console clean.
   Type: mechanical | Pillar: Workplace as trap
   Lore: isolation baked into the job — leaving the deck should not soft-softlock the run (lore INDEX workplace as trap)
   Change: where visual hull ends or `VoidHull` has no collision, add invisible perimeter rail colliders on Buildable layer AND a killplane (y < -2 or off Ground bounds) that respawns the player at hub with a short terminal line (no death spiral). Document in Sector_Layout briefly.
@@ -322,6 +322,9 @@ Method: capture the Game view in Play mode, judge the frame, fix the single wors
 - [ ] Free lead: Abandoned Factory Lite (Asset Store) ÃƒÂ¢Ã¢â€šÂ¬Ã¢â‚¬Â safe mood greys for blockout; not gated, but not queued until visual Now is thin.
 
 ## Agent log (newest first ÃƒÂ¢Ã¢â€šÂ¬Ã¢â‚¬Â one line per session: date, task, result, commit)
+
+- 2026-07-20: auto-dev P2 map-edge fall barrier + killplane — MapEdgeGuard Ground rails + SoftRecoverToHub; VoidHull visual-only; Sector_Layout; Play-verified 4 rails / lanes clear / killplane recover; console clean.
+
 - 2026-07-20: auto-dev A9 lived-in labour props + white furniture tint — PropDressVersion 11, RecolorProp dark-steel/pipe palette, schedule board + spilled crate cluster. **[?] needs in-editor Play verification (no Unity MCP).**
 
 - 2026-07-20: auto-dev P1 seal wall-seam collision gaps — WallSeamSealer + bootstrap wire + Sector_Layout note; Play-verified 13 seals / 1 lane-skip / probes blocked / console clean.

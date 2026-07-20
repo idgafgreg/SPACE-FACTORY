@@ -1660,3 +1660,7 @@
 ## Wall Seam Collision Seals (P1, 2026-07-20)
 
 Runtime `WallSeamSealer` fills small gaps between authored `Walls/*` segments (Hull_/Corr_/Ring_) with invisible Buildable-layer BoxColliders so the player cannot slip through hull junctions. Fillers within ~2.4m of a lane path are skipped so gate openings stay clear.
+
+## Map Edge Guard (P2, 2026-07-20)
+
+Runtime `MapEdgeGuard` places invisible Buildable-layer rails on the four lips of the authored `Ground` deck so the CharacterController cannot walk off into the void. `VoidHull` fog curtains stay visual-only (colliders would clip East/West lane spawns near ±40). If the player still falls (Y < -2) or leaves Ground bounds, soft-recover teleports them near the Command Hub with a short `[NAV] EDGE LOCK` terminal line — no death spiral, no scrap loss.

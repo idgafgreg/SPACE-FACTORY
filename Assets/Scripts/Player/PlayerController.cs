@@ -119,4 +119,31 @@ public class PlayerController : MonoBehaviour
         FloatingText.Spawn(transform.position + Vector3.up * 2f, "RESPAWNED",
             new Color(0.5f, 1f, 0.65f), 1.3f);
     }
+
+    /// <summary>
+    /// P2: soft recover to hub after falling off the deck / killplane.
+    /// No death spiral — instant relocate + terminal line only.
+    /// </summary>
+    public void SoftRecoverToHub(string terminalLine)
+    {
+        if (IsDead) return;
+
+        Vector3 target = _spawnPoint;
+        var hub = SectorLayout.Instance != null ? SectorLayout.Instance.commandHubTransform : null;
+        if (hub != null)
+            target = hub.position + Vector3.back * 3.5f + Vector3.up * 0.25f;
+
+        if (characterController != null) characterController.enabled = false;
+        transform.position = target;
+        if (characterController != null) characterController.enabled = true;
+
+        // Cold nav flash — not a green victory cheer.
+        ScreenFlash.Flash(new Color(0.08f, 0.1f, 0.14f), 0.18f, 1.3f);
+        if (!string.IsNullOrEmpty(terminalLine))
+        {
+            FloatingText.Spawn(transform.position + Vector3.up * 2.2f, terminalLine,
+                new Color(0.72f, 0.82f, 0.92f), 1.55f);
+        }
+    }
 }
+
