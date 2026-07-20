@@ -51,11 +51,12 @@ Rules for tasks in this file:
 
 Code reality: L15–L21 + P1–P4 + A9/A10 all shipped/verified. Remaining open gaps from `lore/2026-07-20` (Flood staging, Milham wayfinding, recycler contamination, cycle-quota dread). Asset pack: **not purchased** — primitives / existing Sfx / runtime meshes only. Visual/audio-only ≤30% of this refill.
 
-- [ ] L22. Infection-form residue crawlers (stage 1 ecology)
+- [x] L22. Infection-form residue crawlers (stage 1 ecology)
   Type: systemic / mechanical | Pillar: Industrial biomass / hive
   Lore: Flood infect→specialize→coordinate ladder (lore/2026-07-20/summary.md #3; INDEX industrial biomass)
   Change: add a commit-sized **InfectionResidue** path — either a thin Crawler prefab variant or runtime mod on vent/EastFlank spawns: lower HP, slight speed up, sick-green primitive tint (no asset pack). On death near a drill/processor, seed `ProcessInfection` (reuse L17 controller) instead of only post-clear spray. Wave 1 stays normal crawlers only. Doc stage-1 numbers in `Progression_Spec.md` same commit.
   done-when: Play — W2+ vent/EastFlank shows ≥1 residue form; kill near machine can infect it; W1 unchanged; console clean
+  DONE 2026-07-20 — InfectionResidue runtime mod; WaveController 50% breach crawlers (min 1) after W1; death seeds ProcessInfection within 5.5m; EnemyArtPulse green threat; Progression_Spec. Play-verified W1=0 / W2=2 / seed infect; console clean.
 
 - [ ] L23. Factory heat raises infection-form share
   Type: systemic | Pillar: Factory pressure = identity
@@ -363,6 +364,8 @@ Method: capture the Game view in Play mode, judge the frame, fix the single wors
 - [ ] Free lead: Abandoned Factory Lite (Asset Store) — safe mood greys for blockout; not gated, but not queued until visual Now is thin.
 
 ## Agent log (newest first — one line per session: date, task, result, commit)
+
+- 2026-07-20: auto-dev L22 infection-form residue crawlers — InfectionResidue + WaveController breach tagging (W1 lock); death seeds ProcessInfection; Progression_Spec; Play-verified W1=0 W2=2 seed=true; console clean.
 
 - 2026-07-20: lore-gap — refilled Now from lore/2026-07-20 + INDEX. Systemic first: L22 infection-form residue crawlers, L23 heat→residue share, L24 contaminated slurry on infected processors, L25 diegetic sector plaques, L26 soft shift-quota, L27 dentist-spot lamp death (≤30% visual). Ice box: living-metal ambience, scanner ghosts, ecology stage 2–3. Asset pack still not purchased. No game code.
 

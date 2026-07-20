@@ -27,6 +27,7 @@ public class WaveController : MonoBehaviour
     // Must match LanePath.laneId values in the scene; GetLane fails loudly (null â†’ round-robin).
     const string WestLaneId = "WestCorridor";
     const string VentLaneId = "VentBreach";
+    const string EastFlankLaneId = "EastFlank";
 
     [Serializable]
     public class WaveDef
@@ -73,12 +74,24 @@ public class WaveController : MonoBehaviour
     [Tooltip("Endless/all-gates: max fraction of spawns converted to VentBreach at Heat01 = 1.")]
     [Range(0f, 0.5f)] public float heatEndlessVentBiasMax = 0.25f;
 
+    [Header("Infection residue forms (L22)")]
+    [Tooltip("Of crawlers on VentBreach/EastFlank after Wave 1, convert this share to InfectionResidue (min 1 when any).")]
+    [Range(0f, 1f)] public float residueBreachBaselineShare = 0.5f;
+    [Tooltip("HP multiplier applied to InfectionResidue crawlers.")]
+    [Range(0.2f, 1f)] public float residueHpMult = InfectionResidue.DefaultHpMult;
+    [Tooltip("Move-speed multiplier for InfectionResidue crawlers.")]
+    [Range(1f, 1.8f)] public float residueSpeedMult = InfectionResidue.DefaultSpeedMult;
+    [Tooltip("On death, seed ProcessInfection on drills/processors within this radius.")]
+    public float residueSeedRadius = InfectionResidue.DefaultSeedRadius;
+
     /// <summary>Last Heat01 sampled when lanes were assigned.</summary>
     public float LastFactoryHeat01 { get; private set; }
     /// <summary>Effective vent share used for teaching-arc assignment (-1 if all-gates path).</summary>
     public float LastEffectiveVentShare { get; private set; }
     /// <summary>How many spawns were assigned to VentBreach last AssignLanes.</summary>
     public int LastVentLaneCount { get; private set; }
+    /// <summary>How many breach-lane crawlers were tagged InfectionResidue last spawn build.</summary>
+    public int LastResidueSpawnCount { get; private set; }
 
     /// <summary>Modifier of the current/most recent wave (None during the defined waves).</summary>
     public WaveModifier CurrentModifier { get; private set; }
@@ -109,6 +122,7 @@ public class WaveController : MonoBehaviour
     int          _spawnQueueIndex;
     List<GameObject> _spawnQueue = new List<GameObject>();
     List<LanePath>   _laneQueue  = new List<LanePath>();
+    List<bool>       _residueFlags = new List<bool>();
     float        _spawnTimer;
     float        _spawnSpacing;
     int          _laneCursor;
@@ -188,6 +202,7 @@ public class WaveController : MonoBehaviour
         AddCopies(_spawnQueue, sapperPrefab,  def.sappers);
         Shuffle(_spawnQueue);
         AssignLanes(def);
+        MarkInfectionResidueSpawns();
 
         _spawnQueueIndex = 0;
         Sfx.WaveHorn();   // "they're coming"
@@ -208,7 +223,8 @@ public class WaveController : MonoBehaviour
         {
             int i = _spawnQueueIndex++;
             LanePath lane = i < _laneQueue.Count ? _laneQueue[i] : NextLane();
-            SpawnOne(_spawnQueue[i], lane);
+            bool residue = i < _residueFlags.Count && _residueFlags[i];
+            SpawnOne(_spawnQueue[i], lane, residue);
             _spawnTimer += _spawnSpacing;
         }
 
@@ -244,7 +260,7 @@ public class WaveController : MonoBehaviour
 
     // â”€â”€ Spawning helpers â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
-    void SpawnOne(GameObject prefab, LanePath lane)
+    void SpawnOne(GameObject prefab, LanePath lane, bool asResidue = false)
     {
         if (prefab == null || lane == null)
         {
@@ -266,8 +282,78 @@ public class WaveController : MonoBehaviour
 
         enemy.Init(lane);
         ApplyModifier(enemy);
+        if (asResidue && enemy is Crawler)
+            InfectionResidue.Apply(enemy, residueHpMult, residueSpeedMult, residueSeedRadius);
         if (enemy is Sapper sapper) sapper.supportTarget = FindSupportTarget(pos);
         EnemiesAlive++;
+    }
+
+    /// <summary>
+    /// L22: after Wave 1, convert a baseline share of VentBreach/EastFlank crawlers
+    /// into InfectionResidue forms (at least one when any breach crawlers exist).
+    /// </summary>
+    void MarkInfectionResidueSpawns() => MarkInfectionResidueSpawns(WaveNumber);
+
+    void MarkInfectionResidueSpawns(int waveNumber)
+    {
+        _residueFlags.Clear();
+        LastResidueSpawnCount = 0;
+        for (int i = 0; i < _spawnQueue.Count; i++)
+            _residueFlags.Add(false);
+
+        // Wave 1 teaching lock: West-only, no infection forms.
+        if (waveNumber <= 1) return;
+
+        var candidates = new List<int>();
+        for (int i = 0; i < _spawnQueue.Count; i++)
+        {
+            if (crawlerPrefab != null && _spawnQueue[i] != crawlerPrefab) continue;
+            if (crawlerPrefab == null && (_spawnQueue[i] == bruiserPrefab || _spawnQueue[i] == sapperPrefab))
+                continue;
+
+            LanePath lane = i < _laneQueue.Count ? _laneQueue[i] : null;
+            if (lane == null) continue;
+            if (!IsBreachLane(lane.laneId)) continue;
+            candidates.Add(i);
+        }
+
+        if (candidates.Count == 0) return;
+
+        int convert = Mathf.RoundToInt(candidates.Count * Mathf.Clamp01(residueBreachBaselineShare));
+        if (convert < 1) convert = 1;
+        convert = Mathf.Min(convert, candidates.Count);
+
+        Shuffle(candidates);
+        for (int i = 0; i < convert; i++)
+            _residueFlags[candidates[i]] = true;
+
+        LastResidueSpawnCount = convert;
+    }
+
+    static bool IsBreachLane(string laneId) =>
+        laneId == VentLaneId || laneId == EastFlankLaneId;
+
+    /// <summary>Editor/test: simulate residue tagging for N VentBreach crawlers at a wave number.</summary>
+    public int DebugRunResidueMark(int waveNumber, int breachCrawlerCount)
+    {
+        if (_layout == null) _layout = SectorLayout.Instance;
+        LanePath vent = _layout != null ? _layout.GetLane(VentLaneId) : null;
+        if (vent == null || crawlerPrefab == null) return -1;
+
+        _spawnQueue.Clear();
+        _laneQueue.Clear();
+        for (int i = 0; i < breachCrawlerCount; i++)
+        {
+            _spawnQueue.Add(crawlerPrefab);
+            _laneQueue.Add(vent);
+        }
+
+        MarkInfectionResidueSpawns(waveNumber);
+        int n = LastResidueSpawnCount;
+        _spawnQueue.Clear();
+        _laneQueue.Clear();
+        _residueFlags.Clear();
+        return n;
     }
 
     void ApplyModifier(EnemyBase enemy)

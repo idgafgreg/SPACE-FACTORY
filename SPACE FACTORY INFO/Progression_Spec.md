@@ -66,6 +66,18 @@ Infection-via-process: biomass slows logistics near hive entries.
 - Clear with player repair tool (E / hold) or `RepairPost` radius — residue clear is free; HP repair still costs parts
 - Tunables: `infectRadius`, `infectionRateMult` on `ProcessInfectionController`
 
+## Infection-form residue crawlers — stage 1 (L22, 2026-07-20)
+
+Flood-style ecology ladder start: fragile infection forms on breach lanes that seed process infection.
+
+- After **Wave 1**, crawlers assigned to `VentBreach` / `EastFlank` can become `InfectionResidue` (runtime mod on crawler prefab — no new asset pack)
+- Baseline convert share: **50%** of breach-lane crawlers, **minimum 1** when any exist (`WaveController.residueBreachBaselineShare`)
+- **Wave 1** never spawns residue forms (West-only teaching lock)
+- Stats: HP × **0.55**, move speed × **1.22**, sick-green tint + residue chip + green threat pulse
+- On death within **5.5m** of a drill/processor: seeds `ProcessInfection` (same 0.55x rate as L17)
+- Tunables on `WaveController`: `residueBreachBaselineShare`, `residueHpMult`, `residueSpeedMult`, `residueSeedRadius`
+- L23 will raise convert share with factory heat (not in this slice)
+
 ## Lonely recovery beat (L18, 2026-07-20)
 
 Still Wakes recovery beats: decorate prep gaps with sad routine, not victory UI.

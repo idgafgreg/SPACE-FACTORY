@@ -44,13 +44,15 @@ public class EnemyArtPulse : MonoBehaviour
             if (e.enemy == null || e.enemy.IsDead) continue;
             // A8b: floor raised 0.35→0.55 — under the warm hub pool the lit
             // albedo swamped the old pulse and enemies read as pale blobs.
+            // L22: infection-form residue uses sick-green threat, not red.
+            Color threat = InfectionResidue.IsResidue(e.enemy) ? InfectionResidue.ThreatTint : ThreatRed;
             float pulse = 0.55f + 0.35f * Mathf.Sin(t * 4f + e.phase);
             foreach (var r in e.bodies)
             {
                 if (r == null) continue;
                 _mpb.Clear();
                 r.GetPropertyBlock(_mpb);
-                _mpb.SetColor(EmissionId, ThreatRed * pulse);
+                _mpb.SetColor(EmissionId, threat * pulse);
                 r.SetPropertyBlock(_mpb);
             }
         }
@@ -106,18 +108,18 @@ public class EnemyArtPulse : MonoBehaviour
                 eye.GetComponent<Renderer>().sharedMaterial = EyeMaterial();
             }
 
-            // A8b: red underglow — a small red pool on the deck under every
-            // enemy. Unlike emission this survives ANY ambient light (in the
-            // warm hub pool the deck turns red-tinted, in the dark it's a red
-            // halo), so hostiles read hostile within the 0.5s target anywhere.
+            // A8b: threat underglow — red for normal hostiles, sick-green for L22 residue.
             if (artRoot.Find("ThreatGlow") == null)
             {
+                Color glowColor = InfectionResidue.IsResidue(enemy)
+                    ? InfectionResidue.ThreatTint
+                    : ThreatRed;
                 var glowGo = new GameObject("ThreatGlow");
                 glowGo.transform.SetParent(artRoot, false);
                 glowGo.transform.localPosition = Vector3.up * 0.45f;
                 var glow = glowGo.AddComponent<Light>();
                 glow.type = LightType.Point;
-                glow.color = ThreatRed;
+                glow.color = glowColor;
                 glow.range = 2.6f;
                 glow.intensity = 1.5f;
                 glow.shadows = LightShadows.None;
