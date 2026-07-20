@@ -4,17 +4,18 @@ This repo is a Unity game: **horror-infused factory management** on a broken far
 
 ## Autonomous dev cycle
 
-Three producer/builder/closer commands share one queue: [`BACKLOG.md`](BACKLOG.md).
+Producer/builder/closer/playtest commands share one queue: [`BACKLOG.md`](BACKLOG.md).
 
 | Step | Command | Role | Writes code? |
 |------|---------|------|----------------|
 | 1 | [`/lore-gap`](.claude/commands/lore-gap.md) | Read `lore/` + living design → refill Now with one-commit tasks | No |
 | 2 | [`/auto-dev`](.claude/commands/auto-dev.md) | Top Now task → implement → Unity verify → commit | Yes (one task) |
 | 3 | [`/bug-pass`](.claude/commands/bug-pass.md) | Regressions + `[?]` verification → fix → commit | Yes (bugs only) |
+| 4 | [`/playtest`](.claude/commands/playtest.md) | Scripted Play Mode suite via `PlaytestHarness` → report + backlog bugs | Report / bugs only |
 
 Optional: [`/backlog-groom`](.claude/commands/backlog-groom.md) reprioritizes when the queue is messy (also pulls lore when Now is thin).
 
-**Suggested loop:** lore-gap once → auto-dev × 3–5 → bug-pass once → human reviews local commits → push.
+**Suggested loop:** lore-gap once → auto-dev × 3–5 → bug-pass once → playtest once → human reviews local commits → push.
 
 ### Design docs are not locked
 
@@ -30,7 +31,7 @@ See `## Asset pack status` in `BACKLOG.md`. Until a pack is purchased, queue and
 - Local commits only — never push unless a human asks
 - No paywalled asset purchases by agents; wishlist + `lore/sync-assets-sheet.ps1`
 - Do not paste copyrighted fiction into the game
-- `/auto-dev` = one task per invocation; `/bug-pass` = no new features
+- `/auto-dev` = one task per invocation; `/bug-pass` = no new features; `/playtest` = no features (report + backlog only)
 
 ## Lore research (required for design work)
 

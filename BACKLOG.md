@@ -5,9 +5,10 @@ Autonomous cycle (see `AGENTS.md`):
 1. `/lore-gap` ÃƒÂ¢Ã¢â€šÂ¬Ã¢â‚¬Â lore + design ÃƒÂ¢Ã¢â‚¬Â Ã¢â‚¬â„¢ refill "Now"
 2. `/auto-dev` ÃƒÂ¢Ã¢â€šÂ¬Ã¢â‚¬Â implement top task ÃƒÂ¢Ã¢â‚¬Â Ã¢â‚¬â„¢ verify ÃƒÂ¢Ã¢â‚¬Â Ã¢â‚¬â„¢ commit
 3. `/bug-pass` ÃƒÂ¢Ã¢â€šÂ¬Ã¢â‚¬Â fix regressions / `[?]` items ÃƒÂ¢Ã¢â‚¬Â Ã¢â‚¬â„¢ commit
-4. `/backlog-groom` ÃƒÂ¢Ã¢â€šÂ¬Ã¢â‚¬Â optional reprioritize when the queue is messy
+4. `/playtest` ÃƒÂ¢Ã¢â€šÂ¬Ã¢â‚¬Â PlaytestHarness smoke + Wave 1 gate ÃƒÂ¢Ã¢â‚¬Â Ã¢â‚¬â„¢ report + backlog
+5. `/backlog-groom` ÃƒÂ¢Ã¢â€šÂ¬Ã¢â‚¬Â optional reprioritize when the queue is messy
 
-Humans and producer commands edit this file; `/auto-dev` and `/bug-pass` check boxes and append Agent log notes.
+Humans and producer commands edit this file; `/auto-dev`, `/bug-pass`, and `/playtest` check boxes and append Agent log notes.
 
 Rules for tasks in this file:
 - One task = one commit-sized change (fits in a single session, testable).
@@ -365,6 +366,8 @@ Method: capture the Game view in Play mode, judge the frame, fix the single wors
 - [ ] Free lead: Abandoned Factory Lite (Asset Store) — safe mood greys for blockout; not gated, but not queued until visual Now is thin.
 
 ## Agent log (newest first — one line per session: date, task, result, commit)
+
+- 2026-07-20: playtest suite PASS — fresh Sector01; SMOKE PASS; Wave 1 gate PASS (1 Barrier+1 AutoTurret @ west choke, hub 500/500); report `Playtest_Agent_2026-07-20_165030.md`; harness hardened (dirty-session reject + Instance resolve). Console errors: none. Commit `d960466`.
 
 - 2026-07-20: auto-dev L23 factory heat raises residue share — WaveController effective share = 0.10 + Heat01*0.60 capped 0.80; idle W2 ~10% / hot ~70-80% breach crawlers; W1 lock; Progression_Spec. **[?] needs in-editor Play verification (no Unity MCP).**
 

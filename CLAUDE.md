@@ -24,7 +24,8 @@ Shared queue: `BACKLOG.md`. Commands live in `.claude/commands/`:
 1. `/lore-gap` — lore + living design → backlog tasks (no game code)
 2. `/auto-dev` — one Now task → implement → verify → commit
 3. `/bug-pass` — regressions / `[?]` items only → commit
-4. `/backlog-groom` — optional reprioritize
+4. `/playtest` — `PlaytestHarness` smoke + Wave 1 gate → report + backlog bugs
+5. `/backlog-groom` — optional reprioritize
 
 `SPACE FACTORY INFO/` is **not locked**; beneficial number/system changes are allowed if docs stay in sync. Asset-pack work is gated by `## Asset pack status` in `BACKLOG.md`. Full policy: `AGENTS.md`.
 

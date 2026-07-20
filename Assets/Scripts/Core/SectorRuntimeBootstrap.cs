@@ -3,8 +3,8 @@ using UnityEngine.SceneManagement;
 
 /// <summary>
 /// Attaches the runtime-only systems (atmosphere, screen flash, playtest
-/// overlay, factory expansion) to any sector scene without editing the scene
-/// file. A sector scene is detected by the presence of a
+/// overlay/harness, factory expansion) to any sector scene without editing
+/// the scene file. A sector scene is detected by the presence of a
 /// <see cref="WaveController"/>; the menu and any other scene are skipped
 /// (and fog is turned back off there).
 ///
@@ -102,6 +102,9 @@ public static class SectorRuntimeBootstrap
         go.AddComponent<FactoryPressureHud>();
         go.AddComponent<BuildGhostCostHud>();
 
+        // Agent + human playtest tools (F3 overlay; harness via MCP / menu).
+        go.AddComponent<PlaytestOverlay>();
+        go.AddComponent<PlaytestHarness>();
 
         // Player-local systems must live on the player so attach/fit can't miss.
         var player = Object.FindAnyObjectByType<PlayerController>();

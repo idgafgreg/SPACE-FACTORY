@@ -143,6 +143,17 @@ public class WaveController : MonoBehaviour
 
     void OnDestroy() { if (Instance == this) Instance = null; }
 
+    /// <summary>
+    /// Playtest/editor: rebind <see cref="Instance"/> if Enter Play Mode Options
+    /// left the static null while a live controller still exists.
+    /// </summary>
+    public static WaveController DebugResolveInstance()
+    {
+        if (Instance != null) return Instance;
+        Instance = FindAnyObjectByType<WaveController>();
+        return Instance;
+    }
+
     void Start()
     {
         _layout = SectorLayout.Instance;
@@ -343,6 +354,21 @@ public class WaveController : MonoBehaviour
 
     static bool IsBreachLane(string laneId) =>
         laneId == VentLaneId || laneId == EastFlankLaneId;
+
+    /// <summary>Playtest: jump Prep → Spawning immediately.</summary>
+    public void DebugSkipPrep()
+    {
+        if (CurrentPhase != Phase.Prep) return;
+        PhaseTimeLeft = 0f;
+        BeginSpawning();
+    }
+
+    /// <summary>Playtest: set remaining prep countdown (Prep only).</summary>
+    public void DebugSetPrepTimeLeft(float seconds)
+    {
+        if (CurrentPhase != Phase.Prep) return;
+        PhaseTimeLeft = Mathf.Max(0f, seconds);
+    }
 
     /// <summary>Editor/test: simulate residue tagging for N VentBreach crawlers at a wave number.</summary>
     public int DebugRunResidueMark(int waveNumber, int breachCrawlerCount)
