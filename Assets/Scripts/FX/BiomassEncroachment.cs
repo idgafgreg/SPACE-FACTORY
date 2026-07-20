@@ -62,9 +62,24 @@ public class BiomassEncroachment : MonoBehaviour
 
     void OnWaveCleared(int waveNumber)
     {
-        // waveNumber is 1-based wave just cleared; WavesCleared is total cleared.
-        int cleared = WaveController.Instance != null ? WaveController.Instance.WavesCleared : waveNumber;
+        // Prefer WavesCleared (set before invoke); fall back to event arg.
+        int cleared = waveNumber;
+        if (WaveController.Instance != null)
+            cleared = Mathf.Max(cleared, WaveController.Instance.WavesCleared);
         Dress(cleared);
+    }
+
+    /// <summary>Editor/test: force residue dress for a cleared-wave count.</summary>
+    public void DebugForceDress(int wavesCleared)
+    {
+        if (_root == null) BuildRoot();
+        if (_root != null)
+        {
+            for (int i = _root.childCount - 1; i >= 0; i--)
+                DestroyImmediate(_root.GetChild(i).gameObject);
+        }
+        _lastWaveCleared = -1;
+        Dress(Mathf.Max(0, wavesCleared));
     }
 
     void BuildRoot()
@@ -128,7 +143,7 @@ public class BiomassEncroachment : MonoBehaviour
                 sample.y = y;
                 if (!IsOpenDeckPoint(sample)) continue;
                 // Prefer samples near walls (biomass uses ship systems).
-                if (NearestWallDistance(sample) > 1.4f) continue;
+                if (NearestWallDistance(sample) > 2.2f) continue;
                 anchors.Add(sample);
             }
         }
@@ -191,7 +206,10 @@ public class BiomassEncroachment : MonoBehaviour
                 (float)_rng.NextDouble() * 30f,
                 (float)_rng.NextDouble() * 360f,
                 (float)_rng.NextDouble() * 30f);
-            Destroy(blob.GetComponent<Collider>());
+            // Immediate — deferred Destroy leaves colliders for a frame and can
+            // block pathing / placement probes during the same dress pass.
+            var col = blob.GetComponent<Collider>();
+            if (col != null) Object.DestroyImmediate(col);
 
             var r = blob.GetComponent<Renderer>();
             if (r != null)
@@ -227,13 +245,40 @@ public class BiomassEncroachment : MonoBehaviour
 
     static bool IsOpenDeckPoint(Vector3 p)
     {
-        if (!Physics.Raycast(p + Vector3.up * 0.5f, Vector3.down, out var hit, 2f,
+        // Must sit on the deck — do NOT blanket CheckSphere (that rejects the
+        // near-wall samples biomass is supposed to use).
+        if (!Physics.Raycast(p + Vector3.up * 2f, Vector3.down, out var hit, 4f,
                 ~0, QueryTriggerInteraction.Ignore))
             return false;
-        if (Mathf.Abs(hit.point.y - p.y) > 0.8f) return false;
-        if (Physics.CheckSphere(p + Vector3.up * 0.25f, 0.25f, ~0, QueryTriggerInteraction.Ignore))
-            return false;
+
+        string hn = hit.collider != null ? hit.collider.name : "";
+        bool onDeck = hn == "Ground" || hn.IndexOf("Deck", System.StringComparison.OrdinalIgnoreCase) >= 0;
+        if (!onDeck && hit.point.y > 0.6f) return false;
+        if (Mathf.Abs(hit.point.y - (p.y - 0.08f)) > 1.0f) return false;
+
+        // Reject only if the sample is clearly inside a wall volume.
+        var cols = Physics.OverlapSphere(p + Vector3.up * 0.4f, 0.12f, ~0, QueryTriggerInteraction.Ignore);
+        foreach (var c in cols)
+        {
+            if (c == null) continue;
+            if (IsWallCollider(c)) return false;
+        }
         return true;
+    }
+
+    static bool IsWallCollider(Collider c)
+    {
+        string n = c.name;
+        if (n.StartsWith("Hull_") || n.StartsWith("Corr_") || n.StartsWith("Ring_")
+            || n.StartsWith("SeamSeal_") || n.StartsWith("Rail_"))
+            return true;
+        Transform t = c.transform;
+        while (t != null)
+        {
+            if (t.name == "Walls") return true;
+            t = t.parent;
+        }
+        return false;
     }
 
     static float NearestWallDistance(Vector3 p)
@@ -241,12 +286,22 @@ public class BiomassEncroachment : MonoBehaviour
         float best = float.PositiveInfinity;
         var walls = GameObject.Find("Walls");
         if (walls == null) return best;
+        Vector3 flat = new Vector3(p.x, 0f, p.z);
         foreach (Transform t in walls.transform)
         {
             if (t == null) continue;
-            float d = Vector3.Distance(new Vector3(t.position.x, 0f, t.position.z),
-                                       new Vector3(p.x, 0f, p.z));
-            if (d < best) best = d;
+            var col = t.GetComponent<Collider>();
+            if (col != null)
+            {
+                Vector3 closest = col.ClosestPoint(p);
+                float d = Vector2.Distance(new Vector2(closest.x, closest.z), new Vector2(flat.x, flat.z));
+                if (d < best) best = d;
+            }
+            else
+            {
+                float d = Vector2.Distance(new Vector2(t.position.x, t.position.z), new Vector2(flat.x, flat.z));
+                if (d < best) best = d;
+            }
         }
         return best;
     }

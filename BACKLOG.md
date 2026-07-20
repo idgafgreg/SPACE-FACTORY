@@ -127,20 +127,18 @@ Human report + editor audit: walls do not fully connect in places; player can wa
   Change: when factory heat or process infection is active, show a one-line ship-terminal HUD chip (`[GRID] VENT PRESSURE HIGH` / `PROCESS CONTAMINATED`) so the pressure is legible without opening debug overlays. Reuse `ShipTerminalUI`.
   done-when: Play — chip appears only under heat/infection; idle factory chip hidden; console clean
 
-### Remaining visual — A9/A10 RESERVED (other agent; do not steal) — cap ~30%
+### Remaining visual — A9/A10 (verified 2026-07-20 bug-pass)
 
-- [?] A9. Lived-in labour props + white furniture tint (absorbs A6b) — user-directed / auto-dev
+- [x] A9. Lived-in labour props + white furniture tint (absorbs A6b) — DONE + Play-verified 2026-07-20 bug-pass: PropDressVersion 12 nest has ScheduleBoard; 0 bright-white furniture tints; console clean.
   Type: visual | Pillar: Workplace as trap / Lonely worker fantasy
   Lore: Still Wakes authenticity (lore/2026-07-19/summary.md #2); INDEX lonely worker
   Change: PlaceholderPropDressing already has a shift nest — expand with schedule board / hand-written signage / spilled crate cluster; tint bright-white Kenney office props (desk/couch/workstation) to steel/amber so they match the dark palette. Primitives + existing Kenney only.
   done-when: Play — no bright-white furniture near nest; ship reads as abandoned workplace, not empty arena; console clean
-  DONE 2026-07-20 — PropDressVersion 11; RecolorProp tints desk/chair/locker/crates/barrels to dark steel/pipe palette; schedule board + spilled crate cluster in hub nest. **Needs in-editor Play verification (no Unity MCP in this harness).**
-- [?] A10. Biomass encroachment on ship systems (visual layer) — user-directed / auto-dev
+- [x] A10. Biomass encroachment on ship systems (visual layer) — DONE + Play-verified 2026-07-20 bug-pass: BiomassEncroachment grows near VentBreach/EastFlank (w1→w3 clusters 7→15); collider-free; spawn filter fixed (near-wall samples were rejected). Console clean.
   Type: visual | Pillar: Industrial biomass / hive
   Lore: INDEX industrial biomass / hive; infection-via-process motif
   Change: vents/pipes/filters near breach lanes grow primitive residue that spreads with wave count (runtime meshes/decals — **not** paid biomass packs). Complements L17; do not block on asset purchase.
   done-when: Play — map visibly degrades near breach over successive waves; console clean
-  DONE 2026-07-20 — BiomassEncroachment component wired in SectorRuntimeBootstrap; spawns primitive capsule residue clusters near VentBreach/EastFlank lanes after each wave clear; radius/count scale with WavesCleared and cap tunable. **Needs in-editor Play verification (no Unity MCP in this harness).**
 ### Visual parity pass 2 ÃƒÂ¢Ã¢â€šÂ¬Ã¢â‚¬Â "does it look like a real game" (2026-07-19 screenshot review) [mostly DONE]
 
 Comp targets: Factorio (readability, machine silhouettes), Dead Space / Alien: Isolation
@@ -322,6 +320,8 @@ Method: capture the Game view in Play mode, judge the frame, fix the single wors
 - [ ] Free lead: Abandoned Factory Lite (Asset Store) ÃƒÂ¢Ã¢â€šÂ¬Ã¢â‚¬Â safe mood greys for blockout; not gated, but not queued until visual Now is thin.
 
 ## Agent log (newest first ÃƒÂ¢Ã¢â€šÂ¬Ã¢â‚¬Â one line per session: date, task, result, commit)
+
+- 2026-07-20: bug-pass — verified A9 props (board, no white furniture); fixed A10 BiomassEncroachment near-wall spawn filter + immediate collider strip; Play-verified growth 7→15 collider-free; P1–P4/L20–L21 systems present. Console clean.
 
 - 2026-07-20: auto-dev P4 wall junction plates — WallJunctionPlates steel cubes on P1 seals; Sector_Layout; Play-verified 13/13 plates; console clean.
 
