@@ -47,9 +47,49 @@ Rules for tasks in this file:
 
 ## Now (agent works top-down)
 
-### Lore-gap refill ÃƒÂ¢Ã¢â€šÂ¬Ã¢â‚¬Â 2026-07-19 (systemic / diegetic first)
+### Lore-gap refill — 2026-07-20 (infection ecology + diegetic ship)
 
-Code reality (2026-07-20): L15-L19 shipped (menace rollercoaster, factory-heat vent pressure, process infection, lonely recovery, scanner lag). A9/A10 reserved for another agent. Map audit: 22 authored walls all have colliders, but **6 wall-seam gaps** detected; `VoidHull` fog curtains spawn with colliders stripped; props strip colliders by design and can clip/float. Asset pack: **not purchased**.
+Code reality: L15–L21 + P1–P4 + A9/A10 all shipped/verified. Remaining open gaps from `lore/2026-07-20` (Flood staging, Milham wayfinding, recycler contamination, cycle-quota dread). Asset pack: **not purchased** — primitives / existing Sfx / runtime meshes only. Visual/audio-only ≤30% of this refill.
+
+- [ ] L22. Infection-form residue crawlers (stage 1 ecology)
+  Type: systemic / mechanical | Pillar: Industrial biomass / hive
+  Lore: Flood infect→specialize→coordinate ladder (lore/2026-07-20/summary.md #3; INDEX industrial biomass)
+  Change: add a commit-sized **InfectionResidue** path — either a thin Crawler prefab variant or runtime mod on vent/EastFlank spawns: lower HP, slight speed up, sick-green primitive tint (no asset pack). On death near a drill/processor, seed `ProcessInfection` (reuse L17 controller) instead of only post-clear spray. Wave 1 stays normal crawlers only. Doc stage-1 numbers in `Progression_Spec.md` same commit.
+  done-when: Play — W2+ vent/EastFlank shows ≥1 residue form; kill near machine can infect it; W1 unchanged; console clean
+
+- [ ] L23. Factory heat raises infection-form share
+  Type: systemic | Pillar: Factory pressure = identity
+  Lore: infection staging tied to factory heat (lore/2026-07-20/summary.md suggested experiments; Factorio pollution lesson)
+  Change: sample `FactoryHeatTracker.Heat01` when building spawn queue; among vent/EastFlank crawler slots after W1, convert a capped share to InfectionResidue when heat is high (idle ≈ baseline / 0). Does not reopen West-only W1. Sync caps into Progression_Spec with L22.
+  done-when: Play — idle factory ≈ few/no residue forms; high scrap/min + producers ⇒ measurable residue share on breach lanes; W1 clean; console clean
+
+- [ ] L24. Contaminated slurry beat on infected processors
+  Type: systemic / diegetic | Pillar: Industrial biomass / hive
+  Lore: infested recycler / filtration colonization (lore/2026-07-20/stories.md); infection-via-process
+  Change: while a `Processor` has `ProcessInfection`, occasionally stall craft briefly + emit wrong-slurry primitive drip VFX + one ship-terminal line (original wording: filtration/slurry fault — not cheer). Repair still clears infection (L17). Distant clean processors unaffected. Numbers in Progression_Spec.
+  done-when: Play — infected processor shows stall + terminal line within a short watch window; repair ends it; clean processors never stall for this reason; console clean
+
+- [ ] L25. Diegetic sector wayfinding plaques
+  Type: diegetic | Pillar: Diegetic dread
+  Lore: Milham diegetic wayfinding / no floating chrome (lore/2026-07-20/summary.md #1; INDEX diegetic dread)
+  Change: runtime world plaques (primitives + TextMesh or OnGUI world-anchored labels) at Hub, WestCorridor approach, VentBreach approach, EastFlank approach — Japanese-subway terse tags e.g. `[SECTOR] HUB` / `WEST BAY` / `VENT APPROACH` / `EAST FLANK`. Steel/amber palette; no new screen HUD chrome. Wire via bootstrap; Sector_Layout note.
+  done-when: Play — all four tags readable from gameplay camera near those zones; no extra canvas clutter; console clean
+
+- [ ] L26. Soft shift-quota pressure during Prep
+  Type: diegetic / systemic | Pillar: Lonely worker fantasy / Factory pressure = identity
+  Lore: corporate/cycle pressure cousin — owed quotas without planet-builder drift (lore/2026-07-20/summary.md #4 StarRupture)
+  Change: during Prep, show a one-line diegetic quota chip via existing terminal HUD (`[SHIFT] SCRAP GOAL n` based on wave + modest heat). Soft only: meet goal before combat → quiet terminal ack (no green cheer); miss → brief `AlarmLevel` bump into early combat (no scrap tax, no soft-lock). Doc targets in Progression_Spec.
+  done-when: Play — prep shows goal; hit and miss paths both readable; factory loop still primary; console clean
+
+- [ ] L27. Dentist-spot lamp death on active breach lane
+  Type: diegetic / visual | Pillar: Diegetic dread
+  Lore: interrogation lighting — room goes blacker not flashier (lore/2026-07-20/summary.md #1 + suggested experiments)
+  Change: when late-prep `AlarmLevel` or active combat targets a breach lane, kill **one** corridor lamp nearest that lane’s approach (intensity→0 / disable), restore after RecoveryBeat ease. Reuse `LampFlicker` / HorrorClock hooks; no new flashy FX. No asset pack.
+  done-when: Play — late prep/combat darkens one approach lamp on the threatened lane; recovery restores; hub pool still usable; console clean
+
+### Done archive — 2026-07-19 lore-gap + map integrity (shipped)
+
+Code reality snapshot (kept for history): L15-L19 shipped; map seams/props sealed; A9/A10 verified. Asset pack: **not purchased**.
 
 - [x] L15. Mid-prep menace rollercoaster (soft director)
   Type: systemic / diegetic | Pillar: Diegetic dread
@@ -87,9 +127,9 @@ Code reality (2026-07-20): L15-L19 shipped (menace rollercoaster, factory-heat v
   DONE 2026-07-20 — AlarmLevel>=0.35 stretches scan CD x1.75; ScanCooldownHud SIGNAL DEGRADED; calm mid-prep normal; Play-verified.
 
 
-### Map integrity + polish — 2026-07-20 (lore-gap; A9/A10 reserved for other agent)
+### Map integrity + polish — 2026-07-20 (DONE archive; A9/A10 later verified)
 
-Human report + editor audit: walls do not fully connect in places; player can walk through some barriers and fall off the map; props/objects sit in weird buggy locations. Prefer these over new features until the ship is a solid workplace trap.
+Human report + editor audit (historical): wall seams, fall-off, prop placement — all sealed below.
 
 - [x] P1. Seal wall-seam collision gaps — DONE: `WallSeamSealer` runtime invisible Buildable BoxColliders at Hull_/Corr_/Ring_ AABB seams (maxGap 2m); skip fillers within 2.4m of lane paths; wired bootstrap after ShipInteriorUpgrade; Sector_Layout note. Play-verified: 13 seals / 1 lane-skip; all seal probes blocked; 0 seals near lanes; console clean.
   Type: mechanical | Pillar: Workplace as trap
@@ -314,12 +354,17 @@ Method: capture the Game view in Play mode, judge the frame, fix the single wors
 ## Ice box (ideas, ungroomed)
 
 - [ ] [asset-pack: Alien Biomass Planet] Replace A10 primitive residue with animated biomass meshes / hue Shader Graph once purchased (path TBD in Asset pack status).
-- [ ] [asset-pack: Bio Horror / Sci-fi Environment] Infestation props for breach corridors ÃƒÂ¢Ã¢â€šÂ¬Ã¢â‚¬Â promote after purchase.
-- [ ] [asset-pack: Bionic structures] Cheap tendril/cocoon kitbash for corridor corruption ÃƒÂ¢Ã¢â€šÂ¬Ã¢â‚¬Â low-cost experiment if A10 primitives feel thin.
-- [ ] Empathy hazard / false vent voice ÃƒÂ¢Ã¢â€šÂ¬Ã¢â‚¬Â audio lure that pulls player off the factory floor mid-prep (lore/2026-07-17 experiment; lore/2026-07-19 empathy motif). Needs a fairness pass so it never soft-locks a wave; groom before Now.
-- [ ] Free lead: Abandoned Factory Lite (Asset Store) ÃƒÂ¢Ã¢â€šÂ¬Ã¢â‚¬Â safe mood greys for blockout; not gated, but not queued until visual Now is thin.
+- [ ] [asset-pack: Bio Horror / Sci-fi Environment] Infestation props for breach corridors — promote after purchase.
+- [ ] [asset-pack: Bionic structures] Cheap tendril/cocoon kitbash for corridor corruption — low-cost experiment if A10 primitives feel thin.
+- [ ] Empathy hazard / false vent voice — audio lure that pulls player off the factory floor mid-prep (lore/2026-07-17 experiment; lore/2026-07-19 empathy motif; 2026-07-20 stories stowaway/duct log). Needs a fairness pass so it never soft-locks a wave; groom before Now.
+- [ ] Ship-as-living call-and-response ambience — procedural metal “answer” creaks to machine pulses / footsteps via existing `Sfx` pool; Built-in only, no pack (lore/2026-07-20/summary.md #2). Queue when Now audio budget is open.
+- [ ] Scanner ghost / solvent misread — brief false residue blip on scanner that may be stress/chemical, not combat spawn (lore/2026-07-20/stories.md Singular Infestation motif). Groom for uncertainty fairness.
+- [ ] Infection ecology stage 2–3 — vent “carrier” behavior + late coordinated packs once L22/L23 prove stage 1 (Flood ladder; keep Biofactory anti-comp).
+- [ ] Free lead: Abandoned Factory Lite (Asset Store) — safe mood greys for blockout; not gated, but not queued until visual Now is thin.
 
-## Agent log (newest first ÃƒÂ¢Ã¢â€šÂ¬Ã¢â‚¬Â one line per session: date, task, result, commit)
+## Agent log (newest first — one line per session: date, task, result, commit)
+
+- 2026-07-20: lore-gap — refilled Now from lore/2026-07-20 + INDEX. Systemic first: L22 infection-form residue crawlers, L23 heat→residue share, L24 contaminated slurry on infected processors, L25 diegetic sector plaques, L26 soft shift-quota, L27 dentist-spot lamp death (≤30% visual). Ice box: living-metal ambience, scanner ghosts, ecology stage 2–3. Asset pack still not purchased. No game code.
 
 - 2026-07-20: bug-pass — verified A9 props (board, no white furniture); fixed A10 BiomassEncroachment near-wall spawn filter + immediate collider strip; Play-verified growth 7→15 collider-free; P1–P4/L20–L21 systems present. Console clean.
 
