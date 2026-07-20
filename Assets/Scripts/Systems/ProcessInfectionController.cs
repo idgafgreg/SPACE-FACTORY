@@ -114,6 +114,17 @@ public class ProcessInfectionController : MonoBehaviour
         return n;
     }
 
+    /// <summary>Live count of any infected ProcessInfection (HUD / tests).</summary>
+    public int CountLiveInfected()
+    {
+        int n = 0;
+        foreach (var inf in Object.FindObjectsByType<ProcessInfection>(FindObjectsInactive.Exclude))
+            if (inf != null && inf.IsInfected) n++;
+        TotalInfected = n;
+        return n;
+    }
+
     /// <summary>Editor/test helper.</summary>
     public int DebugForceInfectNearBreaches() => InfectNearBreachLanes();
 }
+

@@ -121,7 +121,7 @@ Human report + editor audit: walls do not fully connect in places; player can wa
   Change: as WavesCleared rises, deepen one tagged zone (VentBreach approach): fog pull-in, lamp death chance, ambient wrongness — then ease after clear (roller coaster, not permanent max dread). Hook `AtmosphereController` / `LampFlicker`; short numbers in Progression_Spec.
   done-when: Play — zone feels worse by wave 3 than wave 1, eases after clear; factory loop still playable; console clean
 
-- [ ] L21. Breach-lane factory tax readability
+- [x] L21. Breach-lane factory tax readability — DONE: `FactoryPressureHud` below power panel; Heat01>=0.35 → VENT PRESSURE HIGH; any ProcessInfection → PROCESS CONTAMINATED (wins if both); idle hidden; Progression_Spec; wired bootstrap. Play-verified idle/heat/infect/priority/clean; console clean.
   Type: diegetic / systemic | Pillar: Factory pressure = identity
   Lore: Factorio pollution lesson + infection-via-process (INDEX; L16/L17 already ship numbers)
   Change: when factory heat or process infection is active, show a one-line ship-terminal HUD chip (`[GRID] VENT PRESSURE HIGH` / `PROCESS CONTAMINATED`) so the pressure is legible without opening debug overlays. Reuse `ShipTerminalUI`.
@@ -322,6 +322,8 @@ Method: capture the Game view in Play mode, judge the frame, fix the single wors
 - [ ] Free lead: Abandoned Factory Lite (Asset Store) ÃƒÂ¢Ã¢â€šÂ¬Ã¢â‚¬Â safe mood greys for blockout; not gated, but not queued until visual Now is thin.
 
 ## Agent log (newest first ÃƒÂ¢Ã¢â€šÂ¬Ã¢â‚¬Â one line per session: date, task, result, commit)
+
+- 2026-07-20: auto-dev L21 breach-lane factory tax HUD — FactoryPressureHud VENT PRESSURE / PROCESS CONTAMINATED; Progression_Spec; Play-verified idle/heat/infect/priority; console clean.
 
 - 2026-07-20: auto-dev L20 horror-clock VentBreach decay — HorrorClock + LampFlicker zoneStress + Atmosphere fog blend; Progression_Spec; Play-verified c0/c2 decay+fog+lamp death+ease; console clean.
 

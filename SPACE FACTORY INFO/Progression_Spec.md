@@ -93,3 +93,12 @@ Still Wakes / Intensity Director roller coaster on one tagged zone (`VentBreach`
 - Global fog end pulls in with `max(AlarmLevel, ZoneDecay * 0.72)`; sick-green tint uses zone at `0.42`
 - Standing in the vent approach while calm: ambient dips toward `0.28` at full decay
 - Component: `HorrorClock` (bootstrap); does not replace ThreatTelegraph final telegraph
+
+## Breach-lane factory tax HUD (L21, 2026-07-20)
+
+Factorio pollution lesson made legible: when the factory is taxing the hive entry, the ship says so.
+
+- `FactoryPressureHud` (below `[GRID]` power panel): one-line terminal chip, hidden when idle
+- `Heat01 >= 0.35` → `[GRID] VENT PRESSURE HIGH` (amber)
+- Any live `ProcessInfection` → `[GRID] PROCESS CONTAMINATED` (sick green; wins if both)
+- Tunable: `heatShowThreshold` on `FactoryPressureHud`
