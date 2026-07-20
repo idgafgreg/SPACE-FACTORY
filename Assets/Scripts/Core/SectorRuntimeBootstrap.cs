@@ -80,6 +80,7 @@ public static class SectorRuntimeBootstrap
         go.AddComponent<WorkshopBeacon>();
         go.AddComponent<WaveStartSting>();
         go.AddComponent<ThreatTelegraph>();
+        go.AddComponent<RecoveryBeat>();
         go.AddComponent<VisualCleanupPass>();
         go.AddComponent<AmbientDustMotes>();
 

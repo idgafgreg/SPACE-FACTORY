@@ -65,3 +65,11 @@ Infection-via-process: biomass slows logistics near hive entries.
 - Primitive green residue sphere on the machine (no asset pack)
 - Clear with player repair tool (E / hold) or `RepairPost` radius — residue clear is free; HP repair still costs parts
 - Tunables: `infectRadius`, `infectionRateMult` on `ProcessInfectionController`
+
+## Lonely recovery beat (L18, 2026-07-20)
+
+Still Wakes recovery beats: decorate prep gaps with sad routine, not victory UI.
+
+- `RecoveryBeat` on wave clear: ambient dip to 0.22, `AlarmLevel` 0, cold steel flash (no green cheer)
+- One rotating shift-log line + calm tip: repair / seal lane / keep line running
+- Wave-clear scrap popup muted to amber scrap notice (not green `WAVE CLEARED`)

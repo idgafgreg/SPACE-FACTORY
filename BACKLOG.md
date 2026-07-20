@@ -72,11 +72,12 @@ Code reality: `ThreatTelegraph` only escalates the last ~10s of Prep; `ventBreac
   done-when: Play ÃƒÂ¢Ã¢â€šÂ¬Ã¢â‚¬Â machine near vent slows after a clear; repair removes debuff; distant machines unaffected; console clean
   DONE 2026-07-20 — ProcessInfectionController infects near VentBreach/EastFlank at 0.55x; repair clears; far machines clean; Play-verified.
 
-- [ ] L18. Recovery beat = lonely routine, not victory green
+- [x] L18. Recovery beat = lonely routine, not victory green
   Type: diegetic | Pillar: Lonely worker fantasy
   Lore: Still Wakes recovery beats (lore/2026-07-19/summary.md #3)
   Change: rewrite `RecoveryBeat` ÃƒÂ¢Ã¢â€šÂ¬Ã¢â‚¬Â drop celebratory green flash / cheer text; quiet ambient dip + one sad terminal line (shift/ration/empty relief ÃƒÂ¢Ã¢â€šÂ¬Ã¢â‚¬Â original wording) + calm repair/rebuild tip; `AlarmLevel` stays 0.
   done-when: Play ÃƒÂ¢Ã¢â€šÂ¬Ã¢â‚¬Â clear a wave ÃƒÂ¢Ã¢â‚¬Â Ã¢â‚¬â„¢ quiet lonely beat, no green victory flash; tip still readable; console clean
+  DONE 2026-07-20 — RecoveryBeat lonely shift-log + tip; no green victory flash; AlarmLevel 0; wired in bootstrap; Play-verified.
 
 - [ ] L19. Scanner lag under rising menace
   Type: mechanical / diegetic | Pillar: Diegetic dread
@@ -279,6 +280,8 @@ Method: capture the Game view in Play mode, judge the frame, fix the single wors
 - [ ] Free lead: Abandoned Factory Lite (Asset Store) ÃƒÂ¢Ã¢â€šÂ¬Ã¢â‚¬Â safe mood greys for blockout; not gated, but not queued until visual Now is thin.
 
 ## Agent log (newest first ÃƒÂ¢Ã¢â€šÂ¬Ã¢â‚¬Â one line per session: date, task, result, commit)
+
+- 2026-07-20: auto-dev L18 lonely recovery beat — RecoveryBeat rewrite (shift log + calm tip, cold flash, no cheer); wired bootstrap; muted wave-clear scrap popup; Progression_Spec; Play-verified.
 
 - 2026-07-20: auto-dev L17 process infection near breach lanes — ProcessInfection + Controller after wave clear; 0.55x rate; repair tool/RepairPost clear; Progression_Spec; Play-verified near infect / far clean / clear.
 
