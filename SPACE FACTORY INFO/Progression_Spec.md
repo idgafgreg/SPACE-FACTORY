@@ -55,3 +55,13 @@ Factorio pollution lesson: hive vent pressure rises with factory throughput.
 - **Wave 1** (`ventBreachShare = 0`): always West-only — heat never opens the vent
 - Endless / all-gates (`ventBreachShare < 0`): after round-robin, convert up to `Heat01 * 25%` of non-vent spawns to VentBreach
 - Tunables live on `WaveController` (`heatVentShareBonusMax`, `heatVentShareCap`, `heatEndlessVentBiasMax`)
+
+## Process infection near breach lanes (L17, 2026-07-20)
+
+Infection-via-process: biomass slows logistics near hive entries.
+
+- After each cleared wave, `ProcessInfectionController` infects `MiningDrill` / `Processor` within **12m** of `VentBreach` or `EastFlank` waypoints
+- Infected machines run at **0.55x** extract/craft rate (`MachineBase.InfectionRateMult`)
+- Primitive green residue sphere on the machine (no asset pack)
+- Clear with player repair tool (E / hold) or `RepairPost` radius — residue clear is free; HP repair still costs parts
+- Tunables: `infectRadius`, `infectionRateMult` on `ProcessInfectionController`

@@ -53,6 +53,20 @@ public class PlayerRepairTool : MonoBehaviour
         var defense    = hit.collider.GetComponentInParent<DefenseBase>();
         var health     = hit.collider.GetComponentInParent<Health>();
         var damageable = hit.collider.GetComponentInParent<Damageable>();
+        var infection  = hit.collider.GetComponentInParent<ProcessInfection>();
+
+        // Residue clear is free maintenance (L17) — still needs aim + hold repair.
+        if (infection != null && infection.IsInfected)
+        {
+            infection.ClearInfection();
+            ImpactFX.Impact(hit.point, new Color(0.45f, 1f, 0.4f), 0.32f);
+            Sfx.Place();
+        }
+
+        bool needsHeal = (defense != null && defense.CurrentHealth < defense.maxHealth)
+                      || (health != null && health.IsDamaged)
+                      || (damageable != null && damageable.CurrentHealth < damageable.maxHealth);
+        if (!needsHeal) return;
 
         if (resourceInventory.Get(ResourceTypeId.ConstructionParts) <= 0)
         {

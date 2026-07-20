@@ -35,6 +35,16 @@ public abstract class MachineBase : MonoBehaviour, IPowerConsumer
     /// <summary>Public read for HUD/FX systems that can't touch the protected property.</summary>
     public bool IsCurrentlyPowered => IsPowered;
 
+    /// <summary>L17 process infection slowdown (1 = clean).</summary>
+    public float InfectionRateMult
+    {
+        get
+        {
+            var inf = GetComponent<ProcessInfection>();
+            return inf != null ? inf.RateMult : 1f;
+        }
+    }
+
     // ── Registration ─────────────────────────────────────────────────────────
 
     protected virtual void OnEnable()

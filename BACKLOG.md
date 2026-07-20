@@ -65,11 +65,12 @@ Code reality: `ThreatTelegraph` only escalates the last ~10s of Prep; `ventBreac
   done-when: Play ÃƒÂ¢Ã¢â€šÂ¬Ã¢â‚¬Â low/idle factory ÃƒÂ¢Ã¢â‚¬Â°Ã‹â€  baseline vent share; high scrap/min ÃƒÂ¢Ã¢â‚¬Â°Ã‹â€  measurable vent pressure increase; W1 West-only; console clean
   DONE 2026-07-20 — FactoryHeatTracker Heat01 drives capped ventBreachShare bonus; W2 idle vent=1 hot vent=2; W1 west-only; console clean.
 
-- [ ] L17. Process infection near breach lanes
+- [x] L17. Process infection near breach lanes
   Type: systemic / mechanical | Pillar: Industrial biomass / hive
   Lore: infection-via-process; biomass uses ship logistics (lore/2026-07-19/summary.md #5; INDEX industrial biomass)
   Change: after each cleared wave, `Processor`/`MiningDrill` within range of VentBreach (later EastFlank) gain a residue debuff that slows craft/extract rate. Primitive green residue VFX only (no asset pack). Clear with RepairPost or player repair tool. Doc rates/range in living design same commit.
   done-when: Play ÃƒÂ¢Ã¢â€šÂ¬Ã¢â‚¬Â machine near vent slows after a clear; repair removes debuff; distant machines unaffected; console clean
+  DONE 2026-07-20 — ProcessInfectionController infects near VentBreach/EastFlank at 0.55x; repair clears; far machines clean; Play-verified.
 
 - [ ] L18. Recovery beat = lonely routine, not victory green
   Type: diegetic | Pillar: Lonely worker fantasy
@@ -278,6 +279,8 @@ Method: capture the Game view in Play mode, judge the frame, fix the single wors
 - [ ] Free lead: Abandoned Factory Lite (Asset Store) ÃƒÂ¢Ã¢â€šÂ¬Ã¢â‚¬Â safe mood greys for blockout; not gated, but not queued until visual Now is thin.
 
 ## Agent log (newest first ÃƒÂ¢Ã¢â€šÂ¬Ã¢â‚¬Â one line per session: date, task, result, commit)
+
+- 2026-07-20: auto-dev L17 process infection near breach lanes — ProcessInfection + Controller after wave clear; 0.55x rate; repair tool/RepairPost clear; Progression_Spec; Play-verified near infect / far clean / clear.
 
 - 2026-07-20: auto-dev L16 hive pressure scales with factory heat — FactoryHeatTracker (scrap/min + powered producers) bumps vent share after W1; endless vent bias; Progression_Spec numbers; Play-verified W2 1->2 vent, W1 locked.
 

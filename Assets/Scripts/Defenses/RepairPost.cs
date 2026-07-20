@@ -18,6 +18,13 @@ public class RepairPost : DefenseBase
         Collider[] cols = Physics.OverlapSphere(transform.position, radius, structureMask);
         foreach (var col in cols)
         {
+            var infection = col.GetComponentInParent<ProcessInfection>();
+            if (infection != null && infection.IsInfected)
+            {
+                infection.ClearInfection();
+                healedAny = true;
+            }
+
             var defense = col.GetComponentInParent<DefenseBase>();
             if (defense == null || defense == this) continue;
 

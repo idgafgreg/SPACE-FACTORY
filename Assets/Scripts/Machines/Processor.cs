@@ -65,7 +65,8 @@ public class Processor : MachineBase, IItemReceiver
         }
         else
         {
-            _timer -= dt;
+            // InfectionRateMult < 1 stretches craft time (L17 residue).
+            _timer -= dt * InfectionRateMult;
             if (_timer <= 0f)
             {
                 EmitOutput(recipe.output, recipe.outputAmount);

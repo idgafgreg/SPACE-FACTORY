@@ -73,7 +73,7 @@ public class MiningDrill : MachineBase
         if (assignedNode == null) return;   // no node bound → nothing to mine
 
         float richness = assignedNode != null ? Mathf.Max(0.1f, assignedNode.yieldMultiplier) : 1f;
-        _accumulator += unitsPerSecond * RunUpgrades.DrillRateMult * richness * dt;
+        _accumulator += unitsPerSecond * RunUpgrades.DrillRateMult * richness * InfectionRateMult * dt;
         if (_accumulator < 1f) return;
 
         int whole = (int)_accumulator;

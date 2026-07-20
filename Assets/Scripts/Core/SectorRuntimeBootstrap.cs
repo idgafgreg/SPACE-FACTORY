@@ -52,6 +52,7 @@ public static class SectorRuntimeBootstrap
         go.AddComponent<SectorRuntimeMarker>();
         go.AddComponent<SceneScanCache>();
         go.AddComponent<FactoryHeatTracker>();
+        go.AddComponent<ProcessInfectionController>();
 
         // Curated release-facing runtime stack. This used to attach 71
         // independent overlays, hints, pulses, labels and procedural dressers.
