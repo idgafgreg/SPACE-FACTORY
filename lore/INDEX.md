@@ -7,17 +7,20 @@ Rolling map of useful themes. Updated by daily research runs.
 | Pillar | What to mine | Status |
 |--------|----------------|--------|
 | Workplace as trap | Isolation baked into the job, not contrived lockdown | Strong — authenticity research 2026-07-19 (Still Wakes) |
-| Industrial biomass / hive | Threat uses vents, heat, logistics; ship becomes habitat | Strong — infection-via-process fiction 2026-07-19 |
-| Factory pressure = identity | Enemies tied to production loop (Factorio pollution lesson) | Strong; watch Substructure / anti-comp Biofactory |
-| Diegetic dread | Diegetic UI, failing systems, environmental storytelling | **Upgraded 2026-07-19** — Intensity Director / menace gauge pacing |
-| Lonely worker fantasy | Rustic space labor, patched ship, schedule vs survival | Strong — recovery beats + lived-in labor props |
+| Industrial biomass / hive | Threat uses vents, heat, logistics; ship becomes habitat | **Upgraded 2026-07-20** — Flood-style infection staging + recycler/process fiction |
+| Factory pressure = identity | Enemies tied to production loop (Factorio pollution lesson) | Strong; watch StarRupture cycle pressure / keep Biofactory as anti-comp |
+| Diegetic dread | Diegetic UI, failing systems, environmental storytelling | **Upgraded 2026-07-20** — Milham diegetic wayfinding + ship-as-living audio |
+| Lonely worker fantasy | Rustic space labor, patched ship, schedule vs survival | Strong — terrible beauty + recovery beats + lived-in labor props |
 
 ## Comp watchlist
 
 - Factorio (pressure tied to factory growth)
-- Dead Space / Dead Space remake (industrial ship body-horror + Intensity Director)
+- Dead Space / Dead Space remake (industrial ship body-horror + Intensity Director + Milham art direction)
 - Alien: Isolation (isolation + Director/menace pacing)
-- Still Wakes the Deep / Self-Contained (workplace horror)
+- Still Wakes the Deep / Self-Contained (workplace horror + art pillars)
+- Halo Flood (infection ecology ladder — design energy)
+- StarRupture (corporate debt + catastrophe prep windows — watch, don’t copy planet loop)
+- Drill Deep (incremental dread via depth — adjacent)
 - Substructure (factory + descent dread — watch)
 - Biofactory (hive-as-factory **anti-comp** — do not drift)
 - ROUTINE, Haze, Site 17 (adjacent industrial/sci-fi horror)
@@ -41,7 +44,8 @@ Paid + free lore asset leads export to [`assets-wishlist.csv`](assets-wishlist.c
 
 ## Last run
 
-- Date: 2026-07-19
+- Date: 2026-07-20
 - Landed on: `main`
-- Focus weight: horror pacing systems + workplace authenticity + factory/hive comps; balanced articles / videos / reviews / stories / assets
-- Prior run: 2026-07-17
+- Focus weight: industrial art direction + Flood infection ecology + diegetic ship audio; balanced articles / videos / reviews / stories / assets
+- Prior run: 2026-07-19
+- Render pipeline note: project currently **Built-in** (prefer Built-in-compatible kits)
