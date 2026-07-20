@@ -74,9 +74,13 @@ public class WaveController : MonoBehaviour
     [Tooltip("Endless/all-gates: max fraction of spawns converted to VentBreach at Heat01 = 1.")]
     [Range(0f, 0.5f)] public float heatEndlessVentBiasMax = 0.25f;
 
-    [Header("Infection residue forms (L22)")]
-    [Tooltip("Of crawlers on VentBreach/EastFlank after Wave 1, convert this share to InfectionResidue (min 1 when any).")]
-    [Range(0f, 1f)] public float residueBreachBaselineShare = 0.5f;
+    [Header("Infection residue forms (L22 + L23 heat scaling)")]
+    [Tooltip("Share of breach-lane crawlers converted to InfectionResidue at zero factory heat. Idle factory = few residue forms.")]
+    [Range(0f, 1f)] public float residueBreachBaselineShare = 0.1f;
+    [Tooltip("Max additional residue share added when Heat01 = 1.")]
+    [Range(0f, 1f)] public float heatResidueShareBonusMax = 0.6f;
+    [Tooltip("Hard cap on effective residue share after heat bonus.")]
+    [Range(0f, 1f)] public float heatResidueShareCap = 0.8f;
     [Tooltip("HP multiplier applied to InfectionResidue crawlers.")]
     [Range(0.2f, 1f)] public float residueHpMult = InfectionResidue.DefaultHpMult;
     [Tooltip("Move-speed multiplier for InfectionResidue crawlers.")]
@@ -92,6 +96,8 @@ public class WaveController : MonoBehaviour
     public int LastVentLaneCount { get; private set; }
     /// <summary>How many breach-lane crawlers were tagged InfectionResidue last spawn build.</summary>
     public int LastResidueSpawnCount { get; private set; }
+    /// <summary>Effective residue share used last spawn build.</summary>
+    public float LastEffectiveResidueShare { get; private set; }
 
     /// <summary>Modifier of the current/most recent wave (None during the defined waves).</summary>
     public WaveModifier CurrentModifier { get; private set; }
@@ -289,8 +295,8 @@ public class WaveController : MonoBehaviour
     }
 
     /// <summary>
-    /// L22: after Wave 1, convert a baseline share of VentBreach/EastFlank crawlers
-    /// into InfectionResidue forms (at least one when any breach crawlers exist).
+    /// L22 + L23: after Wave 1, convert a heat-scaled share of VentBreach/EastFlank
+    /// crawlers into InfectionResidue forms. Idle factory = few; hot factory = many.
     /// </summary>
     void MarkInfectionResidueSpawns() => MarkInfectionResidueSpawns(WaveNumber);
 
@@ -319,8 +325,13 @@ public class WaveController : MonoBehaviour
 
         if (candidates.Count == 0) return;
 
-        int convert = Mathf.RoundToInt(candidates.Count * Mathf.Clamp01(residueBreachBaselineShare));
-        if (convert < 1) convert = 1;
+        float heat01 = LastFactoryHeat01; // sampled by AssignLanes just before this call
+        float effectiveShare = Mathf.Clamp01(residueBreachBaselineShare + heat01 * heatResidueShareBonusMax);
+        effectiveShare = Mathf.Min(heatResidueShareCap, effectiveShare);
+        LastEffectiveResidueShare = effectiveShare;
+
+        int convert = Mathf.RoundToInt(candidates.Count * effectiveShare);
+        if (effectiveShare > 0f && convert < 1) convert = 1;
         convert = Mathf.Min(convert, candidates.Count);
 
         Shuffle(candidates);

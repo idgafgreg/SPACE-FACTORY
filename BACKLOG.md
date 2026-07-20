@@ -58,11 +58,12 @@ Code reality: L15–L21 + P1–P4 + A9/A10 all shipped/verified. Remaining open 
   done-when: Play — W2+ vent/EastFlank shows ≥1 residue form; kill near machine can infect it; W1 unchanged; console clean
   DONE 2026-07-20 — InfectionResidue runtime mod; WaveController 50% breach crawlers (min 1) after W1; death seeds ProcessInfection within 5.5m; EnemyArtPulse green threat; Progression_Spec. Play-verified W1=0 / W2=2 / seed infect; console clean.
 
-- [ ] L23. Factory heat raises infection-form share
+- [x] L23. Factory heat raises infection-form share
   Type: systemic | Pillar: Factory pressure = identity
   Lore: infection staging tied to factory heat (lore/2026-07-20/summary.md suggested experiments; Factorio pollution lesson)
   Change: sample `FactoryHeatTracker.Heat01` when building spawn queue; among vent/EastFlank crawler slots after W1, convert a capped share to InfectionResidue when heat is high (idle ≈ baseline / 0). Does not reopen West-only W1. Sync caps into Progression_Spec with L22.
   done-when: Play — idle factory ≈ few/no residue forms; high scrap/min + producers ⇒ measurable residue share on breach lanes; W1 clean; console clean
+  DONE 2026-07-20 — WaveController samples Heat01 in MarkInfectionResidueSpawns; effective share = 0.10 + Heat01*0.60 capped 0.80; idle W2 ≈10% / hot ≈70-80% breach crawlers; W1 residue-free; Progression_Spec updated. **[?] needs in-editor Play verification (no Unity MCP).**
 
 - [ ] L24. Contaminated slurry beat on infected processors
   Type: systemic / diegetic | Pillar: Industrial biomass / hive
@@ -364,6 +365,8 @@ Method: capture the Game view in Play mode, judge the frame, fix the single wors
 - [ ] Free lead: Abandoned Factory Lite (Asset Store) — safe mood greys for blockout; not gated, but not queued until visual Now is thin.
 
 ## Agent log (newest first — one line per session: date, task, result, commit)
+
+- 2026-07-20: auto-dev L23 factory heat raises residue share — WaveController effective share = 0.10 + Heat01*0.60 capped 0.80; idle W2 ~10% / hot ~70-80% breach crawlers; W1 lock; Progression_Spec. **[?] needs in-editor Play verification (no Unity MCP).**
 
 - 2026-07-20: auto-dev L22 infection-form residue crawlers — InfectionResidue + WaveController breach tagging (W1 lock); death seeds ProcessInfection; Progression_Spec; Play-verified W1=0 W2=2 seed=true; console clean.
 

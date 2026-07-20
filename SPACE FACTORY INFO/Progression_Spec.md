@@ -71,12 +71,24 @@ Infection-via-process: biomass slows logistics near hive entries.
 Flood-style ecology ladder start: fragile infection forms on breach lanes that seed process infection.
 
 - After **Wave 1**, crawlers assigned to `VentBreach` / `EastFlank` can become `InfectionResidue` (runtime mod on crawler prefab — no new asset pack)
-- Baseline convert share: **50%** of breach-lane crawlers, **minimum 1** when any exist (`WaveController.residueBreachBaselineShare`)
+- Baseline convert share: **10%** of breach-lane crawlers at zero factory heat (`WaveController.residueBreachBaselineShare`)
 - **Wave 1** never spawns residue forms (West-only teaching lock)
 - Stats: HP × **0.55**, move speed × **1.22**, sick-green tint + residue chip + green threat pulse
 - On death within **5.5m** of a drill/processor: seeds `ProcessInfection` (same 0.55x rate as L17)
 - Tunables on `WaveController`: `residueBreachBaselineShare`, `residueHpMult`, `residueSpeedMult`, `residueSeedRadius`
-- L23 will raise convert share with factory heat (not in this slice)
+
+## Factory heat raises infection-form share (L23, 2026-07-20)
+
+The hive responds to a hot factory by sending more infection-form residue down breach lanes.
+
+- `WaveController` samples `FactoryHeatTracker.Heat01` (already captured during lane assignment)
+- Effective residue share = `residueBreachBaselineShare + Heat01 * heatResidueShareBonusMax`, clamped to `heatResidueShareCap`
+- Current tunables: baseline **0.10**, heat bonus max **0.60**, cap **0.80**
+  - idle factory (Heat01 = 0): ~10% of breach crawlers are residue
+  - hot factory (Heat01 = 1): ~70-80% of breach crawlers are residue
+- Still only on `VentBreach` / `EastFlank`; **Wave 1** stays West-only and residue-free
+- Tunables on `WaveController`: `heatResidueShareBonusMax`, `heatResidueShareCap`
+
 
 ## Lonely recovery beat (L18, 2026-07-20)
 
