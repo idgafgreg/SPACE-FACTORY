@@ -1656,3 +1656,7 @@
 - Wave 3 teaches split attention and support-line vulnerability.
 - Each new enemy role should reveal a specific planning weakness instead of just increasing raw numbers.
 - If playtests show that success depends mostly on player aim rather than lane setup and recovery discipline, reduce enemy leak speed or damage and strengthen the value of structures.
+
+## Wall Seam Collision Seals (P1, 2026-07-20)
+
+Runtime `WallSeamSealer` fills small gaps between authored `Walls/*` segments (Hull_/Corr_/Ring_) with invisible Buildable-layer BoxColliders so the player cannot slip through hull junctions. Fillers within ~2.4m of a lane path are skipped so gate openings stay clear.

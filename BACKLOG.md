@@ -91,7 +91,7 @@ Code reality (2026-07-20): L15-L19 shipped (menace rollercoaster, factory-heat v
 
 Human report + editor audit: walls do not fully connect in places; player can walk through some barriers and fall off the map; props/objects sit in weird buggy locations. Prefer these over new features until the ship is a solid workplace trap.
 
-- [ ] P1. Seal wall-seam collision gaps
+- [x] P1. Seal wall-seam collision gaps — DONE: `WallSeamSealer` runtime invisible Buildable BoxColliders at Hull_/Corr_/Ring_ AABB seams (maxGap 2m); skip fillers within 2.4m of lane paths; wired bootstrap after ShipInteriorUpgrade; Sector_Layout note. Play-verified: 13 seals / 1 lane-skip; all seal probes blocked; 0 seals near lanes; console clean.
   Type: mechanical | Pillar: Workplace as trap
   Lore: ship-as-prison / no-exit workplace (lore/2026-07-17/summary.md #1; INDEX workplace as trap)
   Change: audit `Walls/*` junctions (editor found ~6 seam pairs e.g. Hull_Bow_L↔Corr_Bow_L, Corr_Vent_L↔Ring_SW). Add thin BoxCollider fillers or nudge wall scales so CharacterController cannot slip between segments. Keep lane gate openings intact.
@@ -322,6 +322,8 @@ Method: capture the Game view in Play mode, judge the frame, fix the single wors
 - [ ] Free lead: Abandoned Factory Lite (Asset Store) ÃƒÂ¢Ã¢â€šÂ¬Ã¢â‚¬Â safe mood greys for blockout; not gated, but not queued until visual Now is thin.
 
 ## Agent log (newest first ÃƒÂ¢Ã¢â€šÂ¬Ã¢â‚¬Â one line per session: date, task, result, commit)
+
+- 2026-07-20: auto-dev P1 seal wall-seam collision gaps — WallSeamSealer + bootstrap wire + Sector_Layout note; Play-verified 13 seals / 1 lane-skip / probes blocked / console clean.
 
 - 2026-07-20: lore-gap — map integrity + polish queue (P1-P4 wall seams/fall/props/junctions) + L20 horror-clock + L21 pressure HUD; left A9/A10 for other agent; editor audit 6 wall seams, VoidHull no colliders. No game code.
 
