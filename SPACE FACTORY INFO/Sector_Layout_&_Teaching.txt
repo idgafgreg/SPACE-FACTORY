@@ -1664,3 +1664,7 @@ Runtime `WallSeamSealer` fills small gaps between authored `Walls/*` segments (H
 ## Map Edge Guard (P2, 2026-07-20)
 
 Runtime `MapEdgeGuard` places invisible Buildable-layer rails on the four lips of the authored `Ground` deck so the CharacterController cannot walk off into the void. `VoidHull` fog curtains stay visual-only (colliders would clip East/West lane spawns near ±40). If the player still falls (Y < -2) or leaves Ground bounds, soft-recover teleports them near the Command Hub with a short `[NAV] EDGE LOCK` terminal line — no death spiral, no scrap loss.
+
+## Prop Placement Sanity (P3, 2026-07-20)
+
+`PlaceholderPropDressing` (v12+) snaps props to deck via `FindDeckY`, strips colliders (never block CharacterController), and rejects placements that overlap Walls / seam seals, sit within ~1.85m of a lane path, or clutter the hub approach (~2.4m — nest + workshop exempt). Corridor/workshop/bay dressers try alternate side offsets before giving up so the ship stays lived-in without spearing bulkheads.

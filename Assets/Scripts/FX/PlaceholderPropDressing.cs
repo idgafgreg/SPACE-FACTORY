@@ -5,10 +5,18 @@ using UnityEngine;
 /// corridor clutter, and workshop leftovers. Supports sad/lonely mood before
 /// combat (lore/2026-07-17 — "props that look worked in").
 /// Runtime-only; colliders stripped so props never block pathing.
+/// P3: snap to deck, reject wall-clip / lane / hub-approach placements.
 /// </summary>
 public class PlaceholderPropDressing : MonoBehaviour
 {
-    const int PropDressVersion = 11;
+    const int PropDressVersion = 12;
+
+    /// <summary>Keep walkway clear — props must stay outside this lane half-width.</summary>
+    const float LaneClearance = 1.85f;
+
+    /// <summary>Keep Command Hub approach clear of clutter.</summary>
+    const float HubClearance = 2.4f;
+
     float _retryAt = 1.05f;
 
     void Start() => Dress();
@@ -45,6 +53,8 @@ public class PlaceholderPropDressing : MonoBehaviour
         DressWorkshop(root.transform);
         DressCorridors(root.transform);
         DressBayDebris(root.transform);
+
+        Debug.Log($"[PlaceholderPropDressing] v{PropDressVersion} dressed under {root.name} ({root.transform.childCount} children)");
     }
 
     /// <summary>
@@ -55,12 +65,13 @@ public class PlaceholderPropDressing : MonoBehaviour
         // Nest sits off the main approach so it doesn't fight the factory loop.
         Vector3 nest = hub + new Vector3(-5.2f, 0f, 4.4f);
 
-        Spawn("Prop_Desk_Small", nest, root, 1.0f, 200f);
-        Spawn("Prop_Chair", nest + new Vector3(0.15f, 0f, -0.85f), root, 0.95f, 15f);
-        Spawn("Prop_Mug", nest + new Vector3(0.35f, 0f, 0.1f), root, 1.1f, 40f, skipClearance: true);
-        Spawn("Prop_Locker", nest + new Vector3(-1.4f, 0f, 0.6f), root, 0.95f, 110f);
-        Spawn("Prop_Computer", nest + new Vector3(0.9f, 0f, 0.55f), root, 0.85f, 225f);
-        Spawn("desk_computerScreen", nest + new Vector3(0.45f, 0f, 0.05f), root, 0.7f, 200f, skipClearance: true);
+        // Nest is intentionally near the hub — skip hub-approach reject.
+        Spawn("Prop_Desk_Small", nest, root, 1.0f, 200f, ignoreHub: true);
+        Spawn("Prop_Chair", nest + new Vector3(0.15f, 0f, -0.85f), root, 0.95f, 15f, ignoreHub: true);
+        Spawn("Prop_Mug", nest + new Vector3(0.35f, 0f, 0.1f), root, 1.1f, 40f, skipClearance: true, ignoreHub: true);
+        Spawn("Prop_Locker", nest + new Vector3(-1.4f, 0f, 0.6f), root, 0.95f, 110f, ignoreHub: true);
+        Spawn("Prop_Computer", nest + new Vector3(0.9f, 0f, 0.55f), root, 0.85f, 225f, ignoreHub: true);
+        Spawn("desk_computerScreen", nest + new Vector3(0.45f, 0f, 0.05f), root, 0.7f, 200f, skipClearance: true, ignoreHub: true);
 
         // Dim personal lamp — warm vs the ship cyan, "still on" loneliness cue.
         var lamp = new GameObject("ShiftNestLamp");
@@ -74,8 +85,8 @@ public class PlaceholderPropDressing : MonoBehaviour
         light.shadows = LightShadows.None;
 
         // Small crates as "personal stash" — not a junkyard.
-        Spawn("Prop_Crate", nest + new Vector3(1.8f, 0f, -1.1f), root, 0.75f, 35f);
-        Spawn("Prop_Barrel1", nest + new Vector3(-2.1f, 0f, -0.8f), root, 0.8f, 70f);
+        Spawn("Prop_Crate", nest + new Vector3(1.8f, 0f, -1.1f), root, 0.75f, 35f, ignoreHub: true);
+        Spawn("Prop_Barrel1", nest + new Vector3(-2.1f, 0f, -0.8f), root, 0.8f, 70f, ignoreHub: true);
 
         DressScheduleBoard(nest, root);
         DressSpilledCrateCluster(nest, root);
@@ -119,9 +130,9 @@ public class PlaceholderPropDressing : MonoBehaviour
     {
         Vector3 basePos = nest + new Vector3(2.45f, 0f, 1.55f);
         Spawn("Prop_Crate", basePos + new Vector3(0f, 0f, 0f), root, 0.55f, 35f,
-            skipClearance: true, extraRot: Quaternion.Euler(18f, 0f, -22f));
+            skipClearance: true, ignoreHub: true, extraRot: Quaternion.Euler(18f, 0f, -22f));
         Spawn("Prop_Crate", basePos + new Vector3(0.55f, 0f, 0.35f), root, 0.50f, 70f,
-            skipClearance: true, extraRot: Quaternion.Euler(-12f, 30f, 15f));
+            skipClearance: true, ignoreHub: true, extraRot: Quaternion.Euler(-12f, 30f, 15f));
     }
 
     void DressWorkshop(Transform root)
@@ -130,11 +141,17 @@ public class PlaceholderPropDressing : MonoBehaviour
         if (workshop == null) return;
         Vector3 w = workshop.transform.position;
 
-        Spawn("Prop_Shelves_WideTall", w + new Vector3(-1.8f, 0f, 1.2f), root, 0.9f, 90f);
-        Spawn("Prop_Barrel2_Open", w + new Vector3(1.6f, 0f, -0.9f), root, 0.85f, 160f);
-        Spawn("Prop_Crate_Tarp", w + new Vector3(2.2f, 0f, 1.0f), root, 0.8f, 45f);
-        Spawn("Prop_Fan_Small", w + new Vector3(-0.5f, 0f, -1.6f), root, 0.9f, 0f);
-        Spawn("Prop_AccessPoint", w + new Vector3(0.8f, 0f, 1.8f), root, 0.85f, 180f);
+        // Workshop sits near the hub — skip hub-approach reject; still wall/lane safe.
+        TrySpawnOffsets("Prop_Shelves_WideTall", w, root, 0.9f, 90f, ignoreHub: true,
+            new Vector3(-1.8f, 0f, 1.2f), new Vector3(-2.4f, 0f, 0.4f), new Vector3(1.8f, 0f, 1.2f));
+        TrySpawnOffsets("Prop_Barrel2_Open", w, root, 0.85f, 160f, ignoreHub: true,
+            new Vector3(1.6f, 0f, -0.9f), new Vector3(2.2f, 0f, -0.4f));
+        TrySpawnOffsets("Prop_Crate_Tarp", w, root, 0.8f, 45f, ignoreHub: true,
+            new Vector3(2.2f, 0f, 1.0f), new Vector3(1.4f, 0f, 1.6f), new Vector3(-2.0f, 0f, -1.2f));
+        TrySpawnOffsets("Prop_Fan_Small", w, root, 0.9f, 0f, ignoreHub: true,
+            new Vector3(-0.5f, 0f, -1.6f), new Vector3(0.5f, 0f, -1.8f));
+        TrySpawnOffsets("Prop_AccessPoint", w, root, 0.85f, 180f, ignoreHub: true,
+            new Vector3(0.8f, 0f, 1.8f), new Vector3(-0.8f, 0f, 1.8f));
     }
 
     void DressCorridors(Transform root)
@@ -169,21 +186,30 @@ public class PlaceholderPropDressing : MonoBehaviour
                 if (side.sqrMagnitude < 0.01f) side = Vector3.right;
                 side.Normalize();
 
-                // Farther from lane center so modular wall skins + walkway stay clear.
-                float sideOff = (n % 2 == 0) ? 2.55f : -2.55f;
+                float prefer = (n % 2 == 0) ? 1f : -1f;
                 string prop = wallProps[n % wallProps.Length];
-                Spawn(prop, p + side * sideOff, root, 0.82f, n * 47f);
+                // Prefer wall-side offsets; fall back to the opposite side.
+                TrySpawnOffsets(prop, p, root, 0.82f, n * 47f,
+                    side * (prefer * 2.55f),
+                    side * (prefer * 3.05f),
+                    side * (-prefer * 2.55f),
+                    side * (-prefer * 3.05f));
                 n++;
             }
 
-            // Gate mouth: one crate / barrel at spawn — "someone tried to barricade".
+            // Gate mouth: one crate / barrel — "someone tried to barricade".
+            // Keep clear of the lane mouth; park beside the approach.
             Vector3 gate = lane.GetPoint(0);
             Vector3 inDir = (lane.GetPoint(1) - gate);
             inDir.y = 0f;
             if (inDir.sqrMagnitude > 0.01f) inDir.Normalize();
             Vector3 gateSide = Vector3.Cross(Vector3.up, inDir);
-            Spawn(wallProps[(n + 2) % wallProps.Length],
-                gate + gateSide * 2.4f + inDir * 1.2f, root, 0.8f, n * 33f);
+            if (gateSide.sqrMagnitude < 0.01f) gateSide = Vector3.right;
+            gateSide.Normalize();
+            TrySpawnOffsets(wallProps[(n + 2) % wallProps.Length], gate, root, 0.8f, n * 33f,
+                gateSide * 2.8f + inDir * 2.0f,
+                -gateSide * 2.8f + inDir * 2.0f,
+                gateSide * 3.2f + inDir * 2.6f);
             n++;
         }
     }
@@ -199,35 +225,52 @@ public class PlaceholderPropDressing : MonoBehaviour
             if (node.transform.position.sqrMagnitude < 80f) continue;
 
             string prop = (i % 2 == 0) ? "Prop_Crate" : "Prop_Barrel1";
-            Vector3 offset = new Vector3(
-                (i % 2 == 0) ? 1.8f : -1.8f,
-                0f,
-                (i % 3 == 0) ? 1.4f : -1.4f);
-            Spawn(prop, node.transform.position + offset, root, 0.78f, i * 61f);
+            Vector3 origin = node.transform.position;
+            TrySpawnOffsets(prop, origin, root, 0.78f, i * 61f,
+                new Vector3(1.8f, 0f, 1.4f),
+                new Vector3(-1.8f, 0f, -1.4f),
+                new Vector3(1.8f, 0f, -1.4f),
+                new Vector3(-1.8f, 0f, 1.4f));
             i++;
             if (i >= 6) break; // keep sparse
         }
     }
 
-    static void Spawn(string resourcesPath, Vector3 pos, Transform parent, float scale, float yaw,
-        bool skipClearance = false) =>
-        Spawn(resourcesPath, pos, parent, scale, yaw, skipClearance, Quaternion.identity);
+    static void TrySpawnOffsets(string resourcesPath, Vector3 origin, Transform parent,
+        float scale, float yaw, params Vector3[] offsets) =>
+        TrySpawnOffsets(resourcesPath, origin, parent, scale, yaw, false, offsets);
 
-    static void Spawn(string resourcesPath, Vector3 pos, Transform parent, float scale, float yaw,
-        bool skipClearance, Quaternion extraRot)
+    static void TrySpawnOffsets(string resourcesPath, Vector3 origin, Transform parent,
+        float scale, float yaw, bool ignoreHub, params Vector3[] offsets)
     {
+        foreach (var off in offsets)
+        {
+            if (Spawn(resourcesPath, origin + off, parent, scale, yaw, false, ignoreHub, Quaternion.identity))
+                return;
+        }
+    }
+
+    static bool Spawn(string resourcesPath, Vector3 pos, Transform parent, float scale, float yaw,
+        bool skipClearance = false, bool ignoreHub = false, Quaternion extraRot = default)
+    {
+        if (extraRot.Equals(default)) extraRot = Quaternion.identity;
         if (!skipClearance)
         {
+            if (TooCloseToLane(pos, LaneClearance)) return false;
+            if (!ignoreHub && TooCloseToHub(pos, HubClearance)) return false;
             foreach (var machine in FindObjectsByType<MachineBase>(FindObjectsInactive.Exclude))
                 if (machine != null && (machine.transform.position - pos).sqrMagnitude < 2.25f)
-                    return;
+                    return false;
             foreach (var defense in FindObjectsByType<DefenseBase>(FindObjectsInactive.Exclude))
                 if (defense != null && (defense.transform.position - pos).sqrMagnitude < 2.25f)
-                    return;
+                    return false;
         }
 
+        // Rough pre-check: don't even instantiate inside a wall volume.
+        if (PointOverlapsWall(pos + Vector3.up * 0.6f, 0.35f)) return false;
+
         var prefab = Resources.Load<GameObject>("ArtPlaceholders/" + resourcesPath);
-        if (prefab == null) return;
+        if (prefab == null) return false;
 
         float floorY = RuntimeVisualPrimitives.FindDeckY(pos, pos.y);
         // Mug / screen sit on the desk surface, not the deck.
@@ -245,6 +288,13 @@ public class PlaceholderPropDressing : MonoBehaviour
         foreach (var c in go.GetComponentsInChildren<Collider>())
             Destroy(c);
         FitProp(go, resourcesPath, pos.y, scale);
+
+        // P3: reject after fit if the mesh still spears a wall (thin shelves etc.).
+        if (BoundsOverlapWall(go))
+        {
+            Destroy(go);
+            return false;
+        }
 
         // A9: tint bright-white Kenney office props into the dark ship palette.
         RecolorProp(go, resourcesPath);
@@ -266,6 +316,89 @@ public class PlaceholderPropDressing : MonoBehaviour
             }
             r.sharedMaterials = mats;
         }
+        return true;
+    }
+
+    static bool TooCloseToLane(Vector3 worldPos, float clearance)
+    {
+        var layout = SectorLayout.Instance;
+        LanePath[] lanes = layout != null && layout.lanes != null && layout.lanes.Length > 0
+            ? layout.lanes
+            : Object.FindObjectsByType<LanePath>(FindObjectsInactive.Exclude);
+        if (lanes == null) return false;
+
+        float r2 = clearance * clearance;
+        Vector3 p = worldPos; p.y = 0f;
+        foreach (var lane in lanes)
+        {
+            if (lane == null || lane.PointCount < 2) continue;
+            for (int i = 0; i < lane.PointCount - 1; i++)
+            {
+                Vector3 a = lane.GetPoint(i); a.y = 0f;
+                Vector3 b = lane.GetPoint(i + 1); b.y = 0f;
+                if (DistPointToSegmentSq(p, a, b) <= r2) return true;
+            }
+        }
+        return false;
+    }
+
+    static bool TooCloseToHub(Vector3 worldPos, float clearance)
+    {
+        var hub = SectorLayout.Instance != null ? SectorLayout.Instance.commandHubTransform : null;
+        if (hub == null) return false;
+        Vector2 a = new Vector2(worldPos.x, worldPos.z);
+        Vector2 b = new Vector2(hub.position.x, hub.position.z);
+        return (a - b).sqrMagnitude < clearance * clearance;
+    }
+
+    static bool PointOverlapsWall(Vector3 worldPos, float radius)
+    {
+        var cols = Physics.OverlapSphere(worldPos, radius, ~0, QueryTriggerInteraction.Ignore);
+        foreach (var c in cols)
+            if (IsWallCollider(c)) return true;
+        return false;
+    }
+
+    static bool BoundsOverlapWall(GameObject go)
+    {
+        var rends = go.GetComponentsInChildren<Renderer>();
+        if (rends.Length == 0) return false;
+        Bounds b = rends[0].bounds;
+        for (int i = 1; i < rends.Length; i++) b.Encapsulate(rends[i].bounds);
+        // Shrink so resting against a wall lip isn't a false reject.
+        Vector3 e = b.extents;
+        e.x = Mathf.Max(0.05f, e.x - 0.12f);
+        e.y = Mathf.Max(0.05f, e.y - 0.05f);
+        e.z = Mathf.Max(0.05f, e.z - 0.12f);
+        var cols = Physics.OverlapBox(b.center, e, Quaternion.identity, ~0, QueryTriggerInteraction.Ignore);
+        foreach (var c in cols)
+            if (IsWallCollider(c)) return true;
+        return false;
+    }
+
+    static bool IsWallCollider(Collider c)
+    {
+        if (c == null) return false;
+        Transform t = c.transform;
+        string n = t.name;
+        if (n.StartsWith("Hull_") || n.StartsWith("Corr_") || n.StartsWith("Ring_")
+            || n.StartsWith("SeamSeal_") || n.StartsWith("Rail_"))
+            return true;
+        while (t != null)
+        {
+            if (t.name == "Walls") return true;
+            t = t.parent;
+        }
+        return false;
+    }
+
+    static float DistPointToSegmentSq(Vector3 p, Vector3 a, Vector3 b)
+    {
+        Vector3 ab = b - a;
+        float denom = ab.sqrMagnitude;
+        if (denom < 1e-6f) return (p - a).sqrMagnitude;
+        float t = Mathf.Clamp01(Vector3.Dot(p - a, ab) / denom);
+        return (p - (a + ab * t)).sqrMagnitude;
     }
 
     /// <summary>Map default bright Kenney colours to the ship's cold steel/amber palette.

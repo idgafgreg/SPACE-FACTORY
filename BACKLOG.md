@@ -103,7 +103,7 @@ Human report + editor audit: walls do not fully connect in places; player can wa
   Change: where visual hull ends or `VoidHull` has no collision, add invisible perimeter rail colliders on Buildable layer AND a killplane (y < -2 or off Ground bounds) that respawns the player at hub with a short terminal line (no death spiral). Document in Sector_Layout briefly.
   done-when: Play — cannot walk off deck into void; forced fall respawns at hub; console clean
 
-- [ ] P3. Prop / machine placement sanity pass
+- [x] P3. Prop / machine placement sanity pass — DONE: PlaceholderPropDressing v12 lane/hub/wall clearance + offset retries; deck snap kept; colliders stripped; Sector_Layout note. Play-verified: 28 props, 0 float / 0 wall / 0 lane / 0 hub; console clean.
   Type: visual / mechanical | Pillar: Lonely worker fantasy
   Lore: authentic labor habitat before haunt (lore/2026-07-19/summary.md #2)
   Change: audit `PlaceholderPropDressing`, `RuntimeArtBackfill`, starter factory props — fix floating, wall-clipping, and props blocking lanes/hub approach. Snap to deck; reject spawns intersecting Walls colliders; keep props non-blocking for pathing where intended.
@@ -322,6 +322,8 @@ Method: capture the Game view in Play mode, judge the frame, fix the single wors
 - [ ] Free lead: Abandoned Factory Lite (Asset Store) ÃƒÂ¢Ã¢â€šÂ¬Ã¢â‚¬Â safe mood greys for blockout; not gated, but not queued until visual Now is thin.
 
 ## Agent log (newest first ÃƒÂ¢Ã¢â€šÂ¬Ã¢â‚¬Â one line per session: date, task, result, commit)
+
+- 2026-07-20: auto-dev P3 prop placement sanity — PlaceholderPropDressing v12 wall/lane/hub reject + offset retries; Sector_Layout; Play-verified 28 props 0 float/wall/lane; console clean.
 
 - 2026-07-20: auto-dev P2 map-edge fall barrier + killplane — MapEdgeGuard Ground rails + SoftRecoverToHub; VoidHull visual-only; Sector_Layout; Play-verified 4 rails / lanes clear / killplane recover; console clean.
 
