@@ -8,7 +8,12 @@ using UnityEngine;
 /// </summary>
 public class ShipInteriorUpgrade : MonoBehaviour
 {
-    const int UpgradeVersion = 53;
+    const int UpgradeVersion = 55;
+
+    // TransparentFX — built-in layer, ships with every project (same choice as
+    // PostFXBootstrap.VolumeLayer). Wall caps live here so point lights can cull
+    // them; the PostFX volume also being on this layer is unrelated + harmless.
+    const int CapLayer = 1;
 
     static Material _deckMat;
     static Material _hullMat;
@@ -22,19 +27,60 @@ public class ShipInteriorUpgrade : MonoBehaviour
 
     bool _hubDressed;
     Transform _upgradeRoot;
+    float _maskSweepTimer;
 
     void Start() => Upgrade();
 
     void Update()
     {
-        // The command hub's ArtPlaceholder is backfilled a frame or two after
-        // Start, so the hub shell can't be dressed in the one-shot Upgrade pass.
-        // Retry until the art exists, then stop.
+        // The command hub's ArtPlaceholder is backfilled after Start, and can be
+        // REPLACED again later by the art fitter — which silently drops the dark
+        // steel MaterialPropertyBlock and leaves the hub rendering as a white
+        // placeholder blob. A fixed 1.3s delay used to gate this pass, so the
+        // hub was white for the first ~1.3s of every run and stayed white if the
+        // art swap landed after the one successful dress.
+        // Poll every frame and re-dress whenever the tint is missing.
+        // Tint is idempotent and cheap; window/beacon geometry is built once.
+        TintHubArt();
+
+        // Lit props (salvage crates, etc.) spawn all run long with fresh Lights
+        // that default to lighting every layer — re-mask the cap layer on a slow
+        // cadence so wall caps stay lamp-proof (see BuildWallCaps).
+        _maskSweepTimer -= Time.unscaledDeltaTime;
+        if (_maskSweepTimer <= 0f)
+        {
+            _maskSweepTimer = 2f;
+            MaskCapLayerFromPointLights();
+        }
+
         if (_hubDressed) return;
-        if (Time.timeSinceLevelLoad < 1.3f) return;
         var root = _upgradeRoot != null ? _upgradeRoot : transform.Find("InteriorUpgradeRoot");
         if (root == null) return;
         _hubDressed = BuildHubShell(root);
+    }
+
+    /// <summary>Apply the dark-steel tint to the hub art. Idempotent, and safe to
+    /// call every frame — re-applies if the art fitter swaps the placeholder out
+    /// (which drops the property block and leaves a white blob on the pad).
+    /// Separate from <see cref="BuildHubShell"/> so re-tinting never duplicates
+    /// the window/beacon geometry.</summary>
+    static void TintHubArt()
+    {
+        var hubGo = GameObject.Find("CommandHub");
+        var art = hubGo != null ? hubGo.transform.Find("ArtPlaceholder") : null;
+        if (art == null) return;
+
+        foreach (var r in art.GetComponentsInChildren<Renderer>())
+        {
+            if (r == null) continue;
+            var block = new MaterialPropertyBlock();
+            r.GetPropertyBlock(block);
+            if (!block.isEmpty) continue;   // already tinted
+            block.SetColor("_Color", new Color(0.16f, 0.17f, 0.19f)); // dark steel
+            block.SetFloat("_Metallic", 0.85f);
+            block.SetFloat("_Glossiness", 0.45f);
+            r.SetPropertyBlock(block);
+        }
     }
 
     public void Upgrade()
@@ -68,6 +114,7 @@ public class ShipInteriorUpgrade : MonoBehaviour
         BuildCorridorLights(root.transform);
         BuildWallBaseTrim(root.transform);
         BuildWallAccentRails(root.transform);
+        BuildWallCaps(root.transform);
         BuildHangingBeams(root.transform);
         BuildHubDeckPad(root.transform);
         BuildHubFloodLight(root.transform);
@@ -152,6 +199,111 @@ public class ShipInteriorUpgrade : MonoBehaviour
     }
 
     /// <summary>
+    /// A5: give every authored wall a silhouette. From the iso camera the player
+    /// mostly sees wall TOPS, which were the same flat value as the deck — the
+    /// map read as a floor plan, not architecture. Each wall gets:
+    ///   - a lighter steel cap plate, slightly oversized, so the top face is one
+    ///     value step above the deck and the overhang draws a shadow line down
+    ///     the wall side (fake bevel);
+    ///   - a hairline edge strip along the cap rim on both long sides, barely
+    ///     emissive steel-blue, so the wall outline survives in gloom without
+    ///     adding another glow colour to the scene.
+    /// </summary>
+    void BuildWallCaps(Transform parent)
+    {
+        var walls = GameObject.Find("Walls");
+        if (walls == null) return;
+
+        // One value step above the deck (deck tops out ~0.27), NOT bright steel —
+        // full Steel + high gloss blew out white under the player lamp.
+        var capMat = new Material(Shader.Find("Standard")) { name = "RuntimeWallCap" };
+        capMat.mainTexture = MakePlateTexture(64,
+            new Color(0.30f, 0.33f, 0.38f), new Color(0.24f, 0.26f, 0.30f), 10);
+        capMat.mainTextureScale = new Vector2(2f, 2f);
+        capMat.color = Color.white;
+        capMat.SetFloat("_Metallic", 0.35f);
+        capMat.SetFloat("_Glossiness", 0.25f);
+
+        var edgeMat = new Material(Shader.Find("Standard")) { name = "RuntimeWallEdge" };
+        edgeMat.color = ShipPalette.SteelDark;
+        edgeMat.EnableKeyword("_EMISSION");
+        // Faint cold edge light — outline, not glow. Steel-blue keeps the signal
+        // colours (amber = systems, green = hive, red = threat) unpolluted.
+        edgeMat.SetColor("_EmissionColor", new Color(0.22f, 0.30f, 0.40f) * 0.35f);
+        edgeMat.SetFloat("_Metallic", 0.5f);
+        edgeMat.SetFloat("_Glossiness", 0.6f);
+
+        foreach (Transform t in walls.transform)
+        {
+            if (t == null) continue;
+            string n = t.name;
+            if (!(n.StartsWith("Hull_") || n.StartsWith("Corr_") || n.StartsWith("Ring_"))) continue;
+            var wr = t.GetComponent<Renderer>();
+            if (wr == null || !wr.enabled) continue;
+
+            Bounds b = wr.bounds;
+            const float capH = 0.09f;
+            const float lip = 0.10f;   // overhang past the wall face → shadow line
+
+            var cap = GameObject.CreatePrimitive(PrimitiveType.Cube);
+            cap.name = "WallCap";
+            Destroy(cap.GetComponent<Collider>());
+            cap.transform.SetParent(parent, false);
+            // CapLayer: point lights hang at y≈3.5 and caps sit at y≈2.9, so a
+            // lamp-lit cap gets ~30× the deck's light (inverse square) and blows
+            // out white however dark its albedo is. Caps live on a layer that
+            // point lights cull — sun + ambient only — so the top face is a
+            // CONSTANT one-step-lighter value, which is the whole silhouette idea.
+            cap.layer = CapLayer;
+            cap.transform.position = new Vector3(b.center.x, b.max.y + capH * 0.5f, b.center.z);
+            cap.transform.localScale = new Vector3(b.size.x + lip * 2f, capH, b.size.z + lip * 2f);
+            cap.GetComponent<Renderer>().sharedMaterial = capMat;
+
+            // Edge strips along the two long faces of the cap rim.
+            bool longIsX = b.size.x >= b.size.z;
+            float edgeT = 0.05f;
+            for (int s = -1; s <= 1; s += 2)
+            {
+                var edge = GameObject.CreatePrimitive(PrimitiveType.Cube);
+                edge.name = "WallCapEdge";
+                Destroy(edge.GetComponent<Collider>());
+                edge.transform.SetParent(parent, false);
+                if (longIsX)
+                {
+                    edge.transform.position = new Vector3(b.center.x,
+                        b.max.y + capH + 0.01f,
+                        b.center.z + s * (b.size.z * 0.5f + lip - edgeT * 0.5f));
+                    edge.transform.localScale = new Vector3(b.size.x + lip * 2f, 0.02f, edgeT);
+                }
+                else
+                {
+                    edge.transform.position = new Vector3(
+                        b.center.x + s * (b.size.x * 0.5f + lip - edgeT * 0.5f),
+                        b.max.y + capH + 0.01f,
+                        b.center.z);
+                    edge.transform.localScale = new Vector3(edgeT, 0.02f, b.size.z + lip * 2f);
+                }
+                edge.layer = CapLayer;
+                var er = edge.GetComponent<Renderer>();
+                er.sharedMaterial = edgeMat;
+                er.shadowCastingMode = UnityEngine.Rendering.ShadowCastingMode.Off;
+            }
+        }
+
+        MaskCapLayerFromPointLights();
+    }
+
+    /// <summary>Cull the cap layer from every point/spot light (the sun stays).
+    /// Salvage crates and other lit props spawn all run long, so this is swept
+    /// periodically from Update, not once.</summary>
+    static void MaskCapLayerFromPointLights()
+    {
+        foreach (var l in FindObjectsByType<Light>(FindObjectsInactive.Include))
+            if (l.type != LightType.Directional)
+                l.cullingMask &= ~(1 << CapLayer);
+    }
+
+    /// <summary>
     /// Cube Hull_/Corr_/Ring_ stay as colliders only — modular panels are the visible ship.
     /// </summary>
     static void HidePrimitiveHullCubes()
@@ -172,14 +324,16 @@ public class ShipInteriorUpgrade : MonoBehaviour
     {
         if (_texturesReady && _deckMat != null) return;
 
-        // Steel deck / sick-green hull split (Haze palette via ShipPalette).
-        var deckTex = MakePlateTexture(128, ShipPalette.DeckDark, ShipPalette.DeckLight, 24);
+        // Cold-steel deck / darker steel hull split (palette via ShipPalette).
+        var deckTex = MakeDeckTexture(256, ShipPalette.DeckDark, ShipPalette.DeckLight);
         var hullTex = MakePlateTexture(128, ShipPalette.HullLight, ShipPalette.HullDark, 18);
         var hazardTex = MakeHazardTexture(64);
 
         _deckMat = new Material(Shader.Find("Standard")) { name = "RuntimeDeck" };
         _deckMat.mainTexture = deckTex;
-        _deckMat.mainTextureScale = new Vector2(8f, 8f);
+        // 4×4 (was 8×8): 256px texture with irregular plates — bigger repeat
+        // period + non-uniform grid kills the graph-paper tiling read.
+        _deckMat.mainTextureScale = new Vector2(4f, 4f);
         _deckMat.color = Color.white;
         _deckMat.SetFloat("_Metallic", 0.58f);
         _deckMat.SetFloat("_Glossiness", 0.32f);
@@ -188,15 +342,24 @@ public class ShipInteriorUpgrade : MonoBehaviour
         _hullMat.mainTexture = hullTex;
         _hullMat.mainTextureScale = new Vector2(2f, 2f);
         _hullMat.color = Color.white;
-        _hullMat.SetFloat("_Metallic", 0.78f);
-        _hullMat.SetFloat("_Glossiness", 0.4f);
-        _hullMat.EnableKeyword("_EMISSION");
-        _hullMat.SetColor("_EmissionColor", ShipPalette.SickGreenDeep * 1.4f);
+        // Metallic 0.78 turned long wall faces into sky mirrors (bright silver
+        // streaks at grazing angles) — the camera never draws the skybox but
+        // reflections still sample the default procedural sky.
+        _hullMat.SetFloat("_Metallic", 0.40f);
+        _hullMat.SetFloat("_Glossiness", 0.28f);
+        // NO emission. Every wall (and the 8 huge VoidHull curtain slabs) used to
+        // self-illuminate sick green, which (a) painted the frame green and (b)
+        // made walls ignore light entirely — no falloff, no depth, no silhouette.
+        // Lit-only hull means lamps carve the geometry out of the dark.
+        _hullMat.DisableKeyword("_EMISSION");
+        _hullMat.SetColor("_EmissionColor", Color.black);
 
         _trimMat = new Material(Shader.Find("Standard")) { name = "RuntimeTrim" };
-        _trimMat.color = Color.Lerp(ShipPalette.SteelDark, ShipPalette.SickGreen, 0.45f);
+        // Trim is SHIP system light → amber (worker/powered). Green stays booked
+        // for hive/biomass/alarm, so a green glow always means something is wrong.
+        _trimMat.color = Color.Lerp(ShipPalette.SteelDark, ShipPalette.Steel, 0.35f);
         _trimMat.EnableKeyword("_EMISSION");
-        _trimMat.SetColor("_EmissionColor", ShipPalette.TrimEmit * 0.32f);
+        _trimMat.SetColor("_EmissionColor", ShipPalette.AmberDim * 0.30f);
         _trimMat.SetFloat("_Metallic", 0.4f);
         _trimMat.SetFloat("_Glossiness", 0.6f);
 
@@ -252,8 +415,11 @@ public class ShipInteriorUpgrade : MonoBehaviour
 
             if (isFloor)
             {
-                float sx = Mathf.Max(1f, r.bounds.size.x * 0.35f);
-                float sz = Mathf.Max(1f, r.bounds.size.z * 0.35f);
+                // 0.08/u: one 256px WornDeck repeat every 12.5u → plates land at
+                // 1-2u. The old 0.35/u factor was tuned for the 128px texture and
+                // shrank the new plates to a 0.35u mosaic.
+                float sx = Mathf.Max(1f, r.bounds.size.x * 0.08f);
+                float sz = Mathf.Max(1f, r.bounds.size.z * 0.08f);
                 var inst = new Material(_deckMat);
                 inst.mainTextureScale = new Vector2(sx, sz);
                 r.sharedMaterial = inst;
@@ -298,7 +464,10 @@ public class ShipInteriorUpgrade : MonoBehaviour
             wall.transform.position = pos;
             wall.transform.localScale = new Vector3(32f, 8f, 1.2f);
             wall.transform.rotation = Quaternion.LookRotation(center - pos, Vector3.up);
-            wall.GetComponent<Renderer>().sharedMaterial = _hullMat;
+            // Void material, not hull: these are the fog-edge curtain, they must
+            // recede into black. As hull slabs they read as huge lit walls and
+            // flattened the horizon.
+            wall.GetComponent<Renderer>().sharedMaterial = _voidMat;
         }
     }
 
@@ -336,10 +505,12 @@ public class ShipInteriorUpgrade : MonoBehaviour
         if (layout == null || layout.lanes == null) return;
 
         var stripeMat = new Material(_deckMat);
-        stripeMat.color = Color.Lerp(ShipPalette.Steel, ShipPalette.SickGreen, 0.25f);
+        // Factorio reads walkways by VALUE, not hue — a darker steel strip. The old
+        // green tint + green emission made lanes look like carpet runners.
+        stripeMat.color = Color.Lerp(ShipPalette.Steel, ShipPalette.SteelDark, 0.45f);
         stripeMat.SetFloat("_Metallic", 0.65f);
-        stripeMat.EnableKeyword("_EMISSION");
-        stripeMat.SetColor("_EmissionColor", ShipPalette.TrimEmit * 0.06f);
+        stripeMat.DisableKeyword("_EMISSION");
+        stripeMat.SetColor("_EmissionColor", Color.black);
 
         foreach (var lane in layout.lanes)
         {
@@ -380,6 +551,12 @@ public class ShipInteriorUpgrade : MonoBehaviour
             if (lane == null || lane.PointCount < 2) continue;
             for (int i = 0; i < lane.PointCount; i += 2)
             {
+                // A8: every third fixture is dead — sparse pools with real gloom
+                // between them, and the deck reads as a ship whose maintenance
+                // crew never came back (lore: lonely industrial dread).
+                lit++;
+                if (lit % 3 == 0) continue;
+
                 Vector3 p = lane.GetPoint(i);
                 // Invisible light anchor — no floating plate (iso game has no real ceiling).
                 Vector3 pos = p + Vector3.up * 2.35f;
@@ -392,10 +569,12 @@ public class ShipInteriorUpgrade : MonoBehaviour
                 light.range = 9f;
                 light.intensity = 1.5f;
                 light.shadows = LightShadows.None;
+                // Amber / cool steel-white alternation. The old sick-green lamps
+                // broke the colour law (green = hive/alarm ONLY, see ShipPalette).
                 light.color = (lit % 2 == 0)
-                    ? Color.Lerp(ShipPalette.SickGreen, Color.white, 0.35f)
+                    ? new Color(0.72f, 0.80f, 0.92f)
                     : ShipPalette.Amber;
-                lit++;
+                fixture.AddComponent<LampFlicker>();
             }
         }
     }
@@ -513,10 +692,11 @@ public class ShipInteriorUpgrade : MonoBehaviour
         pad.transform.position = hub.position + Vector3.up * 0.02f;
         pad.transform.localScale = new Vector3(5.2f, 0.03f, 5.2f);
         var mat = new Material(_deckMat);
-        mat.color = Color.Lerp(ShipPalette.Steel, ShipPalette.SickGreen, 0.3f);
+        // Hub pad is the one warm island on the deck — amber, matching the hub lamp.
+        mat.color = Color.Lerp(ShipPalette.Steel, ShipPalette.AmberDim, 0.25f);
         mat.SetFloat("_Metallic", 0.7f);
         mat.EnableKeyword("_EMISSION");
-        mat.SetColor("_EmissionColor", ShipPalette.TrimEmit * 0.12f);
+        mat.SetColor("_EmissionColor", ShipPalette.AmberDim * 0.10f);
         pad.GetComponent<Renderer>().sharedMaterial = mat;
     }
 
@@ -838,6 +1018,84 @@ public class ShipInteriorUpgrade : MonoBehaviour
                 mat.SetColor("_EmissionColor", emission * strength);
             }
         }
+    }
+
+    /// <summary>
+    /// A7 deck texture. The old MakePlateTexture grid read as graph paper: every
+    /// plate identical size, identical value, hard edge lines everywhere. This
+    /// builds a worn deck instead:
+    ///   - irregular plate grid (random row/column widths from a seeded RNG),
+    ///   - per-plate value jitter (hash) so no two neighbouring plates match,
+    ///   - rivet dots at plate corners,
+    ///   - low-frequency Perlin stain layer (oil/grime darkening),
+    ///   - sparse directional scuff streaks (traffic wear).
+    /// </summary>
+    static Texture2D MakeDeckTexture(int size, Color a, Color b)
+    {
+        var tex = new Texture2D(size, size, TextureFormat.RGBA32, true)
+        {
+            wrapMode = TextureWrapMode.Repeat,
+            filterMode = FilterMode.Bilinear,
+            name = "WornDeck"
+        };
+        var rng = new System.Random(1337);
+
+        // Irregular plate boundaries. Wraps cleanly because the last boundary is
+        // clamped to `size`, so the repeat seam is just another plate edge.
+        var xs = new System.Collections.Generic.List<int> { 0 };
+        var ys = new System.Collections.Generic.List<int> { 0 };
+        while (xs[xs.Count - 1] < size)
+            xs.Add(Mathf.Min(size, xs[xs.Count - 1] + rng.Next(22, 46)));
+        while (ys[ys.Count - 1] < size)
+            ys.Add(Mathf.Min(size, ys[ys.Count - 1] + rng.Next(22, 46)));
+
+        int PlateIndex(System.Collections.Generic.List<int> bounds, int v)
+        {
+            for (int i = bounds.Count - 2; i >= 0; i--)
+                if (v >= bounds[i]) return i;
+            return 0;
+        }
+
+        var px = new Color[size * size];
+        for (int y = 0; y < size; y++)
+        for (int x = 0; x < size; x++)
+        {
+            int ix = PlateIndex(xs, x), iy = PlateIndex(ys, y);
+            int x0 = xs[ix], x1 = xs[ix + 1], y0 = ys[iy], y1 = ys[iy + 1];
+
+            // Per-plate value: hash → stable jitter, full range, no checker rhythm.
+            uint h = (uint)(ix * 73856093 ^ iy * 19349663);
+            float plateVal = 0.18f + ((h >> 3) % 1000) / 1000f * 0.5f;
+            Color c = Color.Lerp(a, b, plateVal);
+
+            // Plate edges: darker seam, 1px.
+            bool edge = x == x0 || y == y0 || x == x1 - 1 || y == y1 - 1;
+            if (edge) c *= 0.68f;
+
+            // Rivets: 2px dots inset from each plate corner.
+            int rx = Mathf.Min(x - x0, x1 - 1 - x), ry = Mathf.Min(y - y0, y1 - 1 - y);
+            if (rx >= 3 && rx <= 4 && ry >= 3 && ry <= 4)
+                c = Color.Lerp(c, Color.white, 0.30f);
+
+            // Grit noise.
+            float n = Mathf.PerlinNoise(x * 0.31f, y * 0.27f);
+            c *= 0.90f + n * 0.18f;
+
+            // Stains: two octaves of low-frequency Perlin, darkening only.
+            float s1 = Mathf.PerlinNoise(x * 0.024f + 11.7f, y * 0.024f + 3.9f);
+            float s2 = Mathf.PerlinNoise(x * 0.055f + 51.2f, y * 0.055f + 27.4f);
+            float stain = Mathf.Clamp01((s1 * 0.7f + s2 * 0.3f - 0.52f) * 2.2f);
+            c = Color.Lerp(c, c * 0.55f, stain * 0.7f);
+
+            // Sparse scuff streaks: thin bright-worn diagonals.
+            float scuff = Mathf.PerlinNoise(x * 0.012f + y * 0.07f, y * 0.012f);
+            if (scuff > 0.72f) c = Color.Lerp(c, c * 1.35f, (scuff - 0.72f) * 1.6f);
+
+            px[y * size + x] = c;
+        }
+        tex.SetPixels(px);
+        tex.Apply(true);
+        return tex;
     }
 
     static Texture2D MakePlateTexture(int size, Color a, Color b, int cell)

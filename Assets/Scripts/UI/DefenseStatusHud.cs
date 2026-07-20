@@ -47,11 +47,14 @@ public class DefenseStatusHud : MonoBehaviour
             ? $"DEF {_powered}/{_total} UNDERPOWERED"
             : $"DEF {_powered}/{_total}";
 
+        // Below the RUN MODS block, which shares the right column.
         float w = 200f, h = 26f;
-        float x = Screen.width - w - 16f;
-        float y = 96f;
+        float x = ShipTerminalUI.ScaledWidth - w - 16f;
+        float y = ShipTerminalUI.RightColumnBelowMods;
+        ShipTerminalUI.BeginScaled();
         GUI.DrawTexture(new Rect(x, y, w, h), _bg);
         GUI.Label(new Rect(x + 8f, y + 4f, w - 12f, h), text, _style);
+        ShipTerminalUI.EndScaled();
     }
 
     void Ensure()

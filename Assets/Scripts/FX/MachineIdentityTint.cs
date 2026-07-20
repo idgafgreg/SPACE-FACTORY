@@ -41,7 +41,14 @@ public class MachineIdentityTint : MonoBehaviour
                 PowerTap    => new Color(1f, 0.92f, 0.3f),    // yellow
                 _           => new Color(0.85f, 0.85f, 0.9f)
             };
-            Dress(m.transform, accent, 0.65f, lamp: true);
+            Silhouette kit = m switch
+            {
+                MiningDrill => Silhouette.DrillMast,   // TurboDrill subclasses this
+                Processor   => Silhouette.TwinStacks,
+                PowerTap    => Silhouette.CoilPole,
+                _           => Silhouette.None
+            };
+            Dress(m.transform, accent, 0.65f, lamp: true, kit);
         }
 
         foreach (var d in FindObjectsByType<DefenseBase>(FindObjectsInactive.Exclude))
@@ -55,11 +62,23 @@ public class MachineIdentityTint : MonoBehaviour
                 RepairPost => new Color(0.4f, 1f, 0.55f),     // green
                 _          => new Color(0.8f, 0.8f, 0.85f)
             };
-            Dress(d.transform, accent, 0.55f, lamp: d is not Barrier);
+            Silhouette kit = d switch
+            {
+                AutoTurret => Silhouette.Barrel,       // HeavyTurret subclasses this
+                RepairPost => Silhouette.CrossMast,
+                _          => Silhouette.None          // Barrier stays a wall; trap stays flat
+            };
+            Dress(d.transform, accent, 0.55f, lamp: d is not Barrier, kit);
         }
     }
 
-    static void Dress(Transform host, Color accent, float strength, bool lamp)
+    /// <summary>A6: per-type roof shape so machines are identifiable by
+    /// silhouette alone in greyscale (Factorio lesson: shape = identity, colour
+    /// only confirms). Built from primitives on top of the art bounds.</summary>
+    enum Silhouette { None, DrillMast, TwinStacks, CoilPole, Barrel, CrossMast }
+
+    static void Dress(Transform host, Color accent, float strength, bool lamp,
+        Silhouette kit = Silhouette.None)
     {
         var art = host.Find("ArtPlaceholder");
         if (art == null) return;
@@ -86,7 +105,9 @@ public class MachineIdentityTint : MonoBehaviour
             else bounds.Encapsulate(r.bounds);
         }
 
-        if (!lamp || !hasBounds) return;
+        if (!hasBounds) return;
+        if (kit != Silhouette.None) BuildSilhouette(art, bounds, kit, body);
+        if (!lamp) return;
 
         var chip = GameObject.CreatePrimitive(PrimitiveType.Cube);
         chip.name = LampName;
@@ -101,6 +122,116 @@ public class MachineIdentityTint : MonoBehaviour
             0.06f / Mathf.Max(art.lossyScale.y, 0.01f),
             w / Mathf.Max(art.lossyScale.z, 0.01f));
         chip.GetComponent<Renderer>().sharedMaterial = LampMaterial(accent);
+    }
+
+    static Material _kitMat;
+
+    /// <summary>Shared dark-steel body material for silhouette parts — shape
+    /// carries the identity, so the parts stay body-coloured, not accented.</summary>
+    static Material KitMaterial()
+    {
+        if (_kitMat != null) return _kitMat;
+        _kitMat = new Material(Shader.Find("Standard"))
+        {
+            name = "SilhouetteKit",
+            color = new Color(0.16f, 0.18f, 0.21f)
+        };
+        _kitMat.SetFloat("_Metallic", 0.45f);
+        _kitMat.SetFloat("_Glossiness", 0.3f);
+        return _kitMat;
+    }
+
+    /// <summary>Spawn one primitive with a WORLD-space size/position, parented
+    /// under the art root (compensating the art's lossy scale like the lamp).</summary>
+    static GameObject KitPart(Transform art, PrimitiveType prim, Vector3 worldPos,
+        Vector3 worldSize, Quaternion worldRot)
+    {
+        var go = GameObject.CreatePrimitive(prim);
+        go.name = "SilhouettePart";
+        Object.Destroy(go.GetComponent<Collider>());
+        go.transform.SetParent(art, worldPositionStays: true);
+        go.transform.position = worldPos;
+        go.transform.rotation = worldRot;
+        var ls = art.lossyScale;
+        go.transform.localScale = new Vector3(
+            worldSize.x / Mathf.Max(ls.x, 0.01f),
+            worldSize.y / Mathf.Max(ls.y, 0.01f),
+            worldSize.z / Mathf.Max(ls.z, 0.01f));
+        go.GetComponent<Renderer>().sharedMaterial = KitMaterial();
+        return go;
+    }
+
+    static void BuildSilhouette(Transform art, Bounds b, Silhouette kit, Color body)
+    {
+        Vector3 top = new Vector3(b.center.x, b.max.y, b.center.z);
+        float w = Mathf.Max(b.size.x, b.size.z);
+
+        switch (kit)
+        {
+            case Silhouette.DrillMast:
+            {
+                // Tall mast + tilted boom — reads as "digging rig" from above.
+                float mastH = Mathf.Clamp(w * 0.9f, 0.7f, 1.3f);
+                KitPart(art, PrimitiveType.Cylinder,
+                    top + new Vector3(0f, mastH * 0.5f, 0f),
+                    new Vector3(0.14f, mastH * 0.5f, 0.14f), Quaternion.identity);
+                KitPart(art, PrimitiveType.Cube,
+                    top + new Vector3(w * 0.18f, mastH * 0.78f, 0f),
+                    new Vector3(w * 0.5f, 0.09f, 0.12f),
+                    Quaternion.Euler(0f, 0f, -28f));
+                break;
+            }
+            case Silhouette.TwinStacks:
+            {
+                // Two exhaust stacks, offset heights — "refinery" read.
+                float sH = Mathf.Clamp(w * 0.55f, 0.4f, 0.8f);
+                KitPart(art, PrimitiveType.Cylinder,
+                    top + new Vector3(-w * 0.18f, sH * 0.5f, w * 0.12f),
+                    new Vector3(0.18f, sH * 0.5f, 0.18f), Quaternion.identity);
+                KitPart(art, PrimitiveType.Cylinder,
+                    top + new Vector3(w * 0.15f, sH * 0.36f, -w * 0.10f),
+                    new Vector3(0.15f, sH * 0.36f, 0.15f), Quaternion.identity);
+                break;
+            }
+            case Silhouette.CoilPole:
+            {
+                // Insulator pole with two discs — "power" read.
+                float pH = Mathf.Clamp(w * 0.8f, 0.6f, 1.0f);
+                KitPart(art, PrimitiveType.Cylinder,
+                    top + new Vector3(0f, pH * 0.5f, 0f),
+                    new Vector3(0.08f, pH * 0.5f, 0.08f), Quaternion.identity);
+                KitPart(art, PrimitiveType.Cylinder,
+                    top + new Vector3(0f, pH * 0.55f, 0f),
+                    new Vector3(0.34f, 0.03f, 0.34f), Quaternion.identity);
+                KitPart(art, PrimitiveType.Cylinder,
+                    top + new Vector3(0f, pH * 0.85f, 0f),
+                    new Vector3(0.26f, 0.03f, 0.26f), Quaternion.identity);
+                break;
+            }
+            case Silhouette.Barrel:
+            {
+                // Forward barrel over the body — unmistakable "gun" outline.
+                // Parented to the art root: if the art yaws to aim, the barrel yaws.
+                float len = Mathf.Clamp(w * 0.8f, 0.5f, 0.9f);
+                KitPart(art, PrimitiveType.Cylinder,
+                    top + new Vector3(0f, 0.10f, len * 0.55f),
+                    new Vector3(0.10f, len * 0.5f, 0.10f),
+                    Quaternion.Euler(90f, 0f, 0f));
+                break;
+            }
+            case Silhouette.CrossMast:
+            {
+                // Mast with cross-arm — "aid station" antenna.
+                float mH = Mathf.Clamp(w * 0.8f, 0.6f, 1.0f);
+                KitPart(art, PrimitiveType.Cylinder,
+                    top + new Vector3(0f, mH * 0.5f, 0f),
+                    new Vector3(0.09f, mH * 0.5f, 0.09f), Quaternion.identity);
+                KitPart(art, PrimitiveType.Cube,
+                    top + new Vector3(0f, mH * 0.82f, 0f),
+                    new Vector3(0.42f, 0.08f, 0.08f), Quaternion.identity);
+                break;
+            }
+        }
     }
 
     static Material LampMaterial(Color accent)

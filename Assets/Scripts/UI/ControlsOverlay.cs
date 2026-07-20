@@ -23,9 +23,11 @@ public class ControlsOverlay : MonoBehaviour
             "Esc pause";
 
         float w = 280f, h = 160f;
-        float x = 24f, y = Screen.height - h - 24f;
+        float x = 24f, y = ShipTerminalUI.ScaledHeight - h - 24f;
+        ShipTerminalUI.BeginScaled();
         GUI.DrawTexture(new Rect(x, y, w, h), _bg);
         GUI.Label(new Rect(x + 12f, y + 8f, w - 20f, h - 12f), "CONTROLS\n" + sheet, _style);
+        ShipTerminalUI.EndScaled();
     }
 
     void Ensure()

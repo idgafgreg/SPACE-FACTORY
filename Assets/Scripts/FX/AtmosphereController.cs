@@ -15,10 +15,12 @@ public class AtmosphereController : MonoBehaviour
     [Header("Ambient")]
     // Dark ambient so the deck between light pools falls into industrial gloom —
     // pooled lamp/player/hub light is what reads (lore: lonely industrial dread).
-    public Color ambientColor = new Color(0.12f, 0.15f, 0.14f);
+    public Color ambientColor = new Color(0.075f, 0.09f, 0.115f);
 
     [Header("Sun (directional light)")]
-    public float sunIntensity = 0.5f;
+    // A8: the sun is a faint rim, not a room light — at 0.5 it lit every corner
+    // evenly and no genuine darkness existed anywhere. Pools carry the frame now.
+    public float sunIntensity = 0.18f;
     public Color sunColor = ShipPalette.Sun;
 
     [Header("Player light")]
@@ -30,12 +32,15 @@ public class AtmosphereController : MonoBehaviour
 
     [Header("Hub light")]
     public Color hubLightColor = ShipPalette.HubCalm;
-    public float hubLightRange = 16f;
-    public float hubLightBase = 2.15f;
+    // Range/intensity kept as a POOL, not a room wash — a 16u green flood was
+    // repainting most of the play area one hue and killing all hue contrast.
+    public float hubLightRange = 12.5f;
+    public float hubLightBase = 1.85f;
     public Color hubAlarmColor = ShipPalette.HubAlarm;
 
     static AtmosphereController _instance;
     static float _alarmLevel;
+    static Cubemap _darkReflection;
 
     Light _playerLight;
     Light _hubLight;
@@ -43,6 +48,9 @@ public class AtmosphereController : MonoBehaviour
 
     /// <summary>0 = calm prep, 1 = imminent breach. Driven by ThreatTelegraph.</summary>
     public static void SetAlarmLevel(float level01) => _alarmLevel = Mathf.Clamp01(level01);
+
+    /// <summary>Read side of the alarm — LampFlicker deepens its dips with this.</summary>
+    public static float AlarmLevel => _alarmLevel;
 
     void Awake() => _instance = this;
 
@@ -52,7 +60,7 @@ public class AtmosphereController : MonoBehaviour
     {
         // Re-bind defaults in case an old scene serialized gray values.
         fogColor = ShipPalette.Fog;
-        ambientColor = new Color(0.12f, 0.15f, 0.14f);
+        ambientColor = new Color(0.075f, 0.09f, 0.115f);
         sunColor = ShipPalette.Sun;
         playerLightColor = ShipPalette.PlayerLamp;
         hubLightColor = ShipPalette.HubCalm;
@@ -76,6 +84,23 @@ public class AtmosphereController : MonoBehaviour
 
         RenderSettings.ambientMode = UnityEngine.Rendering.AmbientMode.Flat;
         RenderSettings.ambientLight = ambientColor;
+
+        // Kill the default procedural-sky reflection source. The interior never
+        // sees sky, but metallic surfaces were mirroring it as bright silver
+        // streaks. A tiny dark cubemap keeps metals reading as dim steel.
+        RenderSettings.defaultReflectionMode =
+            UnityEngine.Rendering.DefaultReflectionMode.Custom;
+        if (_darkReflection == null)
+        {
+            _darkReflection = new Cubemap(4, TextureFormat.RGBA32, false);
+            var dark = new Color(0.05f, 0.06f, 0.08f);
+            var px = new Color[16];
+            for (int i = 0; i < 16; i++) px[i] = dark;
+            for (int f = 0; f < 6; f++)
+                _darkReflection.SetPixels(px, (CubemapFace)f);
+            _darkReflection.Apply();
+        }
+        RenderSettings.customReflectionTexture = _darkReflection;
 
         var cam = Camera.main;
         if (cam != null)
@@ -120,6 +145,10 @@ public class AtmosphereController : MonoBehaviour
         _playerLight.color = playerLightColor;
         _playerLight.range = playerLightRange;
         _playerLight.intensity = playerLightBase;
+        // Wall caps (TransparentFX layer) read by sun/ambient only — see
+        // ShipInteriorUpgrade.CapLayer. Script execution order means this light
+        // may be created after the cap pass ran its one-shot mask sweep.
+        _playerLight.cullingMask &= ~(1 << 1);
     }
 
     void SetupHubLight()
@@ -139,6 +168,7 @@ public class AtmosphereController : MonoBehaviour
         _hubLight.color = hubLightColor;
         _hubLight.range = hubLightRange;
         _hubLight.intensity = hubLightBase;
+        _hubLight.cullingMask &= ~(1 << 1); // caps: sun/ambient only
     }
 
     void Update()

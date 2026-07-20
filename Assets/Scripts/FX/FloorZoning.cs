@@ -51,13 +51,31 @@ public class FloorZoning : MonoBehaviour
                     Vector3 dir = (b - a) / len;
                     Vector3 side = Vector3.Cross(Vector3.up, dir);
 
-                    // Narrow hazard walkway under the attack path — edging, not carpet.
-                    SpawnDeckStrip("LaneStripe", mid, dir, len * 0.96f, 2.2f, 0.022f, hazardMat);
+                    // The amber walkway carpet that used to run here is gone: the
+                    // dark-steel LaneDeckStripe (ShipInteriorUpgrade) already marks
+                    // the walkway by VALUE, and stacking an amber carpet on top of
+                    // it double-marked every lane.
 
-                    // Bright edge ticks so corridor width reads under fog.
-                    for (int s = -1; s <= 1; s += 2)
-                        SpawnDeckStrip("LaneEdge", mid + side * (s * 1.72f), dir,
-                            len * 0.94f, 0.11f, 0.028f, edgeMat);
+                    // Dashed danger ticks, not continuous racing stripes. Full-length
+                    // edge lines put 277u of solid yellow across a 120x80 deck and ran
+                    // straight through walls, so the marking meant nothing. Dashes read
+                    // as painted hazard marking and let the deck breathe.
+                    // Tuned live: 0.75/3.2 read as scattered dots rather than a
+                    // marked edge. ~45% duty cycle reads as a dashed line.
+                    const float tickLen = 1.2f;
+                    const float tickGap = 1.5f;
+                    const float step = tickLen + tickGap;
+                    int ticks = Mathf.FloorToInt(len / step);
+                    for (int k = 0; k < ticks; k++)
+                    {
+                        Vector3 along = a + dir * ((k + 0.5f) * step);
+                        for (int s = -1; s <= 1; s += 2)
+                        {
+                            Vector3 pos = along + side * (s * 1.72f);
+                            if (InsideWall(pos)) continue;   // stop marking at walls
+                            SpawnDeckStrip("LaneEdge", pos, dir, tickLen, 0.11f, 0.028f, edgeMat);
+                        }
+                    }
                 }
             }
             return;
@@ -69,6 +87,22 @@ public class FloorZoning : MonoBehaviour
         SpawnFlatQuad("LaneStripe", new Vector3(0f, 0.022f, 14f), 4.2f, 16f, hazardMat);
         SpawnFlatQuad("LaneStripe", new Vector3(0f, 0.022f, -14f), 4.2f, 16f, hazardMat);
         SpawnFlatQuad("LaneStripe", new Vector3(25f, 0.022f, -13f), 16f, 4.2f, hazardMat);
+    }
+
+    /// <summary>True if an authored wall occupies this deck position, so lane
+    /// markings can stop at walls instead of painting straight through them.</summary>
+    static bool InsideWall(Vector3 deckPos)
+    {
+        var hits = Physics.OverlapSphere(deckPos + Vector3.up * 0.5f, 0.5f);
+        foreach (var h in hits)
+        {
+            if (h == null) continue;
+            var t = h.transform;
+            string n = t.name;
+            if (n.StartsWith("Hull_") || n.StartsWith("Corr_") || n.StartsWith("Ring_")) return true;
+            if (t.parent != null && t.parent.name == "Walls") return true;
+        }
+        return false;
     }
 
     void SpawnHubPad()
@@ -113,10 +147,12 @@ public class FloorZoning : MonoBehaviour
         var mat = DecalMat(GrimeTexture(), Color.black, 0.75f);
         var rng = new System.Random(777);
         int placed = 0;
-        for (int i = 0; i < 48 && placed < 18; i++)
+        // 34 decals over the full 116×76 walkable area (was 18 over the old
+        // 56×44 pre-expansion map, which left the outer deck spotless).
+        for (int i = 0; i < 110 && placed < 34; i++)
         {
-            float x = (float)(rng.NextDouble() * 56.0 - 28.0);
-            float z = (float)(rng.NextDouble() * 44.0 - 22.0);
+            float x = (float)(rng.NextDouble() * 116.0 - 58.0);
+            float z = (float)(rng.NextDouble() * 76.0 - 38.0);
             if (x * x + z * z < 42f) continue;
 
             float s = 1.8f + (float)rng.NextDouble() * 2.8f;

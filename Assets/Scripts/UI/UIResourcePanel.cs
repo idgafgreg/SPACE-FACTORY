@@ -29,9 +29,16 @@ public class UIResourcePanel : MonoBehaviour
     void Refresh()
     {
         if (_inv == null) return;
-        onScrapText.Invoke(_inv.Get(ResourceTypeId.ScrapMetal).ToString());
-        onEnergyText.Invoke(_inv.Get(ResourceTypeId.EnergyCells).ToString());
-        onCircuitText.Invoke(_inv.Get(ResourceTypeId.CircuitComponents).ToString());
-        onConstructionText.Invoke(_inv.Get(ResourceTypeId.ConstructionParts).ToString());
+        // Bare numbers ("140" / "18" / "0" / "20") were unreadable — nothing said
+        // which resource each row was. Same [SYSTEM] value chrome as the rest of
+        // the terminal HUD ([GRID], [VITAL], [HUB]).
+        onScrapText.Invoke(
+            ShipTerminalUI.Tag("SCRAP", _inv.Get(ResourceTypeId.ScrapMetal).ToString()));
+        onEnergyText.Invoke(
+            ShipTerminalUI.Tag("ENERGY", _inv.Get(ResourceTypeId.EnergyCells).ToString()));
+        onCircuitText.Invoke(
+            ShipTerminalUI.Tag("CIRCUIT", _inv.Get(ResourceTypeId.CircuitComponents).ToString()));
+        onConstructionText.Invoke(
+            ShipTerminalUI.Tag("PARTS", _inv.Get(ResourceTypeId.ConstructionParts).ToString()));
     }
 }

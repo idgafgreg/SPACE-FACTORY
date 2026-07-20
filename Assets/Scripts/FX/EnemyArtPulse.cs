@@ -29,7 +29,9 @@ public class EnemyArtPulse : MonoBehaviour
     {
         if (_mpb == null) _mpb = new MaterialPropertyBlock();
 
-        _scan -= Time.deltaTime;
+        // Unscaled: the upgrade-offer modal freezes timeScale, and enemies
+        // spawned just before a wave clear must still get their threat dress.
+        _scan -= Time.unscaledDeltaTime;
         if (_scan <= 0f)
         {
             _scan = 1.25f;
@@ -40,7 +42,9 @@ public class EnemyArtPulse : MonoBehaviour
         foreach (var e in _entries)
         {
             if (e.enemy == null || e.enemy.IsDead) continue;
-            float pulse = 0.35f + 0.25f * Mathf.Sin(t * 4f + e.phase);
+            // A8b: floor raised 0.35→0.55 — under the warm hub pool the lit
+            // albedo swamped the old pulse and enemies read as pale blobs.
+            float pulse = 0.55f + 0.35f * Mathf.Sin(t * 4f + e.phase);
             foreach (var r in e.bodies)
             {
                 if (r == null) continue;
@@ -93,13 +97,31 @@ public class EnemyArtPulse : MonoBehaviour
                 foreach (var r in bodies) b.Encapsulate(r.bounds);
                 eye.transform.position = new Vector3(b.center.x, b.max.y + 0.06f, b.center.z);
                 eye.transform.rotation = Quaternion.identity;
-                float s = Mathf.Clamp(b.size.x * 0.22f, 0.1f, 0.3f);
+                float s = Mathf.Clamp(b.size.x * 0.3f, 0.14f, 0.4f);
                 var pls = artRoot.lossyScale;
                 eye.transform.localScale = new Vector3(
                     s / Mathf.Max(pls.x, 0.01f),
                     0.05f / Mathf.Max(pls.y, 0.01f),
                     s / Mathf.Max(pls.z, 0.01f));
                 eye.GetComponent<Renderer>().sharedMaterial = EyeMaterial();
+            }
+
+            // A8b: red underglow — a small red pool on the deck under every
+            // enemy. Unlike emission this survives ANY ambient light (in the
+            // warm hub pool the deck turns red-tinted, in the dark it's a red
+            // halo), so hostiles read hostile within the 0.5s target anywhere.
+            if (artRoot.Find("ThreatGlow") == null)
+            {
+                var glowGo = new GameObject("ThreatGlow");
+                glowGo.transform.SetParent(artRoot, false);
+                glowGo.transform.localPosition = Vector3.up * 0.45f;
+                var glow = glowGo.AddComponent<Light>();
+                glow.type = LightType.Point;
+                glow.color = ThreatRed;
+                glow.range = 2.6f;
+                glow.intensity = 1.5f;
+                glow.shadows = LightShadows.None;
+                glow.cullingMask = ~(1 << 1); // never lights wall caps (A5)
             }
 
             _entries.Add(new Entry

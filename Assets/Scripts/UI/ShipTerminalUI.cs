@@ -173,4 +173,62 @@ public static class ShipTerminalUI
 
     public static string Tag(string system, string value) =>
         $"[{system}]  {value}";
+
+    // ── Shared HUD layout space ──────────────────────────────────────────────
+    // The Canvas uses a CanvasScaler (ScaleWithScreenSize, 1920x1080, match =
+    // width), so canvas HUD positions are authored in 1920-space and scale with
+    // the window. OnGUI draws in RAW pixels, so screen-anchored IMGUI panels
+    // drifted across the canvas HUD at any resolution other than 1920 wide —
+    // that is why the power panel landed on top of the resource readout.
+    // Screen-anchored OnGUI HUDs must wrap their drawing in BeginScaled/EndScaled
+    // and author rects in 1920-space, exactly like the canvas.
+    // World-anchored OnGUI (health bars over units, labels) must NOT use this —
+    // those already work in real screen pixels from WorldToScreenPoint.
+
+    /// <summary>Reference width shared with the Canvas' CanvasScaler.</summary>
+    public const float RefWidth = 1920f;
+
+    public const float RefHeight = 1080f;
+
+    // ── Reserved HUD bands, 1920-space, OnGUI top-left origin ────────────────
+    /// <summary>Bottom of the canvas resource readout column.
+    /// Screen-anchored top-left IMGUI panels must start below this.</summary>
+    public const float ResourceColumnBottom = 150f;
+    /// <summary>Bottom of the [GRID] power panel — next free left-column slot.</summary>
+    public const float PowerPanelBottom = 204f;
+    /// <summary>Top of the right-hand status column (below the hub HP strip).</summary>
+    public const float RightColumnTop = 72f;
+    /// <summary>Below the variable-height RUN MODS block.</summary>
+    public const float RightColumnBelowMods = 180f;
+
+    /// <summary>Maps 1920-space coords onto the current screen (same value the
+    /// CanvasScaler computes for match = width).</summary>
+    public static float UiScale => Screen.width / RefWidth;
+
+    /// <summary>Screen width in 1920-space. Constant, because the scaler matches width.</summary>
+    public static float ScaledWidth => RefWidth;
+
+    /// <summary>Screen height in 1920-space. Varies with aspect ratio, so
+    /// bottom/right-anchored HUDs must use this instead of Screen.height.</summary>
+    public static float ScaledHeight => Screen.height / Mathf.Max(0.0001f, UiScale);
+
+    static Matrix4x4 _matrixBeforeScale;
+    static bool _scaled;
+
+    /// <summary>Enter 1920-space for a screen-anchored OnGUI HUD.</summary>
+    public static void BeginScaled()
+    {
+        if (_scaled) return;
+        _matrixBeforeScale = GUI.matrix;
+        _scaled = true;
+        GUI.matrix = Matrix4x4.TRS(Vector3.zero, Quaternion.identity, Vector3.one * UiScale);
+    }
+
+    /// <summary>Leave 1920-space. Always pair with <see cref="BeginScaled"/>.</summary>
+    public static void EndScaled()
+    {
+        if (!_scaled) return;
+        GUI.matrix = _matrixBeforeScale;
+        _scaled = false;
+    }
 }

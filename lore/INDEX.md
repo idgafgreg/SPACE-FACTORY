@@ -35,6 +35,10 @@ cd "D:\new project\SPACE FACTORY"
 git pull origin main
 ```
 
+## Asset tracker (Google Sheet)
+
+Paid + free lore asset leads export to [`assets-wishlist.csv`](assets-wishlist.csv). Setup / refresh: [`GOOGLE-SHEET.md`](GOOGLE-SHEET.md). After any wishlist or free-lead change, run `sync-assets-sheet.ps1`.
+
 ## Last run
 
 - Date: 2026-07-19

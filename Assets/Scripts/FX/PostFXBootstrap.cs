@@ -85,7 +85,8 @@ public class PostFXBootstrap : MonoBehaviour
         grade.postExposure.Override(postExposure);
         grade.contrast.Override(contrast);
         grade.saturation.Override(saturation);
-        // Haze-style grade: sick-green shadows, amber mids, steel highlights.
+        // Teal-orange grade: cold steel shadows, amber mids/highlights. Green is
+        // reserved for signal emissives, so the grade must not tint the frame.
         var lift = ShipPalette.GradeLift;
         lift.x *= shadowLift / 0.05f;
         lift.y *= shadowLift / 0.05f;
@@ -94,12 +95,12 @@ public class PostFXBootstrap : MonoBehaviour
         grade.gamma.Override(ShipPalette.GradeGamma);
         grade.gain.Override(ShipPalette.GradeGain);
         grade.temperature.Override(-8f); // slight cool steel
-        grade.tint.Override(6f);         // push green into the midtones
+        grade.tint.Override(-3f);        // pull the global green cast back out
 
         var vignette = profile.AddSettings<Vignette>();
         vignette.intensity.Override(vignetteIntensity);
         vignette.smoothness.Override(0.48f);
-        vignette.color.Override(ShipPalette.SickGreenDeep);
+        vignette.color.Override(ShipPalette.VoidShell);
 
         var ao = profile.AddSettings<AmbientOcclusion>();
         ao.mode.Override(AmbientOcclusionMode.ScalableAmbientObscurance);

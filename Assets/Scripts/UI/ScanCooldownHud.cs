@@ -26,9 +26,10 @@ public class ScanCooldownHud : MonoBehaviour
         float pct = ready ? 1f : 1f - Mathf.Clamp01(cd / max);
 
         float w = 110f, h = 28f;
-        float x = Screen.width - w - 16f;
-        float y = Screen.height - h - 48f;
+        float x = ShipTerminalUI.ScaledWidth - w - 16f;
+        float y = ShipTerminalUI.ScaledHeight - h - 48f;
 
+        ShipTerminalUI.BeginScaled();
         GUI.DrawTexture(new Rect(x, y, w, h), _white, ScaleMode.StretchToFill, true, 0f,
             new Color(0f, 0f, 0f, 0.5f), 0f, 0f);
         Color fill = ready
@@ -40,6 +41,7 @@ public class ScanCooldownHud : MonoBehaviour
         _style.normal.textColor = ready ? Color.white : new Color(0.8f, 0.85f, 0.9f);
         string label = ready ? "Q  SCAN READY" : $"Q  {cd:0.0}s";
         GUI.Label(new Rect(x, y, w, h), label, _style);
+        ShipTerminalUI.EndScaled();
     }
 
     void Ensure()

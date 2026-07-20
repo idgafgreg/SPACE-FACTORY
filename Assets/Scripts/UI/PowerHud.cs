@@ -46,7 +46,9 @@ public class PowerHud : MonoBehaviour
         float max = Mathf.Max(0.01f, ps.maxPower);
         float pct = Mathf.Clamp01(load / max);
 
-        float x = 14f, y = 58f, w = 240f, h = 44f;
+        // 1920-space, below the canvas resource column — see ShipTerminalUI layout notes.
+        ShipTerminalUI.BeginScaled();
+        float x = 16f, y = ShipTerminalUI.ResourceColumnBottom, w = 260f, h = 46f;
         ShipTerminalUI.DrawPanel(new Rect(x, y, w, h));
 
         var label = ShipTerminalUI.Label;
@@ -60,6 +62,7 @@ public class PowerHud : MonoBehaviour
             : Color.Lerp(ShipTerminalUI.TextGood, ShipPalette.Amber, pct);
         if (_flash > 0f) fill = Color.Lerp(fill, Color.white, _flash);
 
-        ShipTerminalUI.DrawBar(new Rect(x + 8f, y + 24f, w - 16f, 12f), pct, fill);
+        ShipTerminalUI.DrawBar(new Rect(x + 8f, y + 26f, w - 16f, 12f), pct, fill);
+        ShipTerminalUI.EndScaled();
     }
 }

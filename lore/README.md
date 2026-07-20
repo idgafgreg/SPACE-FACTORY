@@ -23,7 +23,21 @@ Start with `INDEX.md`, then the latest `YYYY-MM-DD/summary.md`.
 
 - `YYYY-MM-DD/` — one folder per research day
 - `wishlist-paywalled.md` — assets/tools behind a paywall (buy later when funded)
+- `assets-wishlist.csv` — flat clickable export of paid + free asset leads (for Google Sheets)
+- `sync-assets-sheet.ps1` — rebuilds `assets-wishlist.csv` after wishlist/asset updates
+- `GOOGLE-SHEET.md` — how to import/refresh the Google Sheet
 - `INDEX.md` — rolling index of themes and best finds
+
+### Asset sheet sync (required after asset updates)
+
+Whenever `wishlist-paywalled.md` or any `assets-tools.md` free leads change, regenerate the CSV:
+
+```powershell
+cd "D:\new project\SPACE FACTORY"
+powershell -NoProfile -ExecutionPolicy Bypass -File .\lore\sync-assets-sheet.ps1
+```
+
+Then refresh the Google Sheet (see `GOOGLE-SHEET.md`).
 
 ## Project north star (for researchers)
 

@@ -82,9 +82,11 @@ public class KillFeed : MonoBehaviour
         _style.normal.textColor = c;
 
         float w = 420f, h = 36f;
-        float x = (Screen.width - w) * 0.5f;
-        float y = Screen.height * 0.18f;
+        float x = (ShipTerminalUI.ScaledWidth - w) * 0.5f;
+        float y = ShipTerminalUI.ScaledHeight * 0.18f;
+        ShipTerminalUI.BeginScaled();
         GUI.DrawTexture(new Rect(x, y, w, h), _bg);
         GUI.Label(new Rect(x, y, w, h), _banner, _style);
+        ShipTerminalUI.EndScaled();
     }
 }

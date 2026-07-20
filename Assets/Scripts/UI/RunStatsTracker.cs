@@ -70,8 +70,11 @@ public class RunStatsTracker : MonoBehaviour
             };
         }
 
-        GUI.Label(new Rect(16f, Screen.height - 36f, 380f, 20f),
+        // Sits above the player vital bar in the bottom-left corner.
+        ShipTerminalUI.BeginScaled();
+        GUI.Label(new Rect(16f, ShipTerminalUI.ScaledHeight - 62f, 420f, 20f),
             $"Kills {Kills}   Leaks {Leaks}   Scrap +{ScrapEarned}   Wave {Mathf.Max(PeakWave, wc.WaveNumber)}",
             _style);
+        ShipTerminalUI.EndScaled();
     }
 }

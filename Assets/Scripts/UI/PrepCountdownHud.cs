@@ -23,8 +23,9 @@ public class PrepCountdownHud : MonoBehaviour
         c.a = pulse;
 
         float w = 300f, h = 96f;
-        float x = (Screen.width - w) * 0.5f;
-        float y = Screen.height * 0.2f;
+        float x = (ShipTerminalUI.ScaledWidth - w) * 0.5f;
+        float y = ShipTerminalUI.ScaledHeight * 0.2f;
+        ShipTerminalUI.BeginScaled();
         ShipTerminalUI.DrawPanel(new Rect(x, y, w, h), 3f);
 
         var big = ShipTerminalUI.LabelLarge;
@@ -35,5 +36,6 @@ public class PrepCountdownHud : MonoBehaviour
         var cap = ShipTerminalUI.Caption;
         cap.normal.textColor = new Color(c.r, c.g, c.b, 0.9f * pulse);
         GUI.Label(new Rect(x, y + h - 30f, w, 22f), "[ALERT]  BREACH IMMINENT", cap);
+        ShipTerminalUI.EndScaled();
     }
 }

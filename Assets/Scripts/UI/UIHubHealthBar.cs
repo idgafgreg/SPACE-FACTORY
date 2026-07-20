@@ -40,7 +40,8 @@ public class UIHubHealthBar : MonoBehaviour
 
         _fill.rectTransform.anchorMax = new Vector2(Mathf.Clamp01(frac), 1f);
         _fill.color = Color.Lerp(new Color(0.75f, 0.2f, 0.15f), new Color(0.2f, 0.7f, 0.3f), frac);
-        _label.text = "HUB  " + Mathf.CeilToInt(hub.CurrentHealth) + " / " + Mathf.CeilToInt(hub.maxHealth);
+        _label.text = ShipTerminalUI.Tag("HUB",
+            Mathf.CeilToInt(hub.CurrentHealth) + " / " + Mathf.CeilToInt(hub.maxHealth));
     }
 
     void Build()
@@ -74,5 +75,7 @@ public class UIHubHealthBar : MonoBehaviour
         _label.font = font; _label.fontSize = 12; _label.color = Color.white;
         _label.alignment = TextAnchor.MiddleCenter;
         _label.raycastTarget = false;
+        // Match the rest of the terminal HUD instead of the default legacy font.
+        ShipTerminalUI.ApplyFont(_label);
     }
 }

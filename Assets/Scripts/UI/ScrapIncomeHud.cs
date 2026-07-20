@@ -43,6 +43,11 @@ public class ScrapIncomeHud : MonoBehaviour
                 normal = { textColor = new Color(1f, 0.85f, 0.45f) }
             };
         }
-        GUI.Label(new Rect(16f, 96f, 200f, 18f), $"SCRAP  ~{_rate:0}/min", _style);
+        // Was at raw y=96, i.e. inside the canvas resource column. Left column,
+        // below the [GRID] panel, in shared 1920-space.
+        ShipTerminalUI.BeginScaled();
+        GUI.Label(new Rect(16f, ShipTerminalUI.PowerPanelBottom, 220f, 18f),
+            $"SCRAP  ~{_rate:0}/min", _style);
+        ShipTerminalUI.EndScaled();
     }
 }

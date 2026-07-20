@@ -24,9 +24,10 @@ public class HubHealthOnGui : MonoBehaviour
 
         float frac = Mathf.Clamp01(_hub.CurrentHealth / _hub.maxHealth);
         float w = 320f, h = 42f;
-        float x = (Screen.width - w) * 0.5f;
+        float x = (ShipTerminalUI.ScaledWidth - w) * 0.5f;
         float y = 8f;
 
+        ShipTerminalUI.BeginScaled();
         ShipTerminalUI.DrawPanel(new Rect(x, y, w, h));
 
         var label = ShipTerminalUI.LabelCenter;
@@ -38,5 +39,6 @@ public class HubHealthOnGui : MonoBehaviour
 
         Color fill = Color.Lerp(ShipPalette.HubAlarm, ShipTerminalUI.TextGood, frac);
         ShipTerminalUI.DrawBar(new Rect(x + 10f, y + 24f, w - 20f, 12f), frac, fill);
+        ShipTerminalUI.EndScaled();
     }
 }

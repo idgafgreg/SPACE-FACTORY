@@ -15,7 +15,7 @@ public class RunModsHud : MonoBehaviour
         if (ru == null) return;
 
         Ensure();
-        float x = Screen.width - 230f, y = 72f, w = 214f;
+        float x = ShipTerminalUI.ScaledWidth - 230f, y = ShipTerminalUI.RightColumnTop, w = 214f;
         int lines = 0;
         System.Text.StringBuilder sb = new();
 
@@ -32,9 +32,13 @@ public class RunModsHud : MonoBehaviour
 
         if (lines == 0) return;
 
+        // Scale only around the draw — the early-out above must not leave the
+        // GUI matrix pushed for the next HUD.
         float h = 18f + lines * 14f;
+        ShipTerminalUI.BeginScaled();
         GUI.DrawTexture(new Rect(x, y, w, h), _bg);
         GUI.Label(new Rect(x + 8f, y + 2f, w - 12f, h), "RUN MODS\n" + sb, _style);
+        ShipTerminalUI.EndScaled();
     }
 
     void Ensure()
