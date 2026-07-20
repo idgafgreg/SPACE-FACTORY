@@ -47,7 +47,55 @@ Rules for tasks in this file:
 
 ## Now (agent works top-down)
 
-### Visual parity pass 2 — "does it look like a real game" (2026-07-19 screenshot review)
+### Lore-gap refill — 2026-07-19 (systemic / diegetic first)
+
+Code reality: `ThreatTelegraph` only escalates the last ~10s of Prep; `ventBreachShare` is wave-authored (no factory-output coupling); `RecoveryBeat` is a green victory flash; `PlayerScanner` cooldown is flat; `PlaceholderPropDressing` + `EnvironmentalLore` already cover a thin lived-in layer. Asset pack status: **not purchased** — no pack-gated work in Now.
+
+- [ ] L15. Mid-prep menace rollercoaster (soft director)
+  Type: systemic / diegetic | Pillar: Diegetic dread
+  Lore: Intensity Director + Isolation menace gauge (lore/2026-07-19/summary.md #1; articles.md)
+  Change: extend `ThreatTelegraph` (or add `MenaceDirector`) so mid-Prep is not flat silence — schedule 1–2 low-cost dread beats (lamp brownout via existing `LampFlicker`/`AlarmLevel`, distant vent scrape/skitter, brief wrong-room audio) that rise then *release* before the existing `warningWindow`. Keep teaching preps plan-able. Short curve note in `SPACE FACTORY INFO/Sector_Layout_&_Teaching.txt` (or Systems doc).
+  done-when: Play a prep ≥30s — at least one mid-prep dread beat AND a quiet valley before the final ~10s telegraph; combat spawn math unchanged; console clean
+
+- [ ] L16. Hive pressure scales with factory heat
+  Type: systemic | Pillar: Factory pressure = identity
+  Lore: Factorio pollution lesson (lore/INDEX.md; lore/2026-07-17/summary.md #3)
+  Change: sample rolling scrap/min (reuse `ScrapIncomeHud` window logic or shared helper) and/or active drill+processor count during Prep; for waves with `ventBreachShare ≥ 0` (after W1) and endless, add a capped bonus to vent-lane share/count when output is high. **Wave 1 stays West-only.** Sync baseline/cap numbers into living design (`Systems_&_Progression.txt` or `Progression_Spec.md`) in the same commit.
+  done-when: Play — low/idle factory ≈ baseline vent share; high scrap/min ≈ measurable vent pressure increase; W1 West-only; console clean
+
+- [ ] L17. Process infection near breach lanes
+  Type: systemic / mechanical | Pillar: Industrial biomass / hive
+  Lore: infection-via-process; biomass uses ship logistics (lore/2026-07-19/summary.md #5; INDEX industrial biomass)
+  Change: after each cleared wave, `Processor`/`MiningDrill` within range of VentBreach (later EastFlank) gain a residue debuff that slows craft/extract rate. Primitive green residue VFX only (no asset pack). Clear with RepairPost or player repair tool. Doc rates/range in living design same commit.
+  done-when: Play — machine near vent slows after a clear; repair removes debuff; distant machines unaffected; console clean
+
+- [ ] L18. Recovery beat = lonely routine, not victory green
+  Type: diegetic | Pillar: Lonely worker fantasy
+  Lore: Still Wakes recovery beats (lore/2026-07-19/summary.md #3)
+  Change: rewrite `RecoveryBeat` — drop celebratory green flash / cheer text; quiet ambient dip + one sad terminal line (shift/ration/empty relief — original wording) + calm repair/rebuild tip; `AlarmLevel` stays 0.
+  done-when: Play — clear a wave → quiet lonely beat, no green victory flash; tip still readable; console clean
+
+- [ ] L19. Scanner lag under rising menace
+  Type: mechanical / diegetic | Pillar: Diegetic dread
+  Lore: horror from routine — scanner lag (lore/2026-07-17/summary.md #4)
+  Change: when `AtmosphereController.AlarmLevel` exceeds a threshold (late prep / combat), stretch `PlayerScanner` cooldown and show a diegetic "SIGNAL DEGRADED" state on `ScanCooldownHud`. Calm mid-prep unchanged.
+  done-when: Play — calm prep scan = normal CD; late-prep/combat = longer CD + degraded HUD tag; console clean
+
+### Remaining visual (cap ~30% of Now — after systemic above)
+
+- [ ] A9. Lived-in labour props + white furniture tint (absorbs A6b)
+  Type: visual | Pillar: Workplace as trap / Lonely worker fantasy
+  Lore: Still Wakes authenticity (lore/2026-07-19/summary.md #2); INDEX lonely worker
+  Change: `PlaceholderPropDressing` already has a shift nest — expand with schedule board / hand-written signage / spilled crate cluster; tint bright-white Kenney office props (desk/couch/workstation) to steel/amber so they match the dark palette. Primitives + existing Kenney only.
+  done-when: Play — no bright-white furniture near nest; ship reads as abandoned workplace, not empty arena; console clean
+
+- [ ] A10. Biomass encroachment on ship systems (visual layer)
+  Type: visual | Pillar: Industrial biomass / hive
+  Lore: INDEX industrial biomass / hive; infection-via-process motif
+  Change: vents/pipes/filters near breach lanes grow primitive residue that spreads with wave count (runtime meshes/decals — **not** paid biomass packs). Complements L17; do not block on asset purchase.
+  done-when: Play — map visibly degrades near breach over successive waves; console clean
+
+### Visual parity pass 2 — "does it look like a real game" (2026-07-19 screenshot review) [mostly DONE]
 
 Comp targets: Factorio (readability, machine silhouettes), Dead Space / Alien: Isolation
 (value hierarchy, pooled light, colour as signal), Riftbreaker (top-down industrial clarity).
@@ -114,9 +162,6 @@ Method: capture the Game view in Play mode, judge the frame, fix the single wors
   initial 0.75/3.2 that read as scattered dots); added `InsideWall()` overlap test so ticks stop at
   authored walls. Play-verified: **423u → 104u of yellow, 0 markings intersecting a wall**.
   DONE 2026-07-19 (FloorZoning.cs).
-- [ ] A4. Hazard-stripe spam — long yellow lines run edge-to-edge across the whole deck, through
-  walls, signifying nothing. Should mark lanes/danger only. Done-when: stripes appear only on enemy
-  lanes + machine exclusion zones, and stop at walls.
 - [x] A5. Wall silhouette / height read — DONE 2026-07-19 (ShipInteriorUpgrade.cs v55,
   AtmosphereController.cs). `BuildWallCaps`: every visible authored wall gets a one-value-step
   lighter cap plate (0.10u overhang → fake-bevel shadow line down the wall face) + hairline
@@ -143,9 +188,7 @@ Method: capture the Game view in Play mode, judge the frame, fix the single wors
   expansion machines get dressed too. Play-verified: parts spawn per type (drill 2×3, proc 2×4,
   turret 1, repair 2), close-up inspection shot confirms drill mast+boom reads at a glance,
   zero console errors.
-- [ ] A6b. Untinted white placeholder furniture — close-up inspection revealed bright-white Kenney
-  office props (desk, couch, workstation) near the shift-nest area, breaking the dark palette.
-  Fold into A9 (lived-in labour props): tint to steel/amber and place deliberately.
+- [x] A6b. Untinted white placeholder furniture — folded into refreshed A9 (above). DONE as queue item 2026-07-19 lore-gap.
 - [x] A7. Deck texture detail — DONE 2026-07-19 (ShipInteriorUpgrade.cs, FloorZoning.cs).
   New `MakeDeckTexture` (256px, replaces the uniform 128px/24px-cell grid): irregular plate
   boundaries (seeded RNG, 22-46px widths, repeat-seam safe), per-plate hash value jitter (no two
@@ -178,12 +221,8 @@ Method: capture the Game view in Play mode, judge the frame, fix the single wors
   timeScale 0). Test-env note: editing scripts during play mode does a domain reload that can
   orphan the offer panel + leak timeScale=0 — editor-only, not a shipped bug; don't chase it in
   future sessions, just restart play mode.
-- [ ] A9. Lived-in labour props (lore 2026-07-19 #2, Still Wakes the Deep) — lockers, spilled crates,
-  hand-written signage, cold coffee, shift schedule boards. Done-when: the ship reads as a workplace
-  someone left, not an empty arena.
-- [ ] A10. Biomass encroachment on ship systems (lore INDEX pillar "industrial biomass / hive") —
-  vents/pipes/filters near breach lanes grow residue that spreads with wave count. Done-when: the
-  map visibly degrades over a run.
+- [x] A9 (old stub) — superseded by refreshed A9 under Remaining visual (2026-07-19 lore-gap).
+- [x] A10 (old stub) — superseded by refreshed A10 under Remaining visual (2026-07-19 lore-gap).
 
 ### Visual parity pass (compare target: Factorio readability + Dead Space / Alien Isolation mood; see lore/INDEX.md pillars)
 
@@ -230,9 +269,15 @@ Method: capture the Game view in Play mode, judge the frame, fix the single wors
 
 ## Ice box (ideas, ungroomed)
 
-- [ ] (dump ideas here; /backlog-groom promotes them)
+- [ ] [asset-pack: Alien Biomass Planet] Replace A10 primitive residue with animated biomass meshes / hue Shader Graph once purchased (path TBD in Asset pack status).
+- [ ] [asset-pack: Bio Horror / Sci-fi Environment] Infestation props for breach corridors — promote after purchase.
+- [ ] [asset-pack: Bionic structures] Cheap tendril/cocoon kitbash for corridor corruption — low-cost experiment if A10 primitives feel thin.
+- [ ] Empathy hazard / false vent voice — audio lure that pulls player off the factory floor mid-prep (lore/2026-07-17 experiment; lore/2026-07-19 empathy motif). Needs a fairness pass so it never soft-locks a wave; groom before Now.
+- [ ] Free lead: Abandoned Factory Lite (Asset Store) — safe mood greys for blockout; not gated, but not queued until visual Now is thin.
 
 ## Agent log (newest first — one line per session: date, task, result, commit)
+
+- 2026-07-19: lore-gap — refilled Now from lore/2026-07-19 + INDEX pillars. Systemic first: L15 mid-prep menace rollercoaster, L16 factory-heat→vent pressure, L17 process infection near breach, L18 lonely recovery beat, L19 scanner lag under menace; kept A9/A10 visual (≤30%). Deduped stale A4/A6b/A9/A10 stubs. Ice box: biomass asset-pack tags + empathy-hazard idea. No game code.
 
 - 2026-07-15: Playtest response batch — CRITICAL FIX: enemy AI never followed lanes (AcquireTarget fell back to Hub always → beeline through walls); now HubIfClose(8u radius) + Sapper support-engage radius; verified 4 crawlers walking IN corridor. Preps 40/30s. MainMenu boots first. Locked slots blank. Workshop + UIWorkshopShop: buy unlocks (trap 40/repair 60/relay 50/heavy 120/bulwark 60/turbo 100) + repeatable stat upgrades (80 base ×1.5); replaces wave-gating; purchase verified (-40 scrap → OWNED → slot fills → selectable). EastFlank 3rd lane + east gate + funnel + divider split; waves 4-5 → ALL GATES round-robin; floor re-baked from LIVE wall objects (23).
 
