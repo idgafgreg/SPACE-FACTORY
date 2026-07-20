@@ -8,7 +8,7 @@ using UnityEngine;
 /// </summary>
 public class PlaceholderPropDressing : MonoBehaviour
 {
-    const int PropDressVersion = 10;
+    const int PropDressVersion = 11;
     float _retryAt = 1.05f;
 
     void Start() => Dress();
@@ -76,6 +76,52 @@ public class PlaceholderPropDressing : MonoBehaviour
         // Small crates as "personal stash" — not a junkyard.
         Spawn("Prop_Crate", nest + new Vector3(1.8f, 0f, -1.1f), root, 0.75f, 35f);
         Spawn("Prop_Barrel1", nest + new Vector3(-2.1f, 0f, -0.8f), root, 0.8f, 70f);
+
+        DressScheduleBoard(nest, root);
+        DressSpilledCrateCluster(nest, root);
+    }
+
+    /// <summary>
+    /// Hand-written shift schedule on a dark board — the crew expected to come back.
+    /// </summary>
+    void DressScheduleBoard(Vector3 nest, Transform root)
+    {
+        Vector3 boardPos = nest + new Vector3(-1.85f, 0f, -1.15f);
+        float floorY = RuntimeVisualPrimitives.FindDeckY(boardPos, boardPos.y);
+        boardPos.y = floorY + 1.10f;
+
+        var board = GameObject.CreatePrimitive(PrimitiveType.Cube);
+        board.name = "ScheduleBoard";
+        board.transform.SetParent(root, false);
+        board.transform.position = boardPos;
+        board.transform.localScale = new Vector3(1.10f, 0.75f, 0.04f);
+        board.transform.rotation = Quaternion.Euler(0f, -35f, 0f);
+        Destroy(board.GetComponent<Collider>());
+        TintRenderer(board.GetComponent<Renderer>(), new Color(0.18f, 0.20f, 0.23f));
+
+        // Three pale "writing" lines — log entries, not readable text.
+        for (int i = 0; i < 3; i++)
+        {
+            var line = GameObject.CreatePrimitive(PrimitiveType.Cube);
+            line.name = "ScheduleLine";
+            line.transform.SetParent(board.transform, false);
+            line.transform.localPosition = new Vector3(0f, 0.18f - i * 0.18f, 0.52f);
+            line.transform.localScale = new Vector3(0.72f - i * 0.10f, 0.02f, 0.02f);
+            Destroy(line.GetComponent<Collider>());
+            TintRenderer(line.GetComponent<Renderer>(), new Color(0.72f, 0.75f, 0.78f));
+        }
+    }
+
+    /// <summary>
+    /// Spilled personal crate cluster — someone left in a hurry.
+    /// </summary>
+    void DressSpilledCrateCluster(Vector3 nest, Transform root)
+    {
+        Vector3 basePos = nest + new Vector3(2.45f, 0f, 1.55f);
+        Spawn("Prop_Crate", basePos + new Vector3(0f, 0f, 0f), root, 0.55f, 35f,
+            skipClearance: true, extraRot: Quaternion.Euler(18f, 0f, -22f));
+        Spawn("Prop_Crate", basePos + new Vector3(0.55f, 0f, 0.35f), root, 0.50f, 70f,
+            skipClearance: true, extraRot: Quaternion.Euler(-12f, 30f, 15f));
     }
 
     void DressWorkshop(Transform root)
@@ -164,7 +210,11 @@ public class PlaceholderPropDressing : MonoBehaviour
     }
 
     static void Spawn(string resourcesPath, Vector3 pos, Transform parent, float scale, float yaw,
-        bool skipClearance = false)
+        bool skipClearance = false) =>
+        Spawn(resourcesPath, pos, parent, scale, yaw, skipClearance, Quaternion.identity);
+
+    static void Spawn(string resourcesPath, Vector3 pos, Transform parent, float scale, float yaw,
+        bool skipClearance, Quaternion extraRot)
     {
         if (!skipClearance)
         {
@@ -188,9 +238,16 @@ public class PlaceholderPropDressing : MonoBehaviour
         var go = Instantiate(prefab, pos, rotation, parent);
         go.name = resourcesPath;
         go.transform.localScale = prefab.transform.localScale;
+        // Apply tilt/spill after base yaw but before ground fitting so the
+        // rotated bounds rest naturally on the deck.
+        if (extraRot != Quaternion.identity)
+            go.transform.rotation = extraRot * go.transform.rotation;
         foreach (var c in go.GetComponentsInChildren<Collider>())
             Destroy(c);
         FitProp(go, resourcesPath, pos.y, scale);
+
+        // A9: tint bright-white Kenney office props into the dark ship palette.
+        RecolorProp(go, resourcesPath);
 
         foreach (var r in go.GetComponentsInChildren<Renderer>())
         {
@@ -209,6 +266,44 @@ public class PlaceholderPropDressing : MonoBehaviour
             }
             r.sharedMaterials = mats;
         }
+    }
+
+    /// <summary>Map default bright Kenney colours to the ship's cold steel/amber palette.
+    /// Keeps the shift nest from reading as bright office furniture on a horror ship.</summary>
+    static void RecolorProp(GameObject go, string resourcePath)
+    {
+        Color tint = resourcePath switch
+        {
+            "Prop_Desk_Small" => new Color(0.32f, 0.34f, 0.38f),
+            "Prop_Chair" => new Color(0.30f, 0.32f, 0.36f),
+            "Prop_Computer" => new Color(0.35f, 0.38f, 0.42f),
+            "desk_computerScreen" => new Color(0.42f, 0.35f, 0.22f),
+            "Prop_Locker" => ShipPalette.HullLight,
+            "Prop_Shelves_WideTall" => ShipPalette.HullLight,
+            "Prop_Fan_Small" => new Color(0.28f, 0.30f, 0.34f),
+            "Prop_AccessPoint" => new Color(0.32f, 0.35f, 0.40f),
+            "Prop_Crate" => new Color(0.50f, 0.48f, 0.45f),
+            "Prop_Crate_Tarp" => new Color(0.40f, 0.38f, 0.36f),
+            "Prop_Barrel1" => ShipPalette.Pipe,
+            "Prop_Barrel2_Open" => ShipPalette.Pipe * 1.1f,
+            "pipe-large-valve" => ShipPalette.Pipe,
+            _ => new Color(0.38f, 0.41f, 0.45f)
+        };
+
+        foreach (var r in go.GetComponentsInChildren<Renderer>())
+        {
+            if (r == null) continue;
+            TintRenderer(r, tint);
+        }
+    }
+
+    static void TintRenderer(Renderer r, Color tint)
+    {
+        if (r == null) return;
+        var block = new MaterialPropertyBlock();
+        r.GetPropertyBlock(block);
+        block.SetColor("_Color", tint);
+        r.SetPropertyBlock(block);
     }
 
     static void FitProp(GameObject go, string resourcePath, float groundY, float sizeMultiplier)

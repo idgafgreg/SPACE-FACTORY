@@ -1,4 +1,4 @@
-# SPACE FACTORY ÃƒÂ¢Ã¢â€šÂ¬Ã¢â‚¬Â Agent Backlog
+﻿# SPACE FACTORY ÃƒÂ¢Ã¢â€šÂ¬Ã¢â‚¬Â Agent Backlog
 
 Autonomous cycle (see `AGENTS.md`):
 
@@ -129,12 +129,12 @@ Human report + editor audit: walls do not fully connect in places; player can wa
 
 ### Remaining visual — A9/A10 RESERVED (other agent; do not steal) — cap ~30%
 
-- [ ] A9. Lived-in labour props + white furniture tint (absorbs A6b)
+- [?] A9. Lived-in labour props + white furniture tint (absorbs A6b) — user-directed / auto-dev
   Type: visual | Pillar: Workplace as trap / Lonely worker fantasy
   Lore: Still Wakes authenticity (lore/2026-07-19/summary.md #2); INDEX lonely worker
-  Change: `PlaceholderPropDressing` already has a shift nest ÃƒÂ¢Ã¢â€šÂ¬Ã¢â‚¬Â expand with schedule board / hand-written signage / spilled crate cluster; tint bright-white Kenney office props (desk/couch/workstation) to steel/amber so they match the dark palette. Primitives + existing Kenney only.
-  done-when: Play ÃƒÂ¢Ã¢â€šÂ¬Ã¢â‚¬Â no bright-white furniture near nest; ship reads as abandoned workplace, not empty arena; console clean
-
+  Change: PlaceholderPropDressing already has a shift nest — expand with schedule board / hand-written signage / spilled crate cluster; tint bright-white Kenney office props (desk/couch/workstation) to steel/amber so they match the dark palette. Primitives + existing Kenney only.
+  done-when: Play — no bright-white furniture near nest; ship reads as abandoned workplace, not empty arena; console clean
+  DONE 2026-07-20 — PropDressVersion 11; RecolorProp tints desk/chair/locker/crates/barrels to dark steel/pipe palette; schedule board + spilled crate cluster in hub nest. **Needs in-editor Play verification (no Unity MCP in this harness).**
 - [ ] A10. Biomass encroachment on ship systems (visual layer)
   Type: visual | Pillar: Industrial biomass / hive
   Lore: INDEX industrial biomass / hive; infection-via-process motif
@@ -322,6 +322,7 @@ Method: capture the Game view in Play mode, judge the frame, fix the single wors
 - [ ] Free lead: Abandoned Factory Lite (Asset Store) ÃƒÂ¢Ã¢â€šÂ¬Ã¢â‚¬Â safe mood greys for blockout; not gated, but not queued until visual Now is thin.
 
 ## Agent log (newest first ÃƒÂ¢Ã¢â€šÂ¬Ã¢â‚¬Â one line per session: date, task, result, commit)
+- 2026-07-20: auto-dev A9 lived-in labour props + white furniture tint — PropDressVersion 11, RecolorProp dark-steel/pipe palette, schedule board + spilled crate cluster. **[?] needs in-editor Play verification (no Unity MCP).**
 
 - 2026-07-20: auto-dev P1 seal wall-seam collision gaps — WallSeamSealer + bootstrap wire + Sector_Layout note; Play-verified 13 seals / 1 lane-skip / probes blocked / console clean.
 
