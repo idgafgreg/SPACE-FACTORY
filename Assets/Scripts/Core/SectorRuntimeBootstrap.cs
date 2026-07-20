@@ -68,7 +68,9 @@ public static class SectorRuntimeBootstrap
         go.AddComponent<ConveyorFlowFX>();
         go.AddComponent<ShipInteriorUpgrade>();
         go.AddComponent<WallSeamSealer>();
+        go.AddComponent<WallJunctionPlates>();
         go.AddComponent<MapEdgeGuard>();
+
         go.AddComponent<PlaceholderPropDressing>();
         go.AddComponent<BiomassEncroachment>();
 

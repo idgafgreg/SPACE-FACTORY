@@ -109,7 +109,7 @@ Human report + editor audit: walls do not fully connect in places; player can wa
   Change: audit `PlaceholderPropDressing`, `RuntimeArtBackfill`, starter factory props — fix floating, wall-clipping, and props blocking lanes/hub approach. Snap to deck; reject spawns intersecting Walls colliders; keep props non-blocking for pathing where intended.
   done-when: Play — no floating props; no props through walls; lanes + hub approach clear; console clean
 
-- [ ] P4. Wall visual continuity at junctions
+- [x] P4. Wall visual continuity at junctions — DONE: `WallJunctionPlates` skins each P1 SeamSeal with padded steel cubes (hull palette); lane-skipped seams stay open; Sector_Layout note; wired bootstrap. Play-verified 13/13 plates with renderers; console clean.
   Type: visual | Pillar: Workplace as trap
   Lore: modular workplace kits / pattern then violation (lore/2026-07-17/summary.md #5)
   Change: after P1 collision seal, add small runtime corner/junction plates (primitives, steel mat) so hull reads continuous — no light leaks or void slices at seams. No asset pack.
@@ -322,6 +322,8 @@ Method: capture the Game view in Play mode, judge the frame, fix the single wors
 - [ ] Free lead: Abandoned Factory Lite (Asset Store) ÃƒÂ¢Ã¢â€šÂ¬Ã¢â‚¬Â safe mood greys for blockout; not gated, but not queued until visual Now is thin.
 
 ## Agent log (newest first ÃƒÂ¢Ã¢â€šÂ¬Ã¢â‚¬Â one line per session: date, task, result, commit)
+
+- 2026-07-20: auto-dev P4 wall junction plates — WallJunctionPlates steel cubes on P1 seals; Sector_Layout; Play-verified 13/13 plates; console clean.
 
 - 2026-07-20: auto-dev L21 breach-lane factory tax HUD — FactoryPressureHud VENT PRESSURE / PROCESS CONTAMINATED; Progression_Spec; Play-verified idle/heat/infect/priority; console clean.
 
