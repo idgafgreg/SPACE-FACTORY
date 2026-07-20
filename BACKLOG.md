@@ -49,7 +49,7 @@ Rules for tasks in this file:
 
 ### Lore-gap refill ÃƒÂ¢Ã¢â€šÂ¬Ã¢â‚¬Â 2026-07-19 (systemic / diegetic first)
 
-Code reality: `ThreatTelegraph` only escalates the last ~10s of Prep; `ventBreachShare` is wave-authored (no factory-output coupling); `RecoveryBeat` is a green victory flash; `PlayerScanner` cooldown is flat; `PlaceholderPropDressing` + `EnvironmentalLore` already cover a thin lived-in layer. Asset pack status: **not purchased** ÃƒÂ¢Ã¢â€šÂ¬Ã¢â‚¬Â no pack-gated work in Now.
+Code reality (2026-07-20): L15-L19 shipped (menace rollercoaster, factory-heat vent pressure, process infection, lonely recovery, scanner lag). A9/A10 reserved for another agent. Map audit: 22 authored walls all have colliders, but **6 wall-seam gaps** detected; `VoidHull` fog curtains spawn with colliders stripped; props strip colliders by design and can clip/float. Asset pack: **not purchased**.
 
 - [x] L15. Mid-prep menace rollercoaster (soft director)
   Type: systemic / diegetic | Pillar: Diegetic dread
@@ -86,7 +86,48 @@ Code reality: `ThreatTelegraph` only escalates the last ~10s of Prep; `ventBreac
   done-when: Play ÃƒÂ¢Ã¢â€šÂ¬Ã¢â‚¬Â calm prep scan = normal CD; late-prep/combat = longer CD + degraded HUD tag; console clean
   DONE 2026-07-20 — AlarmLevel>=0.35 stretches scan CD x1.75; ScanCooldownHud SIGNAL DEGRADED; calm mid-prep normal; Play-verified.
 
-### Remaining visual (cap ~30% of Now ÃƒÂ¢Ã¢â€šÂ¬Ã¢â‚¬Â after systemic above)
+
+### Map integrity + polish — 2026-07-20 (lore-gap; A9/A10 reserved for other agent)
+
+Human report + editor audit: walls do not fully connect in places; player can walk through some barriers and fall off the map; props/objects sit in weird buggy locations. Prefer these over new features until the ship is a solid workplace trap.
+
+- [ ] P1. Seal wall-seam collision gaps
+  Type: mechanical | Pillar: Workplace as trap
+  Lore: ship-as-prison / no-exit workplace (lore/2026-07-17/summary.md #1; INDEX workplace as trap)
+  Change: audit `Walls/*` junctions (editor found ~6 seam pairs e.g. Hull_Bow_L↔Corr_Bow_L, Corr_Vent_L↔Ring_SW). Add thin BoxCollider fillers or nudge wall scales so CharacterController cannot slip between segments. Keep lane gate openings intact.
+  done-when: Play — walk every perimeter + corridor junction; zero slip-throughs at former seams; gates still passable; console clean
+
+- [ ] P2. Map-edge fall barrier + killplane recovery
+  Type: mechanical | Pillar: Workplace as trap
+  Lore: isolation baked into the job — leaving the deck should not soft-softlock the run (lore INDEX workplace as trap)
+  Change: where visual hull ends or `VoidHull` has no collision, add invisible perimeter rail colliders on Buildable layer AND a killplane (y < -2 or off Ground bounds) that respawns the player at hub with a short terminal line (no death spiral). Document in Sector_Layout briefly.
+  done-when: Play — cannot walk off deck into void; forced fall respawns at hub; console clean
+
+- [ ] P3. Prop / machine placement sanity pass
+  Type: visual / mechanical | Pillar: Lonely worker fantasy
+  Lore: authentic labor habitat before haunt (lore/2026-07-19/summary.md #2)
+  Change: audit `PlaceholderPropDressing`, `RuntimeArtBackfill`, starter factory props — fix floating, wall-clipping, and props blocking lanes/hub approach. Snap to deck; reject spawns intersecting Walls colliders; keep props non-blocking for pathing where intended.
+  done-when: Play — no floating props; no props through walls; lanes + hub approach clear; console clean
+
+- [ ] P4. Wall visual continuity at junctions
+  Type: visual | Pillar: Workplace as trap
+  Lore: modular workplace kits / pattern then violation (lore/2026-07-17/summary.md #5)
+  Change: after P1 collision seal, add small runtime corner/junction plates (primitives, steel mat) so hull reads continuous — no light leaks or void slices at seams. No asset pack.
+  done-when: Play / SceneView — junctions read continuous from gameplay camera; console clean
+
+- [ ] L20. Horror-clock sector ambience decay
+  Type: systemic / diegetic | Pillar: Diegetic dread
+  Lore: Still Wakes horror clock + Intensity Director curves (lore/2026-07-19/summary.md #1, suggested experiments)
+  Change: as WavesCleared rises, deepen one tagged zone (VentBreach approach): fog pull-in, lamp death chance, ambient wrongness — then ease after clear (roller coaster, not permanent max dread). Hook `AtmosphereController` / `LampFlicker`; short numbers in Progression_Spec.
+  done-when: Play — zone feels worse by wave 3 than wave 1, eases after clear; factory loop still playable; console clean
+
+- [ ] L21. Breach-lane factory tax readability
+  Type: diegetic / systemic | Pillar: Factory pressure = identity
+  Lore: Factorio pollution lesson + infection-via-process (INDEX; L16/L17 already ship numbers)
+  Change: when factory heat or process infection is active, show a one-line ship-terminal HUD chip (`[GRID] VENT PRESSURE HIGH` / `PROCESS CONTAMINATED`) so the pressure is legible without opening debug overlays. Reuse `ShipTerminalUI`.
+  done-when: Play — chip appears only under heat/infection; idle factory chip hidden; console clean
+
+### Remaining visual — A9/A10 RESERVED (other agent; do not steal) — cap ~30%
 
 - [ ] A9. Lived-in labour props + white furniture tint (absorbs A6b)
   Type: visual | Pillar: Workplace as trap / Lonely worker fantasy
@@ -281,6 +322,8 @@ Method: capture the Game view in Play mode, judge the frame, fix the single wors
 - [ ] Free lead: Abandoned Factory Lite (Asset Store) ÃƒÂ¢Ã¢â€šÂ¬Ã¢â‚¬Â safe mood greys for blockout; not gated, but not queued until visual Now is thin.
 
 ## Agent log (newest first ÃƒÂ¢Ã¢â€šÂ¬Ã¢â‚¬Â one line per session: date, task, result, commit)
+
+- 2026-07-20: lore-gap — map integrity + polish queue (P1-P4 wall seams/fall/props/junctions) + L20 horror-clock + L21 pressure HUD; left A9/A10 for other agent; editor audit 6 wall seams, VoidHull no colliders. No game code.
 
 - 2026-07-20: auto-dev L19 scanner lag under rising menace — PlayerScanner EffectiveCooldown from AlarmLevel; ScanCooldownHud SIGNAL DEGRADED; wired HUD; Progression_Spec; Play-verified calm 8s / hot 14s.
 
