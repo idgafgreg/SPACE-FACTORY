@@ -77,6 +77,7 @@ public static class SectorRuntimeBootstrap
         go.AddComponent<DemolishHighlight>();
         go.AddComponent<WorkshopBeacon>();
         go.AddComponent<WaveStartSting>();
+        go.AddComponent<ThreatTelegraph>();
         go.AddComponent<VisualCleanupPass>();
         go.AddComponent<AmbientDustMotes>();
 

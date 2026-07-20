@@ -361,6 +361,7 @@
 
 - Starting scrap: 140
 - Pre-wave setup window before Wave 1: 40 seconds (playtest ruling 2026-07-15 — the earlier 240s/4-minute windows made the game trivially easy; all between-wave preps are now 30 seconds)
+- Mid-prep menace curve (ThreatTelegraph, lore Intensity Director / Isolation menace): during Prep above the final warning window, schedule 1 dread beat on ~30s preps (2 on longer), peak AlarmLevel ≈0.32 with skitter + soft flash, then a mandatory ~5s quiet valley, then the existing final ~10s warning telegraph. Prep stays plan-able — beats are texture, not combat.
 - Intended minimum opening package: 1 Barrier for 30 plus 1 Auto Turret for 80, leaving 30 scrap for either one low-cost utility piece or reserve flexibility.
 - Design intent: the player starts with a strong enough core to solve Wave 1, but not enough surplus to trivialize both lanes immediately.
 
