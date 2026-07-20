@@ -45,3 +45,13 @@ intended growth direction.
 ## Tuning notes
 - All numbers here are first-guess tunables. The locked doc constrains the
   wave 1-3 teaching arc only; everything past wave 3 is open design space.
+
+## Factory heat -> hive pressure (L16, 2026-07-20)
+
+Factorio pollution lesson: hive vent pressure rises with factory throughput.
+
+- `FactoryHeatTracker.Heat01` = 0.55 * clamp(scrapPerMin / 40) + 0.45 * clamp(poweredDrillsAndProcessors / 6)
+- Teaching waves with `ventBreachShare > 0`: effectiveShare = min(0.55, base + Heat01 * 0.20)
+- **Wave 1** (`ventBreachShare = 0`): always West-only — heat never opens the vent
+- Endless / all-gates (`ventBreachShare < 0`): after round-robin, convert up to `Heat01 * 25%` of non-vent spawns to VentBreach
+- Tunables live on `WaveController` (`heatVentShareBonusMax`, `heatVentShareCap`, `heatEndlessVentBiasMax`)

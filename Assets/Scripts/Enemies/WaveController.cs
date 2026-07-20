@@ -65,6 +65,21 @@ public class WaveController : MonoBehaviour
     [Tooltip("Chance an endless wave rolls NO modifier; the rest split evenly across Swift/Armored/Horde/Volatile.")]
     [Range(0f, 1f)] public float endlessNoModifierChance = 0.3f;
 
+    [Header("Factory heat -> hive pressure (L16)")]
+    [Tooltip("Max ventBreachShare added when Heat01 = 1 (teaching waves with share > 0).")]
+    [Range(0f, 0.5f)] public float heatVentShareBonusMax = 0.20f;
+    [Tooltip("Hard cap on effective ventBreachShare after heat bonus.")]
+    [Range(0.1f, 0.9f)] public float heatVentShareCap = 0.55f;
+    [Tooltip("Endless/all-gates: max fraction of spawns converted to VentBreach at Heat01 = 1.")]
+    [Range(0f, 0.5f)] public float heatEndlessVentBiasMax = 0.25f;
+
+    /// <summary>Last Heat01 sampled when lanes were assigned.</summary>
+    public float LastFactoryHeat01 { get; private set; }
+    /// <summary>Effective vent share used for teaching-arc assignment (-1 if all-gates path).</summary>
+    public float LastEffectiveVentShare { get; private set; }
+    /// <summary>How many spawns were assigned to VentBreach last AssignLanes.</summary>
+    public int LastVentLaneCount { get; private set; }
+
     /// <summary>Modifier of the current/most recent wave (None during the defined waves).</summary>
     public WaveModifier CurrentModifier { get; private set; }
     /// <summary>Modifier rolled for the upcoming wave (visible during Prep).</summary>
@@ -277,23 +292,33 @@ public class WaveController : MonoBehaviour
     }
 
     /// <summary>Pre-assigns a lane per queued spawn.
-    /// ventBreachShare &gt;= 0: teaching arc — West + Vent only (deterministic split).
-    /// ventBreachShare &lt; 0: all available gates, round-robin then shuffled.</summary>
+    /// ventBreachShare &gt;= 0: teaching arc - West + Vent only (deterministic split).
+    /// ventBreachShare &lt; 0: all available gates, round-robin then shuffled.
+    /// L16: factory heat bumps vent pressure after Wave 1 (share 0 stays West-only).</summary>
     void AssignLanes(WaveDef def)
     {
         _laneQueue.Clear();
         int n = _spawnQueue.Count;
+        LastFactoryHeat01 = 0f;
+        LastEffectiveVentShare = def.ventBreachShare;
+        LastVentLaneCount = 0;
         if (n == 0 || _layout == null) return;
+
+        float heat01 = FactoryHeatTracker.Instance != null ? FactoryHeatTracker.Instance.Heat01 : 0f;
+        LastFactoryHeat01 = heat01;
 
         if (def.ventBreachShare < 0f)
         {
-            // All gates — fill then shuffle for even pressure.
+            // All gates - fill then shuffle for even pressure.
             for (int i = 0; i < n; i++)
             {
                 var lane = NextLane();
                 if (lane != null) _laneQueue.Add(lane);
             }
+            ApplyEndlessVentHeatBias(heat01);
             Shuffle(_laneQueue);
+            LastEffectiveVentShare = -1f;
+            LastVentLaneCount = CountVentAssignments();
             return;
         }
 
@@ -301,12 +326,72 @@ public class WaveController : MonoBehaviour
         LanePath vent = _layout.GetLane(VentLaneId);
         if (west == null || vent == null) return;
 
-        int ventCount = Mathf.RoundToInt(n * def.ventBreachShare);
-        if (def.ventBreachShare > 0f && ventCount == 0) ventCount = 1;
+        // Wave 1 teaching lock: share == 0 stays West-only (no heat bonus).
+        float share = def.ventBreachShare;
+        if (share > 0f)
+        {
+            float bonus = heat01 * heatVentShareBonusMax;
+            share = Mathf.Min(heatVentShareCap, share + bonus);
+        }
+        LastEffectiveVentShare = share;
+
+        int ventCount = Mathf.RoundToInt(n * share);
+        if (share > 0f && ventCount == 0) ventCount = 1;
         ventCount = Mathf.Min(ventCount, n);
+        LastVentLaneCount = ventCount;
 
         for (int i = 0; i < n; i++) _laneQueue.Add(i < ventCount ? vent : west);
         Shuffle(_laneQueue);
+    }
+
+    /// <summary>Endless/all-gates: convert a heat-scaled slice of non-vent spawns to VentBreach.</summary>
+    void ApplyEndlessVentHeatBias(float heat01)
+    {
+        if (heat01 <= 0.05f || _layout == null) return;
+        LanePath vent = _layout.GetLane(VentLaneId);
+        if (vent == null) return;
+
+        int convert = Mathf.FloorToInt(_laneQueue.Count * heat01 * heatEndlessVentBiasMax);
+        if (convert <= 0) return;
+
+        int converted = 0;
+        for (int i = 0; i < _laneQueue.Count && converted < convert; i++)
+        {
+            var lane = _laneQueue[i];
+            if (lane == null) continue;
+            if (lane.laneId == VentLaneId) continue;
+            _laneQueue[i] = vent;
+            converted++;
+        }
+    }
+
+    int CountVentAssignments()
+    {
+        int n = 0;
+        for (int i = 0; i < _laneQueue.Count; i++)
+        {
+            var lane = _laneQueue[i];
+            if (lane != null && lane.laneId == VentLaneId) n++;
+        }
+        return n;
+    }
+
+    /// <summary>Editor/test: compute teaching-arc effective vent share for given heat.</summary>
+    public float PreviewEffectiveVentShare(float baseShare, float heat01)
+    {
+        if (baseShare < 0f) return -1f;
+        if (baseShare <= 0f) return 0f;
+        return Mathf.Min(heatVentShareCap, baseShare + Mathf.Clamp01(heat01) * heatVentShareBonusMax);
+    }
+
+    /// <summary>Editor/test: run AssignLanes with a dummy spawn queue (uses live FactoryHeatTracker.Heat01).</summary>
+    public void DebugRunAssignLanes(int spawnCount, float ventShare)
+    {
+        if (_layout == null) _layout = SectorLayout.Instance;
+        _spawnQueue.Clear();
+        for (int i = 0; i < spawnCount; i++) _spawnQueue.Add(gameObject);
+        AssignLanes(new WaveDef { ventBreachShare = ventShare });
+        _spawnQueue.Clear();
     }
 
     LanePath NextLane()

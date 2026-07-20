@@ -51,6 +51,7 @@ public static class SectorRuntimeBootstrap
         var go = new GameObject("SectorRuntime");
         go.AddComponent<SectorRuntimeMarker>();
         go.AddComponent<SceneScanCache>();
+        go.AddComponent<FactoryHeatTracker>();
 
         // Curated release-facing runtime stack. This used to attach 71
         // independent overlays, hints, pulses, labels and procedural dressers.
