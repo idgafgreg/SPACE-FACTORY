@@ -147,6 +147,12 @@ public class SpaceBackdrop : MonoBehaviour
             }
             placed++;
         }
+
+        // Deck windows read as space through the floor — right for the top-down
+        // camera, wrong at eye level. Hide them in first person. See
+        // DeckWindowVisibility.
+        if (GetComponent<DeckWindowVisibility>() == null)
+            gameObject.AddComponent<DeckWindowVisibility>();
     }
 
     void Update()

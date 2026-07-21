@@ -11,7 +11,8 @@ public class ShipInteriorUpgrade : MonoBehaviour
     // 56: F6 interior ceiling. Bumped so scenes carrying the v55 marker rebuild
     // instead of skipping and shipping a lidless deck.
     // 57: F7 lamp fixtures — corridor lights gain housings and per-mode values.
-    const int UpgradeVersion = 57;
+    // 58: skip corridor lamp fixtures inside the hub footprint (clipping fix).
+    const int UpgradeVersion = 58;
 
     // TransparentFX — built-in layer, ships with every project (same choice as
     // PostFXBootstrap.VolumeLayer). Wall caps live here so point lights can cull
@@ -551,12 +552,26 @@ public class ShipInteriorUpgrade : MonoBehaviour
 
         EnsureLampMaterials();
 
+        // Lanes emanate from the command hub, so their first points sit on top of
+        // it — which stacked corridor lamp fixtures over the hub structure and
+        // read as glitchy clipping in first person (a playtest flagged it). The
+        // hub has its own flood + beacon lighting, so skip any fixture inside the
+        // hub pad footprint. HubPadRing is ~8 across → ~4 radius; 4.8 clears the
+        // pad edge and the hub shell.
+        Vector3 hubXZ = Vector3.zero;
+        var hubT = layout.commandHubTransform;
+        if (hubT != null) hubXZ = new Vector3(hubT.position.x, 0f, hubT.position.z);
+        const float hubClear = 4.8f;
+
         int lit = 0;
         foreach (var lane in layout.lanes)
         {
             if (lane == null || lane.PointCount < 2) continue;
             for (int i = 0; i < lane.PointCount; i += 2)
             {
+                Vector3 laneXZ = new Vector3(lane.GetPoint(i).x, 0f, lane.GetPoint(i).z);
+                if ((laneXZ - hubXZ).sqrMagnitude < hubClear * hubClear) continue;
+
                 // A8: every third fixture is dead — sparse pools with real gloom
                 // between them, and the deck reads as a ship whose maintenance
                 // crew never came back (lore: lonely industrial dread).

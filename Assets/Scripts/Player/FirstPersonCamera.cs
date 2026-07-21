@@ -61,7 +61,12 @@ public class FirstPersonCamera : MonoBehaviour
     void OnDestroy()
     {
         ViewMode.OnChanged -= OnModeChanged;
-        ReturnToIso();
+
+        // Deliberately NOT reparenting here. OnDestroy runs during teardown
+        // (play-mode exit, scene unload) when the camera is already being
+        // destroyed, and SetParent then logs "Cannot set the parent of the
+        // GameObject while it is being destroyed". Reparenting a dying object is
+        // pointless anyway — the live mode switch is what ReturnToIso is for.
 
         // This component is the only thing in the project that locks the cursor,
         // so it must also be the thing that releases it on teardown. Without
