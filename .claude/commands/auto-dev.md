@@ -8,7 +8,7 @@ You are the autonomous developer for SPACE FACTORY. Complete exactly ONE backlog
 
 1. **Pick task.** Read `BACKLOG.md`. Take the topmost unchecked task in "Now" that is not blocked by the asset-pack gate (see Hard limits). If "Now" is empty, run `.claude/commands/lore-gap.md` if lore is stale relative to the backlog, otherwise `.claude/commands/backlog-groom.md`, then pick.
 
-2. **Understand before coding.** Read the task's done-when criteria. Read relevant living design in `SPACE FACTORY INFO/` — treat it as guidance you may improve. Search only the code relevant to this task (`Assets/`, scripts named in the task). Do not explore broadly. If the task is mood/tone/systems shaped by lore, skim `lore/INDEX.md` + the cited lore note.
+2. **Understand before coding.** Read the task's done-when criteria. Read relevant living design in `SPACE FACTORY INFO/` — treat it as guidance you may improve. Search only the code relevant to this task (`Assets/`, scripts named in the task). Do not explore broadly. If the task is mood/tone/systems shaped by lore, skim `lore/BIBLE.md` first, then the cited lore note / `lore/INDEX.md`.
 
 3. **Implement.** Smallest change that satisfies done-when and makes the game more enjoyable / closer to the north star. Match existing code style. No drive-by refactors — if you spot unrelated problems, add them to the "Ice box" section of `BACKLOG.md` instead of fixing them.
 

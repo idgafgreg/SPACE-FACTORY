@@ -8,20 +8,22 @@ You are working on a **Unity project** used to build games or interactive experi
 
 This game is horror-infused factory management on a broken far-future ship. Before proposing or implementing ideas that affect **tone, atmosphere, narrative, hive/enemy fantasy, factory pressure, environmental storytelling, audio/visual mood, comps, or asset choices**, consult the compiled research in `lore/`:
 
-1. Read `lore/INDEX.md`, then `lore/README.md`, then the latest `lore/YYYY-MM-DD/summary.md`.
-2. Open topic files (`articles.md`, `videos.md`, `reviews-comps.md`, `stories.md`, `assets-tools.md`) only as needed.
-3. Check `lore/wishlist-paywalled.md` before recommending paid assets or tools — do not purchase; list for later. After wishlist / free-lead changes, run `lore/sync-assets-sheet.ps1` (see `lore/GOOGLE-SHEET.md`).
-4. Prefer lore-backed motifs (workplace-as-trap, biomass using ship systems, factory-tied threat, lonely industrial dread) over generic sci-fi or cozy factory tropes.
-5. Cite which lore note shaped a material design suggestion. Do not paste copyrighted fiction into the game.
-6. Pure mechanical bugfixes with no mood/design impact may skip lore.
+1. Read `lore/BIBLE.md` (living canon) first.
+2. Then `lore/INDEX.md`, `lore/README.md`, and the latest `lore/YYYY-MM-DD/summary.md`.
+3. Open topic files (`articles.md`, `videos.md`, `reviews-comps.md`, `stories.md`, `assets-tools.md`) only as needed.
+4. Check `lore/wishlist-paywalled.md` before recommending paid assets or tools — do not purchase; list for later. After wishlist / free-lead changes, run `lore/sync-assets-sheet.ps1` (see `lore/GOOGLE-SHEET.md`).
+5. Prefer bible pillars/motifs (workplace-as-trap, biomass using ship systems, factory-tied threat, lonely industrial dread) over generic sci-fi or cozy factory tropes.
+6. Cite which bible section or lore note shaped a material design suggestion. Do not paste copyrighted fiction into the game.
+7. If the bible is behind the newest digest, run `/lore-bible` before design work. Pure mechanical bugfixes with no mood/design impact may skip lore.
 
 Also see `AGENTS.md` and `.cursor/rules/space-factory-lore.mdc` for the same policy.
 
 ## Autonomous dev cycle
 
-Shared queue: `BACKLOG.md`. Commands live in `.claude/commands/`:
+Shared queue: `BACKLOG.md`. Commands live in `.claude/commands/` (Cursor mirrors under `.cursor/commands/` where present):
 
-1. `/lore-gap` — lore + living design → backlog tasks (no game code)
+0. `/lore-bible` — distill research + strong ideas → `lore/BIBLE.md`
+1. `/lore-gap` — bible + lore + living design → backlog tasks (no game code)
 2. `/auto-dev` — one Now task → implement → verify → commit
 3. `/bug-pass` — regressions / `[?]` items only → commit
 4. `/playtest` — `PlaytestHarness` smoke + Wave 1 gate → report + backlog bugs

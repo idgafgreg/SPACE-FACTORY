@@ -4,18 +4,23 @@ This repo is a Unity game: **horror-infused factory management** on a broken far
 
 ## Autonomous dev cycle
 
-Producer/builder/closer/playtest commands share one queue: [`BACKLOG.md`](BACKLOG.md).
+Producer/builder/closer/playtest commands share one queue: [`BACKLOG.md`](BACKLOG.md). Living lore canon lives in [`lore/BIBLE.md`](lore/BIBLE.md).
 
 | Step | Command | Role | Writes code? |
 |------|---------|------|----------------|
-| 1 | [`/lore-gap`](.claude/commands/lore-gap.md) | Read `lore/` + living design → refill Now with one-commit tasks | No |
+| 0 | [`/lore-bible`](.claude/commands/lore-bible.md) | Distill new `lore/` research + strong ideas into [`lore/BIBLE.md`](lore/BIBLE.md) | No (docs only) |
+| 1 | [`/lore-gap`](.claude/commands/lore-gap.md) | Read bible + `lore/` + living design → refill Now with one-commit tasks | No |
 | 2 | [`/auto-dev`](.claude/commands/auto-dev.md) | Top Now task → implement → Unity verify → commit | Yes (one task) |
 | 3 | [`/bug-pass`](.claude/commands/bug-pass.md) | Regressions + `[?]` verification → fix → commit | Yes (bugs only) |
 | 4 | [`/playtest`](.claude/commands/playtest.md) | Scripted Play Mode suite via `PlaytestHarness` → report + backlog bugs | Report / bugs only |
 
 Optional: [`/backlog-groom`](.claude/commands/backlog-groom.md) reprioritizes when the queue is messy (also pulls lore when Now is thin).
 
-**Suggested loop:** lore-gap once → auto-dev × 3–5 → bug-pass once → playtest once → human reviews local commits → push.
+**Suggested loop:** lore-bible (if research/ideas are newer than the bible) → lore-gap once → auto-dev × 3–5 → bug-pass once → playtest once → human reviews local commits → push.
+
+### Lore bible
+
+[`lore/BIBLE.md`](lore/BIBLE.md) is the short **canon** agents should prefer over raw digests. `/lore-bible` promotes good motifs into it, parks weak ones as experiments, and rejects north-star drift. Daily research folders stay provenance; the bible stays skim-sized.
 
 ### Design docs are not locked
 
@@ -39,11 +44,14 @@ Compiled online research lives in [`lore/`](lore/). Any agentic AI working on th
 
 **Start here:**
 
-1. [`lore/INDEX.md`](lore/INDEX.md)
-2. [`lore/README.md`](lore/README.md)
-3. Latest [`lore/YYYY-MM-DD/summary.md`](lore/)
-4. [`lore/wishlist-paywalled.md`](lore/wishlist-paywalled.md) before suggesting paid packs
-5. After changing the wishlist or free leads in `assets-tools.md`, run `lore/sync-assets-sheet.ps1` so `lore/assets-wishlist.csv` stays current for the Google Sheet (`lore/GOOGLE-SHEET.md`)
+1. [`lore/BIBLE.md`](lore/BIBLE.md) — living canon (skim first)
+2. [`lore/INDEX.md`](lore/INDEX.md)
+3. [`lore/README.md`](lore/README.md)
+4. Latest [`lore/YYYY-MM-DD/summary.md`](lore/) — provenance / candidates not yet absorbed
+5. [`lore/wishlist-paywalled.md`](lore/wishlist-paywalled.md) before suggesting paid packs
+6. After changing the wishlist or free leads in `assets-tools.md`, run `lore/sync-assets-sheet.ps1` so `lore/assets-wishlist.csv` stays current for the Google Sheet (`lore/GOOGLE-SHEET.md`)
+
+If the bible’s **Last absorbed research** is older than the newest digest, run [`/lore-bible`](.claude/commands/lore-bible.md) before design work or `/lore-gap`.
 
 Cursor loads the same policy via [`.cursor/rules/space-factory-lore.mdc`](.cursor/rules/space-factory-lore.mdc). Claude Code also sees the Lore section in [`CLAUDE.md`](CLAUDE.md).
 

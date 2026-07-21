@@ -2,11 +2,12 @@
 
 Autonomous cycle (see `AGENTS.md`):
 
-1. `/lore-gap` ÃƒÂ¢Ã¢â€šÂ¬Ã¢â‚¬Â lore + design ÃƒÂ¢Ã¢â‚¬Â Ã¢â‚¬â„¢ refill "Now"
-2. `/auto-dev` ÃƒÂ¢Ã¢â€šÂ¬Ã¢â‚¬Â implement top task ÃƒÂ¢Ã¢â‚¬Â Ã¢â‚¬â„¢ verify ÃƒÂ¢Ã¢â‚¬Â Ã¢â‚¬â„¢ commit
-3. `/bug-pass` ÃƒÂ¢Ã¢â€šÂ¬Ã¢â‚¬Â fix regressions / `[?]` items ÃƒÂ¢Ã¢â‚¬Â Ã¢â‚¬â„¢ commit
-4. `/playtest` ÃƒÂ¢Ã¢â€šÂ¬Ã¢â‚¬Â PlaytestHarness smoke + Wave 1 gate ÃƒÂ¢Ã¢â‚¬Â Ã¢â‚¬â„¢ report + backlog
-5. `/backlog-groom` ÃƒÂ¢Ã¢â€šÂ¬Ã¢â‚¬Â optional reprioritize when the queue is messy
+0. `/lore-bible` — distill research + strong ideas into `lore/BIBLE.md` (canon)
+1. `/lore-gap` — bible + lore + design → refill "Now"
+2. `/auto-dev` — implement top task → verify → commit
+3. `/bug-pass` — fix regressions / `[?]` items → commit
+4. `/playtest` — PlaytestHarness smoke + Wave 1 gate → report + backlog
+5. `/backlog-groom` — optional reprioritize when the queue is messy
 
 Humans and producer commands edit this file; `/auto-dev`, `/bug-pass`, and `/playtest` check boxes and append Agent log notes.
 
@@ -28,6 +29,16 @@ Rules for tasks in this file:
 
 ## Decisions (human-made, newest first)
 
+- 2026-07-20 (human): **First-person is now IN SCOPE** as a toggleable second view mode, and the
+  target is "FP that looks and reads as good as the current build, if not better" — i.e. a full
+  art/lighting re-pass, not a camera hack. This **overrules** the old `lore/BIBLE.md` north-star
+  line "Scope out: multiplayer, first-person, space walks (for now)"; the bible has been updated
+  in the same commit. Rules that survive: factory layout/throughput stays the primary skill
+  expression (FP must not turn the game into a shooter — Dead Space comp says "steal the industrial
+  body-horror, avoid becoming a third-person shooter"; same warning applies doubled in FP), and the
+  existing orbit/iso path stays fully playable and is **not** deleted until FP passes the Wave 1
+  gate in `/playtest`. Work tracked as the `F1`–`F14` block at the top of Now.
+
 - 2026-07-15 (playtest): prep times ruled DOWN ÃƒÂ¢Ã¢â€šÂ¬Ã¢â‚¬Â wave 1 = 40s, all later preps = 30s (240s+ made
   the game trivially easy; doc updated). Middle-click demolish deemed unnecessary (X mode is the
   way; middle-click path left in but low-value). Locked hotbar slots now read as EMPTY; unlocks
@@ -47,6 +58,248 @@ Rules for tasks in this file:
   raise tasks for it (unlock/upgrade design first pass, then implementation).
 
 ## Now (agent works top-down)
+
+### F1–F14. First-person view mode — TOP PRIORITY (human decision 2026-07-20)
+
+Goal: a **toggleable** first-person mode that looks and reads at least as well as the current
+orbit/iso build. Both view modes stay shipped and playable; iso is not deleted until F14 passes.
+
+**Read before starting any F task:** `lore/BIBLE.md` (north star + diegetic grammar), the
+2026-07-20 decision entry above, and this preamble.
+
+Why the art phase is not optional: every visual pass A5–A10 was authored to read from a camera
+~14 m up on a steep pitch (`CameraFollow.initialOffset = (0, 14, -11)`). At eye height those
+choices invert — wall caps are above the eye line instead of catching a top-down bevel, deck texel
+density is tuned for distance, corridor lamps are *invisible anchors* with no fixture geometry
+("iso game has no real ceiling", `ShipInteriorUpgrade.cs:561`), hanging beams are fake mid-height
+greeble silhouetted against void (`ShipInteriorUpgrade.cs:723`), and **the ship has no ceilings at
+all** — in FP, looking up is empty skybox. F6 unblocks the rest of the art phase.
+
+Order matters: F1–F5 = playable FP; F6–F13 = art/lighting re-pass; F14 = gate.
+
+Conventions for this block:
+- Every task states `Unity:` — what needs the Unity Editor / Unity MCP. Agents **without** Unity
+  MCP: implement, self-review the diff for syntax/API errors, then mark `[?] needs Unity pass —
+  <what>` instead of `[x]`. `/unity-pass` sweeps those later. See `AGENTS.md`.
+- Never regress iso. Any per-mode value goes behind `ViewMode`, not a replacement of the iso value.
+- No asset-pack work (status: not purchased). Primitives, runtime meshes, existing Kenney only.
+
+---
+
+#### Phase 1 — playable FP (mechanics)
+
+- [ ] F1. `ViewMode` switch + first-person camera rig
+  Type: mechanical | Pillar: — (enabling work)
+  Unity: **yes** — scene wiring of the head anchor + toggle verification in Play mode.
+  Change: add a small `ViewMode` static/singleton (`Iso` | `FirstPerson`, default `Iso`, persisted
+  to `PlayerPrefs`) plus a debug toggle key (suggest `V`) and a menu/pause entry later. Add
+  `FirstPersonCamera.cs`: mouse-look yaw+pitch (pitch clamp ±85°, no roll), camera parented to a
+  head anchor on the Player (~1.65 m — confirm against the astronaut art in F13), `Cursor.lockState
+  = CursorLockMode.Locked` while FP and no UI is open. **Do not rewrite `CameraFollow`** — gate its
+  `LateUpdate` on `ViewMode.IsIso` and let the two rigs coexist on the same camera or on two
+  cameras, whichever is cleaner. `CameraShake.Sample` must still apply in FP (it is additive
+  position-only today; in FP it needs to be additive to the head anchor, not fight LookAt).
+  `CameraFollow.Yaw` is consumed by `PlayerController` — keep an equivalent yaw source in FP.
+  done-when: Play — `V` flips iso↔FP live, both rigs stable (no snap, no gimbal flip at ±85°),
+  cursor locks in FP and releases in iso, `CameraShake` reads correctly in both; console clean
+
+- [ ] F2. One interaction-ray choke point for both modes
+  Type: mechanical | Pillar: — (enabling work)
+  Unity: **yes** — Play-mode verification that aim/repair/demolish all still hit in iso.
+  Change: today four systems each build their own `ScreenPointToRay(Input.mousePosition)`:
+  `PlayerAim.cs:45`, `PlayerRepairTool.cs:46`, `PlayerBuildTool.cs:373`, `DemolishHighlight.cs:34`.
+  Under a locked cursor `Input.mousePosition` is stale, so all four break in FP. Add a single
+  `ViewRay.Current(Camera)` helper — iso returns the mouse ray, FP returns the screen-centre ray —
+  and route all four through it. Pure refactor for iso: behaviour must be byte-identical.
+  done-when: Play (iso) — aim, repair, demolish, build ghost all behave exactly as before; Play
+  (FP) — all four track the crosshair, none track a frozen mouse position; console clean
+
+- [ ] F3. FP-safe build placement (kill the infinite-plane assumption)
+  Type: mechanical | Pillar: Factory pressure = identity
+  Unity: **yes** — Play-mode placement test across every buildable, both modes.
+  Change: `PlayerBuildTool.TryGetBuildPoint` intersects the camera ray with an **infinite horizontal
+  plane at foot height** (`PlayerBuildTool.cs:374`). From 14 m up that is exact; at eye level, a ray
+  aimed at or above the horizon is near-parallel to the plane and the hit point shoots to infinity
+  or misses entirely — placement dies. Replace with `Physics.Raycast` against the Ground/Buildable
+  layers, clamped to `maxBuildDistance`, with a graceful fallback (project a point at
+  `maxBuildDistance` along the flattened forward when nothing is hit) so the ghost never teleports.
+  Keep the same snapping and the same `maxBuildDistance` gate. `DemolishHighlight` needs the same
+  treatment. The `PlayerBuildTool.cs:346-353` comment block explains why the old camera-cast failed
+  in iso — do not reintroduce that bug; the fix is a ground-layer cast with a distance clamp, not a
+  fixed-distance cast from the camera.
+  done-when: Play (FP) — every buildable places at reasonable range including aimed at the horizon,
+  ghost never jumps to infinity, `maxBuildDistance` still enforced; Play (iso) — placement
+  unchanged from today; console clean
+
+- [ ] F4. FP player body, movement, and self-occlusion
+  Type: mechanical | Pillar: Lonely worker fantasy
+  Unity: **yes** — visual check that the player's own art does not clip the near plane.
+  Change: `PlayerController.HandleMovement` sets `transform.forward = dir` (legs face the WASD
+  direction) and `PlayerAim` yaws a separate torso at the mouse. In FP the body must yaw with the
+  camera and strafe properly instead. Gate both behind `ViewMode`. Hide the player's own art in FP
+  (`ArtPlaceholder`, the yellow capsule `Visual`/`Torso` primitives, `BlobShadow`) — note
+  `PlayerController.RespawnRoutine` re-enables renderers by name and `PlayerArtAttach.Refresh()`
+  re-dresses, so the FP hide has to survive respawn, not just run once at start.
+  done-when: Play (FP) — strafe/back-pedal correct, no player geometry in the near plane before or
+  after a death+respawn, weapon still fires along the crosshair; Play (iso) — legs/torso split
+  unchanged; console clean
+
+- [ ] F5. Cursor arbitration + diegetic crosshair
+  Type: mechanical / diegetic | Pillar: Diegetic dread
+  Unity: **yes** — Play-mode pass over every panel that takes mouse input.
+  Change: FP locks the cursor, but the build menu, Workshop (`F`), upgrade offer modal, and pause
+  menu are all mouse-driven. Add a small UI-focus stack: any panel that needs the mouse pushes a
+  request that unlocks the cursor and suspends mouse-look; closing pops it and relocks. Note
+  `UIUpgradeOffer` already freezes `timeScale` — the cursor release must not depend on `timeScale`
+  (see the `EnemyArtPulse` unscaled-time lesson in A8b). Add a crosshair that fits the diegetic
+  grammar: a thin steel reticle in the `ShipTerminalUI` register, not arcade chrome, and give it a
+  context state (build / repair / demolish / weapon) so mode is readable without a HUD label.
+  done-when: Play (FP) — every panel opens with a usable cursor and relocks on close, no state
+  where the cursor is lost, crosshair reads mode; Play (iso) — no crosshair, no regressions;
+  console clean
+
+---
+
+#### Phase 2 — art & lighting re-pass (the actual "looks as good as iso" work)
+
+- [ ] F6. Interior enclosure — real ceilings + volume
+  Type: visual / mechanical | Pillar: Workplace as trap
+  Lore: `BIBLE.md` diegetic grammar (interrogation lighting, hard spots, little bounce fill) — none
+  of which is possible in a room with no ceiling; "workplace as trap" needs a lid.
+  Unity: **yes** — SceneView + Play captures at eye level; this is the largest visual verification.
+  Change: `ShipInteriorUpgrade` builds hull/corridor/ring walls but explicitly no ceilings
+  (`:561`, `:723`) because the iso camera looks down through them. FP looking up is currently empty
+  skybox — the single biggest "this is not a real game" tell. Add runtime ceiling panels over the
+  enclosed deck: hull-palette panels, exposed ducting/conduit runs, and the existing hanging beams
+  promoted from fake greeble to actual structure attached to the ceiling. Ceilings must be
+  culled/hidden in iso (reuse the A5 layer-culling trick — caps already live on TransparentFX and
+  are culled from point lights) so the iso view is untouched. Choose a ceiling height that reads as
+  industrial-cramped, not warehouse (F13 audits this against player height).
+  done-when: Play (FP) — looking up anywhere on the enclosed deck shows structure, not skybox;
+  Play (iso) — top-down view identical to today, no ceiling occluding the camera; console clean
+
+- [ ] F7. Eye-level lighting re-pass
+  Type: visual | Pillar: Diegetic dread
+  Lore: `BIBLE.md` — "when hive nears, lights *die*, rooms get blacker — not flashier"; A8's pooled
+  darkness must survive the move to eye level.
+  Unity: **yes** — Play captures at eye level across hub / west deck / vent approach.
+  Change: A8 tuned sun 0.18 / ambient 0.075 luma and hung 10 live point lamps at y≈2.35 as
+  *invisible anchors* with no fixture geometry. At eye level those become bare glowing air, and a
+  lamp 0.7 m above the eye line blows out instead of pooling on the deck. After F6: give each live
+  lamp real fixture geometry mounted to the ceiling, retune height/range/intensity/cone for eye
+  level, and keep the every-3rd-lamp-dead rule (dead fixtures must still be *visible* as dead
+  fixtures — a dark housing reads as neglect; nothing at all reads as a missing asset). `LampFlicker`
+  brownouts and the `AlarmLevel` coupling stay. Per-mode values behind `ViewMode`; iso keeps A8's
+  numbers exactly.
+  done-when: Play (FP) — genuine dark corridors with readable pooled light, no blown-out fixtures
+  at eye level, dead lamps visible as dead housings, flicker + alarm coupling intact; Play (iso) —
+  A8 framing unchanged; console clean
+
+- [ ] F8. Per-mode fog / ambient / grade profile
+  Type: visual | Pillar: Diegetic dread
+  Unity: **yes** — side-by-side Play captures, both modes.
+  Change: `AtmosphereController` fog was tuned so the deck reads at 14 m and `VoidHull` recedes to
+  black at the map edge (A2). At eye level the same density either fogs a 6 m corridor into mush or
+  vanishes entirely down a long sightline. Add an FP profile: fog start/end and density tuned for
+  corridor depth, ambient tuned so F7's pools still win, and a grade check that the A1 cold-steel
+  base + amber/green/red signal separation still holds at eye level. `HorrorClock`'s per-zone fog
+  pull (L20) must scale off whichever profile is active, not a hardcoded iso baseline.
+  done-when: Play (FP) — corridors have depth without mush, map edge still reads as void, signal
+  colours still separate from base; Play (iso) — A1/A2/L20 values unchanged; console clean
+
+- [ ] F9. Wall + deck surface detail at eye level
+  Type: visual | Pillar: Workplace as trap
+  Lore: modular workplace kits, pattern then violation (A5/A7 lineage; `BIBLE.md` lived-in labour).
+  Unity: **yes** — close-range Play captures against a wall and looking down at the deck.
+  Change: A7's deck texture is a 256px procedural plate map tiled at 0.08/u (repeat every 12.5 m) —
+  tuned to read from 14 m; at eye level it is a blurry smear at your feet. A5's wall caps sit at
+  y≈2.9 with a 0.10 u overhang bevel designed to catch a top-down light — at eye level they are
+  above the eye line and the wall face below them is a flat untextured slab. Add: higher-frequency
+  deck detail (retuned tiling and/or a detail map) that holds up at 1 m, a wall mid-band (kick
+  plates, panel seams, conduit, weld lines) so wall faces have scale cues at eye level, and check
+  the A5 metallic 0.40 / gloss 0.28 hull values still don't mirror the dark reflection cubemap when
+  viewed at a grazing angle. Keep iso tiling as a per-mode value.
+  done-when: Play (FP) — deck holds detail at walking distance, walls have readable scale and
+  seams, no mirror-sheen at grazing angles; Play (iso) — A5/A7 reads unchanged; console clean
+
+- [ ] F10. Machine identity at eye level
+  Type: visual | Pillar: Factory pressure = identity
+  Lore: Factorio silhouette lesson (A6) — but A6's silhouettes were authored top-down.
+  Unity: **yes** — Play captures of each machine type at eye level and in greyscale.
+  Change: `MachineIdentityTint` builds `Silhouette` kits (DrillMast, TwinStacks, CoilPole, Barrel,
+  CrossMast) that read as distinct *from above*. At eye level you see the side profile and often
+  only part of it. Extend the kits with eye-level identity: side-face plates/housings that
+  differentiate in profile, machine-height marker lamps at the existing HDR identity colour, and
+  keep the rule that shape carries identity and colour only confirms. Must ride the same 2 s rescan
+  so player-built and expansion machines get dressed.
+  done-when: Play (FP) — each machine type identifiable from ~4 m at eye level in a greyscale
+  capture, before reading any colour; Play (iso) — A6 silhouettes unchanged; console clean
+
+- [ ] F11. Threat readability in FP
+  Type: visual / systemic | Pillar: Industrial biomass / hive
+  Lore: A8b lineage; `BIBLE.md` — hive uses our systems, dread over jump-scare spam.
+  Unity: **yes** — Play spawn tests in dark deck + hub pool, FP.
+  Change: A8b solved "can I see the enemy in the dark" for a camera that sees the whole arena.
+  In FP you see ~60° and everything behind you is invisible. The `ThreatGlow` red point light
+  (range 2.6, int 1.5) and enlarged eye chip still work head-on but do nothing peripherally. Add
+  FP-only threat awareness that stays diegetic: directional audio cues that actually resolve
+  (skitter/scrape positioned in world), red light spill on walls and ceiling from off-screen
+  enemies (F6 gives the ceiling to catch it), and consider a **diegetic** proximity cue rather than
+  an off-screen arrow — a suit tone, or the existing `ThreatCompass` restyled to the terminal
+  register. Do not add arcade chrome. Do not make FP a cheap-jump-scare mode.
+  done-when: Play (FP) — an enemy approaching from behind is detectable before it hits you, via
+  light spill and/or audio, without a floating arcade indicator; Play (iso) — A8b unchanged;
+  console clean
+
+- [ ] F12. Factory legibility in FP — diegetic machine-face readouts
+  Type: diegetic / systemic | Pillar: Factory pressure = identity / Diegetic dread
+  Lore: `BIBLE.md` — "Can we cut floating chrome and still read the state?"; Milham diegetic
+  wayfinding (L25 is the sector-tag cousin of this task).
+  Unity: **yes** — Play readability check at eye level and at range.
+  Change: this is the biggest *design* risk of FP — the iso camera let you see a belt backing up or
+  spot an infected processor across the deck at a glance. In FP that overview is gone, and the
+  existing world-anchored OnGUI bars (`ProcessorWorldBar`, `WorldHealthBars`, `UnpoweredLabel`)
+  were sized for a 14 m camera. Add readouts on the machine faces themselves: status panel on each
+  machine (running / stalled / unpowered / contaminated) in the amber ship-systems palette, sized
+  to read at eye level, plus the existing `FactoryPressureHud` chip (L21) carrying the
+  factory-wide summary. Infected processors (L24 slurry faults) must be identifiable by walking
+  past, not only by watching the terminal line fire.
+  done-when: Play (FP) — walking a production line, you can tell each machine's state from its own
+  face; a contaminated processor is identifiable on approach; no new screen chrome; Play (iso) —
+  world bars unchanged; console clean
+
+- [ ] F13. FP embodiment + architectural scale audit
+  Type: visual / mechanical | Pillar: Lonely worker fantasy
+  Lore: `BIBLE.md` — patched tools, human labour texture; restrained, not FPS-punchy.
+  Unity: **yes** — measurement pass in the editor + eye-level Play captures.
+  Change: two halves. (a) **Scale audit** — corridor widths, gate openings, hub structures, prop
+  sizes and F6's ceiling height were all authored to read from 14 m and have never been checked
+  against a 1.65 m eye. Measure against player height and fix anything that reads as dollhouse or
+  cathedral; corridors should feel industrial-cramped. (b) **Embodiment** — restrained head motion
+  on walk (small, horror-paced, not FPS bob), footstep audio tied to `PlayerFootDust`, and a simple
+  tool viewmodel so the repair tool / weapon / build ghost have a physical presence in frame. Keep
+  it under-driven: this is a tired shift worker, not a marine.
+  done-when: Play (FP) — the ship reads at human scale, walking feels grounded without nausea, the
+  held tool is visible and matches the active mode; Play (iso) — no scale changes visible from the
+  iso camera, or changes are deliberate improvements documented in `Sector_Layout_&_Teaching.txt`;
+  console clean
+
+---
+
+#### Phase 3 — gate
+
+- [ ] F14. FP Wave 1 gate + dual-mode playtest
+  Type: verification | Pillar: —
+  Unity: **yes** — full `PlaytestHarness` run in both modes.
+  Change: extend `PlaytestHarness` so the smoke suite and the Wave 1 design gate run in **both**
+  view modes. FP must clear the same gate iso does (build the Barrier+Turret comp, survive Wave 1,
+  console clean). Write the comparison into the playtest report: what FP does better, what it does
+  worse, and whether iso should remain the default. Only after F14 passes may a human decide
+  whether to change the default view mode — do not change the default inside this task.
+  done-when: `/playtest` suite PASS in iso AND in FP; report names concrete differences; any new
+  bugs filed as backlog items; console clean
+
+---
 
 ### Lore-gap refill — 2026-07-20 (infection ecology + diegetic ship)
 

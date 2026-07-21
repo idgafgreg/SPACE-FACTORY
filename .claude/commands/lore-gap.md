@@ -11,20 +11,23 @@ Horror-infused **factory management** on a broken far-future ship under hive-ali
 ## Procedure
 
 1. **Read inputs (this order):**
-   a. `lore/INDEX.md` — active pillars + last research run
-   b. `lore/README.md` — north star
-   c. Latest `lore/YYYY-MM-DD/summary.md` (and topic files only if a pillar needs depth)
-   d. `SPACE FACTORY INFO/Master_Game_Brief.txt` + `Game_Vision_&_Scope.txt` (living design, not locked)
-   e. `BACKLOG.md` fully — Agent log, Now, Next, Ice box, Needs human decision, Asset pack status
-   f. Light code reality check: only enough of `Assets/` to avoid proposing work that already exists
+   a. `lore/BIBLE.md` — living canon (pillars, hive ladder, diegetic grammar, motifs)
+   b. `lore/INDEX.md` — active pillars + last research run
+   c. `lore/README.md` — north star
+   d. Latest `lore/YYYY-MM-DD/summary.md` (and topic files only if a pillar needs depth)
+   e. `SPACE FACTORY INFO/Master_Game_Brief.txt` + `Game_Vision_&_Scope.txt` (living design, not locked)
+   f. `BACKLOG.md` fully — Agent log, Now, Next, Ice box, Needs human decision, Asset pack status
+   g. Light code reality check: only enough of `Assets/` to avoid proposing work that already exists
 
-2. **Find gaps.** For each active lore pillar, ask: what is missing in the *current game* (systems, pacing, enemy/factory coupling, diegetic UI, atmosphere) that would make a run feel closer to the north star?
+   If `BIBLE.md` **Last absorbed research** is older than the newest `lore/YYYY-MM-DD/summary.md`, stop and run `.claude/commands/lore-bible.md` first, then resume.
+
+2. **Find gaps.** For each active lore pillar (prefer bible wording), ask: what is missing in the *current game* (systems, pacing, enemy/factory coupling, diegetic UI, atmosphere) that would make a run feel closer to the north star?
 
 3. **Write tasks into "Now" (and "Next" if overflow).** Target 3–7 new or refreshed Now tasks. Every task must include:
    - Short title
    - **Type:** `systemic` | `mechanical` | `diegetic` | `visual` | `audio` (or mixed, primary first)
    - **Pillar:** which lore pillar it serves
-   - **Lore cite:** file + motif (not a copyrighted quote)
+   - **Lore cite:** `lore/BIBLE.md` section and/or digest file + motif (not a copyrighted quote)
    - **Change:** what to alter in code/docs/scene
    - **done-when:** Play-mode or compile-checkable exit criteria
 

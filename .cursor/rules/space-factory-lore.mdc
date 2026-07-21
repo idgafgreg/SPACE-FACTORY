@@ -9,16 +9,20 @@ Before proposing or implementing ideas that affect **tone, atmosphere, narrative
 
 ## Required reading order (keep it light)
 
-1. `lore/INDEX.md` — active thematic pillars and last research run
-2. `lore/README.md` — north star + folder layout
-3. Latest `lore/YYYY-MM-DD/summary.md` — headline takeaways
-4. Deeper files only as needed: `articles.md`, `videos.md`, `reviews-comps.md`, `stories.md`, `assets-tools.md`
-5. `lore/wishlist-paywalled.md` — before recommending paid assets/tools
+1. `lore/BIBLE.md` — living canon (prefer this over raw digests)
+2. `lore/INDEX.md` — active thematic pillars and last research run
+3. `lore/README.md` — north star + folder layout
+4. Latest `lore/YYYY-MM-DD/summary.md` — headline takeaways / unabsorbed candidates
+5. Deeper files only as needed: `articles.md`, `videos.md`, `reviews-comps.md`, `stories.md`, `assets-tools.md`
+6. `lore/wishlist-paywalled.md` — before recommending paid assets/tools
+
+If the bible’s **Last absorbed research** is older than the newest digest, run `/lore-bible` before design work or `/lore-gap`.
 
 ## How to use it
 
-- Prefer lore-backed motifs (workplace-as-trap, biomass using ship systems, factory-tied threat, lonely industrial dread) over generic sci-fi or cozy factory tropes.
-- Cite which lore note shaped a suggestion when it materially changes design or art direction.
+- Prefer bible pillars and motifs (workplace-as-trap, biomass using ship systems, factory-tied threat, lonely industrial dread) over generic sci-fi or cozy factory tropes.
+- Cite which bible section or lore note shaped a suggestion when it materially changes design or art direction.
+- Strong new ideas → promote via `/lore-bible` (canon or Open experiments), not by editing digests into pseudo-canon.
 - Do **not** paste copyrighted fiction into the game; use motif/summary notes and original writing.
 - Do **not** buy paywalled assets; point at the wishlist.
 - After updating `wishlist-paywalled.md` or free leads in any `assets-tools.md`, run `lore/sync-assets-sheet.ps1` so `lore/assets-wishlist.csv` stays in sync for the Google Sheet (`lore/GOOGLE-SHEET.md`).
@@ -30,7 +34,7 @@ Horror-infused **factory management** on a broken far-future ship under hive-ali
 
 ## Autonomous cycle (when improving the game from lore)
 
-Use `/lore-gap` → `/auto-dev` → `/bug-pass` against `BACKLOG.md` (see `AGENTS.md`). `SPACE FACTORY INFO/` is living design — beneficial changes allowed; keep docs in sync. Until `BACKLOG.md` Asset pack status is purchased, prefer work that needs no paid pack.
+Use `/lore-bible` → `/lore-gap` → `/auto-dev` → `/bug-pass` against `BACKLOG.md` (see `AGENTS.md`). Skip `/lore-bible` only when the bible is already current with the latest digest. `SPACE FACTORY INFO/` is living design — beneficial changes allowed; keep docs in sync. Until `BACKLOG.md` Asset pack status is purchased, prefer work that needs no paid pack.
 
 ## Lore git policy
 

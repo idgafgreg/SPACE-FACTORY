@@ -9,6 +9,7 @@ You are the producer for SPACE FACTORY. Groom `BACKLOG.md` so the autonomous dev
 1. Read `BACKLOG.md` fully — including the Agent log, Asset pack status, and any `[!] blocked` / `[?] needs verification` tasks.
 
 2. Gather candidates:
+   - If `lore/BIBLE.md` **Last absorbed research** is older than the newest digest, run `.claude/commands/lore-bible.md` first.
    - Prefer running the procedure in `.claude/commands/lore-gap.md` when Now is thin (&lt; 3 unchecked) or lore has a newer `Last run` than the last `lore-gap:` / groom commit — or merge its outputs if you already have lore gaps in mind.
    - `SPACE FACTORY INFO/` design docs: features specified but not yet in code (docs are living — propose tasks that improve fun even if they rewrite old numbers).
    - `git log --oneline -15`: recently touched systems that may have loose ends.

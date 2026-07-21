@@ -2,6 +2,8 @@
 
 Rolling map of useful themes. Updated by daily research runs.
 
+**Canon first:** [`BIBLE.md`](BIBLE.md) — living lore bible. Digests below are provenance until `/lore-bible` absorbs them.
+
 ## Core thematic pillars (active)
 
 | Pillar | What to mine | Status |

@@ -17,16 +17,21 @@ git pull origin main
 - `AGENTS.md` (any agent that reads repo agent docs)
 - `CLAUDE.md` (Claude Code / Unity agent guide)
 
-Start with `INDEX.md`, then the latest `YYYY-MM-DD/summary.md`.
+Start with `BIBLE.md` (living canon), then `INDEX.md`, then the latest `YYYY-MM-DD/summary.md`.
 
 ## Structure
 
-- `YYYY-MM-DD/` — one folder per research day
+- `BIBLE.md` — **living lore bible** (skim-sized canon for all agents; maintained by `/lore-bible`)
+- `YYYY-MM-DD/` — one folder per research day (provenance; not automatic canon)
 - `wishlist-paywalled.md` — assets/tools behind a paywall (buy later when funded)
 - `assets-wishlist.csv` — flat clickable export of paid + free asset leads (for Google Sheets)
 - `sync-assets-sheet.ps1` — rebuilds `assets-wishlist.csv` after wishlist/asset updates
 - `GOOGLE-SHEET.md` — how to import/refresh the Google Sheet
 - `INDEX.md` — rolling index of themes and best finds
+
+### Lore bible agent
+
+After a research digest lands — or when a strong idea should become canon — run `/lore-bible` (Claude: `.claude/commands/lore-bible.md`, Cursor: `.cursor/commands/lore-bible.md`). It updates `BIBLE.md`, then `/lore-gap` turns canon gaps into `BACKLOG.md` tasks.
 
 ### Asset sheet sync (required after asset updates)
 
