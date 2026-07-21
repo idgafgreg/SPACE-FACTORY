@@ -148,7 +148,7 @@ Conventions for this block:
   unchanged; console clean
   DONE 2026-07-20 — PlayerController movement gated: iso=yaw-to-WASD, FP=yaw-with-camera + camera-relative strafe; PlayerAim: iso=torso-to-mouse, FP=torso-to-camera; PlayerBodyVisibility hides all body renderers in FP; wired into respawn + PlayerArtAttach.Refresh. **[?] needs in-editor Play verification (no Unity MCP).**
 
-- [ ] F5. Cursor arbitration + diegetic crosshair
+- [?] F5. Cursor arbitration + diegetic crosshair
   Type: mechanical / diegetic | Pillar: Diegetic dread
   Unity: **yes** — Play-mode pass over every panel that takes mouse input.
   Change: FP locks the cursor, but the build menu, Workshop (`F`), upgrade offer modal, and pause
@@ -161,6 +161,7 @@ Conventions for this block:
   done-when: Play (FP) — every panel opens with a usable cursor and relocks on close, no state
   where the cursor is lost, crosshair reads mode; Play (iso) — no crosshair, no regressions;
   console clean
+  DONE 2026-07-20 — Added UICursorFocus stack; Pause/Upgrade/Workshop/EndOfRun panels push/pop; FirstPersonCamera honours the stack; added FPCrosshair with weapon/build/demolish colour states. **[?] needs in-editor Play verification (no Unity MCP).**
 
 ---
 
@@ -639,6 +640,8 @@ Method: capture the Game view in Play mode, judge the frame, fix the single wors
 - [ ] Free lead: Abandoned Factory Lite (Asset Store) — safe mood greys for blockout; not gated, but not queued until visual Now is thin.
 
 ## Agent log (newest first — one line per session: date, task, result, commit)
+
+- 2026-07-20: auto-dev F5 cursor arbitration + diegetic crosshair — UICursorFocus stack; Pause/Upgrade/Workshop/EndOfRun push/pop; FirstPersonCamera honours it; FPCrosshair weapon/build/demolish colour states. **[?] needs in-editor Play verification (no Unity MCP).**
 
 - 2026-07-20: auto-dev F4 FP player body/movement/self-occlusion — movement gated iso/yaw-to-WASD vs FP/yaw-with-camera; PlayerAim iso/torso-to-mouse vs FP/torso-to-camera; PlayerBodyVisibility hides body renderers in FP; wired respawn + PlayerArtAttach.Refresh. **[?] needs in-editor Play verification (no Unity MCP).**
 

@@ -159,7 +159,7 @@ public class FirstPersonCamera : MonoBehaviour
             return;
         }
 
-        bool wantsFreeCursor = UIPauseMenu.IsPaused || UIUpgradeOffer.IsOpen;
+        bool wantsFreeCursor = UIPauseMenu.IsPaused || UIUpgradeOffer.IsOpen || UICursorFocus.WantsFreeCursor;
         Cursor.lockState = wantsFreeCursor ? CursorLockMode.None : CursorLockMode.Locked;
         Cursor.visible = wantsFreeCursor;
     }

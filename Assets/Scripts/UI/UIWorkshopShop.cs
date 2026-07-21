@@ -77,12 +77,14 @@ public class UIWorkshopShop : MonoBehaviour
         _panel.SetActive(true);
         _panel.transform.SetAsLastSibling();
         _open = true;
+        UICursorFocus.Push(this);
     }
 
     void Close()
     {
         _panel?.SetActive(false);
         _open = false;
+        UICursorFocus.Pop(this);
     }
 
     // ── Purchases ─────────────────────────────────────────────────────────────

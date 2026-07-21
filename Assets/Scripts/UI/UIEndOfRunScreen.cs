@@ -34,6 +34,7 @@ public class UIEndOfRunScreen : MonoBehaviour
     public void Show(bool playerWon)
     {
         panel?.SetActive(true);
+        UICursorFocus.Push(this);
         onResultText.Invoke(playerWon ? "SECTOR SECURED" : "RUN FAILED");
 
         float seconds = Time.timeSinceLevelLoad;
@@ -71,6 +72,7 @@ public class UIEndOfRunScreen : MonoBehaviour
         Debug.Log("[UIEndOfRunScreen] MENU PRESSED");
         Time.timeScale = 1f;
         panel?.SetActive(false);
+        UICursorFocus.Pop(this);
         SceneManager.LoadScene(menuSceneName);
     }
 
@@ -79,6 +81,7 @@ public class UIEndOfRunScreen : MonoBehaviour
         Debug.Log("[UIEndOfRunScreen] restart confirmed");
         Time.timeScale = 1f;               // defensive: in case anything ever pauses on game-over
         panel?.SetActive(false);           // hide immediately — don't wait on the scene reload to do it
+        UICursorFocus.Pop(this);
         SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
     }
 
@@ -115,6 +118,7 @@ public class UIEndOfRunScreen : MonoBehaviour
             new Vector2(-85f, -35f), new Color(0.55f, 0.2f, 0.2f), () =>
             {
                 _confirmPanel.SetActive(false);
+                UICursorFocus.Pop(_confirmPanel);
                 DoRestart();
             });
 
@@ -123,6 +127,8 @@ public class UIEndOfRunScreen : MonoBehaviour
             {
                 _confirmPanel.SetActive(false);
             });
+
+        UICursorFocus.Push(_confirmPanel);
     }
 
     static RectTransform MakeRect(string name, Transform parent, Vector2 size, Vector2 anchoredPos)

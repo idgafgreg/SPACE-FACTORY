@@ -23,7 +23,7 @@ public class UIPauseMenu : MonoBehaviour
     GameObject _buttonColumn;
     Font       _font;
 
-    void OnDestroy() { if (IsPaused) { IsPaused = false; Time.timeScale = 1f; } }
+    void OnDestroy() { if (IsPaused) { IsPaused = false; Time.timeScale = 1f; UICursorFocus.Pop(this); } }
 
     void Update()
     {
@@ -54,6 +54,7 @@ public class UIPauseMenu : MonoBehaviour
         _panel.transform.SetAsLastSibling();
         Time.timeScale = 0f;
         IsPaused = true;
+        UICursorFocus.Push(this);
         Sfx.UIClick();
     }
 
@@ -63,12 +64,14 @@ public class UIPauseMenu : MonoBehaviour
         _panel?.SetActive(false);
         Time.timeScale = 1f;
         IsPaused = false;
+        UICursorFocus.Pop(this);
     }
 
     void DoRestart()
     {
         Time.timeScale = 1f;
         IsPaused = false;
+        UICursorFocus.Pop(this);
         SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
     }
 
@@ -76,6 +79,7 @@ public class UIPauseMenu : MonoBehaviour
     {
         Time.timeScale = 1f;
         IsPaused = false;
+        UICursorFocus.Pop(this);
         SceneManager.LoadScene(menuSceneName);
     }
 

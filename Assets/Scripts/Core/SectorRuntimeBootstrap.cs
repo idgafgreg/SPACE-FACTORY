@@ -101,6 +101,7 @@ public static class SectorRuntimeBootstrap
         go.AddComponent<ScanCooldownHud>();
         go.AddComponent<FactoryPressureHud>();
         go.AddComponent<BuildGhostCostHud>();
+        go.AddComponent<FPCrosshair>();
 
         // Agent + human playtest tools (F3 overlay; harness via MCP / menu).
         go.AddComponent<PlaytestOverlay>();

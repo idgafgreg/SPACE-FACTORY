@@ -70,6 +70,7 @@ public class UIUpgradeOffer : MonoBehaviour
         Time.timeScale = 0f;
         _open = true;
         IsOpen = true;
+        UICursorFocus.Push(this);
         Sfx.WaveHorn();
         ScreenFlash.Flash(new Color(0.45f, 0.3f, 0.7f), 0.18f, 2f);
     }
@@ -90,9 +91,10 @@ public class UIUpgradeOffer : MonoBehaviour
         Time.timeScale = 1f;
         _open = false;
         IsOpen = false;
+        UICursorFocus.Pop(this);
     }
 
-    void OnDestroy() { if (_open) { IsOpen = false; Time.timeScale = 1f; } }
+    void OnDestroy() { if (_open) { IsOpen = false; Time.timeScale = 1f; UICursorFocus.Pop(this); } }
 
     // ── Construction ─────────────────────────────────────────────────────────
 
