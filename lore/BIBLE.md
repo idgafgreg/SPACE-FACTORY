@@ -156,6 +156,7 @@ Promote to sections above only via `/lore-bible` when clearly good and north-sta
 
 | Date | Change | Source |
 |------|--------|--------|
+| 2026-07-20 | no canon changes — digest reviewed (newest still 2026-07-20; Decisions unchanged) | re-run `/lore-bible` |
 | 2026-07-20 | Absorb 07-19 pacing: soft director + recovery beats + authenticity-before-haunt; promote shipped menace/HorrorClock/heat-infection out of experiments; Substructure comp row; FP world-legibility diegetic rule; sync living-design scope docs | `lore/2026-07-19/summary.md` + code reality (`ThreatTelegraph`, `HorrorClock`, `RecoveryBeat`, L23) |
 | 2026-07-20 | **First-person moved out of "Scope out" into the north star as a toggleable dual view mode**, with four design tests guarding against shooter drift and against losing factory legibility. Iso protected. | Human decision, logged in `BACKLOG.md` Decisions; implementation tracked as `F1`–`F14` |
 | 2026-07-20 | Initial bible: north star, pillars, hive ladder, diegetic grammar, comps, motifs, open experiments | Seeded from `INDEX.md`, `README.md`, digests 2026-07-19/20, `Master_Game_Brief.txt` |
