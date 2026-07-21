@@ -75,6 +75,16 @@ public class SpaceBackdrop : MonoBehaviour
             new Vector3(2f, 0f, -9f), new Vector3(-12f, 0f, 8f),
             new Vector3(14f, 0f, -8f), new Vector3(8f, 0f, 14f),
         };
+        // Dedicated container. DeckWindowVisibility toggles every renderer under
+        // its object, so it MUST live on an object that holds only deck windows.
+        // SpaceBackdrop is a component on the shared SectorRuntime object, so
+        // adding it (or parenting windows) directly here would hand the whole
+        // runtime subtree — every prop and dressing — to the visibility toggle,
+        // and they all vanished in first person. The windows and their visibility
+        // controller go on this child instead.
+        var windowRoot = new GameObject("DeckWindows");
+        windowRoot.transform.SetParent(transform, false);
+
         int placed = 0;
         foreach (var s in spots)
         {
@@ -99,7 +109,7 @@ public class SpaceBackdrop : MonoBehaviour
             var win = GameObject.CreatePrimitive(PrimitiveType.Quad);
             win.name = "DeckWindow";
             Destroy(win.GetComponent<Collider>());
-            win.transform.SetParent(transform, false);
+            win.transform.SetParent(windowRoot.transform, false);
             win.transform.position = s + Vector3.up * 0.03f;
             win.transform.rotation = Quaternion.Euler(90f, 0f, 0f);
             win.transform.localScale = new Vector3(1.9f, 4.6f, 1f);
@@ -149,10 +159,11 @@ public class SpaceBackdrop : MonoBehaviour
         }
 
         // Deck windows read as space through the floor — right for the top-down
-        // camera, wrong at eye level. Hide them in first person. See
-        // DeckWindowVisibility.
-        if (GetComponent<DeckWindowVisibility>() == null)
-            gameObject.AddComponent<DeckWindowVisibility>();
+        // camera, wrong at eye level. Hide them in first person. The controller
+        // goes on the dedicated DeckWindows container, NOT on this shared
+        // SectorRuntime object (which parents every prop and dressing).
+        if (windowRoot.GetComponent<DeckWindowVisibility>() == null)
+            windowRoot.AddComponent<DeckWindowVisibility>();
     }
 
     void Update()
