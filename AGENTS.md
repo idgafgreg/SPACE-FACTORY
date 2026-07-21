@@ -38,6 +38,28 @@ Contract:
 Never mark a task `[x]` on the strength of reading the code. Unverified is fine; falsely verified
 is not.
 
+### Encoding: a pre-commit hook blocks mojibake
+
+`BACKLOG.md` was once found with 1108 mis-encoded characters — every em dash, arrow and comparison
+operator run through UTF-8 → Windows-1252 → UTF-8, some of them three times, making 122 lines
+unreadable in diffs. Something in the toolchain writes files with the legacy Windows-1252 default.
+
+A `pre-commit` hook now rejects commits that introduce mojibake into `.md` / `.txt` / `.mdc`.
+If your commit is blocked:
+
+```powershell
+pwsh -File tools/repair-mojibake.ps1 -All          # report only
+pwsh -File tools/repair-mojibake.ps1 -All -Apply   # repair
+```
+
+Always write text files as **UTF-8 without BOM**. In PowerShell prefer
+`[System.IO.File]::WriteAllText(path, text, (New-Object System.Text.UTF8Encoding($false)))` over
+`>` redirection or `Set-Content`, which fall back to the legacy code page on Windows PowerShell.
+
+Hooks are installed with `pwsh -File tools/install-hooks.ps1` (safe to re-run). Do **not** set
+`core.hooksPath` in this repo — Git LFS owns `post-checkout`, `post-commit`, `post-merge` and
+`pre-push` in `.git/hooks`, and pointing `hooksPath` elsewhere silently disables all four.
+
 ### Lore bible
 
 [`lore/BIBLE.md`](lore/BIBLE.md) is the short **canon** agents should prefer over raw digests. `/lore-bible` promotes good motifs into it, parks weak ones as experiments, and rejects north-star drift. Daily research folders stay provenance; the bible stays skim-sized.

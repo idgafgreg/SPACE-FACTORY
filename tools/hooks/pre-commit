@@ -1,0 +1,48 @@
+#!/bin/sh
+#
+# Reject commits that introduce mojibake into .md / .txt / .mdc files.
+#
+# Background: on 2026-07-20 BACKLOG.md was found with 1108 mis-encoded characters
+# (every em dash, arrow and comparison operator run through UTF-8 -> Windows-1252
+# -> UTF-8, some of them three times), which made 122 lines unreadable in diffs.
+# Something in the toolchain writes files with the legacy Windows-1252 default.
+# This hook stops the next occurrence at commit time instead of after the fact.
+#
+# Install: tools/install-hooks.ps1  (copies this file to .git/hooks/pre-commit)
+#
+# NOTE: do NOT switch this repo to core.hooksPath - Git LFS owns post-checkout,
+# post-commit, post-merge and pre-push in .git/hooks, and hooksPath would
+# silently disable all four.
+#
+# Bypass once (only if you are certain the characters are intentional):
+#     git commit --no-verify
+
+repo_root=$(git rev-parse --show-toplevel)
+script="$repo_root/tools/repair-mojibake.ps1"
+
+if [ ! -f "$script" ]; then
+    # Nothing to check against - do not block the commit over a missing tool.
+    exit 0
+fi
+
+# Prefer PowerShell 7, fall back to Windows PowerShell.
+if command -v pwsh >/dev/null 2>&1; then
+    ps_exe=pwsh
+elif command -v powershell >/dev/null 2>&1; then
+    ps_exe=powershell
+else
+    echo "pre-commit: no PowerShell found, skipping mojibake check" >&2
+    exit 0
+fi
+
+"$ps_exe" -NoProfile -ExecutionPolicy Bypass -File "$script" -Check -Staged
+status=$?
+
+if [ $status -ne 0 ]; then
+    echo "" >&2
+    echo "pre-commit: refusing to commit mojibake (see above)." >&2
+    echo "Bypass with 'git commit --no-verify' if the characters are intentional." >&2
+    exit 1
+fi
+
+exit 0
