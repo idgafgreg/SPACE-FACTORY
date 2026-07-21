@@ -6,11 +6,11 @@ Rolling map of useful themes. Updated by daily research runs.
 
 | Pillar | What to mine | Status |
 |--------|----------------|--------|
-| Workplace as trap | Isolation baked into the job, not contrived lockdown | **Upgraded 2026-07-21** — Shipbreaker debt/pride + Mouthwashing freighter hell |
-| Industrial biomass / hive | Threat uses vents, heat, logistics; ship becomes habitat | Strong — Flood staging (07-20) + Barotrauma husk thresholds (07-21) |
-| Factory pressure = identity | Enemies tied to production loop (Factorio pollution lesson) | Strong; vessel cascading failures (Barotrauma) as soft analog |
-| Diegetic dread | Diegetic UI, failing systems, environmental storytelling | **Upgraded 2026-07-21** — ROUTINE machine-lung audio + Prey functional habitat |
-| Lonely worker fantasy | Rustic space labor, patched ship, schedule vs survival | **Upgraded 2026-07-21** — technician/labor comps (Signalis, Shipbreaker) |
+| Workplace as trap | Isolation baked into the job, not contrived lockdown | **Upgraded 2026-07-21** — Shipbreaker debt/pride + Mouthwashing freighter hell + Lethal Company quota (noon) |
+| Industrial biomass / hive | Threat uses vents, heat, logistics; ship becomes habitat | Strong — Flood staging (07-20) + Barotrauma husk (07-21) + Hodgson derelict mold-ship (noon) |
+| Factory pressure = identity | Enemies tied to production loop (Factorio pollution lesson) | **Upgraded 2026-07-21 noon** — quota escalation + pest-as-work-order (Palmer bots) |
+| Diegetic dread | Diegetic UI, failing systems, environmental storytelling | **Upgraded 2026-07-21** — ROUTINE machine-lung + Prey habitat + SOMA “take the world seriously” |
+| Lonely worker fantasy | Rustic space labor, patched ship, schedule vs survival | **Upgraded 2026-07-21** — technician comps + Site 17 employment trap + SOMA isolation |
 
 ## Comp watchlist
 
@@ -25,11 +25,15 @@ Rolling map of useful themes. Updated by daily research runs.
 - Barotrauma (vessel systems + husk staging — added 2026-07-21)
 - ROUTINE (diegetic lunar-base industrial horror — deepened 2026-07-21)
 - SIGNALIS (melancholic retrotech loneliness — added 2026-07-21)
+- Lethal Company (quota-as-trap — mood/systems only, not co-op comedy — added 2026-07-21 noon)
+- SOMA (existential isolation + habitat seriousness — pillars, not plot — added 2026-07-21 noon)
+- Anatomy / Event Horizon (ship-as-body / techno-Gothic grammar — added 2026-07-21 noon)
+- Site 17 (facility ops employment trap — watch — added 2026-07-21 noon)
+- Haze (derelict + organic fusion palette — watch — added 2026-07-21 noon)
 - StarRupture (corporate debt + catastrophe prep windows — watch, don’t copy planet loop)
 - Drill Deep (incremental dread via depth — adjacent)
 - Substructure (factory + descent dread — watch)
 - Biofactory (hive-as-factory **anti-comp** — do not drift)
-- Haze, Site 17 (adjacent industrial/sci-fi horror)
 
 ## Branch policy
 
@@ -50,8 +54,8 @@ Paid + free lore asset leads export to [`assets-wishlist.csv`](assets-wishlist.c
 
 ## Last run
 
-- Date: 2026-07-21
+- Date: 2026-07-21 (morning digest + noon cron supplement)
 - Landed on: `main`
-- Focus weight: lonely freighter labor + vessel systems failure + diegetic industrial comps; balanced articles / videos / reviews / stories / assets
+- Focus weight: morning freighter labor / vessel systems; noon quota dread / SOMA isolation / ship-as-body / industrial SFX + particle leads
 - Prior run: 2026-07-20
 - Render pipeline note: project currently **Built-in** (prefer Built-in-compatible kits)

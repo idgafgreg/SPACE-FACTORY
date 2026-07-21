@@ -38,6 +38,35 @@
 - **What it is:** Retrotech survival horror in mining/labor ruins; technician protagonist; scarce combat; oppressive ambience.
 - **Useful for us:** Tone target (sad / lonely / fear) and poster/CRT diegesis. Not a factory builder — atmosphere/comp.
 
+## Noon supplement — quota trap / facility ops / derelict biomass
+
+### Lethal Company — quota as the real monster
+- **Wikipedia overview:** https://en.wikipedia.org/wiki/Lethal_Company
+- **Unwinnable (“Bad Job”):** https://unwinnable.com/2024/02/16/lethal-company-and-the-ethos-of-the-bad-job/
+- **Quota wiki:** https://lethal.miraheze.org/wiki/Quota/en
+- **What it is:** Contract workers scrape scrap from industrial moons under rising Company quotas; fail deadline → fired into space; success only raises the next target.
+- **Useful for us:** Production pressure that makes greed/risk visible; corporate cheer over disposable labor; industrial facility scavenges. Soft cousin to Shipbreaker debt + StarRupture schedule dread.
+- **Watch vs identity:** Co-op social horror comedy is *not* our loop — steal quota/deadline fantasy for a **solo** ship factory, not proximity-voice chaos.
+
+### Site 17 — mandatory facility employment as trap
+- **Steam:** https://store.steampowered.com/app/3122590/Site_17/
+- **itch demo:** https://fallencrowngames.itch.io/site-17-demo
+- **What it is:** Sit-and-survive Facility Ops Manager in a toxic waste / fuel reclamation site; robots + Meshnet; organic worker is the disposable 10% under automation law; survive the shift until central computer reset.
+- **Useful for us:** Workplace-as-trap distilled — you are employed *into* the horror; cameras/doors/electrify as layout tools. Lonely industrial dread with capitalism comedy edge.
+- **Watch vs identity:** FNAF-adjacent sit-n-survive ≠ belt factory. Mood/comp only; keep player agency in layout/production.
+
+### Haze — derelict craft + organic corruption (watch, don’t copy AI gimmick)
+- **Steam:** https://store.steampowered.com/app/4034940/Haze/
+- **What it is:** Biomechanical android through a derelict spacecraft consumed by alien corruption; terminal/command-line diegesis; cold industrial palette (steel / amber / sick green); procedural AI-authored scenes.
+- **Useful for us:** Visual motif of organic tendrils fusing with ship systems; terminal-as-tool exploration fantasy.
+- **Watch vs identity:** Point-and-click / AI-generated content is orthogonal to our systems. Steal palette + fusion imagery, not the generation pipeline.
+
+### SOMA — isolation facility (pillars, not plot)
+- Covered in `articles.md` (Frictional pillars + Grip interview). Comp stance: PATHOS-II loneliness and “take the world seriously” — not consciousness-copy narrative.
+
+### Anatomy / Event Horizon — ship/house as body
+- Covered in `articles.md` + Jacob Geller video. Comp stance: architecture-as-organism and techno-Gothic grammar. Do not paste tape monologues or Hell imagery into the game.
+
 ## Already on watchlist (light touch only)
 
 - Prey (Talos I mega-dungeon) — deep-dived in `articles.md` this run; add to INDEX watchlist.
@@ -45,4 +74,4 @@
 
 ## Positioning reminder
 
-SPACE FACTORY stays: **steel factory primary**, biomass as parasite of *our* logistics, defense disrupts without replacing the loop. Today’s comps strengthen lonely labor + vessel systems — they do not redefine us as narrative walking-sim, salvage sandbox, or co-op sub comedy.
+SPACE FACTORY stays: **steel factory primary**, biomass as parasite of *our* logistics, defense disrupts without replacing the loop. Today’s comps strengthen lonely labor + vessel systems + quota dread + ship-as-body — they do not redefine us as narrative walking-sim, salvage sandbox, co-op social horror, or sit-n-survive.

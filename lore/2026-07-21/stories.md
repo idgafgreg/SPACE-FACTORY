@@ -21,6 +21,19 @@ Motif summaries only. Do **not** paste copyrighted prose into the game.
 - **Motif:** Freighter captain takes on unusual cargo; paranormal passenger energy aboard a working ship.
 - **For us:** Soft “wrong cargo in the hold” seed for environmental storytelling — schedule pressure to accept salvage that should have stayed sealed (rhymes with Ash-in-Transit procedure failure without rehashing that novella).
 
+## Noon supplement — ship-body / pest logistics
+
+### The Derelict — William Hope Hodgson (public domain, 1912)
+- **Wikisource:** https://en.wikisource.org/wiki/The_Derelict_(Hodgson)
+- **Overview:** https://en.wikipedia.org/wiki/The_Derelict_(short_story)
+- **Motif (summary only):** Boarding party finds an ancient hulk coated in thick white mold with a strange animal smell; the vessel itself behaves as if alive / predatory once disturbed. Classic “structure as organism” sea-horror ancestor of ship biomass.
+- **For us:** Hive that saturates *surfaces* before it walks; smell/texture tells before silhouette; boarding a “quiet” sector that has already finished digesting the last crew. Public-domain motif safe for inspiration — still write original ship copy.
+
+### The Secret Life of Bots — Suzanne Palmer (Clarkesworld, free online)
+- **URL:** https://clarkesworldmagazine.com/palmer_09_17/
+- **Motif (summary only):** Ship AI assigns a lowly multifunction bot to pest control after a biological infestation from storage; bot would rather fix glamorous systems; infestation reports map as linear serial detections through the ship’s physical volume while critical repair queues stay enormous.
+- **For us:** Lonely *maintenance fantasy* — the factory ship’s true protagonists are filters, bots, and backlog tickets. Hive as “Incidental” on a work order list before it becomes existential. Soft comedy in Palmer’s tone ≠ our sad/fear register, but the *logistics framing* of infestation is gold.
+
 ## Avoid rehash
 
 - *A Singular Infestation* / *Infested Recycler* / *Destiny Low and Winding* — covered 2026-07-20.
