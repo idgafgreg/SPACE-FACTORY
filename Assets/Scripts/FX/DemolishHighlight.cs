@@ -32,7 +32,7 @@ public class DemolishHighlight : MonoBehaviour
         if (_cam == null) return;
 
         Ray ray = ViewRay.Current(_cam);
-        if (!Physics.Raycast(ray, out var hit, 40f))
+        if (!Physics.Raycast(ray, out var hit, 40f, LayerMask.GetMask("Buildable")))
         {
             Clear();
             return;

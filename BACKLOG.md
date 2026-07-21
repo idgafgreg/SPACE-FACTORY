@@ -116,7 +116,7 @@ Conventions for this block:
   (FP) — all four track the crosshair, none track a frozen mouse position; console clean
   DONE 2026-07-20 — Added `ViewRay.Current(Camera)`; routed PlayerAim, PlayerRepairTool, PlayerBuildTool, DemolishHighlight. Iso path unchanged (mouse ray); FP path uses viewport centre. **[?] needs in-editor Play verification (no Unity MCP).**
 
-- [ ] F3. FP-safe build placement (kill the infinite-plane assumption)
+- [?] F3. FP-safe build placement (kill the infinite-plane assumption)
   Type: mechanical | Pillar: Factory pressure = identity
   Unity: **yes** — Play-mode placement test across every buildable, both modes.
   Change: `PlayerBuildTool.TryGetBuildPoint` intersects the camera ray with an **infinite horizontal
@@ -132,6 +132,7 @@ Conventions for this block:
   done-when: Play (FP) — every buildable places at reasonable range including aimed at the horizon,
   ghost never jumps to infinity, `maxBuildDistance` still enforced; Play (iso) — placement
   unchanged from today; console clean
+  DONE 2026-07-20 — PlayerBuildTool.TryGetBuildPoint now Physics.Raycasts against Ground+Buildable up to 1.5*maxBuildDistance, clamped to player-distance gate; horizon fallback projects maxBuildDistance along flattened forward; DemolishHighlight uses Buildable layer mask. **[?] needs in-editor Play verification (no Unity MCP).**
 
 - [ ] F4. FP player body, movement, and self-occlusion
   Type: mechanical | Pillar: Lonely worker fantasy
@@ -637,6 +638,8 @@ Method: capture the Game view in Play mode, judge the frame, fix the single wors
 - [ ] Free lead: Abandoned Factory Lite (Asset Store) — safe mood greys for blockout; not gated, but not queued until visual Now is thin.
 
 ## Agent log (newest first — one line per session: date, task, result, commit)
+
+- 2026-07-20: auto-dev F3 FP-safe build placement — TryGetBuildPoint Physics.Raycasts against Ground+Buildable up to 1.5*maxBuildDistance, clamps hit to player-distance gate, horizon fallback projects maxBuildDistance along flattened forward; DemolishHighlight uses Buildable layer mask. **[?] needs in-editor Play verification (no Unity MCP).**
 
 - 2026-07-20: auto-dev F2 interaction-ray choke point — ViewRay.Current(Camera); iso uses mouse ray, FP uses viewport centre; routed PlayerAim, PlayerRepairTool, PlayerBuildTool, DemolishHighlight. **[?] needs in-editor Play verification (no Unity MCP).**
 

@@ -341,22 +341,20 @@ public class PlayerBuildTool : MonoBehaviour
     // ── Helpers ───────────────────────────────────────────────────────────────
 
     /// <summary>
-    /// Finds where the mouse is pointing on the ground, for placement.
+    /// Finds where the player is pointing on the ground, for placement.
+    /// Works for both iso (camera-to-mouse ray) and first-person (centre ray).
     ///
-    /// Mirrors PlayerAim.cs's working pattern: intersect the camera-to-mouse
-    /// ray with a horizontal plane at ground height (taken from this script's
-    /// own transform — PlayerBuildTool lives on the Player root, same as
-    /// PlayerAim) instead of doing a Physics.Raycast capped at a fixed
-    /// distance FROM THE CAMERA. That's what the old RaycastGround() did, and
-    /// it silently broke all placement: this project's camera sits ~25+ units
-    /// above the ground on a steep angle, so every camera-cast ray needed to
-    /// travel well past maxBuildDistance (12) before ever reaching the Ground
-    /// layer — meaning no click, anywhere on screen, could ever succeed.
-    ///
-    /// maxBuildDistance is now checked against distance FROM THE PLAYER
-    /// instead, which is what a "max build distance" should mean anyway and
-    /// is camera-position-independent.
+    /// In iso the camera sits high and steep, so a Physics.Raycast capped at a
+    /// fixed distance FROM THE CAMERA silently broke placement. We now cast
+    /// against Ground + Buildable layers, clamped to maxBuildDistance FROM THE
+    /// PLAYER. In first-person the centre ray can be aimed at the horizon, so a
+    /// miss uses a fallback point projected along the ray's flattened forward
+    /// at maxBuildDistance — the ghost never teleports to infinity.
     /// </summary>
+    [Header("Layer masks")]
+    [Tooltip("Layers that count as valid ground/buildable targets for placement.")]
+    public LayerMask placementHitMask;
+
     /// <summary>Public for HUD overlays that follow the ghost.</summary>
     public bool TryGetGhostWorldPoint(out Vector3 point)
     {
@@ -370,15 +368,38 @@ public class PlayerBuildTool : MonoBehaviour
         point = default;
         if (!buildCamera) return false;
 
-        Ray   ray   = ViewRay.Current(buildCamera);
-        Plane plane = new Plane(Vector3.up, new Vector3(0f, transform.position.y, 0f));
-        if (!plane.Raycast(ray, out float distance)) return false;
+        Ray ray = ViewRay.Current(buildCamera);
 
-        Vector3 hitPoint = ray.GetPoint(distance);
-        if ((hitPoint - transform.position).sqrMagnitude > maxBuildDistance * maxBuildDistance) return false;
+        // Try ground/buildable surfaces first. This is camera-position-independent
+        // and lets first-person aim at walls, floors, and the horizon.
+        int hitLayers = placementHitMask.value == 0
+            ? LayerMask.GetMask("Ground", "Buildable")
+            : placementHitMask.value;
 
-        point = hitPoint;
-        return true;
+        if (Physics.Raycast(ray, out var hit, maxBuildDistance * 1.5f, hitLayers))
+        {
+            Vector3 hitPoint = hit.point;
+            if ((hitPoint - transform.position).sqrMagnitude <= maxBuildDistance * maxBuildDistance)
+            {
+                point = hitPoint;
+                return true;
+            }
+        }
+
+        // No ground hit within range: project a fallback point along the ray's
+        // flattened forward at exactly maxBuildDistance so the ghost stays usable
+        // in first-person when looking at the horizon.
+        Vector3 flatDir = ray.direction;
+        flatDir.y = 0f;
+        if (flatDir.sqrMagnitude > 0.0001f)
+        {
+            flatDir.Normalize();
+            point = transform.position + flatDir * maxBuildDistance;
+            point.y = transform.position.y;
+            return true;
+        }
+
+        return false;
     }
 
     void PublishReason(PlacementResult result) =>
