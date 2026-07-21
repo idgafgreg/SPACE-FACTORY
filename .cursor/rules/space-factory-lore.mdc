@@ -36,6 +36,18 @@ Horror-infused **factory management** on a broken far-future ship under hive-ali
 
 Use `/lore-bible` → `/lore-gap` → `/auto-dev` → `/bug-pass` against `BACKLOG.md` (see `AGENTS.md`). Skip `/lore-bible` only when the bible is already current with the latest digest. `SPACE FACTORY INFO/` is living design — beneficial changes allowed; keep docs in sync. Until `BACKLOG.md` Asset pack status is purchased, prefer work that needs no paid pack.
 
+## No Unity MCP here — park editor work, do not fake it
+
+Cursor cannot compile this project, enter Play mode, author scene objects, or capture the Game view. Most `done-when` criteria in `BACKLOG.md` require exactly that.
+
+So: implement the code, re-read every changed file for syntax and API errors, then mark the task **`[?] needs Unity pass — <what specifically>`** instead of `[x]`, and say so in the commit message. Every task carries a `Unity:` field describing what the editor is needed for.
+
+The `/unity-pass` command (Claude Code, which has Unity MCP) sweeps those `[?]` items later, does the editor-side work, and resolves each to `[x]` or a filed bug. Never mark a task `[x]` on the strength of reading the code — unverified is fine, falsely verified is not.
+
+## View modes (2026-07-20 human decision)
+
+First-person is **in scope** as a toggleable second view mode alongside orbit/iso; both ship. See the North star table in `lore/BIBLE.md` and the `F1`–`F14` block at the top of `BACKLOG.md` Now. FP must not demote the factory into a shooter, and iso stays fully playable.
+
 ## Lore git policy
 
 Commit lore research updates directly to `main`. Do not create `lore/daily-*` branches.

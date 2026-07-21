@@ -13,10 +13,30 @@ Producer/builder/closer/playtest commands share one queue: [`BACKLOG.md`](BACKLO
 | 2 | [`/auto-dev`](.claude/commands/auto-dev.md) | Top Now task → implement → Unity verify → commit | Yes (one task) |
 | 3 | [`/bug-pass`](.claude/commands/bug-pass.md) | Regressions + `[?]` verification → fix → commit | Yes (bugs only) |
 | 4 | [`/playtest`](.claude/commands/playtest.md) | Scripted Play Mode suite via `PlaytestHarness` → report + backlog bugs | Report / bugs only |
+| 5 | [`/unity-pass`](.claude/commands/unity-pass.md) | Clear every task parked on Unity Editor work — compile, author scene-side, Play-verify, resolve `[?]` | Fixes + editor wiring only |
 
 Optional: [`/backlog-groom`](.claude/commands/backlog-groom.md) reprioritizes when the queue is messy (also pulls lore when Now is thin).
 
 **Suggested loop:** lore-bible (if research/ideas are newer than the bible) → lore-gap once → auto-dev × 3–5 → bug-pass once → playtest once → human reviews local commits → push.
+
+### Agents without Unity MCP
+
+Not every agent working this repo has Unity MCP. An agent without it **cannot compile, cannot
+enter Play mode, cannot author scene objects, and cannot capture the Game view** — so it cannot
+honestly satisfy most `done-when` criteria.
+
+Contract:
+
+1. Every task in `BACKLOG.md` should carry a `Unity:` field saying what needs the editor
+   (`Unity: none` is a valid and useful answer).
+2. An agent without Unity MCP implements the code, re-reads every changed file for syntax and API
+   errors, and marks the task **`[?] needs Unity pass — <what specifically>`** instead of `[x]`.
+   It commits normally and says so in the commit message.
+3. [`/unity-pass`](.claude/commands/unity-pass.md) later sweeps every `[?]`, does the editor-side
+   work, verifies against done-when, and resolves each to `[x]` or a filed bug.
+
+Never mark a task `[x]` on the strength of reading the code. Unverified is fine; falsely verified
+is not.
 
 ### Lore bible
 

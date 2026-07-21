@@ -27,7 +27,10 @@ Shared queue: `BACKLOG.md`. Commands live in `.claude/commands/` (Cursor mirrors
 2. `/auto-dev` — one Now task → implement → verify → commit
 3. `/bug-pass` — regressions / `[?]` items only → commit
 4. `/playtest` — `PlaytestHarness` smoke + Wave 1 gate → report + backlog bugs
-5. `/backlog-groom` — optional reprioritize
+5. `/unity-pass` — clear every task another agent parked on Unity Editor work (compile, scene wiring, Play-verify, resolve `[?]`)
+6. `/backlog-groom` — optional reprioritize
+
+Agents **without** Unity MCP: implement, self-review the diff, then mark the task `[?] needs Unity pass — <what>` rather than `[x]`. Never claim verification you could not perform. `/unity-pass` sweeps those.
 
 `SPACE FACTORY INFO/` is **not locked**; beneficial number/system changes are allowed if docs stay in sync. Asset-pack work is gated by `## Asset pack status` in `BACKLOG.md`. Full policy: `AGENTS.md`.
 
