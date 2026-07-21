@@ -61,7 +61,7 @@ public class FirstPersonCamera : MonoBehaviour
     void OnDestroy()
     {
         ViewMode.OnChanged -= OnModeChanged;
-        ReturnToIso(false);
+        ReturnToIso();
     }
 
     void Update()
@@ -109,7 +109,7 @@ public class FirstPersonCamera : MonoBehaviour
         if (ViewMode.IsFirstPerson)
             SwitchToFirstPerson();
         else
-            ReturnToIso(true);
+            ReturnToIso();
     }
 
     void SwitchToFirstPerson()
@@ -144,7 +144,20 @@ public class FirstPersonCamera : MonoBehaviour
         _capturedOriginal = true;
     }
 
-    void ReturnToIso(bool resumeRig)
+    /// <summary>
+    /// Hand the camera back to the iso rig.
+    ///
+    /// Deliberately does NOT call <see cref="CameraFollow.ResumeFromCurrent"/>.
+    /// CameraFollow.LateUpdate early-returns while in first person, so its yaw,
+    /// pitch and zoom are untouched for the whole FP session and already hold
+    /// the exact framing the player left. Reseeding from the camera transform
+    /// instead recomputed zoom from the pose captured at Start, which seated the
+    /// rig at maximum zoom — measured as ZoomPercent 0.633 -> 0.000 on a single
+    /// round trip, i.e. every trip to first person and back silently zoomed the
+    /// player all the way out. Letting the retained state stand restores the
+    /// previous framing exactly on the next iso LateUpdate.
+    /// </summary>
+    void ReturnToIso()
     {
         if (_capturedOriginal && transform.parent != _originalParent)
         {
@@ -152,9 +165,6 @@ public class FirstPersonCamera : MonoBehaviour
             transform.localPosition = _originalLocalPos;
             transform.localRotation = _originalLocalRot;
         }
-
-        if (resumeRig && _isoRig != null)
-            _isoRig.ResumeFromCurrent();
     }
 
     void UpdateCursorLock()

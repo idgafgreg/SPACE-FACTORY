@@ -29,6 +29,13 @@ public class UIEndOfRunScreen : MonoBehaviour
     void OnDestroy()
     {
         if (Instance == this) Instance = null;
+
+        // Release any cursor hold. This screen is the one most likely to be torn
+        // down while still open — restarting a run reloads the scene out from
+        // under it — and a leaked hold keeps the first-person cursor unlocked
+        // for the rest of the session. Pop is a no-op when nothing is held.
+        UICursorFocus.Pop(this);
+        if (_confirmPanel != null) UICursorFocus.Pop(_confirmPanel);
     }
 
     public void Show(bool playerWon)

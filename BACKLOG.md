@@ -693,6 +693,20 @@ Method: capture the Game view in Play mode, judge the frame, fix the single wors
 
 ## Agent log (newest first — one line per session: date, task, result, commit)
 
+- 2026-07-20: **bug-pass — three FP regressions from the F1–F5 window, none of which surfaced as
+  console errors.** (1) `UICursorFocus` leaked holders destroyed without popping — proven in Play
+  mode, `WantsFreeCursor` stayed True after the holder died, which would leave the first-person
+  cursor unlocked for the rest of the session with no recovery; the getter now prunes dead Unity
+  objects, and `UIWorkshopShop` / `UIEndOfRunScreen` gained the `OnDestroy` pop that `UIPauseMenu`
+  and `UIUpgradeOffer` already had. (2) Returning from FP zoomed the iso camera all the way out —
+  `ResumeFromCurrent` reseeded zoom from the pose captured at `Start`, measured as ZoomPercent
+  0.633 → 0.000 and yaw 180.0 → -168.7 per round trip. `CameraFollow.LateUpdate` already
+  early-returns during FP, so the rig's yaw/pitch/zoom survive untouched; the resume call was
+  destroying good state and is no longer made on return. (3) `ResumeFromCurrent` also left zoom
+  unclamped, fixed for any future caller though the FP path no longer calls it. Verified over three
+  consecutive round trips: ZoomPercent 0.633 → 0.633, yaw 180.0 → 180.0, player art restored
+  exactly, build placement resolves in both modes, cursor stack self-heals. Console clean.
+
 - 2026-07-20: **unity-pass — F1–F5 + L23 resolved `[?]` → `[x]`.** Project did not compile on
   arrival: a stray `}` from F4 at `PlayerController.cs:77` closed the class early (CS8803 / CS0106
   ×2 / CS1022), so nothing since F4 had ever built. Four further defects found in Play mode, all

@@ -189,8 +189,19 @@ public class CameraFollow : MonoBehaviour
     {
         if (!target) return;
         Vector3 offset = transform.position - target.position;
-        _zoomDistance = _targetZoomDistance = offset.magnitude;
-        Vector3 dir = offset / Mathf.Max(0.001f, _zoomDistance);
+
+        // Clamp into the rig's own zoom range. The raw camera-to-target distance
+        // is not the same quantity as _zoomDistance — the rig orbits a focus
+        // point that framingInterest can pull away from the target — so coming
+        // back from first person could seat _zoomDistance outside [min, max].
+        // ZoomPercent then read 0 (measured: 0.633 -> 0.000 across one round
+        // trip) and the first scroll afterwards would snap back into range
+        // instead of easing.
+        float rawDistance = offset.magnitude;
+        _zoomDistance = _targetZoomDistance =
+            Mathf.Clamp(rawDistance, minZoomDistance, maxZoomDistance);
+
+        Vector3 dir = offset / Mathf.Max(0.001f, rawDistance);
         _targetYaw = _yaw = Mathf.Atan2(dir.x, dir.z) * Mathf.Rad2Deg;
         _targetPitch = _pitch = Mathf.Clamp(Mathf.Asin(Mathf.Clamp(dir.y, -1f, 1f)) * Mathf.Rad2Deg, minPitch, maxPitch);
         _yawVelocity = 0f;

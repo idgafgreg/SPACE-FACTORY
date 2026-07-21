@@ -87,6 +87,11 @@ public class UIWorkshopShop : MonoBehaviour
         UICursorFocus.Pop(this);
     }
 
+    // Release the cursor hold if we are torn down while open, matching
+    // UIPauseMenu and UIUpgradeOffer. Without this the shop is the one panel
+    // that can leak a hold through a scene reload.
+    void OnDestroy() { if (_open) { _open = false; UICursorFocus.Pop(this); } }
+
     // ── Purchases ─────────────────────────────────────────────────────────────
 
     void BuyUnlock(int i)
