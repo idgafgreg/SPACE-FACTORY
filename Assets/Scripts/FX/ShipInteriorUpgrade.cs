@@ -10,7 +10,8 @@ public class ShipInteriorUpgrade : MonoBehaviour
 {
     // 56: F6 interior ceiling. Bumped so scenes carrying the v55 marker rebuild
     // instead of skipping and shipping a lidless deck.
-    const int UpgradeVersion = 56;
+    // 57: F7 lamp fixtures — corridor lights gain housings and per-mode values.
+    const int UpgradeVersion = 57;
 
     // TransparentFX — built-in layer, ships with every project (same choice as
     // PostFXBootstrap.VolumeLayer). Wall caps live here so point lights can cull
@@ -548,6 +549,8 @@ public class ShipInteriorUpgrade : MonoBehaviour
         var layout = SectorLayout.Instance;
         if (layout == null || layout.lanes == null) return;
 
+        EnsureLampMaterials();
+
         int lit = 0;
         foreach (var lane in layout.lanes)
         {
@@ -557,29 +560,136 @@ public class ShipInteriorUpgrade : MonoBehaviour
                 // A8: every third fixture is dead — sparse pools with real gloom
                 // between them, and the deck reads as a ship whose maintenance
                 // crew never came back (lore: lonely industrial dread).
+                //
+                // F7: a dead lamp is now a dark housing rather than nothing.
+                // Skipping it entirely was right when fixtures had no geometry,
+                // but at eye level an empty gap reads as a missing asset while a
+                // cold housing reads as neglect — which is the point.
                 lit++;
-                if (lit % 3 == 0) continue;
+                bool dead = lit % 3 == 0;
 
                 Vector3 p = lane.GetPoint(i);
-                // Invisible light anchor — no floating plate (iso game has no real ceiling).
-                Vector3 pos = p + Vector3.up * 2.35f;
-                var fixture = new GameObject("CorridorLight");
+                var fixture = new GameObject(dead ? "CorridorLight_Dead" : "CorridorLight");
                 fixture.transform.SetParent(parent, false);
-                fixture.transform.position = pos;
+                fixture.transform.position = new Vector3(p.x, 0f, p.z);
 
-                var light = fixture.AddComponent<Light>();
+                bool warm = (lit % 2 != 0);
+                Color lampColour = warm
+                    ? ShipPalette.Amber
+                    : new Color(0.72f, 0.80f, 0.92f);
+
+                var housing = BuildLampHousing(fixture.transform, dead, lampColour);
+
+                var rig = fixture.AddComponent<CorridorLampFixture>();
+                rig.isDead = dead;
+
+                if (dead)
+                {
+                    rig.Bind(null, null, null, housing);
+                    continue;
+                }
+
+                // Light lives on its own pivot so the fixture can move the source
+                // between iso and eye-level heights without dragging the housing,
+                // which stays bolted to the ceiling.
+                var pivot = new GameObject("LightSource");
+                pivot.transform.SetParent(fixture.transform, false);
+                pivot.transform.localPosition = new Vector3(0f, 2.35f, 0f);
+
+                var light = pivot.AddComponent<Light>();
                 light.type = LightType.Point;
                 light.range = 9f;
                 light.intensity = 1.5f;
                 light.shadows = LightShadows.None;
                 // Amber / cool steel-white alternation. The old sick-green lamps
                 // broke the colour law (green = hive/alarm ONLY, see ShipPalette).
-                light.color = (lit % 2 == 0)
-                    ? new Color(0.72f, 0.80f, 0.92f)
-                    : ShipPalette.Amber;
-                fixture.AddComponent<LampFlicker>();
+                light.color = lampColour;
+
+                var flicker = pivot.AddComponent<LampFlicker>();
+                rig.Bind(light, flicker, pivot.transform, housing);
             }
         }
+    }
+
+    static Material _lampHousingMat;
+    static Material _lampLensLitMat;
+    static Material _lampLensDeadMat;
+
+    static void EnsureLampMaterials()
+    {
+        if (_lampHousingMat != null) return;
+
+        _lampHousingMat = new Material(Shader.Find("Standard")) { name = "RuntimeLampHousing" };
+        _lampHousingMat.color = ShipPalette.SteelDark;
+        _lampHousingMat.SetFloat("_Metallic", 0.5f);
+        _lampHousingMat.SetFloat("_Glossiness", 0.3f);
+
+        // The lit lens is emissive so the fixture reads as the source of its own
+        // pool at eye level, instead of a dark box with light appearing under it.
+        _lampLensLitMat = new Material(Shader.Find("Standard")) { name = "RuntimeLampLens" };
+        _lampLensLitMat.color = new Color(0.85f, 0.82f, 0.72f);
+        _lampLensLitMat.EnableKeyword("_EMISSION");
+        _lampLensLitMat.SetColor("_EmissionColor", new Color(1f, 0.88f, 0.62f) * 1.1f);
+
+        // Dead lens: cold, unlit, faintly grimy. Reads as a fixture that failed,
+        // not as a hole in the ceiling.
+        _lampLensDeadMat = new Material(Shader.Find("Standard")) { name = "RuntimeLampLensDead" };
+        _lampLensDeadMat.color = new Color(0.16f, 0.17f, 0.19f);
+        _lampLensDeadMat.SetFloat("_Metallic", 0.2f);
+        _lampLensDeadMat.SetFloat("_Glossiness", 0.45f);
+        _lampLensDeadMat.DisableKeyword("_EMISSION");
+    }
+
+    /// <summary>Housing + lens bolted to the F6 ceiling. Returns its renderers so the
+    /// fixture can hide them in iso.</summary>
+    static Renderer[] BuildLampHousing(Transform parent, bool dead, Color lampColour)
+    {
+        var rends = new System.Collections.Generic.List<Renderer>();
+
+        // Short stem down from the ceiling — reads as mounted, not floating.
+        var stem = GameObject.CreatePrimitive(PrimitiveType.Cube);
+        stem.name = "LampStem";
+        stem.transform.SetParent(parent, false);
+        Destroy(stem.GetComponent<Collider>());
+        stem.transform.localPosition = new Vector3(0f, CeilingHeight - 0.10f, 0f);
+        stem.transform.localScale = new Vector3(0.10f, 0.20f, 0.10f);
+        stem.GetComponent<Renderer>().sharedMaterial = _lampHousingMat;
+        rends.Add(stem.GetComponent<Renderer>());
+
+        // Housing shell.
+        var shell = GameObject.CreatePrimitive(PrimitiveType.Cube);
+        shell.name = "LampHousing";
+        shell.transform.SetParent(parent, false);
+        Destroy(shell.GetComponent<Collider>());
+        shell.transform.localPosition = new Vector3(0f, CeilingHeight - 0.26f, 0f);
+        shell.transform.localScale = new Vector3(0.62f, 0.14f, 0.30f);
+        shell.GetComponent<Renderer>().sharedMaterial = _lampHousingMat;
+        rends.Add(shell.GetComponent<Renderer>());
+
+        // Lens on the underside.
+        var lens = GameObject.CreatePrimitive(PrimitiveType.Cube);
+        lens.name = dead ? "LampLensDead" : "LampLens";
+        lens.transform.SetParent(parent, false);
+        Destroy(lens.GetComponent<Collider>());
+        lens.transform.localPosition = new Vector3(0f, CeilingHeight - 0.35f, 0f);
+        lens.transform.localScale = new Vector3(0.52f, 0.05f, 0.22f);
+
+        var lensRend = lens.GetComponent<Renderer>();
+        if (dead)
+        {
+            lensRend.sharedMaterial = _lampLensDeadMat;
+        }
+        else
+        {
+            // Tint the shared lit lens toward this lamp's own colour so the amber
+            // and steel-white alternation reads on the fixture, not only in the pool.
+            var inst = new Material(_lampLensLitMat);
+            inst.SetColor("_EmissionColor", lampColour * 1.2f);
+            lensRend.sharedMaterial = inst;
+        }
+        rends.Add(lensRend);
+
+        return rends.ToArray();
     }
 
     void BuildWallBaseTrim(Transform parent)

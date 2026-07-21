@@ -236,7 +236,7 @@ Conventions for this block:
   occluding A8's 0.18 rim sun would darken the deck and risk A8b threat readability. Re-lighting the
   ceiling is F7's call to make on purpose, not a side effect of adding geometry.
 
-- [ ] F7. Eye-level lighting re-pass
+- [!] F7. Eye-level lighting re-pass — fixture half shipped; remaining criterion blocked on F8 (grade removes 82% of the eye-level frame)
   Type: visual | Pillar: Diegetic dread
   Lore: `BIBLE.md` — "when hive nears, lights *die*, rooms get blacker — not flashier"; A8's pooled
   darkness must survive the move to eye level.
@@ -252,10 +252,38 @@ Conventions for this block:
   done-when: Play (FP) — genuine dark corridors with readable pooled light, no blown-out fixtures
   at eye level, dead lamps visible as dead housings, flicker + alarm coupling intact; Play (iso) —
   A8 framing unchanged; console clean
+  **PARTIAL 2026-07-21 — fixture half shipped, "readable pooled light" NOT met. Blocked on F8.**
+  Shipped: `CorridorLampFixture` + `BuildLampHousing` give every lamp a stem, housing and lens
+  bolted to the F6 ceiling; dead lamps are now a cold dark housing instead of nothing at all (A8
+  skipped every third fixture entirely, which at eye level reads as a missing asset rather than as
+  neglect) — 15 fixtures, 10 live + 5 dead; per-mode values carried on the fixture with iso pinned
+  to A8's exact 2.35 / 9 / 1.5 and zero new geometry visible from overhead; `LampFlicker` gained
+  `SetBaseIntensity` so per-mode changes survive its per-frame modulation, and its flicker + the
+  `AlarmLevel` coupling are untouched (10 flickers = 10 live lamps). Console clean.
+  **Not met, with the measurement:** standing 5m from a live lamp at eye height, sweeping intensity
+  1.5→8 across ranges 8/12/16 moved the frame's mean luma only **0.024 → 0.033**. Disabling the
+  post-processing stack on that same frame moved it **0.024 → 0.134** — the grade is removing
+  **82%** of the image. A1 tuned that vignette and colour grade against the iso frame, where the
+  camera sees ten pools at once rather than one. Eye-level readability is therefore a grade/ambient
+  problem, not a lamp problem, and both live in F8. The lamp values here are chosen to be right
+  once F8 lifts the grade; F8 must re-check them against a real frame.
+  Verification note: two earlier measurement passes were invalid and were thrown out — the player
+  slid between commands so the camera was not where it was placed, which made lamp intensity look
+  like it had no effect at all. Pinning the transform inside the same command as the render fixed it.
 
-- [ ] F8. Per-mode fog / ambient / grade profile
+- [ ] F8. Per-mode fog / ambient / grade profile — **now also unblocks F7; do this before F9**
   Type: visual | Pillar: Diegetic dread
   Unity: **yes** — side-by-side Play captures, both modes.
+  **Measured while doing F7 — the grade, not the lamps, is what makes eye level unreadable.**
+  At eye height 5m from a live lamp: sweeping lamp intensity 1.5→8 across ranges 8/12/16 moved the
+  frame's mean luma only 0.024 → 0.033, but disabling the `PostProcessLayer` on that same frame
+  moved it 0.024 → **0.134**. The A1 grade is removing **82%** of the image, because it was tuned
+  against an iso frame that sees ten pools at once instead of one. The lever for "readable pooled
+  light" is here: a per-mode grade (vignette strength, lift/gamma/gain) plus ambient, with the same
+  rule as everywhere else — iso keeps A1/A2's numbers exactly. Re-check `CorridorLampFixture`'s
+  `fpIntensity` / `fpRange` against a real frame afterwards; they were set blind to be right once
+  the grade lifts. Reproduce the measurement by rendering `Camera.main` to a RenderTexture — pin the
+  player transform inside the same command as the render, or it slides and the numbers are garbage.
   Change: `AtmosphereController` fog was tuned so the deck reads at 14 m and `VoidHull` recedes to
   black at the map edge (A2). At eye level the same density either fogs a 6 m corridor into mush or
   vanishes entirely down a long sightline. Add an FP profile: fog start/end and density tuned for
@@ -710,6 +738,21 @@ Method: capture the Game view in Play mode, judge the frame, fix the single wors
 - [ ] Free lead: Abandoned Factory Lite (Asset Store) — safe mood greys for blockout; not gated, but not queued until visual Now is thin.
 
 ## Agent log (newest first — one line per session: date, task, result, commit)
+
+- 2026-07-21: **auto-dev F7 eye-level lighting — PARTIAL, and the remaining half is blocked on F8.**
+  Shipped the fixture work: corridor lamps are now real objects (stem/housing/lens bolted to the F6
+  ceiling), dead lamps are visible cold housings instead of nothing, per-mode light values with iso
+  pinned to A8's exact 2.35/9/1.5 and no new geometry overhead, `LampFlicker.SetBaseIntensity` so
+  per-mode intensity survives the per-frame flicker. 15 fixtures / 10 live / 5 dead, console clean.
+  **Did not meet "readable pooled light" and did not claim it.** Rendering `Camera.main` to a
+  RenderTexture and reading the pixels: lamp intensity 1.5→8 across ranges 8/12/16 moves frame mean
+  luma only 0.024→0.033; disabling `PostProcessLayer` on the same frame moves it 0.024→0.134. The A1
+  grade removes **82%** of the eye-level image because it was tuned against an iso frame that sees
+  ten pools at once. That lever is F8's, so F7 is marked `[!]` and F8 is flagged as unblocking it.
+  Two earlier measurement passes were thrown out as invalid: the player slid between commands so the
+  camera was never where it was placed, which made lamp intensity look like it did nothing at all.
+  Pinning the transform inside the same command as the render fixed it. Worth remembering — the
+  first read of "changing this value has no effect" was a broken harness, not a broken system.
 
 - 2026-07-21: **auto-dev F6 interior enclosure — real ceilings.** The ship had no lid at all, so
   first-person looking up was empty skybox and the bible's diegetic grammar (hard spots, little

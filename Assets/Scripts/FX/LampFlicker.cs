@@ -32,11 +32,26 @@ public class LampFlicker : MonoBehaviour
 
     void Start()
     {
-        _light = GetComponent<Light>();
+        if (_light == null) _light = GetComponent<Light>();
         if (_light == null) { enabled = false; return; }
-        _base = _light.intensity;
+        if (_base <= 0f) _base = _light.intensity;
         _seed = Random.value * 100f;
         _nextStutter = StutterDelay();
+    }
+
+    /// <summary>
+    /// F7: retarget the intensity the flicker modulates around.
+    ///
+    /// The base is cached at Start, so a view-mode tuner changing
+    /// <c>Light.intensity</c> directly would be overwritten on the next Update
+    /// and the lamp would snap back to its iso brightness. Route per-mode
+    /// changes through here instead.
+    /// </summary>
+    public void SetBaseIntensity(float value)
+    {
+        if (_light == null) _light = GetComponent<Light>();
+        _base = value;
+        if (_light != null && !forceDead) _light.intensity = value;
     }
 
     float StutterDelay() => stutterEvery * (0.4f + Random.value * 1.2f);

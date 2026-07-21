@@ -32,6 +32,24 @@
   solid lid occlude A8's 0.18 rim sun would darken the whole deck and put A8b threat readability at
   risk. F7 owns re-lighting the ceiling deliberately once fixtures are mounted to it.
 
+# Corridor Lighting (F7, 2026-07-21)
+
+- Corridor lamps are real fixtures: stem, housing and lens bolted to the ceiling. Every third lamp
+  is dead (A8's rule, unchanged) but a dead lamp is now a cold dark housing rather than nothing,
+  because at eye level an empty gap reads as a missing asset while a failed fixture reads as
+  neglect. 15 fixtures: 10 live, 5 dead.
+- Light values are per view mode. Iso keeps A8 exactly — source at y 2.35, range 9, intensity 1.5 —
+  and the housings are hidden there, so the overhead frame is byte-for-byte what A8 signed off.
+  First person moves the source to y 2.95 (just under the ceiling, 1.30 above a 1.65 eye), range 11,
+  intensity 2.2.
+- Flicker and the AlarmLevel coupling are unchanged. Per-mode intensity goes through
+  LampFlicker.SetBaseIntensity so the flicker modulates around the active value.
+- OPEN: eye-level corridors are not yet readable, and lamp values cannot fix it. Measured — sweeping
+  intensity 1.5 to 8 moves frame mean luma 0.024 to 0.033, while disabling post-processing on the
+  same frame moves it to 0.134. The A1 grade removes 82% of the eye-level image because it was tuned
+  against the iso frame. F8 owns the per-mode grade/ambient and should re-check the lamp values
+  above once it lands.
+
 # Flow Through The Sector
 
 - Start at the Command Hub with immediate visual access to the nearest scrap source and the central processing space.
