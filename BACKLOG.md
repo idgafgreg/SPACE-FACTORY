@@ -134,7 +134,7 @@ Conventions for this block:
   unchanged from today; console clean
   DONE 2026-07-20 — PlayerBuildTool.TryGetBuildPoint now Physics.Raycasts against Ground+Buildable up to 1.5*maxBuildDistance, clamped to player-distance gate; horizon fallback projects maxBuildDistance along flattened forward; DemolishHighlight uses Buildable layer mask. **[?] needs in-editor Play verification (no Unity MCP).**
 
-- [ ] F4. FP player body, movement, and self-occlusion
+- [?] F4. FP player body, movement, and self-occlusion
   Type: mechanical | Pillar: Lonely worker fantasy
   Unity: **yes** — visual check that the player's own art does not clip the near plane.
   Change: `PlayerController.HandleMovement` sets `transform.forward = dir` (legs face the WASD
@@ -146,6 +146,7 @@ Conventions for this block:
   done-when: Play (FP) — strafe/back-pedal correct, no player geometry in the near plane before or
   after a death+respawn, weapon still fires along the crosshair; Play (iso) — legs/torso split
   unchanged; console clean
+  DONE 2026-07-20 — PlayerController movement gated: iso=yaw-to-WASD, FP=yaw-with-camera + camera-relative strafe; PlayerAim: iso=torso-to-mouse, FP=torso-to-camera; PlayerBodyVisibility hides all body renderers in FP; wired into respawn + PlayerArtAttach.Refresh. **[?] needs in-editor Play verification (no Unity MCP).**
 
 - [ ] F5. Cursor arbitration + diegetic crosshair
   Type: mechanical / diegetic | Pillar: Diegetic dread
@@ -638,6 +639,8 @@ Method: capture the Game view in Play mode, judge the frame, fix the single wors
 - [ ] Free lead: Abandoned Factory Lite (Asset Store) — safe mood greys for blockout; not gated, but not queued until visual Now is thin.
 
 ## Agent log (newest first — one line per session: date, task, result, commit)
+
+- 2026-07-20: auto-dev F4 FP player body/movement/self-occlusion — movement gated iso/yaw-to-WASD vs FP/yaw-with-camera; PlayerAim iso/torso-to-mouse vs FP/torso-to-camera; PlayerBodyVisibility hides body renderers in FP; wired respawn + PlayerArtAttach.Refresh. **[?] needs in-editor Play verification (no Unity MCP).**
 
 - 2026-07-20: auto-dev F3 FP-safe build placement — TryGetBuildPoint Physics.Raycasts against Ground+Buildable up to 1.5*maxBuildDistance, clamps hit to player-distance gate, horizon fallback projects maxBuildDistance along flattened forward; DemolishHighlight uses Buildable layer mask. **[?] needs in-editor Play verification (no Unity MCP).**
 

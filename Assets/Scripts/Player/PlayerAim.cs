@@ -42,6 +42,13 @@ public class PlayerAim : MonoBehaviour
         if (!aimCamera) aimCamera = Camera.main;
         if (!aimCamera) return;
 
+        if (ViewMode.IsFirstPerson)
+        {
+            // FP: torso (and therefore weapons/muzzle) align with the camera look direction.
+            torso.rotation = aimCamera.transform.rotation;
+            return;
+        }
+
         Ray   ray   = ViewRay.Current(aimCamera);
         Plane plane = new Plane(Vector3.up, new Vector3(0f, transform.position.y, 0f));
 

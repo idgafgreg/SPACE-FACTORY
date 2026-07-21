@@ -61,12 +61,22 @@ public class PlayerArtAttach : MonoBehaviour
 
     void HideCapsule(Transform art)
     {
+        bool fp = ViewMode.IsFirstPerson;
         foreach (var r in GetComponentsInChildren<Renderer>(true))
         {
             if (r == null) continue;
-            if (r.transform == art || r.transform.IsChildOf(art)) continue;
+            if (r.transform == art || r.transform.IsChildOf(art))
+            {
+                // FP: hide the astronaut body too (near-plane clipping).
+                r.enabled = !fp;
+                continue;
+            }
             if (r.name.Contains("BlobShadow")) continue;
             r.enabled = false;
         }
+
+        // Sync the dedicated visibility component if present.
+        var bodyVis = GetComponent<PlayerBodyVisibility>();
+        if (bodyVis != null) bodyVis.Apply();
     }
 }

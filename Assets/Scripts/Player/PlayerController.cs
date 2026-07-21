@@ -48,7 +48,7 @@ public class PlayerController : MonoBehaviour
         float v = Input.GetAxisRaw("Vertical");
         if (Mathf.Abs(h) < 0.001f && Mathf.Abs(v) < 0.001f) return;
 
-        // Camera-relative movement so WASD matches the orbited camera angle
+        // Camera-relative movement so WASD matches the camera angle.
         Vector3 camForward = playerCamera.transform.forward;
         camForward.y = 0f;
         camForward.Normalize();
@@ -59,7 +59,21 @@ public class PlayerController : MonoBehaviour
 
         Vector3 dir = (camForward * v + camRight * h).normalized;
         characterController.SimpleMove(dir * moveSpeed);
-        transform.forward = dir;
+
+        if (ViewMode.IsIso)
+        {
+            // Iso: legs/body face the WASD direction.
+            transform.forward = dir;
+        }
+        else
+        {
+            // FP: body yaws with the camera; strafe/back-pedal are camera-relative.
+            Vector3 flatLook = playerCamera.transform.forward;
+            flatLook.y = 0f;
+            if (flatLook.sqrMagnitude > 0.0001f)
+                transform.rotation = Quaternion.LookRotation(flatLook);
+        }
+    }
     }
 
     // ── Damage / respawn ──────────────────────────────────────────────────────
@@ -112,6 +126,9 @@ public class PlayerController : MonoBehaviour
         }
         var attach = GetComponent<PlayerArtAttach>();
         if (attach != null) attach.Refresh();
+
+        var bodyVis = GetComponent<PlayerBodyVisibility>();
+        if (bodyVis != null) bodyVis.Apply();
 
         ScreenFlash.Flash(new Color(0.3f, 0.85f, 0.55f), 0.2f, 2f);
         CameraShake.Add(0.08f);
