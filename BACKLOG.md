@@ -249,7 +249,15 @@ Conventions for this block:
   occluding A8's 0.18 rim sun would darken the deck and risk A8b threat readability. Re-lighting the
   ceiling is F7's call to make on purpose, not a side effect of adding geometry.
 
-- [!] F7. Eye-level lighting re-pass — fixtures shipped; F8 grade now landed, so UNBLOCKED. Remaining: bump lamp `fpIntensity`/`fpRange` so an isolated pool reads at the tuned grade, then re-verify "readable pooled light" against a lamp frame. Small follow-up, no longer blocked.
+- [x] F7. Eye-level lighting re-pass — fixtures + tuned pooled light shipped.
+  DONE 2026-07-21: fixture half (housings, dead-lamp housings, per-mode values) shipped earlier;
+  with F8's grade landed, bumped `fpIntensity` 2.2→4.0 and `fpRange` 11→12, tuned against a real
+  lamp-pool frame. Verified by capture: the deck plates and wall panels read inside the pool (frame
+  mean 0.123), amber rails + yellow stripes clean, dark surround preserved, 0 blown pixels; iso
+  keeps A8 exactly (range 9, source y 2.35). Flicker/AlarmLevel coupling intact (light reads ~3.4
+  under flicker). Note: hit the "read state the same frame you set it" pitfall during verification —
+  a same-frame render showed the pool dim (0.025); it read correctly one frame later (0.123). The
+  rule works; I still needed it.
   Type: visual | Pillar: Diegetic dread
   Lore: `BIBLE.md` — "when hive nears, lights *die*, rooms get blacker — not flashier"; A8's pooled
   darkness must survive the move to eye level.

@@ -22,15 +22,16 @@ using UnityEngine;
 /// <see cref="LampFlicker.SetBaseIntensity"/> so the flicker modulates around
 /// the right value instead of snapping back to the iso brightness.
 ///
-/// MEASURED LIMIT — lamp values cannot make the corridor readable on their own.
-/// Standing 5m from a live lamp at eye height and sweeping intensity 1.5→8 across
-/// ranges 8/12/16 moved the frame's mean luma only 0.024→0.033. Disabling the
-/// post-processing stack on the same frame moved it 0.024→0.134: the grade is
-/// removing 82% of the image. A1 tuned that vignette and colour grade against the
-/// iso frame, where the camera sees ten pools at once instead of one. Making
-/// eye-level corridors readable is therefore a grade/ambient change, which is F8's
-/// scope, not a lamp change. These values are chosen to be correct once F8 lifts
-/// the grade, and F8 should re-check them against a real frame.
+/// HISTORY — lamp values alone could NOT make the corridor readable while the
+/// iso colour grade was still in force. Sweeping intensity 1.5→8 barely moved the
+/// frame (mean 0.024→0.033) because A1's grade, tuned for the iso frame that sees
+/// ten pools at once, was removing ~82% of the eye-level image. F8 fixed that root
+/// cause with a per-mode grade (PostFXBootstrap.fp*, AtmosphereController
+/// .fpAmbientColor). WITH that grade landed, this intensity/range pair was tuned
+/// against a real lamp-pool frame and the pool now reads — deck plates and wall
+/// panels legible inside it, dark surround preserved, zero blown pixels. The
+/// lesson worth keeping: a lamp value looking "dead" was really a grade eating the
+/// frame; measure the whole pipeline, not one knob.
 /// </summary>
 public class CorridorLampFixture : MonoBehaviour
 {
@@ -44,11 +45,12 @@ public class CorridorLampFixture : MonoBehaviour
     public float fpHeight    = 2.95f;
     [Tooltip("Pools should still read as pools with real gloom between them, but the eye-level " +
              "view sees one pool at a time rather than ten at once, so this is wider than it looks.")]
-    public float fpRange     = 11f;
-    [Tooltip("Slightly above iso: the player walks within a couple of metres of the source, and " +
-             "the deck below it is what has to read. See the class note on why this cannot be " +
-             "tuned to 'readable' on its own.")]
-    public float fpIntensity = 2.2f;
+    public float fpRange     = 12f;
+    [Tooltip("Tuned (F7, after F8's grade landed) against a real lamp-pool frame: the deck plates " +
+             "and wall panels must read inside the pool while the surround stays dark. 4.0 does " +
+             "that with max luma ~0.9 and zero blown pixels; higher (6+) washes the pool flat and " +
+             "kills the horror gloom.")]
+    public float fpIntensity = 4.0f;
 
     /// <summary>Dead fixtures get a housing and no light — visible neglect.</summary>
     public bool isDead;
