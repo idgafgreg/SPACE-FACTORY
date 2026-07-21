@@ -83,7 +83,23 @@ public class FirstPersonCamera : MonoBehaviour
         _yaw += mx;
         _pitch = Mathf.Clamp(_pitch - my, minPitch, maxPitch);
 
-        _headAnchor.localRotation = Quaternion.Euler(0f, _yaw, 0f);
+        // Yaw has exactly ONE owner: the player root. Pitch has exactly one
+        // owner: this camera. The head anchor is a pure position offset and is
+        // never rotated.
+        //
+        // It previously yawed the head anchor (which is a CHILD of the player)
+        // while PlayerController separately snapped the player's WORLD rotation
+        // to the camera's forward. Camera forward = player yaw * anchor yaw, so
+        // every frame added the anchor's yaw to the player again and the whole
+        // rig span up at _yaw degrees per frame. Because PlayerController
+        // early-returns when there is no WASD input, this only triggered while
+        // actually walking — which is why it read as "WASD spins the camera and
+        // the player never moves": the movement direction was derived from that
+        // spinning forward vector, so successive frames cancelled out.
+        if (player != null)
+            player.rotation = Quaternion.Euler(0f, _yaw, 0f);
+
+        _headAnchor.localRotation = Quaternion.identity;
         transform.localRotation = Quaternion.Euler(_pitch, 0f, 0f);
 
         // CameraShake is world-space additive; transform into the head anchor's local space.
@@ -120,19 +136,19 @@ public class FirstPersonCamera : MonoBehaviour
         // Remember iso pose before reparenting.
         CaptureOriginalPose();
 
-        // Seed yaw from the camera's current horizontal look direction so the switch does not snap.
-        Vector3 flat = transform.forward;
-        flat.y = 0f;
-        if (flat.sqrMagnitude > 0.0001f)
-            _yaw = Quaternion.LookRotation(flat).eulerAngles.y;
-        else
-            _yaw = player != null ? player.eulerAngles.y : 0f;
+        // Seed yaw from the PLAYER's facing, not the iso camera's. The player
+        // root is the yaw owner in first person, so seeding from the orbit
+        // camera would spin the body to face wherever the iso camera happened
+        // to sit the moment the player pressed the toggle.
+        _yaw   = player != null ? player.eulerAngles.y : 0f;
         _pitch = 0f;
 
         transform.SetParent(_headAnchor, false);
         transform.localPosition = Vector3.zero;
         transform.localRotation = Quaternion.identity;
-        _headAnchor.localRotation = Quaternion.Euler(0f, _yaw, 0f);
+
+        // Head anchor is a pure position offset — never rotated. See LateUpdate.
+        _headAnchor.localRotation = Quaternion.identity;
     }
 
     void CaptureOriginalPose()

@@ -48,31 +48,37 @@ public class PlayerController : MonoBehaviour
         float v = Input.GetAxisRaw("Vertical");
         if (Mathf.Abs(h) < 0.001f && Mathf.Abs(v) < 0.001f) return;
 
-        // Camera-relative movement so WASD matches the camera angle.
-        Vector3 camForward = playerCamera.transform.forward;
-        camForward.y = 0f;
-        camForward.Normalize();
-
-        Vector3 camRight = playerCamera.transform.right;
-        camRight.y = 0f;
-        camRight.Normalize();
-
-        Vector3 dir = (camForward * v + camRight * h).normalized;
-        characterController.SimpleMove(dir * moveSpeed);
+        Vector3 forward, right;
 
         if (ViewMode.IsIso)
         {
-            // Iso: legs/body face the WASD direction.
-            transform.forward = dir;
+            // Iso: movement is relative to the orbited camera angle.
+            forward = playerCamera.transform.forward;
+            right   = playerCamera.transform.right;
         }
         else
         {
-            // FP: body yaws with the camera; strafe/back-pedal are camera-relative.
-            Vector3 flatLook = playerCamera.transform.forward;
-            flatLook.y = 0f;
-            if (flatLook.sqrMagnitude > 0.0001f)
-                transform.rotation = Quaternion.LookRotation(flatLook);
+            // First person: the player root already faces where the camera looks
+            // — FirstPersonCamera writes the player's yaw directly, and is the
+            // only thing that does. Deriving movement from the camera and then
+            // re-rotating the player to match the camera created a feedback loop
+            // that span the rig up while any movement key was held. Use the
+            // player's own basis and do not touch rotation here.
+            forward = transform.forward;
+            right   = transform.right;
         }
+
+        forward.y = 0f;
+        forward.Normalize();
+        right.y = 0f;
+        right.Normalize();
+
+        Vector3 dir = (forward * v + right * h).normalized;
+        characterController.SimpleMove(dir * moveSpeed);
+
+        // Iso only: legs/body face the WASD direction. In first person the yaw
+        // owner is FirstPersonCamera.
+        if (ViewMode.IsIso) transform.forward = dir;
     }
 
     // ── Damage / respawn ──────────────────────────────────────────────────────

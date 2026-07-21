@@ -693,6 +693,20 @@ Method: capture the Game view in Play mode, judge the frame, fix the single wors
 
 ## Agent log (newest first — one line per session: date, task, result, commit)
 
+- 2026-07-21: **human bug report — FP WASD span the camera and the player never moved. Fixed.**
+  Yaw had two owners: `FirstPersonCamera` yawed the head anchor (a CHILD of the player) while
+  `PlayerController` snapped the player's WORLD rotation to the camera's forward. Camera forward =
+  player yaw × anchor yaw, so every frame added the anchor's yaw to the player again and the rig
+  span at `_yaw` degrees per frame; the movement vector was derived from that spinning forward, so
+  successive frames cancelled and the player stayed put. Now: player root owns yaw, camera owns
+  pitch, head anchor is a pure position offset never rotated, and `HandleMovement` uses the
+  player's own basis in FP without touching rotation.
+  **Process failure, worth recording:** F1/F4 were marked `[x]` by `/unity-pass` and survived a
+  `/bug-pass` and a full `/playtest` PASS. None of it caught this, because every check asserted
+  static transform state after setting `ViewMode` — not one ran a frame of movement with input
+  held. `HandleMovement` early-returns when there is no WASD input, so the defect was invisible to
+  every test written. Automated FP checks must drive input, not just read transforms.
+
 - 2026-07-21: **playtest: full suite PASS** — report
   `SPACE FACTORY INFO/Playtest_Agent_2026-07-21_111432.md`. Smoke PASS (9/9: WaveController,
   SectorLayout, BuildSystem, ResourceInventory, PowerSystem, PlayerController, commandHubTransform,
