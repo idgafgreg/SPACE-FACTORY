@@ -54,7 +54,11 @@ public class AtmosphereController : MonoBehaviour
 
     void Awake() => _instance = this;
 
-    void OnDestroy() { if (_instance == this) _instance = null; }
+    void OnDestroy()
+    {
+        if (_instance == this) _instance = null;
+        ViewMode.OnChanged -= OnViewModeChanged;
+    }
 
     void Start()
     {
@@ -66,12 +70,68 @@ public class AtmosphereController : MonoBehaviour
         hubLightColor = ShipPalette.HubCalm;
         hubAlarmColor = ShipPalette.HubAlarm;
 
+        ApplyViewProfile();
+
         ApplyGlobal();
         SetupSun();
         SetupPlayerLight();
         SetupHubLight();
         _flickerSeed = Random.value * 100f;
         Sfx.SetAmbient(0.45f);
+
+        ViewMode.OnChanged += OnViewModeChanged;
+    }
+
+    // ── F8: per-mode fog + ambient ───────────────────────────────────────────
+
+    [Header("First-person profile (F8)")]
+    [Tooltip("Corridor depth rather than 14m deck read. A2's numbers fog a 6m corridor into mush.")]
+    public float fpFogStart = 6f;
+    public float fpFogEnd   = 26f;
+    [Tooltip("Lifted so F7's pools still win but the deck between them is not pure black. " +
+             "A8's 0.075 luma was tuned for an overhead frame showing ten pools at once.")]
+    public Color fpAmbientColor = new Color(0.135f, 0.150f, 0.180f);
+
+    // A2/A8 values, captured so iso can be restored exactly.
+    float _isoFogStart, _isoFogEnd;
+    Color _isoAmbient;
+    bool _isoCaptured;
+
+    void OnViewModeChanged()
+    {
+        ApplyViewProfile();
+        ApplyGlobal();
+    }
+
+    /// <summary>
+    /// Swap fog + ambient for the active view mode.
+    ///
+    /// The alarm/HorrorClock fog pull in Update lerps *from* these fields, so
+    /// changing them here means L20's per-zone decay scales off whichever
+    /// profile is live rather than a hardcoded iso baseline.
+    /// </summary>
+    void ApplyViewProfile()
+    {
+        if (!_isoCaptured)
+        {
+            _isoFogStart = fogStart;
+            _isoFogEnd   = fogEnd;
+            _isoAmbient  = ambientColor;
+            _isoCaptured = true;
+        }
+
+        if (ViewMode.IsFirstPerson)
+        {
+            fogStart     = fpFogStart;
+            fogEnd       = fpFogEnd;
+            ambientColor = fpAmbientColor;
+        }
+        else
+        {
+            fogStart     = _isoFogStart;
+            fogEnd       = _isoFogEnd;
+            ambientColor = _isoAmbient;
+        }
     }
 
     void ApplyGlobal()

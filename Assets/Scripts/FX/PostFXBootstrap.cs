@@ -36,6 +36,50 @@ public class PostFXBootstrap : MonoBehaviour
     [Header("Vignette")]
     public float vignetteIntensity = 0.32f;
 
+    [Header("First-person profile (F8)")]
+    // A1 tuned the grade against the iso frame, where the camera sees ten light
+    // pools at once and the eye has plenty to read. At eye level it sees one
+    // pool, and the same grade removed 82% of the image: measured mean luma
+    // 0.134 with the PostProcessLayer disabled versus 0.024 with it on, standing
+    // 5m from a live lamp. That is why F7 could not make corridors readable by
+    // touching lamps — the lever was always here.
+    //
+    // The FP profile lifts exposure and the shadow floor and eases the vignette,
+    // so pooled light and the deck between pools both survive the grade. It is
+    // deliberately still dark: the bible wants rooms that get blacker, not a
+    // brightened frame. Iso keeps A1's numbers exactly.
+    public float fpPostExposure     = 0.95f;
+    public float fpShadowLift       = 0.115f;
+    public float fpVignetteIntensity = 0.20f;
+
+    ColorGrading _grade;
+    Vignette _vignette;
+    bool _built;
+
+    /// <summary>Swap the grade for the active view mode. Iso restores A1 exactly.</summary>
+    public void ApplyViewProfile()
+    {
+        if (_grade == null || _vignette == null) return;
+
+        bool fp = ViewMode.IsFirstPerson;
+
+        float exposure = fp ? fpPostExposure : postExposure;
+        float shadow   = fp ? fpShadowLift : shadowLift;
+        float vig      = fp ? fpVignetteIntensity : vignetteIntensity;
+
+        _grade.postExposure.Override(exposure);
+
+        // ShipPalette.GradeLift is authored against shadowLift 0.05, so scale it
+        // the same way the initial build does rather than inventing a new curve.
+        var lift = ShipPalette.GradeLift;
+        lift.x *= shadow / 0.05f;
+        lift.y *= shadow / 0.05f;
+        lift.z *= shadow / 0.05f;
+        _grade.lift.Override(lift);
+
+        _vignette.intensity.Override(vig);
+    }
+
     // TransparentFX is a built-in layer that ships with every project, so the
     // volume/layer pairing can never break on a fresh checkout.
     const int VolumeLayer = 1; // TransparentFX
@@ -107,16 +151,23 @@ public class PostFXBootstrap : MonoBehaviour
         ao.intensity.Override(0.55f);
         ao.radius.Override(0.4f);
 
+        _grade = grade;
+        _vignette = vignette;
+        ApplyViewProfile();
+        ViewMode.OnChanged += ApplyViewProfile;
+
         var volumeGo = new GameObject("PostFXVolume");
         volumeGo.transform.SetParent(transform, false);
         volumeGo.layer = VolumeLayer;
         _volume = volumeGo.AddComponent<PostProcessVolume>();
+        _built = true;
         _volume.isGlobal = true;
         _volume.profile = profile;
     }
 
     void OnDestroy()
     {
+        ViewMode.OnChanged -= ApplyViewProfile;
         if (_volume != null && _volume.profile != null)
             Destroy(_volume.profile);
     }

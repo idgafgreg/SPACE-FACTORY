@@ -271,7 +271,7 @@ Conventions for this block:
   slid between commands so the camera was not where it was placed, which made lamp intensity look
   like it had no effect at all. Pinning the transform inside the same command as the render fixed it.
 
-- [ ] F8. Per-mode fog / ambient / grade profile — **now also unblocks F7; do this before F9**
+- [ ] F8. Per-mode fog / ambient / grade profile — **plumbing shipped, values UNTUNED; still blocks F7. Fix the playtest viewpoint first (Ice box).**
   Type: visual | Pillar: Diegetic dread
   Unity: **yes** — side-by-side Play captures, both modes.
   **Measured while doing F7 — the grade, not the lamps, is what makes eye level unreadable.**
@@ -292,6 +292,27 @@ Conventions for this block:
   pull (L20) must scale off whichever profile is active, not a hardcoded iso baseline.
   done-when: Play (FP) — corridors have depth without mush, map edge still reads as void, signal
   colours still separate from base; Play (iso) — A1/A2/L20 values unchanged; console clean
+  **PARTIAL 2026-07-21 — per-mode plumbing shipped and verified; the FP values are NOT tuned.**
+  Shipped: `AtmosphereController` carries `fpFogStart` / `fpFogEnd` / `fpAmbientColor` and swaps on
+  `ViewMode.OnChanged`, capturing A2/A8's values once so iso restores byte-exact;
+  `PostFXBootstrap` keeps its `ColorGrading` / `Vignette` handles and swaps postExposure, shadow
+  lift and vignette per mode. **Iso verified restored exactly — fogStart 12 / fogEnd 44 / ambient
+  0.088, stable over two round trips** — and L20's alarm fog pull was confirmed lerping off the
+  active profile (FP fogEnd read 19.578 mid-pull), which was the explicit done-when requirement.
+  **Not done: the FP numbers are guesses and I could not verify them.** Three separate measurement
+  approaches failed to discriminate a good frame from a bad one:
+  - `postExposure` 0.12→1.9 moved mean luma 0.032→0.135 but the resulting frames were smeared mush;
+    raising exposure pushes the image past bloom's 1.35 threshold and diffusion 6.5 turns it to soup.
+  - Fog made **no measurable difference at all** — identical mean and local-contrast with fog fully
+    disabled — so the premise in this task's Change note ("A2's density fogs a 6m corridor into
+    mush") is unproven and probably wrong.
+  - The root problem: the verification camera was aimed at open deck with nothing within 13.5m, so
+    every frame legitimately looked like nothing. A mean-luma metric cannot tell "too dark" from
+    "pointed at an empty floor", and my local-contrast metric read flat for good and bad frames alike.
+  Next session must fix the viewpoint problem FIRST (see Ice box: named eye-level vantages in
+  `PlaytestHarness`) before touching another grade value, then tune against a frame that actually
+  contains a wall, a machine and a lit pool. F7's `fpIntensity` / `fpRange` still need the same
+  re-check afterwards.
 
 - [ ] F9. Wall + deck surface detail at eye level
   Type: visual | Pillar: Workplace as trap
@@ -728,6 +749,17 @@ Method: capture the Game view in Play mode, judge the frame, fix the single wors
 
 ## Ice box (ideas, ungroomed)
 
+- [ ] `PlayerController.HandleMovement` calls `characterController.SimpleMove` without checking the
+  controller is enabled, so anything that disables it while movement input is live logs
+  "CharacterController.Move called on inactive controller" every frame. Harmless in normal play
+  (respawn early-returns on `IsDead`, `SoftRecoverToHub` re-enables in the same frame) — surfaced by
+  a playtest helper that pinned the transform with the controller off. One-line guard.
+- [ ] **Playtest needs a named eye-level camera viewpoint.** Every visual verification in F6–F8 was
+  hampered by not having a known-good FP vantage: shots landed on empty deck 13.5m from anything, so
+  "the frame looks like nothing" said more about the viewpoint than the lighting. Add a small set of
+  named vantages (hub approach, west corridor under a live lamp, vent approach) to `PlaytestHarness`
+  so visual passes are comparable between sessions instead of re-aimed by hand each time.
+
 - [ ] [asset-pack: Alien Biomass Planet] Replace A10 primitive residue with animated biomass meshes / hue Shader Graph once purchased (path TBD in Asset pack status).
 - [ ] [asset-pack: Bio Horror / Sci-fi Environment] Infestation props for breach corridors — promote after purchase.
 - [ ] [asset-pack: Bionic structures] Cheap tendril/cocoon kitbash for corridor corruption — low-cost experiment if A10 primitives feel thin.
@@ -738,6 +770,24 @@ Method: capture the Game view in Play mode, judge the frame, fix the single wors
 - [ ] Free lead: Abandoned Factory Lite (Asset Store) — safe mood greys for blockout; not gated, but not queued until visual Now is thin.
 
 ## Agent log (newest first — one line per session: date, task, result, commit)
+
+- 2026-07-21: **auto-dev F8 per-mode grade/fog/ambient — PARTIAL. Plumbing shipped and verified;
+  the FP values are untuned and I did not claim otherwise.** `AtmosphereController` and
+  `PostFXBootstrap` now carry first-person profiles and swap on `ViewMode.OnChanged`. Iso verified
+  restored byte-exact (fog 12/44, ambient 0.088, stable over two round trips) and L20's alarm fog
+  pull confirmed scaling off the active profile — both explicit done-when items, both met.
+  **The tuning half failed, and the reason is worth keeping:** my verification camera was aimed at
+  open deck with nothing inside 13.5m, so every candidate frame looked like nothing and mean luma
+  could not tell "too dark" from "pointed at an empty floor". On that bad viewpoint I successively
+  blamed the lamps (F7), then the grade, then exposure, then fog — and fog turned out to make *zero*
+  measurable difference with it fully disabled, which also falsifies this task's own premise that
+  A2's density mushes a 6m corridor. Raising postExposure did lift mean luma but pushed the frame
+  past bloom's 1.35 threshold, so diffusion 6.5 smeared it to soup: exposure is the wrong lever.
+  Filed the real blocker in Ice box — `PlaytestHarness` needs named eye-level vantages so visual
+  passes are comparable between sessions instead of hand-aimed each time. That comes before any
+  further grade work, and F7's lamp values need the same re-check afterwards.
+  Lesson for the next visual task: a metric that cannot distinguish a bad viewpoint from a bad
+  setting is not verification, and three passes of it in a row is three passes of nothing.
 
 - 2026-07-21: **auto-dev F7 eye-level lighting — PARTIAL, and the remaining half is blocked on F8.**
   Shipped the fixture work: corridor lamps are now real objects (stem/housing/lens bolted to the F6
