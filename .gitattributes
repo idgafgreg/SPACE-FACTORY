@@ -1,0 +1,79 @@
+# SPACE FACTORY — line endings and binary handling
+#
+# Why this file exists: the repo is worked by agents on different platforms
+# (Cursor, a cloud lore agent on Linux, Claude Code on Windows) with
+# core.autocrlf=true locally and no attributes, which produced three different
+# states across 374 text files: most at LF, 48 checked out CRLF, and 26 of the
+# original hand-authored scripts with CRLF committed *into the index*. Mixed
+# index endings mean a whole-file diff the moment any tool rewrites one.
+#
+# Fix: LF everywhere, in the index and in the working tree. Unity itself writes
+# LF for .cs, .meta, .unity, .prefab and .asset on every platform, so this
+# matches the engine rather than fighting it, and Visual Studio / Rider handle
+# LF on Windows fine.
+
+* text=auto eol=lf
+
+# Source
+*.cs        text eol=lf diff=csharp
+*.shader    text eol=lf
+*.cginc     text eol=lf
+*.hlsl      text eol=lf
+*.compute   text eol=lf
+
+# Unity YAML + project files
+*.meta      text eol=lf
+*.unity     text eol=lf
+*.prefab    text eol=lf
+*.asset     text eol=lf
+*.mat       text eol=lf
+*.anim      text eol=lf
+*.controller text eol=lf
+*.physicMaterial text eol=lf
+*.json      text eol=lf
+*.md        text eol=lf
+*.txt       text eol=lf
+*.yml       text eol=lf
+*.yaml      text eol=lf
+
+# Scene/prefab merges are not safe to line-merge by hand. If three-way merges
+# on Unity YAML ever become a problem, configure Unity's SmartMerge and switch
+# the four types above to `merge=unityyamlmerge`.
+
+# Windows-only scripts keep CRLF so they run under cmd/PowerShell hosts that
+# care. (lore/sync-assets-sheet.ps1 and friends.)
+*.ps1       text eol=crlf
+*.bat       text eol=crlf
+*.cmd       text eol=crlf
+
+# Binaries — never touch, never diff as text
+*.png       binary
+*.jpg       binary
+*.jpeg      binary
+*.gif       binary
+*.tga       binary
+*.psd       binary
+*.tif       binary
+*.exr       binary
+*.hdr       binary
+*.fbx       binary
+*.obj       binary
+*.blend     binary
+*.wav       binary
+*.mp3       binary
+*.ogg       binary
+*.ttf       binary
+*.otf       binary
+*.dll       binary
+*.so        binary
+*.dylib     binary
+*.pdb       binary
+*.unitypackage binary
+*.zip       binary
+
+# Kenney's OBJ/MTL are plain text but git's `text=auto` heuristic guesses them
+# binary and then stores the working-tree bytes verbatim — which reintroduced
+# CRLF into an index that was already LF, rewriting every mesh file for nothing.
+# Declaring them text explicitly overrides the guess and leaves the index alone.
+*.obj       text eol=lf
+*.mtl       text eol=lf
