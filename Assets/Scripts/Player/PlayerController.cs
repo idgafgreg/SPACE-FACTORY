@@ -74,7 +74,6 @@ public class PlayerController : MonoBehaviour
                 transform.rotation = Quaternion.LookRotation(flatLook);
         }
     }
-    }
 
     // ── Damage / respawn ──────────────────────────────────────────────────────
 

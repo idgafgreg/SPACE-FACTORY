@@ -3293,6 +3293,15 @@ MonoBehaviour:
   prepDuration: 15
   endlessGrowth: 1.3
   endlessNoModifierChance: 0.25
+  heatVentShareBonusMax: 0.2
+  heatVentShareCap: 0.55
+  heatEndlessVentBiasMax: 0.25
+  residueBreachBaselineShare: 0.1
+  heatResidueShareBonusMax: 0.6
+  heatResidueShareCap: 0.8
+  residueHpMult: 0.55
+  residueSpeedMult: 1.22
+  residueSeedRadius: 5.5
   onWaveText:
     m_PersistentCalls:
       m_Calls: []
@@ -5263,6 +5272,9 @@ MonoBehaviour:
     m_PersistentCalls:
       m_Calls: []
   demolishKey: 120
+  placementHitMask:
+    serializedVersion: 2
+    m_Bits: 0
 --- !u!114 &1445036920
 MonoBehaviour:
   m_ObjectHideFlags: 0

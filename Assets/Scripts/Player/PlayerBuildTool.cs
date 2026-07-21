@@ -376,7 +376,16 @@ public class PlayerBuildTool : MonoBehaviour
             ? LayerMask.GetMask("Ground", "Buildable")
             : placementHitMask.value;
 
-        if (Physics.Raycast(ray, out var hit, maxBuildDistance * 1.5f, hitLayers))
+        // The ray has to be long enough to reach the ground from wherever the
+        // CAMERA is, which in iso is 20-30 units away at high zoom. The actual
+        // range limit is the player-distance check below, not the ray length.
+        // Capping the ray at maxBuildDistance * 1.5 (18) silently broke iso
+        // placement past ~18 zoom: the cast missed, execution fell through to
+        // the horizon fallback, and the ghost froze 12 units in front of the
+        // player regardless of where the mouse pointed. Verified against the
+        // zoom range in CameraFollow (minZoomDistance 6 .. maxZoomDistance 28).
+        const float GroundRayLength = 500f;
+        if (Physics.Raycast(ray, out var hit, GroundRayLength, hitLayers))
         {
             Vector3 hitPoint = hit.point;
             if ((hitPoint - transform.position).sqrMagnitude <= maxBuildDistance * maxBuildDistance)

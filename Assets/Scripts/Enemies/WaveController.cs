@@ -377,6 +377,16 @@ public class WaveController : MonoBehaviour
         LanePath vent = _layout != null ? _layout.GetLane(VentLaneId) : null;
         if (vent == null || crawlerPrefab == null) return -1;
 
+        // MarkInfectionResidueSpawns reads LastFactoryHeat01, which is normally
+        // refreshed by AssignLanes immediately before it. This hook bypasses
+        // AssignLanes, so without sampling here it would read a STALE heat from
+        // whenever lanes were last assigned - making idle and hot factories
+        // report identical residue counts and rendering the hook useless for
+        // testing the very coupling it exists to test.
+        LastFactoryHeat01 = FactoryHeatTracker.Instance != null
+            ? FactoryHeatTracker.Instance.Heat01
+            : 0f;
+
         _spawnQueue.Clear();
         _laneQueue.Clear();
         for (int i = 0; i < breachCrawlerCount; i++)

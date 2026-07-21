@@ -28,6 +28,11 @@ public class FirstPersonCamera : MonoBehaviour
     float _pitch;
     Transform _headAnchor;
     Transform _originalParent;
+    // The main camera is a ROOT object, so its original parent is legitimately
+    // null. Guarding the restore on `_originalParent != null` therefore never
+    // fired and left the camera welded to the head anchor after switching back
+    // to iso. Track "have we captured it yet" separately from "is it non-null".
+    bool _capturedOriginal;
     Vector3 _originalLocalPos;
     Quaternion _originalLocalRot;
     CameraFollow _isoRig;
@@ -47,9 +52,7 @@ public class FirstPersonCamera : MonoBehaviour
 
         EnsureHeadAnchor();
 
-        _originalParent = transform.parent;
-        _originalLocalPos = transform.localPosition;
-        _originalLocalRot = transform.localRotation;
+        CaptureOriginalPose();
 
         OnModeChanged();
         ViewMode.OnChanged += OnModeChanged;
@@ -115,12 +118,7 @@ public class FirstPersonCamera : MonoBehaviour
         if (_headAnchor == null) return;
 
         // Remember iso pose before reparenting.
-        if (_originalParent == null)
-        {
-            _originalParent = transform.parent;
-            _originalLocalPos = transform.localPosition;
-            _originalLocalRot = transform.localRotation;
-        }
+        CaptureOriginalPose();
 
         // Seed yaw from the camera's current horizontal look direction so the switch does not snap.
         Vector3 flat = transform.forward;
@@ -137,9 +135,18 @@ public class FirstPersonCamera : MonoBehaviour
         _headAnchor.localRotation = Quaternion.Euler(0f, _yaw, 0f);
     }
 
+    void CaptureOriginalPose()
+    {
+        if (_capturedOriginal) return;
+        _originalParent   = transform.parent;
+        _originalLocalPos = transform.localPosition;
+        _originalLocalRot = transform.localRotation;
+        _capturedOriginal = true;
+    }
+
     void ReturnToIso(bool resumeRig)
     {
-        if (_originalParent != null && transform.parent != _originalParent)
+        if (_capturedOriginal && transform.parent != _originalParent)
         {
             transform.SetParent(_originalParent, false);
             transform.localPosition = _originalLocalPos;

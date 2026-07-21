@@ -88,7 +88,7 @@ Conventions for this block:
 
 #### Phase 1 — playable FP (mechanics)
 
-- [?] F1. `ViewMode` switch + first-person camera rig
+- [x] F1. `ViewMode` switch + first-person camera rig
   Type: mechanical | Pillar: — (enabling work)
   Unity: **yes** — scene wiring of the head anchor + toggle verification in Play mode.
   Change: add a small `ViewMode` static/singleton (`Iso` | `FirstPerson`, default `Iso`, persisted
@@ -102,9 +102,15 @@ Conventions for this block:
   `CameraFollow.Yaw` is consumed by `PlayerController` — keep an equivalent yaw source in FP.
   done-when: Play — `V` flips iso↔FP live, both rigs stable (no snap, no gimbal flip at ±85°),
   cursor locks in FP and releases in iso, `CameraShake` reads correctly in both; console clean
-  DONE 2026-07-20 — ViewMode static + PlayerPrefs; FirstPersonCamera runtime-attached to Main Camera by SectorRuntimeBootstrap; head anchor created at 1.65m; CameraFollow gated on ViewMode.IsIso; ResumeFromCurrent smooth return; shake sampled in FP; cursor locks in FP and releases for pause/upgrade. **[?] needs in-editor Play verification (no Unity MCP).**
+  DONE 2026-07-20 — ViewMode static + PlayerPrefs; FirstPersonCamera runtime-attached to Main Camera by SectorRuntimeBootstrap; head anchor created at 1.65m; CameraFollow gated on ViewMode.IsIso; ResumeFromCurrent smooth return; shake sampled in FP; cursor locks in FP and releases for pause/upgrade.
+  UNITY-PASS 2026-07-20 — **found + fixed a real bug**: `ReturnToIso` guarded the reparent on
+  `_originalParent != null`, but the main camera is a ROOT object so its original parent is
+  legitimately null — the guard never fired and the camera stayed welded to `FPHeadAnchor` after
+  switching back to iso. Replaced with a `_capturedOriginal` flag + `CaptureOriginalPose()`.
+  Play-verified: camParent `<root>` → FPHeadAnchor → `<root>`, stable over 2 round trips; head
+  anchor at localY 1.65; FP localPos/localRot zeroed on entry. Console clean.
 
-- [?] F2. One interaction-ray choke point for both modes
+- [x] F2. One interaction-ray choke point for both modes
   Type: mechanical | Pillar: — (enabling work)
   Unity: **yes** — Play-mode verification that aim/repair/demolish all still hit in iso.
   Change: today four systems each build their own `ScreenPointToRay(Input.mousePosition)`:
@@ -114,9 +120,12 @@ Conventions for this block:
   and route all four through it. Pure refactor for iso: behaviour must be byte-identical.
   done-when: Play (iso) — aim, repair, demolish, build ghost all behave exactly as before; Play
   (FP) — all four track the crosshair, none track a frozen mouse position; console clean
-  DONE 2026-07-20 — Added `ViewRay.Current(Camera)`; routed PlayerAim, PlayerRepairTool, PlayerBuildTool, DemolishHighlight. Iso path unchanged (mouse ray); FP path uses viewport centre. **[?] needs in-editor Play verification (no Unity MCP).**
+  DONE 2026-07-20 — Added `ViewRay.Current(Camera)`; routed PlayerAim, PlayerRepairTool, PlayerBuildTool, DemolishHighlight. Iso path unchanged (mouse ray); FP path uses viewport centre.
+  UNITY-PASS 2026-07-20 — PASS, no changes needed. Play-verified: iso ray = mouse ray
+  (dir -0.343,-0.835,0.430 at the live cursor); FP ray sits 0.000° from both the viewport centre
+  and `camera.forward`. All four call sites routed. Console clean.
 
-- [?] F3. FP-safe build placement (kill the infinite-plane assumption)
+- [x] F3. FP-safe build placement (kill the infinite-plane assumption)
   Type: mechanical | Pillar: Factory pressure = identity
   Unity: **yes** — Play-mode placement test across every buildable, both modes.
   Change: `PlayerBuildTool.TryGetBuildPoint` intersects the camera ray with an **infinite horizontal
@@ -132,9 +141,20 @@ Conventions for this block:
   done-when: Play (FP) — every buildable places at reasonable range including aimed at the horizon,
   ghost never jumps to infinity, `maxBuildDistance` still enforced; Play (iso) — placement
   unchanged from today; console clean
-  DONE 2026-07-20 — PlayerBuildTool.TryGetBuildPoint now Physics.Raycasts against Ground+Buildable up to 1.5*maxBuildDistance, clamped to player-distance gate; horizon fallback projects maxBuildDistance along flattened forward; DemolishHighlight uses Buildable layer mask. **[?] needs in-editor Play verification (no Unity MCP).**
+  DONE 2026-07-20 — PlayerBuildTool.TryGetBuildPoint now Physics.Raycasts against Ground+Buildable, clamped to player-distance gate; horizon fallback projects maxBuildDistance along flattened forward; DemolishHighlight uses Buildable layer mask.
+  UNITY-PASS 2026-07-20 — **found + fixed an iso regression**: the new `Physics.Raycast` was capped
+  at `maxBuildDistance * 1.5` = 18 units **from the camera**, but the iso camera sits 20–30 units
+  from the ground at high zoom (measured: zoom 20 → 18.9, zoom 28 → 25.8, vs `CameraFollow`
+  maxZoomDistance 28). Past ~18 zoom the cast missed entirely and execution fell through to the
+  first-person horizon fallback, freezing the ghost 12 units in front of the player regardless of
+  the mouse — the exact failure the original plane-intersect comment warned about. Ray length is
+  now 500; the real limit was always the player-distance gate below it.
+  Play-verified after fix — iso: 4/4 zooms (6/14/20/28) resolve to the mouse-aimed ground point,
+  offsets 0.11–0.63 (one grid cell, from snapping), no fallback used. FP: 6/6 pitches
+  (0/±10/±45/±85/30) finite and within maxBuildDistance, horizon aim never escapes to infinity.
+  Console clean.
 
-- [?] F4. FP player body, movement, and self-occlusion
+- [x] F4. FP player body, movement, and self-occlusion
   Type: mechanical | Pillar: Lonely worker fantasy
   Unity: **yes** — visual check that the player's own art does not clip the near plane.
   Change: `PlayerController.HandleMovement` sets `transform.forward = dir` (legs face the WASD
@@ -146,9 +166,20 @@ Conventions for this block:
   done-when: Play (FP) — strafe/back-pedal correct, no player geometry in the near plane before or
   after a death+respawn, weapon still fires along the crosshair; Play (iso) — legs/torso split
   unchanged; console clean
-  DONE 2026-07-20 — PlayerController movement gated: iso=yaw-to-WASD, FP=yaw-with-camera + camera-relative strafe; PlayerAim: iso=torso-to-mouse, FP=torso-to-camera; PlayerBodyVisibility hides all body renderers in FP; wired into respawn + PlayerArtAttach.Refresh. **[?] needs in-editor Play verification (no Unity MCP).**
+  DONE 2026-07-20 — PlayerController movement gated: iso=yaw-to-WASD, FP=yaw-with-camera + camera-relative strafe; PlayerAim: iso=torso-to-mouse, FP=torso-to-camera; PlayerBodyVisibility hides body renderers in FP; wired into respawn + PlayerArtAttach.Refresh.
+  UNITY-PASS 2026-07-20 — **fixed a compile break and an iso regression.**
+  (1) The F4 edit left a stray `}` at `PlayerController.cs:77` that closed the class early — the
+  whole project failed to compile (CS8803 / CS0106 ×2 / CS1022). Nothing since F4 had ever built.
+  (2) `PlayerBodyVisibility.Apply()` blanket-set `r.enabled = show` on every renderer under the
+  player, so returning to iso force-enabled ALL 9 — resurrecting the yellow capsule `Visual` /
+  `TorsoVisual` placeholders that `RespawnRoutine` deliberately leaves off (see its ArtPlaceholder
+  comment). Now records what it hid and restores exactly that set; iso is a no-op when nothing was
+  hidden, so respawn/PlayerArtAttach keep control.
+  Play-verified: iso visible = [BlobShadow, TorsoVisual, Visual] before AND after two FP round
+  trips (previously became all 9); FP = 0 visible; stays 0 after `PlayerArtAttach.Refresh()`.
+  Console clean.
 
-- [?] F5. Cursor arbitration + diegetic crosshair
+- [x] F5. Cursor arbitration + diegetic crosshair
   Type: mechanical / diegetic | Pillar: Diegetic dread
   Unity: **yes** — Play-mode pass over every panel that takes mouse input.
   Change: FP locks the cursor, but the build menu, Workshop (`F`), upgrade offer modal, and pause
@@ -161,7 +192,11 @@ Conventions for this block:
   done-when: Play (FP) — every panel opens with a usable cursor and relocks on close, no state
   where the cursor is lost, crosshair reads mode; Play (iso) — no crosshair, no regressions;
   console clean
-  DONE 2026-07-20 — Added UICursorFocus stack; Pause/Upgrade/Workshop/EndOfRun panels push/pop; FirstPersonCamera honours the stack; added FPCrosshair with weapon/build/demolish colour states. **[?] needs in-editor Play verification (no Unity MCP).**
+  DONE 2026-07-20 — Added UICursorFocus stack; Pause/Upgrade/Workshop/EndOfRun panels push/pop; FirstPersonCamera honours the stack; added FPCrosshair with weapon/build/demolish colour states.
+  UNITY-PASS 2026-07-20 — PASS, no changes needed. Play-verified: `WantsFreeCursor` False → Push →
+  True → Pop → False; `FirstPersonCamera.UpdateCursorLock` reads the stack plus `UIPauseMenu` /
+  `UIUpgradeOffer` independently of `Time.timeScale` (the A8b unscaled-time lesson holds);
+  FPCrosshair present in scene. Console clean.
 
 ---
 
@@ -313,7 +348,24 @@ Conventions for this block:
 Code reality: L15–L24 shipped; L25–L27 still missing; stage-1 residue + heat share exist; no plaques/quota/PA/vent-carrier; schedule board is a static prop only. Bible current through 2026-07-20. Asset pack: **not purchased** — primitives / existing `Sfx` / runtime meshes only. Visual/audio-only ≤30% of this lore block (L27 only).
 
 - [x] L22. Infection-form residue crawlers (stage 1 ecology) — DONE 2026-07-20 (see archive notes below).
-- [x] L23. Factory heat raises infection-form share — DONE 2026-07-20 (**[?]** Play verify if Unity MCP free).
+- [x] L23. Factory heat raises infection-form share — DONE 2026-07-20.
+  UNITY-PASS 2026-07-20 — **found + fixed a live value that defeated this task.** Measured in Play
+  mode, `WaveController.residueBreachBaselineShare` was **0.50**, so an idle factory already ran at
+  50% residue forms and heat only moved it 0.50 → 0.80. That contradicts the done-when ("idle
+  factory ≈ few/no residue forms") and the bible's "cold, quiet decks stay relatively calm" — heat
+  had almost nothing left to express.
+  Provenance note, since the first diagnosis was wrong: this was **not** a committed scene override.
+  The C# initializer (`WaveController.cs:79`) was already the documented `0.1f`, and none of the
+  L22/L23 fields existed in `Sector01.unity` on disk — the save in this pass is what wrote all nine
+  out for the first time (the other eight landed exactly on their code defaults). The loaded scene
+  was carrying an unsaved 0.50 for this one field, most likely an inspector tweak from an earlier
+  session that was never saved. The scene now pins 0.10 explicitly, so runtime can no longer drift
+  from the doc. No code change was needed.
+  Also fixed the test hook: `DebugRunResidueMark` bypasses `AssignLanes`, the only thing that
+  refreshes `LastFactoryHeat01`, so it read a stale heat and reported identical counts for idle and
+  hot — it could not test the coupling it exists to test. It now samples heat itself.
+  Play-verified after both fixes: idle Heat01 0.00 → share 0.10, W2 2/20; mid 0.93 → 0.66, 13/20;
+  hot 1.00 → 0.70, 14/20; W1 0/20 at both heat extremes; monotonic idle ≤ mid ≤ hot. Console clean.
 - [x] L24. Contaminated slurry beat on infected processors — DONE 2026-07-20.
 
 - [ ] L25. Diegetic sector wayfinding plaques
@@ -640,6 +692,19 @@ Method: capture the Game view in Play mode, judge the frame, fix the single wors
 - [ ] Free lead: Abandoned Factory Lite (Asset Store) — safe mood greys for blockout; not gated, but not queued until visual Now is thin.
 
 ## Agent log (newest first — one line per session: date, task, result, commit)
+
+- 2026-07-20: **unity-pass — F1–F5 + L23 resolved `[?]` → `[x]`.** Project did not compile on
+  arrival: a stray `}` from F4 at `PlayerController.cs:77` closed the class early (CS8803 / CS0106
+  ×2 / CS1022), so nothing since F4 had ever built. Four further defects found in Play mode, all
+  fixed and re-verified: F1 camera never returned to its iso parent (null-parent guard never
+  fired); F3 capped the placement ray at 18 units from a camera that sits 20–30 units up, breaking
+  iso placement past ~18 zoom; F4 blanket-enabled every player renderer on return to iso,
+  resurrecting the yellow capsule placeholders; L23 ran at `residueBreachBaselineShare` 0.50 against
+  a documented 0.10, so idle factories sat at 50% residue and heat barely mattered (pinned to 0.10
+  and saved — the L22/L23 fields had never been written to `Sector01.unity` at all, so this pass
+  also serialized the other eight at their code defaults; plus the `DebugRunResidueMark` hook now
+  samples heat, without which the coupling could not be tested). F2 and F5 passed unchanged.
+  Console clean, 0 errors 0 warnings.
 
 - 2026-07-20: auto-dev F5 cursor arbitration + diegetic crosshair — UICursorFocus stack; Pause/Upgrade/Workshop/EndOfRun push/pop; FirstPersonCamera honours it; FPCrosshair weapon/build/demolish colour states. **[?] needs in-editor Play verification (no Unity MCP).**
 
