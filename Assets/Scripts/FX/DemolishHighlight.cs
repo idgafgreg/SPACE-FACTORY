@@ -31,7 +31,7 @@ public class DemolishHighlight : MonoBehaviour
         if (_cam == null) _cam = Camera.main;
         if (_cam == null) return;
 
-        Ray ray = _cam.ScreenPointToRay(Input.mousePosition);
+        Ray ray = ViewRay.Current(_cam);
         if (!Physics.Raycast(ray, out var hit, 40f))
         {
             Clear();

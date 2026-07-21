@@ -42,7 +42,7 @@ public class PlayerAim : MonoBehaviour
         if (!aimCamera) aimCamera = Camera.main;
         if (!aimCamera) return;
 
-        Ray   ray   = aimCamera.ScreenPointToRay(Input.mousePosition);
+        Ray   ray   = ViewRay.Current(aimCamera);
         Plane plane = new Plane(Vector3.up, new Vector3(0f, transform.position.y, 0f));
 
         if (!plane.Raycast(ray, out float distance)) return;

@@ -370,7 +370,7 @@ public class PlayerBuildTool : MonoBehaviour
         point = default;
         if (!buildCamera) return false;
 
-        Ray   ray   = buildCamera.ScreenPointToRay(Input.mousePosition);
+        Ray   ray   = ViewRay.Current(buildCamera);
         Plane plane = new Plane(Vector3.up, new Vector3(0f, transform.position.y, 0f));
         if (!plane.Raycast(ray, out float distance)) return false;
 

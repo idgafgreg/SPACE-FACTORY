@@ -104,7 +104,7 @@ Conventions for this block:
   cursor locks in FP and releases in iso, `CameraShake` reads correctly in both; console clean
   DONE 2026-07-20 — ViewMode static + PlayerPrefs; FirstPersonCamera runtime-attached to Main Camera by SectorRuntimeBootstrap; head anchor created at 1.65m; CameraFollow gated on ViewMode.IsIso; ResumeFromCurrent smooth return; shake sampled in FP; cursor locks in FP and releases for pause/upgrade. **[?] needs in-editor Play verification (no Unity MCP).**
 
-- [ ] F2. One interaction-ray choke point for both modes
+- [?] F2. One interaction-ray choke point for both modes
   Type: mechanical | Pillar: — (enabling work)
   Unity: **yes** — Play-mode verification that aim/repair/demolish all still hit in iso.
   Change: today four systems each build their own `ScreenPointToRay(Input.mousePosition)`:
@@ -114,6 +114,7 @@ Conventions for this block:
   and route all four through it. Pure refactor for iso: behaviour must be byte-identical.
   done-when: Play (iso) — aim, repair, demolish, build ghost all behave exactly as before; Play
   (FP) — all four track the crosshair, none track a frozen mouse position; console clean
+  DONE 2026-07-20 — Added `ViewRay.Current(Camera)`; routed PlayerAim, PlayerRepairTool, PlayerBuildTool, DemolishHighlight. Iso path unchanged (mouse ray); FP path uses viewport centre. **[?] needs in-editor Play verification (no Unity MCP).**
 
 - [ ] F3. FP-safe build placement (kill the infinite-plane assumption)
   Type: mechanical | Pillar: Factory pressure = identity
@@ -636,6 +637,8 @@ Method: capture the Game view in Play mode, judge the frame, fix the single wors
 - [ ] Free lead: Abandoned Factory Lite (Asset Store) — safe mood greys for blockout; not gated, but not queued until visual Now is thin.
 
 ## Agent log (newest first — one line per session: date, task, result, commit)
+
+- 2026-07-20: auto-dev F2 interaction-ray choke point — ViewRay.Current(Camera); iso uses mouse ray, FP uses viewport centre; routed PlayerAim, PlayerRepairTool, PlayerBuildTool, DemolishHighlight. **[?] needs in-editor Play verification (no Unity MCP).**
 
 - 2026-07-20: auto-dev F1 first-person camera rig — ViewMode static + PlayerPrefs; FirstPersonCamera runtime-attached to Main Camera by SectorRuntimeBootstrap; head anchor at 1.65m; CameraFollow gated on ViewMode.IsIso; ResumeFromCurrent smooth return; shake sampled in FP; cursor locks in FP and releases for pause/upgrade. **[?] needs in-editor Play verification (no Unity MCP).**
 

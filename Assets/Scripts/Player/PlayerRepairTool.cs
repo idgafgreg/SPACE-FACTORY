@@ -43,7 +43,7 @@ public class PlayerRepairTool : MonoBehaviour
 
     void TryRepair()
     {
-        Ray ray = repairCamera.ScreenPointToRay(Input.mousePosition);
+        Ray ray = ViewRay.Current(repairCamera);
         if (!Physics.Raycast(ray, out var hit, maxRepairDistance, targetLayerMask)) return;
 
         // Structures use one of three independent HP systems depending on type
