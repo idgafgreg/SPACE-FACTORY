@@ -77,3 +77,9 @@
 # Declaring them text explicitly overrides the guess and leaves the index alone.
 *.obj       text eol=lf
 *.mtl       text eol=lf
+
+# This one vendored license carries a stray lone CR (an old Mac line ending)
+# mid-file, which makes eol normalization non-idempotent: it re-checks-out
+# dirty no matter how many times it is restored. Pin it byte-exact and stop
+# converting a file we should not be rewriting anyway.
+Assets/Art/ThirdParty/Kenney_SpaceKit/License.txt -text
