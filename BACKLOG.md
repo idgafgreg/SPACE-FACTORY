@@ -202,7 +202,7 @@ Conventions for this block:
 
 #### Phase 2 — art & lighting re-pass (the actual "looks as good as iso" work)
 
-- [ ] F6. Interior enclosure — real ceilings + volume
+- [x] F6. Interior enclosure — real ceilings + volume
   Type: visual / mechanical | Pillar: Workplace as trap
   Lore: `BIBLE.md` diegetic grammar (interrogation lighting, hard spots, little bounce fill) — none
   of which is possible in a room with no ceiling; "workplace as trap" needs a lid.
@@ -217,6 +217,24 @@ Conventions for this block:
   industrial-cramped, not warehouse (F13 audits this against player height).
   done-when: Play (FP) — looking up anywhere on the enclosed deck shows structure, not skybox;
   Play (iso) — top-down view identical to today, no ceiling occluding the camera; console clean
+  DONE 2026-07-21 — `ShipInteriorUpgrade.BuildCeiling` (UpgradeVersion 55→56 so existing scenes
+  rebuild instead of shipping a lidless deck): 176 overlapping hull-palette panels at y=3.2 with
+  per-panel value jitter off a stable hash, 21 ribs on the underside, and `BuildOverheadPipes`
+  promoted from dead code — it was written but never called from `Apply()`, so the conduit this task
+  asked for already existed and simply never ran. Hanging beams re-hung from the lid (y 2.5→2.9)
+  instead of floating at mid height silhouetted against void. `CeilingVisibility` shows it in FP and
+  hides it in iso; switching renderers rather than adding a layer keeps `ProjectSettings` untouched.
+  **Two things the verification changed:** coverage was scoped to the authored hull (x ±42.5,
+  z ±24.5) but the walkable deck runs to x ±60 z ±40 — P2's rails sit at the Ground lip — leaving a
+  band the player can walk into and look up at sky from; and inset panels left 6cm seams that
+  probing found as 88 sky slivers overhead, so panels now overlap.
+  Play-verified: coverage **1617/1617** standable points have structure overhead at 2.5u sampling;
+  iso hides all 209 ceiling renderers; headroom 1.55 over a 1.65 eye; orthographic Front/Right
+  captures show a continuous slab edge-on. Movement scenario re-run green (10/10). Console clean.
+  Deliberately left to F7: panels are shadow-casting-off and culled from point lights (the A5
+  wall-cap layer trick) — lamps hang under a metre below and would blow the lid out to white, and
+  occluding A8's 0.18 rim sun would darken the deck and risk A8b threat readability. Re-lighting the
+  ceiling is F7's call to make on purpose, not a side effect of adding geometry.
 
 - [ ] F7. Eye-level lighting re-pass
   Type: visual | Pillar: Diegetic dread
@@ -692,6 +710,19 @@ Method: capture the Game view in Play mode, judge the frame, fix the single wors
 - [ ] Free lead: Abandoned Factory Lite (Asset Store) — safe mood greys for blockout; not gated, but not queued until visual Now is thin.
 
 ## Agent log (newest first — one line per session: date, task, result, commit)
+
+- 2026-07-21: **auto-dev F6 interior enclosure — real ceilings.** The ship had no lid at all, so
+  first-person looking up was empty skybox and the bible's diegetic grammar (hard spots, little
+  bounce fill) had nothing to mount to. 176 overlapping panels at y=3.2 + 21 ribs, `CeilingVisibility`
+  showing them in FP and hiding them in iso, hanging beams re-hung from the lid, and the never-called
+  `BuildOverheadPipes` promoted into the build so the conduit finally runs. UpgradeVersion 55→56.
+  Play-verified 1617/1617 coverage, iso hides all 209 renderers, console clean; movement scenario
+  re-run green. Sector_Layout doc updated with the volume numbers.
+  Two scoping errors the verification caught: the lid initially stopped at the authored hull while
+  the walkable deck runs 40% wider, and inset panels left 6cm sky slivers on every seam.
+  Also hardened `PlaytestScenarios.Drive` with a wall-clock backstop: `Time.deltaTime` is 0 while the
+  editor is paused — and the scene-capture tools pause it — so a game-time loop waited on a clock
+  that never ticked and the scenario hung silently with no output. Found by it happening mid-task.
 
 - 2026-07-21: **playtest harness gains input-driven scenarios** (human request, after two bugs got
   through). Added `GameInput`, a facade over `UnityEngine.Input` that forwards straight through

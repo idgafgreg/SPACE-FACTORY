@@ -16,6 +16,22 @@
 - Zone F — Vent Breach Approach: second threat lane with a less obvious path, used to teach that one defense line is not enough.
 - Zone G — Maintenance Pocket: fallback area for repairs and repositioning, protected enough to support recovery but not fully immune to failure spillover.
 
+# Interior Volume (F6, 2026-07-21)
+
+- The deck is enclosed. Ceiling underside sits at y = 3.2 against wall tops at ~2.9, giving roughly
+  1.55 of headroom over a 1.65 eye — industrial-cramped rather than warehouse. F13 audits this
+  against the final astronaut art.
+- Coverage spans the whole walkable deck (x ±60, z ±40), not just the authored hull (x ±42.5,
+  z ±24.5). The edge rails from P2 sit at the Ground lip, so the player can stand well outside the
+  hull; a lid that stopped at the hull left a band to walk into and look up at open sky from.
+- The ceiling is built at runtime by ShipInteriorUpgrade and is visible in first person only.
+  CeilingVisibility switches it off in iso, where an overhead camera would otherwise be looking at
+  the inside of a lid. Neither view mode is allowed to regress the other.
+- Panels do not cast shadows and are culled from point lights (the A5 wall-cap layer trick).
+  Corridor lamps hang under a metre below the ceiling and would blow it out to white, and letting a
+  solid lid occlude A8's 0.18 rim sun would darken the whole deck and put A8b threat readability at
+  risk. F7 owns re-lighting the ceiling deliberately once fixtures are mounted to it.
+
 # Flow Through The Sector
 
 - Start at the Command Hub with immediate visual access to the nearest scrap source and the central processing space.

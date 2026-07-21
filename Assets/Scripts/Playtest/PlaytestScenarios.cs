@@ -109,11 +109,25 @@ public partial class PlaytestHarness
     IEnumerator Drive(GameInput.Scripted input, float seconds)
     {
         float t = 0f;
+        // Wall-clock backstop. Time.deltaTime is 0 while the editor is paused —
+        // and the scene-capture tools pause it — so a game-time loop waits for a
+        // clock that never ticks and the scenario hangs with no output at all.
+        // A hung suite is worse than a failed one: it looks like nothing ran.
+        float realStart = Time.realtimeSinceStartup;
+        float realBudget = Mathf.Max(5f, seconds * 10f);
+
         while (t < seconds)
         {
             yield return null;
             t += Time.deltaTime;
             input.ClearEdges();
+
+            if (Time.realtimeSinceStartup - realStart > realBudget)
+            {
+                Debug.LogWarning($"{LogPrefix} Drive aborted after {realBudget:0.0}s real time " +
+                                 $"with only {t:0.00}s of game time — is the editor paused?");
+                yield break;
+            }
         }
     }
 

@@ -8,7 +8,9 @@ using UnityEngine;
 /// </summary>
 public class ShipInteriorUpgrade : MonoBehaviour
 {
-    const int UpgradeVersion = 55;
+    // 56: F6 interior ceiling. Bumped so scenes carrying the v55 marker rebuild
+    // instead of skipping and shipping a lidless deck.
+    const int UpgradeVersion = 56;
 
     // TransparentFX — built-in layer, ships with every project (same choice as
     // PostFXBootstrap.VolumeLayer). Wall caps live here so point lights can cull
@@ -115,6 +117,7 @@ public class ShipInteriorUpgrade : MonoBehaviour
         BuildWallBaseTrim(root.transform);
         BuildWallAccentRails(root.transform);
         BuildWallCaps(root.transform);
+        BuildCeiling(root.transform);
         BuildHangingBeams(root.transform);
         BuildHubDeckPad(root.transform);
         BuildHubFloodLight(root.transform);
@@ -718,10 +721,154 @@ public class ShipInteriorUpgrade : MonoBehaviour
         light.shadows = LightShadows.None;
     }
 
+    /// <summary>Underside height of the interior ceiling (F6).</summary>
+    public const float CeilingHeight = 3.2f;
+
+    /// <summary>
+    /// F6: a real lid over the enclosed deck.
+    ///
+    /// The ship had no ceiling at all — the iso camera looks straight down
+    /// through one, so none was ever built (see the old notes on the corridor
+    /// lights and hanging beams). In first person that meant looking up showed
+    /// empty skybox, which was the single biggest "this is not a real game"
+    /// tell, and it also made the bible's diegetic grammar impossible: hard
+    /// spots and little bounce fill need something overhead to mount to and
+    /// bounce off. "Workplace as trap" needs a lid.
+    ///
+    /// Height is 3.2 against wall tops at ~2.9 and a 1.65 eye, so roughly 1.5 of
+    /// headroom — industrial-cramped rather than warehouse. F13 audits this
+    /// against the final astronaut art.
+    ///
+    /// Panels live on <see cref="CapLayer"/>, which every non-directional light
+    /// already culls (the A5 wall-cap trick). Corridor lamps hang at y≈2.35,
+    /// less than a metre under this, so without that they would blow out to
+    /// white exactly the way the caps did. F7 owns re-lighting the ceiling
+    /// properly once fixtures are mounted to it.
+    ///
+    /// Shadow casting is off for the same reason: A8 tuned the sun to 0.18 as a
+    /// rim light, and letting a solid lid occlude it would darken the whole deck
+    /// and put A8b's threat readability at risk. That is F7's call to make
+    /// deliberately, not a side effect of adding geometry.
+    /// </summary>
+    void BuildCeiling(Transform parent)
+    {
+        if (!TryGetEnclosedDeckBounds(out Bounds area)) return;
+
+        var ceilingRoot = new GameObject("Ceiling");
+        ceilingRoot.transform.SetParent(parent, false);
+        ceilingRoot.AddComponent<CeilingVisibility>();
+
+        // Tile rather than one slab: per-panel value jitter gives the eye scale
+        // overhead instead of one flat grey plane.
+        //
+        // Panels OVERLAP by a few centimetres rather than being inset. An inset
+        // left 6cm gaps on every seam, and a 6cm sliver of skybox 1.5m above the
+        // player's head is still skybox — coverage probes found 88 of them.
+        // Seams read from the value jitter and the ribs, not from real holes.
+        const float panel = 8f;
+        const float overlap = 0.08f;
+        area.Expand(new Vector3(1.5f, 0f, 1.5f));   // reach past the deck lip
+        int nx = Mathf.Max(1, Mathf.CeilToInt(area.size.x / panel));
+        int nz = Mathf.Max(1, Mathf.CeilToInt(area.size.z / panel));
+        float sx = area.size.x / nx;
+        float sz = area.size.z / nz;
+
+        for (int ix = 0; ix < nx; ix++)
+        {
+            for (int iz = 0; iz < nz; iz++)
+            {
+                float cx = area.min.x + sx * (ix + 0.5f);
+                float cz = area.min.z + sz * (iz + 0.5f);
+
+                var p = GameObject.CreatePrimitive(PrimitiveType.Cube);
+                p.name = "CeilingPanel";
+                p.transform.SetParent(ceilingRoot.transform, false);
+                Destroy(p.GetComponent<Collider>());
+                p.layer = CapLayer;
+                p.transform.position = new Vector3(cx, CeilingHeight + 0.09f, cz);
+                p.transform.localScale = new Vector3(sx + overlap, 0.18f, sz + overlap);
+
+                var r = p.GetComponent<Renderer>();
+                r.shadowCastingMode = UnityEngine.Rendering.ShadowCastingMode.Off;
+                // Per-panel value jitter off a stable hash — neighbouring panels
+                // never match, and the pattern is identical between runs.
+                int h = (ix * 73856093) ^ (iz * 19349663);
+                float j = 0.88f + ((h & 0xFF) / 255f) * 0.24f;
+                var inst = new Material(_ceilMat);
+                inst.color = new Color(j, j, j, 1f);
+                r.sharedMaterial = inst;
+            }
+        }
+
+        BuildCeilingRibs(ceilingRoot.transform, area);
+        // Promote the overhead pipe run from dead code to real ducting. It was
+        // written but never called from Apply(), so the conduit the task asks
+        // for already existed and simply never ran.
+        BuildOverheadPipes(ceilingRoot.transform);
+    }
+
+    /// <summary>Cross ribs on the ceiling underside — structure, and something for
+    /// F7's fixtures to hang from.</summary>
+    void BuildCeilingRibs(Transform parent, Bounds area)
+    {
+        const float ribSpacing = 6f;
+        int ribs = Mathf.Max(1, Mathf.FloorToInt(area.size.x / ribSpacing));
+        for (int i = 0; i <= ribs; i++)
+        {
+            float x = area.min.x + (area.size.x / ribs) * i;
+            var rib = GameObject.CreatePrimitive(PrimitiveType.Cube);
+            rib.name = "CeilingRib";
+            rib.transform.SetParent(parent, false);
+            Destroy(rib.GetComponent<Collider>());
+            rib.layer = CapLayer;
+            rib.transform.position = new Vector3(x, CeilingHeight - 0.12f, area.center.z);
+            rib.transform.localScale = new Vector3(0.35f, 0.24f, area.size.z);
+            var rr = rib.GetComponent<Renderer>();
+            rr.shadowCastingMode = UnityEngine.Rendering.ShadowCastingMode.Off;
+            rr.sharedMaterial = _trimMat;
+        }
+    }
+
+    /// <summary>
+    /// XZ extent the ceiling has to cover: everywhere the player can stand.
+    ///
+    /// The authored hull spans x±42.5 z±24.5, but the walkable deck runs to
+    /// x±60 z±40 — P2's edge rails sit at the Ground lip, not the hull — so
+    /// covering only the hull left a band the player can walk into and look
+    /// straight up at skybox from, which is the exact tell this task exists to
+    /// remove. Union both so the lid reaches the rails.
+    /// </summary>
+    static bool TryGetEnclosedDeckBounds(out Bounds area)
+    {
+        area = new Bounds();
+        bool any = false;
+
+        var ground = GameObject.Find("Ground");
+        var gr = ground != null ? ground.GetComponent<Renderer>() : null;
+        if (gr != null) { area = gr.bounds; any = true; }
+
+        var walls = GameObject.Find("Walls");
+        if (walls != null)
+        {
+            foreach (Transform t in walls.transform)
+            {
+                if (t == null) continue;
+                string n = t.name;
+                if (!(n.StartsWith("Hull_") || n.StartsWith("Corr_") || n.StartsWith("Ring_"))) continue;
+                var r = t.GetComponent<Renderer>();
+                if (r == null) continue;
+                if (!any) { area = r.bounds; any = true; }
+                else area.Encapsulate(r.bounds);
+            }
+        }
+
+        return any;
+    }
+
     void BuildHangingBeams(Transform parent)
     {
-        // Iso camera looks down — flat ceilings above the camera are invisible.
-        // Dark cross-beams at mid height silhouette against the void (Barotrauma greeble).
+        // Beams now hang from the F6 ceiling rather than floating at mid height
+        // silhouetted against void, which is what they did when there was no lid.
         var layout = SectorLayout.Instance;
         if (layout == null || layout.lanes == null) return;
 
@@ -732,7 +879,7 @@ public class ShipInteriorUpgrade : MonoBehaviour
             {
                 Vector3 a = lane.GetPoint(i);
                 Vector3 b = lane.GetPoint(i + 1);
-                Vector3 mid = (a + b) * 0.5f + Vector3.up * 2.85f;
+                Vector3 mid = (a + b) * 0.5f + Vector3.up * (CeilingHeight - 0.30f);
                 float len = Vector3.Distance(a, b);
                 if (len < 0.5f) continue;
 
@@ -746,7 +893,7 @@ public class ShipInteriorUpgrade : MonoBehaviour
                 beam.name = "HangBeam";
                 beam.transform.SetParent(parent, false);
                 Destroy(beam.GetComponent<Collider>());
-                beam.transform.position = mid + Vector3.down * 0.35f;
+                beam.transform.position = mid;
                 beam.transform.localScale = new Vector3(0.22f, 0.12f, Mathf.Min(len * 0.8f, 4.5f));
                 beam.transform.rotation = Quaternion.LookRotation(dir, Vector3.up);
                 beam.GetComponent<Renderer>().sharedMaterial = _ceilMat;
