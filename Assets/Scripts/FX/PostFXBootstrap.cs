@@ -38,19 +38,23 @@ public class PostFXBootstrap : MonoBehaviour
 
     [Header("First-person profile (F8)")]
     // A1 tuned the grade against the iso frame, where the camera sees ten light
-    // pools at once and the eye has plenty to read. At eye level it sees one
-    // pool, and the same grade removed 82% of the image: measured mean luma
-    // 0.134 with the PostProcessLayer disabled versus 0.024 with it on, standing
-    // 5m from a live lamp. That is why F7 could not make corridors readable by
-    // touching lamps — the lever was always here.
+    // pools at once. At eye level it sees one, so the FP profile raises exposure
+    // off iso's 0.12, lifts the shadow floor and eases the vignette so pooled
+    // light AND the deck/walls between pools survive the grade.
     //
-    // The FP profile lifts exposure and the shadow floor and eases the vignette,
-    // so pooled light and the deck between pools both survive the grade. It is
-    // deliberately still dark: the bible wants rooms that get blacker, not a
-    // brightened frame. Iso keeps A1's numbers exactly.
+    // Tuned by rendering real corridor frames (a west-corridor vantage with a
+    // ceiling, walls, hazard stripes and amber rails in shot), NOT an empty
+    // floor: an earlier pass "measured" the corridor as 82% black, but that was
+    // a camera aimed at bare deck with nothing lit in frame — a real corridor
+    // reads as a moody, legible space at these values. Exposure is the ONE lever
+    // held back: pushing it past ~1.3 shoves the frame over bloom's 1.35
+    // threshold and diffusion 6.5 smears it to mush, so shadow lift + ambient
+    // (AtmosphereController.fpAmbientColor) do the floor-legibility work instead.
+    // Deliberately still dark — the bible wants rooms that get blacker. Iso keeps
+    // A1's numbers exactly.
     public float fpPostExposure     = 0.95f;
-    public float fpShadowLift       = 0.115f;
-    public float fpVignetteIntensity = 0.20f;
+    public float fpShadowLift       = 0.16f;
+    public float fpVignetteIntensity = 0.14f;
 
     ColorGrading _grade;
     Vignette _vignette;

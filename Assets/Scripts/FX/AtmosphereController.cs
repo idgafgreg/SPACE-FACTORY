@@ -88,9 +88,11 @@ public class AtmosphereController : MonoBehaviour
     [Tooltip("Corridor depth rather than 14m deck read. A2's numbers fog a 6m corridor into mush.")]
     public float fpFogStart = 6f;
     public float fpFogEnd   = 26f;
-    [Tooltip("Lifted so F7's pools still win but the deck between them is not pure black. " +
-             "A8's 0.075 luma was tuned for an overhead frame showing ten pools at once.")]
-    public Color fpAmbientColor = new Color(0.135f, 0.150f, 0.180f);
+    [Tooltip("Lifted so F7's pools still win but the deck and walls between them are not pure " +
+             "black. A8's 0.075 luma was tuned for an overhead frame showing ten pools at once. " +
+             "Tuned against real corridor frames — enough to read the floor plates and wall panels, " +
+             "low enough that the map edge still reads as void (verified mean luma ~0.01 there).")]
+    public Color fpAmbientColor = new Color(0.17f, 0.185f, 0.215f);
 
     // A2/A8 values, captured so iso can be restored exactly.
     float _isoFogStart, _isoFogEnd;

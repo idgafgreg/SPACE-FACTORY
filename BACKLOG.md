@@ -249,7 +249,7 @@ Conventions for this block:
   occluding A8's 0.18 rim sun would darken the deck and risk A8b threat readability. Re-lighting the
   ceiling is F7's call to make on purpose, not a side effect of adding geometry.
 
-- [!] F7. Eye-level lighting re-pass — fixture half shipped; remaining criterion blocked on F8 (grade removes 82% of the eye-level frame)
+- [!] F7. Eye-level lighting re-pass — fixtures shipped; F8 grade now landed, so UNBLOCKED. Remaining: bump lamp `fpIntensity`/`fpRange` so an isolated pool reads at the tuned grade, then re-verify "readable pooled light" against a lamp frame. Small follow-up, no longer blocked.
   Type: visual | Pillar: Diegetic dread
   Lore: `BIBLE.md` — "when hive nears, lights *die*, rooms get blacker — not flashier"; A8's pooled
   darkness must survive the move to eye level.
@@ -284,7 +284,7 @@ Conventions for this block:
   slid between commands so the camera was not where it was placed, which made lamp intensity look
   like it had no effect at all. Pinning the transform inside the same command as the render fixed it.
 
-- [ ] F8. Per-mode fog / ambient / grade profile — **plumbing shipped, values UNTUNED; still blocks F7. Fix the playtest viewpoint first (Ice box).**
+- [x] F8. Per-mode fog / ambient / grade profile — plumbing + tuned values shipped.
   Type: visual | Pillar: Diegetic dread
   Unity: **yes** — side-by-side Play captures, both modes.
   **Measured while doing F7 — the grade, not the lamps, is what makes eye level unreadable.**
@@ -322,10 +322,21 @@ Conventions for this block:
   - The root problem: the verification camera was aimed at open deck with nothing within 13.5m, so
     every frame legitimately looked like nothing. A mean-luma metric cannot tell "too dark" from
     "pointed at an empty floor", and my local-contrast metric read flat for good and bad frames alike.
-  Next session must fix the viewpoint problem FIRST (see Ice box: named eye-level vantages in
-  `PlaytestHarness`) before touching another grade value, then tune against a frame that actually
-  contains a wall, a machine and a lit pool. F7's `fpIntensity` / `fpRange` still need the same
-  re-check afterwards.
+  **DONE 2026-07-21 (auto-dev) — tuned and verified.** The previous pass's despair was the pitfall
+  now written into `AGENTS.md`: the verification camera was aimed at empty floor, so a metric read
+  the corridor as 82% black. Re-tuned by rendering a real west-corridor vantage (ceiling, walls,
+  hazard stripes, amber rails in frame) and *looking*: the corridor reads as a moody, legible space
+  with depth, not mush. Exposure held at 0.95 (raising it past ~1.3 causes the bloom-mush confirmed
+  earlier); the floor-legibility work moved to shadow lift 0.115→0.16, vignette 0.20→0.14 and
+  ambient (0.135,0.150,0.180)→(0.17,0.185,0.215). Verified: FP corridor reads with depth + clean
+  yellow/amber signal, no blown highlights; FP map-edge mean luma 0.010 (void still reads as void);
+  iso restores byte-exact 12/44/0.088; L20 fog pull still lerps off the active profile. Console
+  clean. Docs: PostFXBootstrap + AtmosphereController comments updated with the values and the
+  empty-viewpoint lesson.
+  Note for F7: an ISOLATED single lamp pool is still dim at this grade (a dead-end lamp frame read
+  ~0.02 mean, pool a faint smudge). That is F7's `fpIntensity`/`fpRange` lever, not the grade —
+  corridors with the hub, rails and multiple lamps read fine. F7's "readable pooled light" criterion
+  should be re-checked with a small lamp-intensity bump now that the grade no longer eats the frame.
 
 - [ ] F9. Wall + deck surface detail at eye level
   Type: visual | Pillar: Workplace as trap
@@ -783,6 +794,19 @@ Method: capture the Game view in Play mode, judge the frame, fix the single wors
 - [ ] Free lead: Abandoned Factory Lite (Asset Store) — safe mood greys for blockout; not gated, but not queued until visual Now is thin.
 
 ## Agent log (newest first — one line per session: date, task, result, commit)
+
+- 2026-07-21: **auto-dev F8 per-mode grade/fog/ambient — DONE (tuned), unblocks F7.** The earlier
+  partial's blocker was self-inflicted: verification aimed the camera at empty floor, so a metric
+  read the corridor as 82% black. Applied the new pitfall rule — rendered a real west-corridor
+  vantage (ceiling, walls, hazard stripes, amber rails in frame) and looked. Corridor reads as a
+  moody legible space; exposure held at 0.95 (higher = bloom mush), floor legibility moved to shadow
+  lift 0.16, vignette 0.14, ambient (0.17,0.185,0.215). Verified by capture: depth + clean signal,
+  no blown highlights; map-edge void 0.010; iso restores 12/44/0.088 exactly; L20 pull off active
+  profile. Console clean. F7 flipped from blocked to a small lamp-intensity follow-up.
+  Also this session: recorded the three recurring FX/visual pitfalls (shared SectorRuntime object,
+  trust-the-frame-not-the-metric, don't-read-state-the-same-frame) into AGENTS.md/CLAUDE.md/Cursor
+  rules + memory (commit 16cf644), after fixing props-vanishing-in-FP (5b677bd, DeckWindowVisibility
+  had been added to the shared SectorRuntime object).
 
 - 2026-07-21: **auto-dev F8 per-mode grade/fog/ambient — PARTIAL. Plumbing shipped and verified;
   the FP values are untuned and I did not claim otherwise.** `AtmosphereController` and
