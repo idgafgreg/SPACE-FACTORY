@@ -11,7 +11,13 @@ You are the playtest agent for SPACE FACTORY. Run scripted in-editor scenarios t
 | Smoke | `PlaytestHarness.RunSmoke()` | Core singletons + WestCorridor + hub present; no setup holes |
 | Metrics | `PlaytestHarness.DumpMetrics()` | Snapshot only (wave/hub/player/power/resources/FPS) |
 | Wave 1 gate | `PlaytestHarness.RunWave1Gate()` | 1 Barrier + 1 AutoTurret at west choke clears Wave 1 with hub ≥ ~15% HP |
-| Full suite | `PlaytestHarness.RunFullSuite()` | Smoke + Wave 1 + markdown report under `SPACE FACTORY INFO/` |
+| Movement + look | `PlaytestHarness.RunMovementScenario()` | Drives WASD + mouse for real time in **both** view modes: player travels, FP yaw does not compound, strafe is lateral, mouse turns the body, camera and body stay welded, pitch clamps without roll |
+| Build + demolish | `PlaytestHarness.RunBuildScenario()` | Places and removes a Barrier through the tool's own placement path in both modes |
+| Damage / respawn | `PlaytestHarness.RunCombatScenario()` | Player dies at 0 HP, respawns with full HP, FP body stays hidden through respawn, iso art returns |
+| Cursor ownership | `PlaytestHarness.RunTransitionScenario()` | FP locks the cursor, panels free and re-lock it, a destroyed panel does not strand it, `MainMenuController.Awake` frees it, tearing down the FP rig releases it |
+| Full suite | `PlaytestHarness.RunFullSuite()` | Smoke + Wave 1 + all four scenarios + markdown report under `SPACE FACTORY INFO/` |
+
+**Why the scenarios exist:** static state assertions are not enough. First-person WASD was completely broken through a `/unity-pass`, a `/bug-pass` and a full suite PASS, because `PlayerController` early-returns with no input so the defective path never executed under test. Dead main-menu buttons survived the same suite. Anything input- or transition-shaped must be driven, not inspected. Scenarios drive real input via `GameInput`, which forwards to `UnityEngine.Input` unless a test source is pushed.
 
 Feel items (prep boredom, zoom, juice) stay human — use `SPACE FACTORY INFO/Playtest_Checklist_*.md`.
 
@@ -47,7 +53,11 @@ internal class CommandScript : IRunCommand
 6. **Wait for completion.** Poll `Unity_GetConsoleLogs` / `Unity_ReadConsole` until you see:
    - `[PlaytestHarness] SUITE DONE` (full suite), or
    - `[PlaytestHarness] WAVE1 DONE PASS|FAIL` (wave1-only), or
-   - `[PlaytestHarness] SMOKE PASS|FAIL` (smoke-only)
+   - `[PlaytestHarness] SMOKE PASS|FAIL` (smoke-only), or
+   - `[PlaytestHarness] MOVEMENT|BUILD|COMBAT|TRANSITION DONE PASS|FAIL` (single scenario)
+
+   `Unity_GetConsoleLogs` has returned empty for these; `Unity_ReadConsole` with
+   `FilterText: "PlaytestHarness"` (or a specific scenario's `BEGIN` line) is reliable.
    Wave 1 uses accelerated `timeScale` but can still take up to ~90s realtime. Do not stop Play early.
 
 7. **Collect evidence:**

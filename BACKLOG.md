@@ -693,6 +693,22 @@ Method: capture the Game view in Play mode, judge the frame, fix the single wors
 
 ## Agent log (newest first — one line per session: date, task, result, commit)
 
+- 2026-07-21: **playtest harness gains input-driven scenarios** (human request, after two bugs got
+  through). Added `GameInput`, a facade over `UnityEngine.Input` that forwards straight through
+  unless a test source is pushed, and routed 28 call sites (PlayerController, FirstPersonCamera,
+  ViewRay, CameraFollow, PlayerBuildTool). Four scenarios, standalone or folded into
+  `RunFullSuite`: movement + look (both modes), build + demolish (both modes), damage/death/respawn,
+  cursor ownership. All green — MOVEMENT 10/10, BUILD 6/6, COMBAT 5/5, TRANSITION 6/6.
+  **Mutation-tested:** reintroducing the WASD spin makes the movement scenario report 4 failures
+  naming the exact symptoms (travelled 0.11u, yawDrift 90deg, mouse-X yaw delta 0, camera/body
+  mismatch 16.6deg), with iso correctly unaffected; reverted and back to 10/10. A suite that has
+  never failed proves nothing, so this is now the bar for new scenarios.
+  Three defects the scenarios exposed in *themselves* while being written, worth remembering:
+  frame-count driving is meaningless at 200+ fps (use seconds); the iso build test silently read
+  the operator's real mouse position and was not reproducible; and the transition scenario cannot
+  `DontDestroyOnLoad` the harness, because the harness attaches to the shared `SectorRuntime`
+  object and dragging that across a scene load strands the editor.
+
 - 2026-07-21: **human bug report — main menu buttons dead after a first-person run. Fixed.**
   Diagnosed live in the user's own paused session: scene `MainMenu`, `Cursor.lockState = Locked`,
   `Cursor.visible = False`. The buttons were never broken — EventSystem, StandaloneInputModule,
