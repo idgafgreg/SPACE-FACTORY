@@ -29,6 +29,13 @@ Rules for tasks in this file:
 
 ## Decisions (human-made, newest first)
 
+- 2026-07-21 (human): **Map size stays as-is (~120×80); the empty deck is filled as the factory
+  grows, not by shrinking the playable area.** A first-person playtest flagged "most of the map is
+  empty except spawn". Ruling: that emptiness is expansion headroom, not a bug — do NOT shrink the
+  deck or pull the walls in. Future work fills it through played expansion (more machines, belts,
+  breach lanes, dressing that scales with WavesCleared), not by reducing scope. Agents must not
+  "fix" the emptiness by resizing the map.
+
 - 2026-07-20 (human): **First-person is now IN SCOPE** as a toggleable second view mode, and the
   target is "FP that looks and reads as good as the current build, if not better" — i.e. a full
   art/lighting re-pass, not a camera hack. This **overrules** the old `lore/BIBLE.md` north-star

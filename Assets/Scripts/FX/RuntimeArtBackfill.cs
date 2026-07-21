@@ -58,6 +58,12 @@ public class RuntimeArtBackfill : MonoBehaviour
             if (node == null) continue;
             EnsureArt(node.gameObject, PickNodeModel(node));
             EnsureBlobShadow(node.transform, 0.65f);
+
+            // The fitted crate art collapses to a ~0.14m speck on nodes, so add a
+            // legible resource-coloured cluster on top (Wave C readability).
+            var marker = node.GetComponent<NodeReadabilityMarker>();
+            if (marker == null) marker = node.gameObject.AddComponent<NodeReadabilityMarker>();
+            marker.resourceType = node.resourceType;
         }
 
         foreach (var crate in FindObjectsByType<SalvageCrate>(FindObjectsInactive.Exclude))

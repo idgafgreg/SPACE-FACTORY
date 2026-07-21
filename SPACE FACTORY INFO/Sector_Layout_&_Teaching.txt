@@ -50,6 +50,18 @@
   against the iso frame. F8 owns the per-mode grade/ambient and should re-check the lamp values
   above once it lands.
 
+# Resource Node Readability (Wave C, 2026-07-21)
+
+- Resource nodes render as a cluster of resource-coloured emissive crystals on the plinth
+  (NodeReadabilityMarker). The generic art backfill collapses a node's fitted placeholder to a
+  ~0.14m speck, so without this a node read as a bare dark disc — a first-person playtest could not
+  tell a node from the floor. The cluster is the readable element; the plinth is just its base.
+- Colour signals the resource: scrap = amber, energy = yellow, circuits = blue, advanced = violet.
+  Emission is deliberately low (below the bloom threshold) so the crystals read as faceted geometry
+  rather than a glow blob, with a small point light so the deposit is findable in the dark.
+- Shard renderers carry "Readability" in their name so RuntimeArtBackfill's HideHostRenderers
+  exempts them on its rescan (same mechanism the plinth uses); otherwise the rescan blanks them.
+
 # Flow Through The Sector
 
 - Start at the Command Hub with immediate visual access to the nearest scrap source and the central processing space.
