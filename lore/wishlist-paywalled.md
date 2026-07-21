@@ -2,7 +2,7 @@
 
 Assets and tools found during lore research that require purchase. **Do not buy until funded.** Prices are approximate store listing prices at discovery time and may change.
 
-Last updated: 2026-07-20
+Last updated: 2026-07-21
 
 | Priority | Item | Est. price | Link | Why it fits SPACE FACTORY | Notes |
 |----------|------|------------|------|---------------------------|-------|
@@ -10,6 +10,7 @@ Last updated: 2026-07-20
 | High | Modular Horror Kit: Industrial Edition | ~$23 | https://assetstore.unity.com/packages/3d/environments/industrial/modular-horror-kit-industrial-edition-342062 | Cheap industrial horror corridors, traps, creatures, URP | Good prototype kit; Dec 2025 release; URP — convert if still on Built-in |
 | High | Bionic structures | ~$9.90 | https://assetstore.unity.com/packages/3d/environments/bionic-structures-163649 | Low-cost organic outgrowths/cocoons for hive-on-metal kitbash | Added 2026-07-19; URP/HDRP shaders noted on store page |
 | High | Janky Audio | ~$20 | https://assetstore.unity.com/packages/tools/audio/janky-audio-288290 | Occlusion + non-spherical reverb for diegetic PA / vents / lonely decks | Added 2026-07-20; **Built-in compatible** (matches current project RP) |
+| Medium | Modular Industrial Catwalk Kit [Paid] | ~$10 | https://assetstore.unity.com/packages/3d/props/industrial/modular-industrial-catwalk-kit-paid-287148 | Extra catwalk colors/ladders/ramps/cages for multi-level factory decks | Added 2026-07-21; try free kit first (287064) |
 | Medium | Modular Sci-Fi Corridor Pack | ~$20 | https://assetstore.unity.com/packages/3d/environments/sci-fi/modular-sci-fi-corridor-pack-193228 | Retro modular corridors; Built-in + URP/HDRP packages included | Added 2026-07-20; try free modular kits first |
 | Medium | Alien Biomass Planet | ~$49.99 | https://assetstore.unity.com/packages/3d/environments/sci-fi/alien-biomass-planet-212722 | Animated biomass meshes, hue master shader, slime SFX | Added 2026-07-19; planet-surface bias — cherry-pick props onto ship decks |
 | Medium | Bio Horror / Sci-fi Environment | ~$59.99 | https://assetstore.unity.com/packages/3d/environments/fantasy/bio-horror-sci-fi-environment-248164 | Infestation props + sci-fi bio-horror demo (URP/HDRP) | Added 2026-07-19; verify style vs our industrial palette |
@@ -24,6 +25,6 @@ Last updated: 2026-07-20
 
 - Prefer **one** environment kit that matches art direction over stacking three similar packs.
 - Project is **Built-in RP** as of 2026-07-20 — prefer Built-in-compatible tools (e.g. Janky Audio) before URP-only packs.
-- Try free modular kits (3D Free Modular Kit, EmaceArt corridors) and built-in reverb/occlusion before buying corridor or fog packs.
+- Try free modular kits (3D Free Modular Kit, EmaceArt corridors, free catwalks, free pipelines) and built-in reverb/occlusion before buying corridor, catwalk, or fog packs.
 - Prefer cheap biomass kitbash (**Bionic structures**) before $50+ infestation packs if only prototyping growth props.
 - Re-check prices and Unity version compatibility on purchase day.

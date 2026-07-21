@@ -6,11 +6,11 @@ Rolling map of useful themes. Updated by daily research runs.
 
 | Pillar | What to mine | Status |
 |--------|----------------|--------|
-| Workplace as trap | Isolation baked into the job, not contrived lockdown | Strong — authenticity research 2026-07-19 (Still Wakes) |
-| Industrial biomass / hive | Threat uses vents, heat, logistics; ship becomes habitat | **Upgraded 2026-07-20** — Flood-style infection staging + recycler/process fiction |
-| Factory pressure = identity | Enemies tied to production loop (Factorio pollution lesson) | Strong; watch StarRupture cycle pressure / keep Biofactory as anti-comp |
-| Diegetic dread | Diegetic UI, failing systems, environmental storytelling | **Upgraded 2026-07-20** — Milham diegetic wayfinding + ship-as-living audio |
-| Lonely worker fantasy | Rustic space labor, patched ship, schedule vs survival | Strong — terrible beauty + recovery beats + lived-in labor props |
+| Workplace as trap | Isolation baked into the job, not contrived lockdown | **Upgraded 2026-07-21** — Shipbreaker debt/pride + Mouthwashing freighter hell |
+| Industrial biomass / hive | Threat uses vents, heat, logistics; ship becomes habitat | Strong — Flood staging (07-20) + Barotrauma husk thresholds (07-21) |
+| Factory pressure = identity | Enemies tied to production loop (Factorio pollution lesson) | Strong; vessel cascading failures (Barotrauma) as soft analog |
+| Diegetic dread | Diegetic UI, failing systems, environmental storytelling | **Upgraded 2026-07-21** — ROUTINE machine-lung audio + Prey functional habitat |
+| Lonely worker fantasy | Rustic space labor, patched ship, schedule vs survival | **Upgraded 2026-07-21** — technician/labor comps (Signalis, Shipbreaker) |
 
 ## Comp watchlist
 
@@ -19,11 +19,17 @@ Rolling map of useful themes. Updated by daily research runs.
 - Alien: Isolation (isolation + Director/menace pacing)
 - Still Wakes the Deep / Self-Contained (workplace horror + art pillars)
 - Halo Flood (infection ecology ladder — design energy)
+- Prey / Talos I (mega-dungeon station + functional habitat — added 2026-07-21)
+- Hardspace: Shipbreaker (lonely corporate labor pride — added 2026-07-21)
+- Mouthwashing (freighter psychological hell — mood only — added 2026-07-21)
+- Barotrauma (vessel systems + husk staging — added 2026-07-21)
+- ROUTINE (diegetic lunar-base industrial horror — deepened 2026-07-21)
+- SIGNALIS (melancholic retrotech loneliness — added 2026-07-21)
 - StarRupture (corporate debt + catastrophe prep windows — watch, don’t copy planet loop)
 - Drill Deep (incremental dread via depth — adjacent)
 - Substructure (factory + descent dread — watch)
 - Biofactory (hive-as-factory **anti-comp** — do not drift)
-- ROUTINE, Haze, Site 17 (adjacent industrial/sci-fi horror)
+- Haze, Site 17 (adjacent industrial/sci-fi horror)
 
 ## Branch policy
 
@@ -44,8 +50,8 @@ Paid + free lore asset leads export to [`assets-wishlist.csv`](assets-wishlist.c
 
 ## Last run
 
-- Date: 2026-07-20
+- Date: 2026-07-21
 - Landed on: `main`
-- Focus weight: industrial art direction + Flood infection ecology + diegetic ship audio; balanced articles / videos / reviews / stories / assets
-- Prior run: 2026-07-19
+- Focus weight: lonely freighter labor + vessel systems failure + diegetic industrial comps; balanced articles / videos / reviews / stories / assets
+- Prior run: 2026-07-20
 - Render pipeline note: project currently **Built-in** (prefer Built-in-compatible kits)
