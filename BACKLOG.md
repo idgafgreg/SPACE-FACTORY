@@ -88,7 +88,7 @@ Conventions for this block:
 
 #### Phase 1 — playable FP (mechanics)
 
-- [ ] F1. `ViewMode` switch + first-person camera rig
+- [?] F1. `ViewMode` switch + first-person camera rig
   Type: mechanical | Pillar: — (enabling work)
   Unity: **yes** — scene wiring of the head anchor + toggle verification in Play mode.
   Change: add a small `ViewMode` static/singleton (`Iso` | `FirstPerson`, default `Iso`, persisted
@@ -102,6 +102,7 @@ Conventions for this block:
   `CameraFollow.Yaw` is consumed by `PlayerController` — keep an equivalent yaw source in FP.
   done-when: Play — `V` flips iso↔FP live, both rigs stable (no snap, no gimbal flip at ±85°),
   cursor locks in FP and releases in iso, `CameraShake` reads correctly in both; console clean
+  DONE 2026-07-20 — ViewMode static + PlayerPrefs; FirstPersonCamera runtime-attached to Main Camera by SectorRuntimeBootstrap; head anchor created at 1.65m; CameraFollow gated on ViewMode.IsIso; ResumeFromCurrent smooth return; shake sampled in FP; cursor locks in FP and releases for pause/upgrade. **[?] needs in-editor Play verification (no Unity MCP).**
 
 - [ ] F2. One interaction-ray choke point for both modes
   Type: mechanical | Pillar: — (enabling work)
@@ -635,6 +636,8 @@ Method: capture the Game view in Play mode, judge the frame, fix the single wors
 - [ ] Free lead: Abandoned Factory Lite (Asset Store) — safe mood greys for blockout; not gated, but not queued until visual Now is thin.
 
 ## Agent log (newest first — one line per session: date, task, result, commit)
+
+- 2026-07-20: auto-dev F1 first-person camera rig — ViewMode static + PlayerPrefs; FirstPersonCamera runtime-attached to Main Camera by SectorRuntimeBootstrap; head anchor at 1.65m; CameraFollow gated on ViewMode.IsIso; ResumeFromCurrent smooth return; shake sampled in FP; cursor locks in FP and releases for pause/upgrade. **[?] needs in-editor Play verification (no Unity MCP).**
 
 - 2026-07-20: lore-gap — bible current; kept F1–F14 top priority. Refreshed L25–L27 (BIBLE cites); added L28 schedule-board ticks, L29 vent-carrier stage-2, L30 scrap/min throughput tax. Next: L31 living-metal ambience. Ice box: PA VO, empathy hazard, stage-3 packs. No game code.
 

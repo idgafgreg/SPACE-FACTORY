@@ -1,4 +1,4 @@
-﻿using UnityEngine;
+using UnityEngine;
 using UnityEngine.SceneManagement;
 
 /// <summary>
@@ -117,5 +117,9 @@ public static class SectorRuntimeBootstrap
             if (player.GetComponent<PlayerArtAttach>() == null)
                 player.gameObject.AddComponent<PlayerArtAttach>();
         }
+
+        var cam = Camera.main;
+        if (cam != null && cam.GetComponent<FirstPersonCamera>() == null)
+            cam.gameObject.AddComponent<FirstPersonCamera>();
     }
 }

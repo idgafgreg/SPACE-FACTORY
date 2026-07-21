@@ -67,6 +67,7 @@ public class CameraFollow : MonoBehaviour
     void LateUpdate()
     {
         if (!target) return;
+        if (!ViewMode.IsIso) return;
 
         ReadOrbitInput();
         ReadZoomInput();
@@ -175,6 +176,23 @@ public class CameraFollow : MonoBehaviour
         _yaw = _targetYaw;
         _pitch = _targetPitch;
         _zoomDistance = _targetZoomDistance;
+        _yawVelocity = 0f;
+        _pitchVelocity = 0f;
+        _zoomVelocity = 0f;
+    }
+
+    /// <summary>
+    /// F1: resume the iso rig from the camera's current world transform without
+    /// snapping. Called when switching from first-person back to iso.
+    /// </summary>
+    public void ResumeFromCurrent()
+    {
+        if (!target) return;
+        Vector3 offset = transform.position - target.position;
+        _zoomDistance = _targetZoomDistance = offset.magnitude;
+        Vector3 dir = offset / Mathf.Max(0.001f, _zoomDistance);
+        _targetYaw = _yaw = Mathf.Atan2(dir.x, dir.z) * Mathf.Rad2Deg;
+        _targetPitch = _pitch = Mathf.Clamp(Mathf.Asin(Mathf.Clamp(dir.y, -1f, 1f)) * Mathf.Rad2Deg, minPitch, maxPitch);
         _yawVelocity = 0f;
         _pitchVelocity = 0f;
         _zoomVelocity = 0f;
