@@ -89,6 +89,25 @@ The hive responds to a hot factory by sending more infection-form residue down b
 - Still only on `VentBreach` / `EastFlank`; **Wave 1** stays West-only and residue-free
 - Tunables on `WaveController`: `heatResidueShareBonusMax`, `heatResidueShareCap`
 
+## Contaminated slurry beat (L24, 2026-07-20)
+
+An infected processor doesn't just run slow — its reclaim line periodically goes
+off-spec and the batch has to be held. Infection becomes an audible/visible event
+on the factory floor instead of a silent rate multiplier.
+
+- Applies to **`Processor` only**. Drills carry `ProcessInfection` too (L17) but have no
+  filtration line, so they never slurry-stall — they stay at the flat 0.55x.
+- While infected, a slurry fault fires every **11–18s** (`faultIntervalMin/Max`)
+- A fault holds the craft for **1.7s** (`stallSeconds`); `RateMult` returns **0** during
+  the hold, so the stall rides the existing `MachineBase.InfectionRateMult` path and the
+  craft loop is unchanged
+- Each fault emits one terse terminal line (filtration/slurry fault wording — a fault
+  report, not an alarm and not a cheer) plus a bile-green primitive drip off the machine lip
+- **Repair releases a held batch immediately** — `ClearInfection` zeroes the stall so a
+  machine can't sit frozen after its residue is gone
+- Clean processors are untouched: no `ProcessInfection` ⇒ `InfectionRateMult` 1.0, never stalls
+- Tunables on `ProcessInfection`: `faultIntervalMin`, `faultIntervalMax`, `stallSeconds`
+
 
 ## Lonely recovery beat (L18, 2026-07-20)
 

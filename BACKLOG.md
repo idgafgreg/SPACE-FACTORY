@@ -66,11 +66,12 @@ Code reality: L15–L21 + P1–P4 + A9/A10 all shipped/verified. Remaining open 
   done-when: Play — idle factory ≈ few/no residue forms; high scrap/min + producers ⇒ measurable residue share on breach lanes; W1 clean; console clean
   DONE 2026-07-20 — WaveController samples Heat01 in MarkInfectionResidueSpawns; effective share = 0.10 + Heat01*0.60 capped 0.80; idle W2 ≈10% / hot ≈70-80% breach crawlers; W1 residue-free; Progression_Spec updated. **[?] needs in-editor Play verification (no Unity MCP).**
 
-- [ ] L24. Contaminated slurry beat on infected processors
+- [x] L24. Contaminated slurry beat on infected processors
   Type: systemic / diegetic | Pillar: Industrial biomass / hive
   Lore: infested recycler / filtration colonization (lore/2026-07-20/stories.md); infection-via-process
   Change: while a `Processor` has `ProcessInfection`, occasionally stall craft briefly + emit wrong-slurry primitive drip VFX + one ship-terminal line (original wording: filtration/slurry fault — not cheer). Repair still clears infection (L17). Distant clean processors unaffected. Numbers in Progression_Spec.
   done-when: Play — infected processor shows stall + terminal line within a short watch window; repair ends it; clean processors never stall for this reason; console clean
+  DONE 2026-07-20 — slurry beat built into `ProcessInfection` (not a new component: it already owns the infected lifecycle, so repair can't orphan a running stall). Fault every 11-18s holds craft 1.7s; `RateMult` returns 0 while held, so the stall rides the existing `InfectionRateMult` path — **zero changes to `Processor.Tick`**. One terse terminal line per fault (4-line pool, RecoveryBeat register) + bile-green primitive drip coroutine. Processor-gated via `_processor` so L17-infected drills never slurry-stall. Play-verified: PROC faults=3 / stalling / rate 0.00 / line emitted; DRILL faults=0; 3 clean processors at rate 1.00 never stalled; forced mid-stall repair released instantly (stalling True→False, rate 0.00→1.00); console clean.
 
 - [ ] L25. Diegetic sector wayfinding plaques
   Type: diegetic | Pillar: Diegetic dread
@@ -366,6 +367,8 @@ Method: capture the Game view in Play mode, judge the frame, fix the single wors
 - [ ] Free lead: Abandoned Factory Lite (Asset Store) — safe mood greys for blockout; not gated, but not queued until visual Now is thin.
 
 ## Agent log (newest first — one line per session: date, task, result, commit)
+
+- 2026-07-20: auto-dev L24 contaminated slurry beat — built into `ProcessInfection` (owns infected lifecycle ⇒ repair can't orphan a stall); fault 11-18s holds craft 1.7s via `RateMult`→0 so `Processor.Tick` is untouched; terse terminal line + bile drip; processor-gated so infected drills never stall. Play-verified stall/line/drill-exempt/clean-control/mid-stall repair release; console clean. Commit `a33db0f`.
 
 - 2026-07-20: playtest suite PASS — fresh Sector01; SMOKE PASS; Wave 1 gate PASS (1 Barrier+1 AutoTurret @ west choke, hub 500/500); report `Playtest_Agent_2026-07-20_165030.md`; harness hardened (dirty-session reject + Instance resolve). Console errors: none. Commit `89df1f8`.
 
