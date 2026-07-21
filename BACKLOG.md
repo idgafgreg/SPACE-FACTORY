@@ -301,48 +301,57 @@ Conventions for this block:
 
 ---
 
-### Lore-gap refill — 2026-07-20 (infection ecology + diegetic ship)
+### Lore-gap refill — 2026-07-20b (bible-backed; after F1–F14)
 
-Code reality: L15–L21 + P1–P4 + A9/A10 all shipped/verified. Remaining open gaps from `lore/2026-07-20` (Flood staging, Milham wayfinding, recycler contamination, cycle-quota dread). Asset pack: **not purchased** — primitives / existing Sfx / runtime meshes only. Visual/audio-only ≤30% of this refill.
+**Priority note:** F1–F14 (above) remains **TOP PRIORITY** per Decision 2026-07-20. Agents take the next open `F*` task first. Lore tasks below are ready when Phase 1 FP (F1–F5) clears, or when a human/groom pulls one up.
 
-- [x] L22. Infection-form residue crawlers (stage 1 ecology)
-  Type: systemic / mechanical | Pillar: Industrial biomass / hive
-  Lore: Flood infect→specialize→coordinate ladder (lore/2026-07-20/summary.md #3; INDEX industrial biomass)
-  Change: add a commit-sized **InfectionResidue** path — either a thin Crawler prefab variant or runtime mod on vent/EastFlank spawns: lower HP, slight speed up, sick-green primitive tint (no asset pack). On death near a drill/processor, seed `ProcessInfection` (reuse L17 controller) instead of only post-clear spray. Wave 1 stays normal crawlers only. Doc stage-1 numbers in `Progression_Spec.md` same commit.
-  done-when: Play — W2+ vent/EastFlank shows ≥1 residue form; kill near machine can infect it; W1 unchanged; console clean
-  DONE 2026-07-20 — InfectionResidue runtime mod; WaveController 50% breach crawlers (min 1) after W1; death seeds ProcessInfection within 5.5m; EnemyArtPulse green threat; Progression_Spec. Play-verified W1=0 / W2=2 / seed infect; console clean.
+Code reality: L15–L24 shipped; L25–L27 still missing; stage-1 residue + heat share exist; no plaques/quota/PA/vent-carrier; schedule board is a static prop only. Bible current through 2026-07-20. Asset pack: **not purchased** — primitives / existing `Sfx` / runtime meshes only. Visual/audio-only ≤30% of this lore block (L27 only).
 
-- [x] L23. Factory heat raises infection-form share
-  Type: systemic | Pillar: Factory pressure = identity
-  Lore: infection staging tied to factory heat (lore/2026-07-20/summary.md suggested experiments; Factorio pollution lesson)
-  Change: sample `FactoryHeatTracker.Heat01` when building spawn queue; among vent/EastFlank crawler slots after W1, convert a capped share to InfectionResidue when heat is high (idle ≈ baseline / 0). Does not reopen West-only W1. Sync caps into Progression_Spec with L22.
-  done-when: Play — idle factory ≈ few/no residue forms; high scrap/min + producers ⇒ measurable residue share on breach lanes; W1 clean; console clean
-  DONE 2026-07-20 — WaveController samples Heat01 in MarkInfectionResidueSpawns; effective share = 0.10 + Heat01*0.60 capped 0.80; idle W2 ≈10% / hot ≈70-80% breach crawlers; W1 residue-free; Progression_Spec updated. **[?] needs in-editor Play verification (no Unity MCP).**
-
-- [x] L24. Contaminated slurry beat on infected processors
-  Type: systemic / diegetic | Pillar: Industrial biomass / hive
-  Lore: infested recycler / filtration colonization (lore/2026-07-20/stories.md); infection-via-process
-  Change: while a `Processor` has `ProcessInfection`, occasionally stall craft briefly + emit wrong-slurry primitive drip VFX + one ship-terminal line (original wording: filtration/slurry fault — not cheer). Repair still clears infection (L17). Distant clean processors unaffected. Numbers in Progression_Spec.
-  done-when: Play — infected processor shows stall + terminal line within a short watch window; repair ends it; clean processors never stall for this reason; console clean
-  DONE 2026-07-20 — slurry beat built into `ProcessInfection` (not a new component: it already owns the infected lifecycle, so repair can't orphan a running stall). Fault every 11-18s holds craft 1.7s; `RateMult` returns 0 while held, so the stall rides the existing `InfectionRateMult` path — **zero changes to `Processor.Tick`**. One terse terminal line per fault (4-line pool, RecoveryBeat register) + bile-green primitive drip coroutine. Processor-gated via `_processor` so L17-infected drills never slurry-stall. Play-verified: PROC faults=3 / stalling / rate 0.00 / line emitted; DRILL faults=0; 3 clean processors at rate 1.00 never stalled; forced mid-stall repair released instantly (stalling True→False, rate 0.00→1.00); console clean.
+- [x] L22. Infection-form residue crawlers (stage 1 ecology) — DONE 2026-07-20 (see archive notes below).
+- [x] L23. Factory heat raises infection-form share — DONE 2026-07-20 (**[?]** Play verify if Unity MCP free).
+- [x] L24. Contaminated slurry beat on infected processors — DONE 2026-07-20.
 
 - [ ] L25. Diegetic sector wayfinding plaques
   Type: diegetic | Pillar: Diegetic dread
-  Lore: Milham diegetic wayfinding / no floating chrome (lore/2026-07-20/summary.md #1; INDEX diegetic dread)
-  Change: runtime world plaques (primitives + TextMesh or OnGUI world-anchored labels) at Hub, WestCorridor approach, VentBreach approach, EastFlank approach — Japanese-subway terse tags e.g. `[SECTOR] HUB` / `WEST BAY` / `VENT APPROACH` / `EAST FLANK`. Steel/amber palette; no new screen HUD chrome. Wire via bootstrap; Sector_Layout note.
-  done-when: Play — all four tags readable from gameplay camera near those zones; no extra canvas clutter; console clean
+  Lore: `lore/BIBLE.md` diegetic grammar + motifs (sector tags); Milham wayfinding (lore/2026-07-20/summary.md #1)
+  Unity: **yes** — readable from iso camera; still useful later in FP (F12 cousin, do not block on F*).
+  Change: runtime world plaques (primitives + TextMesh or world-anchored labels) at Hub, WestCorridor approach, VentBreach approach, EastFlank approach — terse tags e.g. `[SECTOR] HUB` / `WEST BAY` / `VENT APPROACH` / `EAST FLANK`. Steel/amber palette; no new screen HUD chrome. Wire via bootstrap; Sector_Layout note.
+  done-when: Play — all four tags readable near those zones in iso; no extra canvas clutter; console clean
 
 - [ ] L26. Soft shift-quota pressure during Prep
   Type: diegetic / systemic | Pillar: Lonely worker fantasy / Factory pressure = identity
-  Lore: corporate/cycle pressure cousin — owed quotas without planet-builder drift (lore/2026-07-20/summary.md #4 StarRupture)
-  Change: during Prep, show a one-line diegetic quota chip via existing terminal HUD (`[SHIFT] SCRAP GOAL n` based on wave + modest heat). Soft only: meet goal before combat → quiet terminal ack (no green cheer); miss → brief `AlarmLevel` bump into early combat (no scrap tax, no soft-lock). Doc targets in Progression_Spec.
+  Lore: `lore/BIBLE.md` factory×horror (owed quota + failing habitat); StarRupture cycle pressure cousin (lore/2026-07-20/summary.md #4)
+  Unity: **yes** — Prep hit/miss paths.
+  Change: during Prep, one-line diegetic quota chip via existing terminal HUD (`[SHIFT] SCRAP GOAL n` from wave + modest heat). Soft only: meet before combat → quiet terminal ack (no green cheer); miss → brief `AlarmLevel` bump into early combat (no scrap tax, no soft-lock). Doc targets in Progression_Spec.
   done-when: Play — prep shows goal; hit and miss paths both readable; factory loop still primary; console clean
 
 - [ ] L27. Dentist-spot lamp death on active breach lane
   Type: diegetic / visual | Pillar: Diegetic dread
-  Lore: interrogation lighting — room goes blacker not flashier (lore/2026-07-20/summary.md #1 + suggested experiments)
-  Change: when late-prep `AlarmLevel` or active combat targets a breach lane, kill **one** corridor lamp nearest that lane’s approach (intensity→0 / disable), restore after RecoveryBeat ease. Reuse `LampFlicker` / HorrorClock hooks; no new flashy FX. No asset pack.
+  Lore: `lore/BIBLE.md` diegetic grammar (lights die, rooms blacker); interrogation lighting (lore/2026-07-20/summary.md #1)
+  Unity: **yes** — threatened-lane lamp death + recovery restore.
+  Change: when late-prep `AlarmLevel` or active combat targets a breach lane, kill **one** corridor lamp nearest that lane’s approach (intensity→0 / disable), restore after RecoveryBeat ease. Reuse `LampFlicker` / HorrorClock hooks; no new flashy FX. Distinct from zone-wide HorrorClock decay — this is a single approach telegraph. No asset pack.
   done-when: Play — late prep/combat darkens one approach lamp on the threatened lane; recovery restores; hub pool still usable; console clean
+
+- [ ] L28. Schedule board ticks through catastrophe
+  Type: diegetic | Pillar: Lonely worker fantasy / Workplace as trap
+  Lore: `lore/BIBLE.md` motifs (schedule boards / shift timers that keep ticking); authenticity-before-haunt
+  Unity: **yes** — board text changes across Prep → Combat → Recovery.
+  Change: the existing `ScheduleBoard` prop from `PlaceholderPropDressing` is static — drive 2–4 terse lines from wave/phase (`SHIFT n`, `PREP WINDOW`, `BREACH ACTIVE`, `CLEAR — RESUME DUTY`) via TextMesh or equivalent. Steel/amber; no cheer; no new screen chrome. Wire so boards refresh when phase changes.
+  done-when: Play — at least one board updates on Prep enter, Combat enter, and RecoveryBeat; iso readable; console clean
+
+- [ ] L29. Vent-carrier stage-2 ecology (specialize rung)
+  Type: systemic / mechanical | Pillar: Industrial biomass / hive
+  Lore: `lore/BIBLE.md` hive ladder step 2 (vent carriers); Flood specialize (lore/2026-07-20/summary.md #3); keep Biofactory anti-comp
+  Unity: **yes** — W3+ breach spawn + behavior check.
+  Change: commit-sized **VentCarrier** path (Crawler runtime mod or thin variant): appears on vent/EastFlank from W3+, slightly tougher, prefers vent approach, on death near a sealed/closed vent prop or corridor lamp seeds a small `BiomassEncroachment` blob or bumps local HorrorClock stress (reuse existing systems — no new shooter fantasy). W1–W2 unchanged. Caps in Progression_Spec. Primitives only.
+  done-when: Play — W3+ shows ≥1 carrier on breach lanes; W1–W2 have none; death leaves a readable ecology beat (residue/stress); console clean
+
+- [ ] L30. Scrap/min throughput tax beyond Heat01 blend
+  Type: systemic | Pillar: Factory pressure = identity
+  Lore: `lore/BIBLE.md` open experiment (stronger scrap/min coupling); Factorio pollution lesson
+  Unity: **yes** — idle vs high-throughput residue/vent share.
+  Change: `FactoryHeatTracker` already folds scrap/min into Heat01 — expose a small **Throughput01** (or use raw `ScrapPerMinute` bands) so WaveController can add a capped residue/vent bias *on top of* heat when belts are screaming but producers are few (or vice versa). Goal: a bigger *running* factory feels more haunted, not only “more powered buildings.” Doc bands in Progression_Spec. W1 lock stays.
+  done-when: Play — high scrap/min with modest producer count measurably raises breach residue or vent share vs idle; W1 clean; console clean
 
 ### Done archive — 2026-07-19 lore-gap + map integrity (shipped)
 
@@ -601,6 +610,12 @@ Method: capture the Game view in Play mode, judge the frame, fix the single wors
 
 ## Next (groomed, not yet started)
 
+- [ ] L31. Ship-as-living call-and-response ambience
+  Type: audio / diegetic | Pillar: Diegetic dread / Lonely worker fantasy
+  Lore: `lore/BIBLE.md` diegetic grammar (metal structure as living organism); lore/2026-07-20/summary.md #2
+  Change: procedural metal “answer” creaks to machine pulses / footsteps via existing `Sfx` pool (Built-in only, no pack, no VO library). Quiet between answers — soft director, not sting spam.
+  done-when: Play — walking a running deck yields occasional answered creaks; idle dark deck stays quieter; console clean
+
 - [x] First pass progression design — DONE: SPACE FACTORY INFO/Progression_Spec.md written AND v1 slice implemented (wave-gated unlocks: ShockTrap→1, RepairPost→2, RelayNode→3; wave-clear bonus 10+5×N; hotbar lock display; unlock popups). Play-verified.
 - [x] Progression v2 tier-2 structures — DONE: HeavyTurret (w5, 150 scrap, range 6.5/dmg 22/rate 1.5, 1.5×HP, 1.2× scale, red), Bulwark (w6, 70, 3×HP barrier, taller, steel-blue), TurboDrill (w7, 120, 2× extraction, 4 power, orange). Prefab variants + def assets + catalogue + hotbar registered. Play-verified unlock chain + placement + stats.
 - [x] Progression v3 upgrade offers — DONE: RunUpgrades container (5 modifiers, null-safe statics), UIUpgradeOffer modal (1-of-3 random distinct after every cleared wave, timeScale 0 while open, skippable, Esc-guarded vs pause menu). Pool: turret dmg +15%, drill +20%, repair cost −25%, salvage +50%, sidearm +4 shots. Consumers patched: AutoTurret, MiningDrill, PlayerRepairTool, SalvageCrate, PlayerWeapon (+hotbar heat display). Play-verified full loop.
@@ -613,13 +628,15 @@ Method: capture the Game view in Play mode, judge the frame, fix the single wors
 - [ ] [asset-pack: Alien Biomass Planet] Replace A10 primitive residue with animated biomass meshes / hue Shader Graph once purchased (path TBD in Asset pack status).
 - [ ] [asset-pack: Bio Horror / Sci-fi Environment] Infestation props for breach corridors — promote after purchase.
 - [ ] [asset-pack: Bionic structures] Cheap tendril/cocoon kitbash for corridor corruption — low-cost experiment if A10 primitives feel thin.
-- [ ] Empathy hazard / false vent voice — audio lure that pulls player off the factory floor mid-prep (lore/2026-07-17 experiment; lore/2026-07-19 empathy motif; 2026-07-20 stories stowaway/duct log). Needs a fairness pass so it never soft-locks a wave; groom before Now.
-- [ ] Ship-as-living call-and-response ambience — procedural metal “answer” creaks to machine pulses / footsteps via existing `Sfx` pool; Built-in only, no pack (lore/2026-07-20/summary.md #2). Queue when Now audio budget is open.
+- [ ] Empathy hazard / false vent voice — audio lure / sealed-duct log that pulls player off the factory floor mid-prep (`lore/BIBLE.md` open experiment; lore/2026-07-19 empathy motif). Needs fairness pass so it never soft-locks a wave; groom before Now.
+- [ ] Diegetic radio / PA VO through occluded speakers — muffled “crew” that isn’t there (`lore/BIBLE.md` open experiment). Needs VO policy + occlusion path; not queued while F* owns art budget.
 - [ ] Scanner ghost / solvent misread — brief false residue blip on scanner that may be stress/chemical, not combat spawn (lore/2026-07-20/stories.md Singular Infestation motif). Groom for uncertainty fairness.
-- [ ] Infection ecology stage 2–3 — vent “carrier” behavior + late coordinated packs once L22/L23 prove stage 1 (Flood ladder; keep Biofactory anti-comp).
+- [ ] Infection ecology stage 3 — late coordinated packs once L29 vent-carrier proves stage 2 (Flood ladder; keep Biofactory anti-comp).
 - [ ] Free lead: Abandoned Factory Lite (Asset Store) — safe mood greys for blockout; not gated, but not queued until visual Now is thin.
 
 ## Agent log (newest first — one line per session: date, task, result, commit)
+
+- 2026-07-20: lore-gap — bible current; kept F1–F14 top priority. Refreshed L25–L27 (BIBLE cites); added L28 schedule-board ticks, L29 vent-carrier stage-2, L30 scrap/min throughput tax. Next: L31 living-metal ambience. Ice box: PA VO, empathy hazard, stage-3 packs. No game code.
 
 - 2026-07-20: auto-dev L24 contaminated slurry beat — built into `ProcessInfection` (owns infected lifecycle ⇒ repair can't orphan a stall); fault 11-18s holds craft 1.7s via `RateMult`→0 so `Processor.Tick` is untouched; terse terminal line + bile drip; processor-gated so infected drills never stall. Play-verified stall/line/drill-exempt/clean-control/mid-stall repair release; console clean. Commit `a33db0f`.
 
