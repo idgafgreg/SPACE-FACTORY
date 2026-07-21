@@ -36,9 +36,14 @@
 # Excluded Features
 
 - Multiplayer.
-- First-person presentation.
 - Space-walk systems and external EVA gameplay.
 - Feature creep that turns the game into a broad survival sandbox instead of a focused factory-horror experience.
+
+# View modes (human decision 2026-07-20)
+
+- Dual-mode: orbit/iso and first-person, both shipped and toggleable.
+- Factory layout/throughput remains the primary skill expression in both modes — FP must not become a shooter.
+- Iso stays fully playable; default view mode does not change until FP clears the Wave 1 playtest gate (see `BACKLOG.md` F1–F14 and `lore/BIBLE.md`).
 
 # Scope Tiers
 

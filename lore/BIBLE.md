@@ -70,7 +70,9 @@ Use these when inventing features, VFX, audio, enemy behavior, or backlog tasks.
 
 - Pressure should feel like **owed quota + failing habitat**, not random shooter arena.
 - Best scares are **layout consequences**: blocked belts, dark sectors, vents that used to be “yours.”
-- Recovery beats matter: brief quiet after a wave so the lonely workplace returns before the next cycle.
+- **Soft director pacing:** raise tension with proximity, failing lights, vent audio, scanner lag — then let it *back off* so the next spike lands. Prep windows are earned quiet, not empty UI time.
+- **Recovery beats:** after combat, return the lonely workplace (routine labor texture, AlarmLevel easing) before the next cycle — dread needs air.
+- Authenticity before haunt: the ship must read as a real labor habitat first; biomass wrongness lands harder on true workplace bones.
 - Anti-comp: **Biofactory** (hive-as-factory) — do not drift into “the factory *is* the hive.” We are ship factory *under* parasite pressure.
 
 ---
@@ -79,8 +81,10 @@ Use these when inventing features, VFX, audio, enemy behavior, or backlog tasks.
 
 - Prefer interrogation lighting, hard spots, little bounce fill; when hive nears, lights *die*, rooms get blacker — not flashier.
 - Wayfinding in-world: sector tags, posters, failing lamps (Japanese-subway / industrial signage energy).
+- Ship anatomy can feel like a rib cage / body cavity — industrial, not cartoon organ belts.
 - Audio treats the metal structure as a living organism: call-and-response ambience, reverb/occlusion; PA/radio muffled wrong when systems are compromised.
 - HUD: diegetic where possible; avoid pure sci-fi arcade chrome.
+- In **first-person**, factory state must still be readable on machine faces and in the world — never require the iso overview to stay legible.
 
 **Pipeline note:** project is **Built-in RP** today — prefer Built-in-compatible kits and tools until that changes.
 
@@ -91,7 +95,8 @@ Use these when inventing features, VFX, audio, enemy behavior, or backlog tasks.
 | Comp | Steal | Avoid |
 |------|-------|-------|
 | Factorio | Pressure tied to factory growth | Turning horror into pure logistics puzzle |
-| Dead Space / remake | Industrial ship body-horror, diegetic UI, art direction | Becoming a third-person shooter |
+| Dead Space / remake | Industrial ship body-horror, diegetic UI, art direction | Becoming a shooter (3P or FP) |
+| Substructure | Factory + descent dread (adjacent) | Dig-only / vertical-crawl identity |
 | Alien: Isolation | Isolation + Director/menace pacing | Scripted cat-and-mouse as the whole loop |
 | Still Wakes the Deep | Workplace authenticity → terrible beauty | Pure narrative walking sim |
 | Halo Flood | Infection ecology ladder | One monster type forever / IP silhouette copy |
@@ -117,9 +122,11 @@ Short, original motifs agents may use in copy, props, systems (no copyrighted qu
 
 Promote to sections above only via `/lore-bible` when clearly good and north-star-aligned. Until then: optional.
 
-- Infection spawn rate scaled by processor heat / scrap-per-minute  
-- Sector lights extinguishing as a readable threat telegraph  
-- Diegetic radio VO through occluded speakers  
+- Diegetic radio / PA VO through occluded speakers (muffled “crew” that isn’t there)  
+- Empathy hazard: sealed-duct crew log that asks reopen “for someone still in there” (tone fork — keep restrained)  
+- Stronger scrap-per-minute coupling beyond heat/processor infection share already in code  
+
+**Absorbed / no longer experiments:** soft menace director + scanner lag, HorrorClock sector decay, heat-raised infection share, recovery-beat AlarmLevel ease — treat as canon grammar above.
 
 ---
 
@@ -127,7 +134,8 @@ Promote to sections above only via `/lore-bible` when clearly good and north-sta
 
 - Paste copyrighted fiction into game strings, docs, or this bible  
 - Buy paywalled assets from agents — wishlist only (`wishlist-paywalled.md` + sheet sync)  
-- Replace factory identity with tower-defense or shooter loops  
+- Replace factory identity with tower-defense or shooter loops (including FP)  
+- Let FP rot iso, or let iso block world-legibility fixes FP needs  
 - Invent a second roadmap — tasks go in `BACKLOG.md`  
 - Treat daily digests as canon until distilled here  
 
@@ -148,12 +156,13 @@ Promote to sections above only via `/lore-bible` when clearly good and north-sta
 
 | Date | Change | Source |
 |------|--------|--------|
+| 2026-07-20 | Absorb 07-19 pacing: soft director + recovery beats + authenticity-before-haunt; promote shipped menace/HorrorClock/heat-infection out of experiments; Substructure comp row; FP world-legibility diegetic rule; sync living-design scope docs | `lore/2026-07-19/summary.md` + code reality (`ThreatTelegraph`, `HorrorClock`, `RecoveryBeat`, L23) |
 | 2026-07-20 | **First-person moved out of "Scope out" into the north star as a toggleable dual view mode**, with four design tests guarding against shooter drift and against losing factory legibility. Iso protected. | Human decision, logged in `BACKLOG.md` Decisions; implementation tracked as `F1`–`F14` |
 | 2026-07-20 | Initial bible: north star, pillars, hive ladder, diegetic grammar, comps, motifs, open experiments | Seeded from `INDEX.md`, `README.md`, digests 2026-07-19/20, `Master_Game_Brief.txt` |
 
 ## Last absorbed research
 
 - Date: 2026-07-20  
-- Digest: `lore/2026-07-20/summary.md`  
-- Focus absorbed: Milham diegetic wayfinding + Flood-style staging + ship-as-living audio + Built-in asset preference  
+- Digests: `lore/2026-07-19/summary.md`, `lore/2026-07-20/summary.md`  
+- Focus absorbed: soft director / recovery pacing (19) + Milham diegetic wayfinding + Flood staging + ship-as-living audio + Built-in preference (20); FP dual-mode from human Decision  
 )

@@ -42,7 +42,8 @@
 # Scope Guardrails
 
 - What must stay in scope: Has to stay a factory game with horror annotations 
-- What stays out of scope for now: Multiplayer, First person gameplay, space walks
+- What stays out of scope for now: Multiplayer, space walks
+- View modes (2026-07-20): dual orbit/iso + first-person, toggleable; factory-primary in both (see lore/BIBLE.md)
 
 # Success Criteria
 
