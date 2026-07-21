@@ -693,6 +693,18 @@ Method: capture the Game view in Play mode, judge the frame, fix the single wors
 
 ## Agent log (newest first — one line per session: date, task, result, commit)
 
+- 2026-07-21: **playtest: full suite PASS** — report
+  `SPACE FACTORY INFO/Playtest_Agent_2026-07-21_111432.md`. Smoke PASS (9/9: WaveController,
+  SectorLayout, BuildSystem, ResourceInventory, PowerSystem, PlayerController, commandHubTransform,
+  commandHubDamageable, WestCorridor lane). Wave 1 gate PASS — 1 Barrier + 1 AutoTurret at the west
+  choke ≈ (-23, 0, 0) cleared the wave with the hub at **500/500 (100%)**, threshold is ≥15%.
+  Final metrics: wave=1 cleared=1 enemies=0, player 120/120, power 7.0/10.0, scrap 696 parts 30
+  energy 19, placed barriers=1 turrets=1, fps 183. Console clean: 0 errors, 0 warnings.
+  Confirms the F1–F5 first-person work and the `be2a636` bug-pass fixes did not regress the iso
+  gameplay path. Run was in Iso (`ViewMode.Iso`); dual-mode gating is F14, not covered here.
+  Data point for a human balance look, **not** an agent judgment: the hub took **zero** damage, so
+  this gate currently passes with 85 points of headroom over its own threshold.
+
 - 2026-07-20: **bug-pass — three FP regressions from the F1–F5 window, none of which surfaced as
   console errors.** (1) `UICursorFocus` leaked holders destroyed without popping — proven in Play
   mode, `WantsFreeCursor` stayed True after the holder died, which would leave the first-person
