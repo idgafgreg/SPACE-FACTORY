@@ -101,18 +101,18 @@ public class CameraFollow : MonoBehaviour
 
     void ReadOrbitInput()
     {
-        if (Input.GetMouseButtonDown(2))
+        if (GameInput.GetMouseButtonDown(2))
         {
-            _middleDownScreenPos = Input.mousePosition;
+            _middleDownScreenPos = GameInput.MousePosition;
             _orbiting = false;
         }
 
-        if (Input.GetMouseButton(2))
+        if (GameInput.GetMouseButton(2))
         {
             // Engage orbit only after the shared drag threshold so a clean
             // middle CLICK stays a demolish (PlayerBuildTool checks the same constant).
             if (!_orbiting &&
-                (Input.mousePosition - _middleDownScreenPos).sqrMagnitude >
+                (GameInput.MousePosition - _middleDownScreenPos).sqrMagnitude >
                 PlayerBuildTool.MiddleDragThreshold * PlayerBuildTool.MiddleDragThreshold)
                 _orbiting = true;
 
@@ -123,10 +123,10 @@ public class CameraFollow : MonoBehaviour
                 // SmoothDampAngle wraps to the shortest path and the camera
                 // visibly snaps BACKWARDS (this happened when an old scene
                 // still carried the right-click-era sensitivity of 500).
-                float dYaw = Mathf.Clamp(Input.GetAxis("Mouse X") * orbitSensitivity, -30f, 30f);
+                float dYaw = Mathf.Clamp(GameInput.GetAxis("Mouse X") * orbitSensitivity, -30f, 30f);
                 _targetYaw = Mathf.Clamp(_targetYaw + dYaw, _yaw - 150f, _yaw + 150f);
 
-                float dPitch = Mathf.Clamp(-Input.GetAxis("Mouse Y") * pitchSensitivity, -20f, 20f);
+                float dPitch = Mathf.Clamp(-GameInput.GetAxis("Mouse Y") * pitchSensitivity, -20f, 20f);
                 _targetPitch = Mathf.Clamp(_targetPitch + dPitch, minPitch, maxPitch);
             }
         }
@@ -138,9 +138,9 @@ public class CameraFollow : MonoBehaviour
         // Plain scroll always zooms — including while placing a building.
         // Shift+scroll is reserved for rotating the ghost (PlayerBuildTool).
         if (PlayerBuildTool.Instance != null && PlayerBuildTool.Instance.HasSelection &&
-            (Input.GetKey(KeyCode.LeftShift) || Input.GetKey(KeyCode.RightShift))) return;
+            (GameInput.GetKey(KeyCode.LeftShift) || GameInput.GetKey(KeyCode.RightShift))) return;
 
-        float scroll = Input.GetAxis("Mouse ScrollWheel");
+        float scroll = GameInput.GetAxis("Mouse ScrollWheel");
         if (Mathf.Abs(scroll) > 0.0001f)
             _targetZoomDistance = Mathf.Clamp(_targetZoomDistance - scroll * zoomSpeed,
                 minZoomDistance, maxZoomDistance);

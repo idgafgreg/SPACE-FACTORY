@@ -44,8 +44,8 @@ public class PlayerController : MonoBehaviour
 
     void HandleMovement()
     {
-        float h = Input.GetAxisRaw("Horizontal");
-        float v = Input.GetAxisRaw("Vertical");
+        float h = GameInput.GetAxisRaw("Horizontal");
+        float v = GameInput.GetAxisRaw("Vertical");
         if (Mathf.Abs(h) < 0.001f && Mathf.Abs(v) < 0.001f) return;
 
         Vector3 forward, right;

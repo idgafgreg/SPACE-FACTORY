@@ -12,7 +12,7 @@ using UnityEngine;
 /// Logs use the prefix <c>[PlaytestHarness]</c> so agents can scrape the console.
 /// Wave-1 combat is accelerated with timeScale; feel/balance judgment stays human.
 /// </summary>
-public class PlaytestHarness : MonoBehaviour
+public partial class PlaytestHarness : MonoBehaviour
 {
     public const string LogPrefix = "[PlaytestHarness]";
 
@@ -218,6 +218,14 @@ public class PlaytestHarness : MonoBehaviour
         report.AppendLine();
 
         yield return CoWave1Gate(writeReport: false, suiteLabel: "suite", report);
+
+        // Input-driven scenarios run after the Wave 1 gate: they move the
+        // player, spend resources and kill it, none of which the gate should
+        // have to tolerate. See PlaytestScenarios.cs for why these exist.
+        yield return CoSuiteScenario("Movement + look", "MOVEMENT", CoScenarioMovement, report);
+        yield return CoSuiteScenario("Build + demolish", "BUILD", CoScenarioBuild, report);
+        yield return CoSuiteScenario("Damage / death / respawn", "COMBAT", CoScenarioCombat, report);
+        yield return CoSuiteScenario("Cursor ownership", "TRANSITION", CoScenarioTransitions, report);
 
         report.AppendLine();
         report.AppendLine("## Final metrics");

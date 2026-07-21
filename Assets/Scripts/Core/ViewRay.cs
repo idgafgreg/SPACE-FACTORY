@@ -1,4 +1,4 @@
-﻿using UnityEngine;
+using UnityEngine;
 
 /// <summary>
 /// Single source of truth for the player's interaction ray in both view modes.
@@ -22,7 +22,7 @@ public static class ViewRay
         if (ViewMode.IsFirstPerson)
             return cam.ViewportPointToRay(ScreenCentre);
 
-        return cam.ScreenPointToRay(Input.mousePosition);
+        return cam.ScreenPointToRay(GameInput.MousePosition);
     }
 
     /// <summary>Current ray from Camera.main.</summary>

@@ -98,13 +98,13 @@ public class PlayerBuildTool : MonoBehaviour
     {
         if (UIPauseMenu.IsPaused) return;
         ReadHotbar();
-        if (Input.GetKeyDown(demolishKey)) ToggleDemolishMode();
+        if (GameInput.GetKeyDown(demolishKey)) ToggleDemolishMode();
         ReadRotation();
         UpdateGhost();
         HandlePlace();
         HandleDemolishClick();
         HandleRemove();
-        if (Input.GetKeyDown(KeyCode.Escape) && (_currentDef != null || DemolishMode))
+        if (GameInput.GetKeyDown(KeyCode.Escape) && (_currentDef != null || DemolishMode))
         {
             ClearSelection();
             SetDemolishMode(false);
@@ -127,7 +127,7 @@ public class PlayerBuildTool : MonoBehaviour
 
     void HandleDemolishClick()
     {
-        if (!DemolishMode || !Input.GetMouseButtonDown(0)) return;
+        if (!DemolishMode || !GameInput.GetMouseButtonDown(0)) return;
         if (UnityEngine.EventSystems.EventSystem.current != null &&
             UnityEngine.EventSystems.EventSystem.current.IsPointerOverGameObject()) return;
         if (!TryGetBuildPoint(out var point)) return;
@@ -150,7 +150,7 @@ public class PlayerBuildTool : MonoBehaviour
     {
         for (int i = 0; i < HotbarKeys.Length && i < buildableDefs.Count; i++)
         {
-            if (Input.GetKeyDown(HotbarKeys[i])) { ToggleSlot(i); return; }
+            if (GameInput.GetKeyDown(HotbarKeys[i])) { ToggleSlot(i); return; }
         }
     }
 
@@ -185,10 +185,10 @@ public class PlayerBuildTool : MonoBehaviour
     {
         if (_currentDef == null) return;
 
-        if (Input.GetKeyDown(KeyCode.R)) { _ghostYaw = Mathf.Repeat(_ghostYaw + 90f, 360f); return; }
+        if (GameInput.GetKeyDown(KeyCode.R)) { _ghostYaw = Mathf.Repeat(_ghostYaw + 90f, 360f); return; }
 
-        if (!Input.GetKey(KeyCode.LeftShift) && !Input.GetKey(KeyCode.RightShift)) return;
-        float scroll = Input.GetAxis("Mouse ScrollWheel");
+        if (!GameInput.GetKey(KeyCode.LeftShift) && !GameInput.GetKey(KeyCode.RightShift)) return;
+        float scroll = GameInput.GetAxis("Mouse ScrollWheel");
         if (scroll >  0.0001f) _ghostYaw = Mathf.Repeat(_ghostYaw + 90f, 360f);
         if (scroll < -0.0001f) _ghostYaw = Mathf.Repeat(_ghostYaw - 90f, 360f);
     }
@@ -309,7 +309,7 @@ public class PlayerBuildTool : MonoBehaviour
 
     void HandlePlace()
     {
-        if (_currentDef == null || !Input.GetMouseButtonDown(0)) return;
+        if (_currentDef == null || !GameInput.GetMouseButtonDown(0)) return;
         if (UnityEngine.EventSystems.EventSystem.current != null &&
             UnityEngine.EventSystems.EventSystem.current.IsPointerOverGameObject()) return;
         if (!TryGetBuildPoint(out var point)) return;
@@ -330,9 +330,9 @@ public class PlayerBuildTool : MonoBehaviour
     {
         // Middle mouse is shared with camera orbit: press-and-drag orbits,
         // a clean press-release (below the drag threshold) demolishes.
-        if (Input.GetMouseButtonDown(2)) _middleDownScreenPos = Input.mousePosition;
-        if (!Input.GetMouseButtonUp(2)) return;
-        if ((Input.mousePosition - _middleDownScreenPos).sqrMagnitude >
+        if (GameInput.GetMouseButtonDown(2)) _middleDownScreenPos = GameInput.MousePosition;
+        if (!GameInput.GetMouseButtonUp(2)) return;
+        if ((GameInput.MousePosition - _middleDownScreenPos).sqrMagnitude >
             MiddleDragThreshold * MiddleDragThreshold) return;   // was an orbit drag
         if (!TryGetBuildPoint(out var point)) return;
         buildSystem?.TryRemoveAt(point);

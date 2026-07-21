@@ -1,4 +1,4 @@
-﻿using UnityEngine;
+using UnityEngine;
 
 /// <summary>
 /// First-person camera rig (F1). Parented to a runtime head anchor on the player.
@@ -74,7 +74,7 @@ public class FirstPersonCamera : MonoBehaviour
 
     void Update()
     {
-        if (Input.GetKeyDown(toggleKey))
+        if (GameInput.GetKeyDown(toggleKey))
             ViewMode.Toggle();
 
         UpdateCursorLock();
@@ -85,8 +85,8 @@ public class FirstPersonCamera : MonoBehaviour
         if (!ViewMode.IsFirstPerson) return;
         if (_headAnchor == null) return;
 
-        float mx = Input.GetAxis("Mouse X") * mouseSensitivityX * Time.deltaTime;
-        float my = Input.GetAxis("Mouse Y") * mouseSensitivityY * Time.deltaTime;
+        float mx = GameInput.GetAxis("Mouse X") * mouseSensitivityX * Time.deltaTime;
+        float my = GameInput.GetAxis("Mouse Y") * mouseSensitivityY * Time.deltaTime;
 
         _yaw += mx;
         _pitch = Mathf.Clamp(_pitch - my, minPitch, maxPitch);
