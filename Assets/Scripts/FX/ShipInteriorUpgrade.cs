@@ -12,7 +12,8 @@ public class ShipInteriorUpgrade : MonoBehaviour
     // instead of skipping and shipping a lidless deck.
     // 57: F7 lamp fixtures — corridor lights gain housings and per-mode values.
     // 58: skip corridor lamp fixtures inside the hub footprint (clipping fix).
-    const int UpgradeVersion = 58;
+    // 59: F9 — wire the never-called BuildKickplates for eye-level deck-edge detail.
+    const int UpgradeVersion = 59;
 
     // TransparentFX — built-in layer, ships with every project (same choice as
     // PostFXBootstrap.VolumeLayer). Wall caps live here so point lights can cull
@@ -119,6 +120,10 @@ public class ShipInteriorUpgrade : MonoBehaviour
         BuildWallBaseTrim(root.transform);
         BuildWallAccentRails(root.transform);
         BuildWallCaps(root.transform);
+        // F9: deck-edge kick plates along the lanes — low steel curbs that give
+        // the walkway an industrial edge and read as scale detail at eye level.
+        // Was written but never called (dead code, like F6's overhead pipes).
+        BuildKickplates(root.transform);
         BuildCeiling(root.transform);
         BuildHangingBeams(root.transform);
         BuildHubDeckPad(root.transform);
@@ -1234,18 +1239,30 @@ public class ShipInteriorUpgrade : MonoBehaviour
                 dir /= len;
                 Vector3 side = Vector3.Cross(Vector3.up, dir);
 
+                const float plateH = 0.12f;
                 for (int s = -1; s <= 1; s += 2)
                 {
                     // Closer to lane center so rails stay on deck, not inside walls.
                     Vector3 mid = (a + b) * 0.5f + side * (s * 1.85f) + Vector3.up * 0.08f;
                     if (!IsOpenDeckPoint(mid)) continue;
 
+                    // Ground the plate to the actual deck surface, not the lane's
+                    // authored height. Lane points sit at y≈0.5 but the deck
+                    // renders at y≈0, so inheriting the lane Y floated the curbs
+                    // ~0.5m — a float that a head-on corridor shot hides through
+                    // foreshortening but a side view (and a deck-Y compare) catch.
+                    float deckY = 0f;
+                    if (Physics.Raycast(mid + Vector3.up * 1.5f, Vector3.down, out var deckHit, 3f,
+                            ~0, QueryTriggerInteraction.Ignore) && deckHit.point.y < 0.6f)
+                        deckY = deckHit.point.y;
+                    mid.y = deckY + plateH * 0.5f;
+
                     var plate = GameObject.CreatePrimitive(PrimitiveType.Cube);
                     plate.name = "Kickplate";
                     plate.transform.SetParent(parent, false);
                     Destroy(plate.GetComponent<Collider>());
                     plate.transform.position = mid;
-                    plate.transform.localScale = new Vector3(0.08f, 0.12f, Mathf.Min(len * 0.7f, 4f));
+                    plate.transform.localScale = new Vector3(0.08f, plateH, Mathf.Min(len * 0.7f, 4f));
                     plate.transform.rotation = Quaternion.LookRotation(dir, Vector3.up);
                     plate.GetComponent<Renderer>().sharedMaterial = _hullMat;
                 }

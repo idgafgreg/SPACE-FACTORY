@@ -346,7 +346,22 @@ Conventions for this block:
   corridors with the hub, rails and multiple lamps read fine. F7's "readable pooled light" criterion
   should be re-checked with a small lamp-intensity bump now that the grade no longer eats the frame.
 
-- [ ] F9. Wall + deck surface detail at eye level
+- [x] F9. Wall + deck surface detail at eye level
+  DONE 2026-07-21 (auto-dev). The task premise was largely stale: verified by real lit close-range
+  captures that A5 (wall caps, base trim, amber accent rails, diamond hull tiling) + A7 (deck plates,
+  seams, rivets, grime decals, hazard stripes) + F8's grade already give the deck and walls readable
+  eye-level detail, and the "mirror-sheen at grazing angles" done-when is clean (grazing wall max
+  luma 0.17, 0 hot pixels — A5's metallic 0.40/gloss 0.28 + dark reflection cubemap hold). Genuine
+  addition: wired the never-called `BuildKickplates` (dead code, like F6's overhead pipes) — 40
+  deck-edge steel curbs along the lanes that give the walkway an industrial edge and scale at eye
+  level. Verified in FP; iso restores 12/44/0.088.
+  Bug caught + fixed during verification, worth keeping: the curbs first spawned FLOATING 0.48m —
+  BuildKickplates inherited the lanes' authored y≈0.5 while the deck renders at y≈0. A head-on
+  corridor shot HID the float via foreshortening (I nearly passed it); a side-angle shot plus a
+  deck-Y compare (kickplate bottom 0.52 vs lane-stripe deck 0.04) caught it. Now raycasts the deck
+  and grounds the base (bottom y 0.00). Refines the "trust the frame" rule: the frame must be from a
+  viewpoint that would REVEAL the defect — a side view for float — and cross-checked against a
+  ground reference.
   Type: visual | Pillar: Workplace as trap
   Lore: modular workplace kits, pattern then violation (A5/A7 lineage; `BIBLE.md` lived-in labour).
   Unity: **yes** — close-range Play captures against a wall and looking down at the deck.

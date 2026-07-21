@@ -75,7 +75,10 @@ the ground raycast hitting the machine's own collider; an "orange disc out of pl
 under a 2x screenshot exposure boost. Every one wasted a pass. **Rule:** verify any visual, lighting,
 or placement claim by rendering `Camera.main` to a texture (or `ScreenCapture` for HUD) from a real
 gameplay viewpoint and **reading the image**. A number is a hypothesis; the frame is the evidence. If a
-value "has no effect," suspect the measurement before the system.
+value "has no effect," suspect the measurement before the system. **The viewpoint must be able to
+reveal the defect:** a head-on corridor shot hides a floating prop through foreshortening — check
+float from the SIDE and cross-check placement against a ground reference (a lane stripe's Y, the deck
+surface). A frame from the wrong angle lies as readily as a bad metric.
 
 **3. State set this frame is not readable this frame.** `LateUpdate` writes (camera rig, `PlayerAim`
 torso), `ViewMode.OnChanged` reactions, and physics/gravity settle *after* your `RunCommand` returns.
