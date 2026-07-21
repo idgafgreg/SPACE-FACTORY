@@ -6,12 +6,12 @@ using UnityEngine.Events;
 /// <summary>
 /// Drives discrete enemy waves against the Command Hub.
 ///
-/// Loop:  Prep (build window) â†’ Spawning (release the wave across lanes) â†’
-///        Combat (wait until every enemy is dead) â†’ back to Prep, next wave.
+/// Loop:  Prep (build window) → Spawning (release the wave across lanes) →
+///        Combat (wait until every enemy is dead) → back to Prep, next wave.
 ///
 /// Defined waves in <see cref="waves"/> play in order; once they run out the
 /// controller generates ever-larger endless waves. The hub staying alive is
-/// still the win condition â€” <see cref="RunStateController"/> ends the run if
+/// still the win condition — <see cref="RunStateController"/> ends the run if
 /// the hub dies, unchanged.
 /// </summary>
 public class WaveController : MonoBehaviour
@@ -24,7 +24,7 @@ public class WaveController : MonoBehaviour
     /// list, announced in the prep banner, applied to each spawn.</summary>
     public enum WaveModifier { None, Swift, Armored, Horde, Volatile }
 
-    // Must match LanePath.laneId values in the scene; GetLane fails loudly (null â†’ round-robin).
+    // Must match LanePath.laneId values in the scene; GetLane fails loudly (null → round-robin).
     const string WestLaneId = "WestCorridor";
     const string VentLaneId = "VentBreach";
     const string EastFlankLaneId = "EastFlank";
@@ -109,12 +109,12 @@ public class WaveController : MonoBehaviour
     public UnityEvent<string> onWaveText = new UnityEvent<string>();
 
     [Header("Progression")]
-    [Tooltip("Scrap granted when a wave is cleared: base + perWave Ã— wave number.")]
+    [Tooltip("Scrap granted when a wave is cleared: base + perWave × wave number.")]
     public int waveClearBonusBase    = 10;
     public int waveClearBonusPerWave = 5;
     public UnityEvent<int> onWaveCleared = new UnityEvent<int>();   // fires with the cleared wave number
 
-    /// <summary>Number of waves fully cleared â€” drives BuildableDef.unlockWave gating.</summary>
+    /// <summary>Number of waves fully cleared — drives BuildableDef.unlockWave gating.</summary>
     public int WavesCleared { get; private set; }
 
     public int   WaveNumber        { get; private set; }   // 1-based, current/most recent
@@ -180,7 +180,7 @@ public class WaveController : MonoBehaviour
         _nextModifier = RollModifier(WaveNumber + 1);
         if (_nextModifier == WaveModifier.Horde)
         {
-            // Horde mutates counts â€” safe: endless GetWave returns a fresh copy.
+            // Horde mutates counts — safe: endless GetWave returns a fresh copy.
             _nextDef.crawlers = Mathf.CeilToInt(_nextDef.crawlers * 1.5f);
             _nextDef.bruisers = Mathf.CeilToInt(_nextDef.bruisers * 1.5f);
             _nextDef.sappers  = Mathf.CeilToInt(_nextDef.sappers  * 1.5f);
@@ -281,7 +281,7 @@ public class WaveController : MonoBehaviour
     {
         if (prefab == null || lane == null)
         {
-            Debug.LogWarning("[WaveController] SpawnOne skipped â€” null prefab or lane.");
+            Debug.LogWarning("[WaveController] SpawnOne skipped — null prefab or lane.");
             return;
         }
 
@@ -292,7 +292,7 @@ public class WaveController : MonoBehaviour
 
         if (!go.TryGetComponent<EnemyBase>(out var enemy))
         {
-            Debug.LogError($"[WaveController] Prefab '{prefab.name}' has no EnemyBase â€” destroying orphan.");
+            Debug.LogError($"[WaveController] Prefab '{prefab.name}' has no EnemyBase — destroying orphan.");
             Destroy(go);
             return;
         }
@@ -603,7 +603,7 @@ public class WaveController : MonoBehaviour
 
     void PublishText()
     {
-        // Cheap key of everything the banner shows â€” only rebuild the string when it changes
+        // Cheap key of everything the banner shows — only rebuild the string when it changes
         // (avoids per-frame string allocation / GC churn in Update).
         // "Remaining" counts unspawned queue too, so the banner stays meaningful
         // across the long (60-90s) spawn windows where enemies trickle in.
@@ -615,9 +615,9 @@ public class WaveController : MonoBehaviour
 
         _lastText = CurrentPhase switch
         {
-            Phase.Prep     => $"Wave {WaveNumber + 1} in {secs}s â€” build & repair{NextLaneLabel()}{ModifierLabel(_nextModifier)}",
-            Phase.Spawning => $"Wave {WaveNumber} incomingâ€¦ â€” {remaining} left{ModifierLabel(CurrentModifier)}",
-            Phase.Combat   => $"Wave {WaveNumber} â€” {remaining} left{ModifierLabel(CurrentModifier)}",
+            Phase.Prep     => $"Wave {WaveNumber + 1} in {secs}s — build & repair{NextLaneLabel()}{ModifierLabel(_nextModifier)}",
+            Phase.Spawning => $"Wave {WaveNumber} incoming… — {remaining} left{ModifierLabel(CurrentModifier)}",
+            Phase.Combat   => $"Wave {WaveNumber} — {remaining} left{ModifierLabel(CurrentModifier)}",
             _              => string.Empty,
         };
         onWaveText.Invoke(_lastText);
@@ -625,10 +625,10 @@ public class WaveController : MonoBehaviour
 
     static string ModifierLabel(WaveModifier m) => m switch
     {
-        WaveModifier.Swift    => " â€” SWIFT",
-        WaveModifier.Armored  => " â€” ARMORED",
-        WaveModifier.Horde    => " â€” HORDE",
-        WaveModifier.Volatile => " â€” VOLATILE",
+        WaveModifier.Swift    => " — SWIFT",
+        WaveModifier.Armored  => " — ARMORED",
+        WaveModifier.Horde    => " — HORDE",
+        WaveModifier.Volatile => " — VOLATILE",
         _                     => string.Empty,
     };
 
@@ -646,14 +646,14 @@ public class WaveController : MonoBehaviour
         if (share < 0f)
         {
             int gates = _layout?.lanes != null ? _layout.lanes.Length : 0;
-            return gates >= 5 ? " â€” ALL 5 GATES" : " â€” ALL GATES";
+            return gates >= 5 ? " — ALL 5 GATES" : " — ALL GATES";
         }
 
         int vent = Mathf.RoundToInt(n * share);
         if (share > 0f && vent == 0) vent = 1;
 
-        if (vent <= 0) return " â€” PORT GATE";
-        if (vent >= n) return " â€” AFT VENT";
-        return " â€” PORT + AFT VENT";
+        if (vent <= 0) return " — PORT GATE";
+        if (vent >= n) return " — AFT VENT";
+        return " — PORT + AFT VENT";
     }
 }

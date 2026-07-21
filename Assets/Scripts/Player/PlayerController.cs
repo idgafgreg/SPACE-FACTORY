@@ -44,9 +44,16 @@ public class PlayerController : MonoBehaviour
 
     void HandleMovement()
     {
+        // SimpleMove is also what applies gravity, so it has to run every frame
+        // even with no input. Returning early when no key was held meant a
+        // standing player was never pulled down — most visibly after a respawn,
+        // which teleports to the authored spawn point and then left the player
+        // hanging in the air until they happened to press a movement key.
+        if (characterController == null || !characterController.enabled) return;
+
         float h = GameInput.GetAxisRaw("Horizontal");
         float v = GameInput.GetAxisRaw("Vertical");
-        if (Mathf.Abs(h) < 0.001f && Mathf.Abs(v) < 0.001f) return;
+        bool hasInput = Mathf.Abs(h) > 0.001f || Mathf.Abs(v) > 0.001f;
 
         Vector3 forward, right;
 
@@ -73,12 +80,15 @@ public class PlayerController : MonoBehaviour
         right.y = 0f;
         right.Normalize();
 
-        Vector3 dir = (forward * v + right * h).normalized;
+        Vector3 dir = hasInput ? (forward * v + right * h).normalized : Vector3.zero;
+
+        // Always call it: zero horizontal still runs the gravity step.
         characterController.SimpleMove(dir * moveSpeed);
 
         // Iso only: legs/body face the WASD direction. In first person the yaw
-        // owner is FirstPersonCamera.
-        if (ViewMode.IsIso) transform.forward = dir;
+        // owner is FirstPersonCamera. Never aim at a zero vector.
+        if (ViewMode.IsIso && hasInput && dir.sqrMagnitude > 0.0001f)
+            transform.forward = dir;
     }
 
     // ── Damage / respawn ──────────────────────────────────────────────────────

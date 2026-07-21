@@ -22,6 +22,7 @@ public class MainMenuController : MonoBehaviour
         Cursor.visible   = true;
 
         MainMenuAtmosphere.Ensure();
+        _loadedAt = Time.unscaledTime;
 
         Wire("PlayButton", () => SceneManager.LoadScene(gameSceneName));
         Wire("QuitButton", () =>
@@ -34,10 +35,28 @@ public class MainMenuController : MonoBehaviour
         });
     }
 
+    // Pause menu → Main Menu used to end the session instantly. The pause menu's
+    // "Main Menu" button and this scene's Quit button both sit near screen
+    // centre, so the *same* physical click carried across the scene load and
+    // landed on Quit — which in the editor is EditorApplication.isPlaying =
+    // false, i.e. play mode just ends. A menu should never act on a click that
+    // began in a different scene, so swallow anything in the first moments.
+    const float InputDeadTime = 0.35f;
+    float _loadedAt;
+
+    bool AcceptingInput => Time.unscaledTime - _loadedAt >= InputDeadTime;
+
     void Wire(string buttonName, UnityEngine.Events.UnityAction action)
     {
         var t = transform.Find(buttonName) ?? FindDeep(transform, buttonName);
-        if (t != null && t.TryGetComponent<Button>(out var b)) b.onClick.AddListener(action);
+        if (t != null && t.TryGetComponent<Button>(out var b))
+        {
+            b.onClick.AddListener(() =>
+            {
+                if (!AcceptingInput) return;   // click carried in from the previous scene
+                action();
+            });
+        }
         else Debug.LogWarning("[MainMenu] button not found: " + buttonName);
     }
 
