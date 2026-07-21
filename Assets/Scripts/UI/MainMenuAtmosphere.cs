@@ -126,9 +126,13 @@ public class MainMenuAtmosphere : MonoBehaviour
                 text.fontSize = 16;
                 text.color = ShipTerminalUI.TextAmber;
             }
-            else if (text.text.Equals("PLAY", System.StringComparison.OrdinalIgnoreCase))
+            else if (text.text.Equals("PLAY", System.StringComparison.OrdinalIgnoreCase)
+                  || text.text.Equals("[ BEGIN SHIFT ]", System.StringComparison.OrdinalIgnoreCase))
             {
-                text.text = "[ BEGIN SHIFT ]";
+                // Plain label by request. The match also accepts the old
+                // "[ BEGIN SHIFT ]" so a scene still carrying the previous text
+                // is relabelled instead of being left behind.
+                text.text = "Play";
                 text.fontSize = 18;
                 text.color = ShipTerminalUI.TextPrimary;
             }

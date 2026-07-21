@@ -62,6 +62,14 @@ public class FirstPersonCamera : MonoBehaviour
     {
         ViewMode.OnChanged -= OnModeChanged;
         ReturnToIso();
+
+        // This component is the only thing in the project that locks the cursor,
+        // so it must also be the thing that releases it on teardown. Without
+        // this, leaving a first-person run for any other scene left the cursor
+        // Locked and hidden globally. MainMenuController re-asserts a free
+        // cursor as well; both are cheap and neither depends on the other.
+        Cursor.lockState = CursorLockMode.None;
+        Cursor.visible   = true;
     }
 
     void Update()

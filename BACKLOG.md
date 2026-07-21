@@ -693,6 +693,20 @@ Method: capture the Game view in Play mode, judge the frame, fix the single wors
 
 ## Agent log (newest first — one line per session: date, task, result, commit)
 
+- 2026-07-21: **human bug report — main menu buttons dead after a first-person run. Fixed.**
+  Diagnosed live in the user's own paused session: scene `MainMenu`, `Cursor.lockState = Locked`,
+  `Cursor.visible = False`. The buttons were never broken — EventSystem, StandaloneInputModule,
+  interactable flags and wiring were all healthy; there was simply no pointer to click with.
+  `FirstPersonCamera` is the only thing in the project that locks the cursor, it lives in the
+  sector scene, and `Cursor.lockState` is global and survives scene loads, so leaving an FP run for
+  the menu left it locked with nothing to release it. Fixed at both ends: `MainMenuController.Awake`
+  now asserts a free cursor (menus own their cursor), and `FirstPersonCamera.OnDestroy` releases the
+  lock it took. Verified by reproducing the real path — force Locked+hidden, `LoadScene("MainMenu")`,
+  then assert: lockState None, visible True, clickable True.
+  Also by request: Play button label `[ BEGIN SHIFT ]` → `Play` in `MainMenuAtmosphere`. Note this
+  drops a diegetic label the bible's lonely-worker pillar motivated; Quit still reads `[ ABORT ]`,
+  so the two buttons are now in different registers — raise if that should be unified.
+
 - 2026-07-21: **human bug report — FP WASD span the camera and the player never moved. Fixed.**
   Yaw had two owners: `FirstPersonCamera` yawed the head anchor (a CHILD of the player) while
   `PlayerController` snapped the player's WORLD rotation to the camera's forward. Camera forward =
