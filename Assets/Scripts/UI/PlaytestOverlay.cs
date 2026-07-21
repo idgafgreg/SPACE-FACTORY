@@ -13,7 +13,10 @@ using UnityEngine;
 public class PlaytestOverlay : MonoBehaviour
 {
     public KeyCode toggleKey = KeyCode.F3;
-    bool _show = true;
+    // Off by default. This is a diagnostics overlay for playtests; left on it
+    // draws its data panel over the real resource/grid HUD in the top-left
+    // corner (a playtest flagged the overlap). Opt in with F3 when measuring.
+    bool _show = false;
 
     GUIStyle _style;
     readonly StringBuilder _sb = new();
