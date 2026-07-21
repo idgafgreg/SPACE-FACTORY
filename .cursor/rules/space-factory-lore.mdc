@@ -51,6 +51,17 @@ So: implement the code, re-read every changed file for syntax and API errors, th
 
 The `/unity-pass` command (Claude Code, which has Unity MCP) sweeps those `[?]` items later, does the editor-side work, and resolves each to `[x]` or a filed bug. Never mark a task `[x]` on the strength of reading the code — unverified is fine, falsely verified is not.
 
+## Verified pitfalls (full text in AGENTS.md — read before FX/visual/view-mode work)
+
+1. `SectorRuntime` is ONE shared GameObject; most FX systems are components on it, and props/dressing
+   are its children. Inside such a component, `gameObject.AddComponent`, `GetComponentsInChildren<Renderer>`,
+   `DontDestroyOnLoad(gameObject)` and reparenting `transform` all hit the entire runtime subtree. Put
+   per-feature geometry / lights / visibility toggles on a dedicated child object, never on the runtime.
+2. A scalar metric (mean luma, bounds gap, collision count) cannot tell "broken" from "measured wrong."
+   Verify visuals by rendering the camera to an image and looking at it, from a real gameplay viewpoint.
+3. State set this frame (LateUpdate writes, ViewMode.OnChanged reactions, gravity) is not readable the
+   same frame. Change in one step, read in the next after frames advance.
+
 ## View modes (2026-07-20 human decision)
 
 First-person is **in scope** as a toggleable second view mode alongside orbit/iso; both ship. See the North star table in `lore/BIBLE.md` and the `F1`–`F14` block at the top of `BACKLOG.md` Now. FP must not demote the factory into a shooter, and iso stays fully playable.

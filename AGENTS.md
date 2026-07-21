@@ -47,6 +47,44 @@ Contract:
 Never mark a task `[x]` on the strength of reading the code. Unverified is fine; falsely verified
 is not.
 
+### Verified pitfalls — read before touching runtime FX, visuals, or view modes
+
+Three mistakes have each been made **more than once** on this project, cost real debugging, and shipped
+regressions a human playtest caught. They are not hypothetical. Read them every time; they do not fit
+in one context window of trial and error.
+
+**1. `SectorRuntime` is one shared GameObject. Most FX systems are components ON it.**
+`SpaceBackdrop`, `ShipInteriorUpgrade`, `AtmosphereController`, `PostFXBootstrap`, the HUD drawers,
+`PlaytestHarness` and ~40 others all live on the single `SectorRuntime` object, and `PlaceholderProps`
+/ `InteriorUpgradeRoot` / `Ceiling` are its children. So inside any of those components:
+- `gameObject.AddComponent<X>()` puts X on `SectorRuntime`, not on "your" object.
+- `GetComponentsInChildren<Renderer>()` returns the **entire runtime subtree** — every prop and dressing.
+- `DontDestroyOnLoad(gameObject)` drags the whole runtime across a scene load.
+- reparenting or disabling `transform` hits everything under the runtime.
+This caused: all props vanishing in first person (a visibility toggle added to `SectorRuntime` hid the
+subtree), the editor stranded on the menu (a playtest scenario `DontDestroyOnLoad`-ed the harness), and
+a teardown error reparenting the camera. **Rule:** per-feature geometry, lights and visibility
+controllers go on a dedicated child GameObject you create, never on the shared runtime object. Before
+`AddComponent`/`GetComponentsInChildren`/`DontDestroyOnLoad`/reparenting in an FX script, confirm what
+object you are actually on.
+
+**2. A scalar metric cannot tell "broken" from "fine but measured wrong." Look at a rendered frame.**
+Mean-luma said the corridor was too dark when the camera was aimed at empty floor 13 m from anything;
+a bounds-gap "floating" check flagged desk-mounted mugs and ceiling ducts; a "sunk machine" check was
+the ground raycast hitting the machine's own collider; an "orange disc out of place" was a dark plinth
+under a 2x screenshot exposure boost. Every one wasted a pass. **Rule:** verify any visual, lighting,
+or placement claim by rendering `Camera.main` to a texture (or `ScreenCapture` for HUD) from a real
+gameplay viewpoint and **reading the image**. A number is a hypothesis; the frame is the evidence. If a
+value "has no effect," suspect the measurement before the system.
+
+**3. State set this frame is not readable this frame.** `LateUpdate` writes (camera rig, `PlayerAim`
+torso), `ViewMode.OnChanged` reactions, and physics/gravity settle *after* your `RunCommand` returns.
+Reading them in the same command gave a 28-degree aim error that was really 0, an "iso torso not
+restored" that restored fine one frame later, and a camera that "didn't move" because it drifted
+between commands. **Rule:** change mode/transform in one `RunCommand`, then read the result in a
+**separate** command after frames advance. Pin transforms you depend on inside the same command that
+uses them.
+
 ### Encoding: a pre-commit hook blocks mojibake
 
 `BACKLOG.md` was once found with 1108 mis-encoded characters — every em dash, arrow and comparison

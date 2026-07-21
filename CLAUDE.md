@@ -40,6 +40,12 @@ Shared queue: `BACKLOG.md`. Commands live in `.claude/commands/` (Cursor mirrors
 
 Agents **without** Unity MCP: implement, self-review the diff, then mark the task `[?] needs Unity pass — <what>` rather than `[x]`. Never claim verification you could not perform. `/unity-pass` sweeps those.
 
+### Verified pitfalls (full text in `AGENTS.md` — read before touching FX/visuals/view modes)
+
+1. **`SectorRuntime` is one shared GameObject** and most FX systems are components on it. Inside them, `gameObject.AddComponent` / `GetComponentsInChildren<Renderer>()` / `DontDestroyOnLoad(gameObject)` / reparenting `transform` hit the **entire runtime subtree** (all props and dressing). Put per-feature geometry, lights and visibility toggles on a dedicated child object you create — never on the shared runtime. This regressed props-in-FP, stranded the editor on the menu, and threw a teardown error.
+2. **A scalar metric can't tell "broken" from "measured wrong."** Verify any visual/lighting/placement claim by rendering `Camera.main` (or `ScreenCapture` for HUD) from a real gameplay viewpoint and reading the image. Mean-luma, bounds-gaps and collision counts have each sent a pass chasing nothing. If a value "has no effect," suspect the measurement first.
+3. **State set this frame isn't readable this frame.** `LateUpdate` writes, `ViewMode.OnChanged` reactions and gravity settle after your `RunCommand` returns. Change mode/transform in one command, read the result in a separate command after frames advance; pin transforms inside the command that uses them.
+
 `SPACE FACTORY INFO/` is **not locked**; beneficial number/system changes are allowed if docs stay in sync. Asset-pack work is gated by `## Asset pack status` in `BACKLOG.md`. Full policy: `AGENTS.md`.
 
 ## Understanding Unity Projects
