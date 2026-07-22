@@ -5338,6 +5338,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::PlayerAim
   aimCamera: {fileID: 746681994}
   torso: {fileID: 638963494}
+  fpWeaponOffset: {x: 0.28, y: -0.22, z: 0.35}
 --- !u!114 &1445036923
 MonoBehaviour:
   m_ObjectHideFlags: 0

@@ -1,7 +1,7 @@
 #ifndef UNITY_POSTFX_COLOR
 #define UNITY_POSTFX_COLOR
 
-#include "StdLib.hlsl"
+#include "Packages/com.unity.postprocessing/PostProcessing/Shaders/StdLib.hlsl"
 #include "ACES.hlsl"
 
 #define LUT_SPACE_ENCODE(x) LinearToLogC(x)

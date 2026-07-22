@@ -1,17 +1,21 @@
 using UnityEngine;
 
 /// <summary>
-/// P3: skin authored Hull_/Corr_/Ring_ cubes with POLYGON Sci-Fi Horror wall
-/// panels. Colliders stay on the cubes (pathing/build unchanged); only
-/// MeshRenderers are hidden. Geometry lives under a dedicated child root —
-/// never on SectorRuntime itself.
+/// P3 / C1 cleanup: skin authored Hull_/Corr_/Ring_ cubes with FULL-HEIGHT
+/// POLYGON Sci-Fi Horror wall panels (~3 m Alcoves/Windows/Doors/Reactors).
+/// Never uses Wall_Trim_* (0.27 m baseboards — height-fitting those exploded
+/// into 30 m slabs that clipped the whole deck).
+/// Colliders stay on the cubes. Geometry under SyntyHullRoot only.
 /// </summary>
 public class SyntyHullDressing : MonoBehaviour
 {
-    const int DressVersion = 1;
-    const float TargetWallHeight = 2.75f;
-    const float PanelOverlap = 0.08f;
-    const float FaceInset = 0.03f;
+    // v4: shallow panels only (no reactors/deep alcoves); snap interior face to wall, not bounds center.
+    const int DressVersion = 4;
+    const float TargetWallHeight = 2.85f;
+    const float MaxPanelWidth = 3.4f;
+    const float PanelOverlap = 0.1f;
+    const float FaceInset = 0.04f;
+    const float MinNativeHeight = 2.4f;
 
     Transform _root;
 
@@ -32,12 +36,13 @@ public class SyntyHullDressing : MonoBehaviour
             DestroyImmediate(existing.gameObject);
         }
 
-        var corridor = SyntyHorrorLoader.HullCorridorPanels;
-        var alcove = SyntyHorrorLoader.HullAlcovePanels;
-        var exterior = SyntyHorrorLoader.HullExteriorPanels;
+        SyntyHorrorLoader.ClearCache();
+        var corridor = FilterFullHeight(SyntyHorrorLoader.HullCorridorPanels);
+        var alcove = FilterFullHeight(SyntyHorrorLoader.HullAlcovePanels);
+        var exterior = FilterFullHeight(SyntyHorrorLoader.HullExteriorPanels);
         if (corridor.Length == 0 && exterior.Length == 0 && alcove.Length == 0)
         {
-            Debug.LogError("[SyntyHullDressing] No wall panels loaded — ship stays cube-skinned.");
+            Debug.LogError("[SyntyHullDressing] No full-height wall panels loaded.");
             return;
         }
 
@@ -45,7 +50,6 @@ public class SyntyHullDressing : MonoBehaviour
         if (wallsRoot == null)
         {
             Debug.LogWarning("[SyntyHullDressing] No Walls root — retry next frame.");
-            // Walls are scene-authored; if missing briefly, try once more.
             Invoke(nameof(Dress), 0.15f);
             return;
         }
@@ -70,7 +74,25 @@ public class SyntyHullDressing : MonoBehaviour
             panels += SkinWallSegment(wall, isHull, isRing, segmentIndex++, corridor, alcove, exterior);
         }
 
-        Debug.Log($"[SyntyHullDressing] v{DressVersion} skinned {panels} Synty panels under {_root.name}");
+        MuteConflictingInteriorDress();
+        Debug.Log($"[SyntyHullDressing] v{DressVersion} skinned {panels} full-height panels under {_root.name}");
+    }
+
+    static GameObject[] FilterFullHeight(GameObject[] src)
+    {
+        if (src == null || src.Length == 0) return System.Array.Empty<GameObject>();
+        var list = new System.Collections.Generic.List<GameObject>(src.Length);
+        foreach (var p in src)
+        {
+            if (p == null) continue;
+            // Instantiating every candidate is expensive once; use name reject first.
+            string n = p.name;
+            if (n.Contains("Trim") || n.Contains("Insert") || n.Contains("Curve")
+                || n.Contains("Reactor") || n.Contains("Alcove_03") || n.Contains("Alcove_04"))
+                continue;
+            list.Add(p);
+        }
+        return list.ToArray();
     }
 
     int SkinWallSegment(Transform wall, bool exterior, bool hubAccent, int segmentIndex,
@@ -85,7 +107,6 @@ public class SyntyHullDressing : MonoBehaviour
 
         bool alongX = b.size.x >= b.size.z;
         float length = alongX ? b.size.x : b.size.z;
-        float height = Mathf.Max(1.5f, b.size.y);
         if (length < 0.8f) return 0;
 
         Vector3 faceNormal = FaceTowardInterior(b.center, alongX);
@@ -97,19 +118,17 @@ public class SyntyHullDressing : MonoBehaviour
 
         var probe = Object.Instantiate(probeModel, _root);
         SyntyHorrorLoader.PrepareInstance(probe);
-        FitPanelHeight(probe, TargetWallHeight);
+        FitPanelSafe(probe, TargetWallHeight);
         Bounds pb = RendererBounds(probe);
-        float panelLen = Mathf.Max(0.6f, alongX ? pb.size.x : pb.size.z);
+        float panelLen = Mathf.Max(0.8f, alongX ? pb.size.x : pb.size.z);
         float panelDepth = Mathf.Max(0.08f, alongX ? pb.size.z : pb.size.x);
         Object.DestroyImmediate(probe);
 
-        float step = panelLen * (hubAccent ? 0.92f : exterior ? 1.02f : 0.96f) - PanelOverlap;
-        if (step < 0.5f) step = 0.5f;
-
+        // Tile at native-ish width — do NOT stretch panels along long hull runs.
+        float step = Mathf.Clamp(panelLen - PanelOverlap, 1.2f, MaxPanelWidth);
         int count = Mathf.Max(1, Mathf.RoundToInt(length / step));
         float used = count * step;
         Vector3 origin = b.center - along * (used * 0.5f - step * 0.5f);
-        float deckY = b.min.y;
         float thinHalf = alongX ? b.extents.z : b.extents.x;
         Vector3 faceOffset = faceNormal * (thinHalf + FaceInset);
 
@@ -120,22 +139,22 @@ public class SyntyHullDressing : MonoBehaviour
             if (model == null) continue;
 
             Vector3 pos = origin + along * (i * step) + faceOffset;
-            pos.y = deckY;
+            // Always sit on the real deck — authored cube min.y can float above Ground.
+            pos.y = RuntimeVisualPrimitives.FindDeckY(pos, b.min.y);
 
             var panel = Object.Instantiate(model, _root);
             panel.name = exterior ? "SyntyHullPanel" : hubAccent ? "SyntyRingPanel" : "SyntyCorrPanel";
             SyntyHorrorLoader.PrepareInstance(panel);
-            FitPanelHeight(panel, Mathf.Min(TargetWallHeight, height * 1.02f));
+            // Constant height so corridor tops don't step with cube size variance.
+            FitPanelSafe(panel, TargetWallHeight);
+            if (panel == null || panel.transform.localScale.x < 0.01f)
+            {
+                if (panel != null) Object.DestroyImmediate(panel);
+                continue;
+            }
             panel.transform.rotation = Quaternion.LookRotation(faceNormal, Vector3.up);
-
-            float stretch = Mathf.Clamp(step / Mathf.Max(0.01f, panelLen), 0.85f, 1.4f);
-            Vector3 ls = panel.transform.localScale;
-            if (alongX)
-                panel.transform.localScale = new Vector3(ls.x * stretch, ls.y, ls.z);
-            else
-                panel.transform.localScale = new Vector3(ls.x, ls.y, ls.z * stretch);
-
-            SnapToAnchor(panel, pos, faceNormal, panelDepth);
+            if (!SnapToAnchor(panel, pos, faceNormal, panelDepth))
+                continue;
             placed++;
         }
 
@@ -154,8 +173,7 @@ public class SyntyHullDressing : MonoBehaviour
             return null;
         }
 
-        // Hub ring + corridors: mostly trim panels, sprinkle alcoves/windows for life.
-        bool accent = (panelIndex + segmentIndex) % 5 == 2
+        bool accent = (panelIndex + segmentIndex) % 4 == 2
             || (hubAccent && (panelIndex + segmentIndex) % 3 == 0);
         if (accent && alcove != null && alcove.Length > 0)
             return alcove[(segmentIndex + panelIndex) % alcove.Length];
@@ -164,6 +182,33 @@ public class SyntyHullDressing : MonoBehaviour
         if (alcove != null && alcove.Length > 0)
             return alcove[(segmentIndex + panelIndex) % alcove.Length];
         return null;
+    }
+
+    /// <summary>Scale to target height but never explode width past MaxPanelWidth.</summary>
+    static void FitPanelSafe(GameObject go, float targetH)
+    {
+        go.transform.localScale = Vector3.one;
+        Bounds b = RendererBounds(go);
+        if (b.size.y < 0.05f) return;
+
+        // Skip / reject short trims that slipped through.
+        if (b.size.y < MinNativeHeight * 0.85f)
+        {
+            // Uniform upscale would explode — instead discard by collapsing to near-zero
+            // (caller still places it; better to destroy). Mark tiny via scale.
+            go.transform.localScale = Vector3.one * 0.001f;
+            return;
+        }
+
+        float s = targetH / b.size.y;
+        go.transform.localScale = Vector3.one * s;
+        b = RendererBounds(go);
+        float w = Mathf.Max(b.size.x, b.size.z);
+        if (w > MaxPanelWidth)
+        {
+            float shrink = MaxPanelWidth / w;
+            go.transform.localScale *= shrink;
+        }
     }
 
     static void HidePrimitiveRenderer(Transform wall)
@@ -176,6 +221,29 @@ public class SyntyHullDressing : MonoBehaviour
         }
     }
 
+    /// <summary>
+    /// Cube-era wall trim / accent rails / kickplates fight Synty full walls.
+    /// Caps stay (iso silhouette). Mute the rest under InteriorUpgradeRoot.
+    /// </summary>
+    static void MuteConflictingInteriorDress()
+    {
+        var interior = GameObject.Find("InteriorUpgradeRoot");
+        if (interior == null) return;
+        foreach (Transform t in interior.GetComponentsInChildren<Transform>(true))
+        {
+            if (t == null) continue;
+            string n = t.name;
+            // HangBeam cubes sit at ~2.9 m and spear Synty wall crowns (C3).
+            bool mute = n.Contains("WallBaseTrim") || n.Contains("WallAccent")
+                || n.Contains("Kickplate") || n.Contains("KickPlate")
+                || n.StartsWith("Rail_") || n.Contains("AccentRail")
+                || n == "HangBeam";
+            if (!mute) continue;
+            foreach (var r in t.GetComponentsInChildren<Renderer>(true))
+                if (r != null) r.enabled = false;
+        }
+    }
+
     static Vector3 FaceTowardInterior(Vector3 center, bool alongX)
     {
         if (alongX)
@@ -183,23 +251,56 @@ public class SyntyHullDressing : MonoBehaviour
         return center.x >= 0f ? Vector3.left : Vector3.right;
     }
 
-    static void FitPanelHeight(GameObject go, float targetH)
+    static bool SnapToAnchor(GameObject go, Vector3 deckAnchor, Vector3 faceNormal, float panelDepth)
     {
-        go.transform.localScale = Vector3.one;
         Bounds b = RendererBounds(go);
-        if (b.size.y < 0.001f) return;
-        go.transform.localScale = Vector3.one * (targetH / b.size.y);
+        if (b.size.y < 0.05f || Mathf.Max(b.size.x, b.size.z) > MaxPanelWidth * 1.15f)
+        {
+            Object.DestroyImmediate(go);
+            return false;
+        }
+
+        // Reject deep panels that would spear the lane even after face-align.
+        float depth = Mathf.Abs(Vector3.Dot(b.size, AbsVec(faceNormal)));
+        if (depth < 0.05f) depth = Mathf.Min(b.size.x, b.size.z);
+        if (depth > 1.15f)
+        {
+            Object.DestroyImmediate(go);
+            return false;
+        }
+
+        float standOff = Mathf.Clamp(panelDepth * 0.08f, 0.02f, 0.08f);
+
+        // Align along-wall (tangent) + height by centering XZ on anchor and decking min.y.
+        // Then push so the INTERIOR face (max along faceNormal) sits at the wall face —
+        // never center the AABB (Reactor pivots were ~3 m off and became black slabs).
+        Vector3 tangent = Vector3.Cross(Vector3.up, faceNormal).normalized;
+        if (tangent.sqrMagnitude < 0.01f) tangent = Vector3.right;
+
+        float alongNow = Vector3.Dot(b.center, tangent);
+        float alongWant = Vector3.Dot(deckAnchor, tangent);
+        float upDelta = deckAnchor.y - b.min.y;
+
+        // World-space max of bounds along faceNormal.
+        float maxAlong = MaxBoundAlong(b, faceNormal);
+        float wantAlong = Vector3.Dot(deckAnchor, faceNormal) + standOff;
+
+        go.transform.position += tangent * (alongWant - alongNow)
+            + Vector3.up * upDelta
+            + faceNormal * (wantAlong - maxAlong);
+
+        return true;
     }
 
-    static void SnapToAnchor(GameObject go, Vector3 deckAnchor, Vector3 faceNormal, float panelDepth)
+    static Vector3 AbsVec(Vector3 v) => new Vector3(Mathf.Abs(v.x), Mathf.Abs(v.y), Mathf.Abs(v.z));
+
+    static float MaxBoundAlong(Bounds b, Vector3 axis)
     {
-        Bounds b = RendererBounds(go);
-        go.transform.position += new Vector3(
-            deckAnchor.x - b.center.x,
-            deckAnchor.y - b.min.y,
-            deckAnchor.z - b.center.z);
-        float standOff = Mathf.Clamp(panelDepth * 0.12f, 0.03f, 0.14f);
-        go.transform.position += faceNormal * standOff;
+        Vector3 a = axis.normalized;
+        // Support point of AABB along axis.
+        Vector3 ext = b.extents;
+        float rad = Mathf.Abs(a.x) * ext.x + Mathf.Abs(a.y) * ext.y + Mathf.Abs(a.z) * ext.z;
+        return Vector3.Dot(b.center, a) + rad;
     }
 
     static Bounds RendererBounds(GameObject go)

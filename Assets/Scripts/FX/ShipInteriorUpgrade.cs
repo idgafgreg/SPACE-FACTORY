@@ -13,7 +13,7 @@ public class ShipInteriorUpgrade : MonoBehaviour
     // 57: F7 lamp fixtures — corridor lights gain housings and per-mode values.
     // 58: skip corridor lamp fixtures inside the hub footprint (clipping fix).
     // 59: F9 — wire the never-called BuildKickplates for eye-level deck-edge detail.
-    const int UpgradeVersion = 59;
+    const int UpgradeVersion = 60; // C7: overhead pipes higher + farther from pillars
 
     // TransparentFX — built-in layer, ships with every project (same choice as
     // PostFXBootstrap.VolumeLayer). Wall caps live here so point lights can cull
@@ -1055,11 +1055,11 @@ public class ShipInteriorUpgrade : MonoBehaviour
                 dir.y = 0f;
                 if (dir.sqrMagnitude < 0.25f) continue;
                 dir.Normalize();
-                // Keep pipes over the walkable lane, not in wall volume
-                Vector3 side = Vector3.Cross(Vector3.up, dir).normalized * (0.85f * sideSign);
+                // Keep pipes high under the F6 lid and near the wall, not through pillars.
+                Vector3 side = Vector3.Cross(Vector3.up, dir).normalized * (1.35f * sideSign);
 
-                Vector3 p0 = a + side + Vector3.up * 2.95f;
-                Vector3 p1 = b + side + Vector3.up * 2.95f;
+                Vector3 p0 = a + side + Vector3.up * (CeilingHeight - 0.38f);
+                Vector3 p1 = b + side + Vector3.up * (CeilingHeight - 0.38f);
 
                 if (!IsOpenAirSegment(p0, p1)) continue;
 

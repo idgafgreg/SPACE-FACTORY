@@ -51,8 +51,7 @@ public static class SyntyHorrorLoader
         BldRoot + "SM_Bld_Alien_Wall_02.prefab",
         BldRoot + "SM_Bld_Alien_Wall_03.prefab",
         BldRoot + "SM_Bld_Alien_Wall_04.prefab",
-        BldRoot + "SM_Bld_Alien_Wall_Trim_01.prefab",
-        BldRoot + "SM_Bld_Alien_Wall_Trim_02.prefab",
+        // No Alien_Wall_Trim_* — same explode risk as hull Wall_Trim when height-fit.
     };
 
     /// <summary>P1 — sparse pillars along colonized breach walls.</summary>
@@ -63,36 +62,36 @@ public static class SyntyHorrorLoader
         BldRoot + "SM_Bld_Alien_Pillar_03.prefab",
     };
 
-    /// <summary>P3 — corridor / ring wall skins (Synty modular wall kit).</summary>
+    /// <summary>
+    /// P3/C6 — FULL-HEIGHT shallow corridor skins (~3 m, depth under ~0.6 m).
+    /// Never Wall_Trim_* (explode when height-fit). Never Reactor_* (mesh pivot
+    /// offset ~3 m — centers into the lane as black slabs). Never deep Alcoves
+    /// 03/04 (bunks/furniture pierce the walkway).
+    /// </summary>
     public static readonly string[] HullCorridorPanelPaths =
     {
-        BldRoot + "SM_Bld_Wall_Trim_01.prefab",
-        BldRoot + "SM_Bld_Wall_Trim_02.prefab",
-        BldRoot + "SM_Bld_Wall_Trim_03.prefab",
-        BldRoot + "SM_Bld_Wall_Trim_04.prefab",
-        BldRoot + "SM_Bld_Wall_Trim_05.prefab",
-        BldRoot + "SM_Bld_Wall_Trim_Large_01.prefab",
-        BldRoot + "SM_Bld_Wall_Trim_Large_02.prefab",
+        BldRoot + "SM_Bld_Wall_Window_01.prefab",
+        BldRoot + "SM_Bld_Wall_Window_02.prefab",
+        BldRoot + "SM_Bld_Wall_Door_01.prefab",
+        BldRoot + "SM_Bld_Wall_Door_Double_01.prefab",
+        BldRoot + "SM_Bld_Wall_Door_Double_02.prefab",
     };
 
+    /// <summary>Sparse accent — shallow alcoves only (furniture faces into the wall volume).</summary>
     public static readonly string[] HullAlcovePanelPaths =
     {
         BldRoot + "SM_Bld_Wall_Alcove_01.prefab",
         BldRoot + "SM_Bld_Wall_Alcove_02.prefab",
-        BldRoot + "SM_Bld_Wall_Alcove_03.prefab",
-        BldRoot + "SM_Bld_Wall_Alcove_04.prefab",
         BldRoot + "SM_Bld_Wall_Window_01.prefab",
-        BldRoot + "SM_Bld_Wall_Window_02.prefab",
     };
 
+    /// <summary>Outer hull — same shallow set; reactors parked until face-aligned mount exists.</summary>
     public static readonly string[] HullExteriorPanelPaths =
     {
-        BldRoot + "SM_Bld_Wall_Reactor_01.prefab",
-        BldRoot + "SM_Bld_Wall_Reactor_02.prefab",
-        BldRoot + "SM_Bld_Wall_Trim_Large_01.prefab",
-        BldRoot + "SM_Bld_Wall_Trim_Large_02.prefab",
-        BldRoot + "SM_Bld_Wall_Trim_01.prefab",
-        BldRoot + "SM_Bld_Wall_Trim_03.prefab",
+        BldRoot + "SM_Bld_Wall_Window_02.prefab",
+        BldRoot + "SM_Bld_Wall_Door_Double_01.prefab",
+        BldRoot + "SM_Bld_Wall_Alcove_01.prefab",
+        BldRoot + "SM_Bld_Wall_Door_01.prefab",
     };
 
     static GameObject[] _growth;
@@ -103,6 +102,14 @@ public static class SyntyHorrorLoader
     static GameObject[] _alcovePanels;
     static GameObject[] _exteriorPanels;
     static bool _loggedMissing;
+
+    /// <summary>Drop cached prefab arrays (call after changing path lists in editor).</summary>
+    public static void ClearCache()
+    {
+        _growth = _eggs = _walls = _pillars = null;
+        _corrPanels = _alcovePanels = _exteriorPanels = null;
+        _loggedMissing = false;
+    }
 
     public static GameObject[] AlienGrowthPrefabs => _growth ??= LoadAll(AlienGrowthPrefabPaths);
     public static GameObject[] EggSackPrefabs => _eggs ??= LoadAll(EggSackPrefabPaths);

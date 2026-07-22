@@ -10,10 +10,11 @@ using UnityEngine;
 /// </summary>
 public class PlaceholderPropDressing : MonoBehaviour
 {
-    const int PropDressVersion = 13;
+    // v14 C2: corridor/workshop/bay use Synty only (no Kenney cylinders piercing walls).
+    const int PropDressVersion = 14;
 
     /// <summary>Keep walkway clear — props must stay outside this lane half-width.</summary>
-    const float LaneClearance = 1.85f;
+    const float LaneClearance = 1.95f;
 
     /// <summary>Keep Command Hub approach clear of clutter.</summary>
     const float HubClearance = 2.4f;
@@ -242,16 +243,16 @@ public class PlaceholderPropDressing : MonoBehaviour
         if (workshop == null) return;
         Vector3 w = workshop.transform.position;
 
-        // Workshop sits near the hub — skip hub-approach reject; still wall/lane safe.
-        TrySpawnOffsets("Prop_Shelves_WideTall", w, root, 0.9f, 90f, ignoreHub: true,
+        // Workshop near hub — Synty only; skip hub-approach reject.
+        TrySpawnCorridorSynty("SM_Prop_Locker_01", w, root, NestRole.Locker, 0.9f, 90f, ignoreHub: true,
             new Vector3(-1.8f, 0f, 1.2f), new Vector3(-2.4f, 0f, 0.4f), new Vector3(1.8f, 0f, 1.2f));
-        TrySpawnOffsets("Prop_Barrel2_Open", w, root, 0.85f, 160f, ignoreHub: true,
+        TrySpawnCorridorSynty("SM_Prop_Barrel_01", w, root, NestRole.Barrel, 0.85f, 160f, ignoreHub: true,
             new Vector3(1.6f, 0f, -0.9f), new Vector3(2.2f, 0f, -0.4f));
-        TrySpawnOffsets("Prop_Crate_Tarp", w, root, 0.8f, 45f, ignoreHub: true,
+        TrySpawnCorridorSynty("SM_Prop_Crate_01", w, root, NestRole.Crate, 0.8f, 45f, ignoreHub: true,
             new Vector3(2.2f, 0f, 1.0f), new Vector3(1.4f, 0f, 1.6f), new Vector3(-2.0f, 0f, -1.2f));
-        TrySpawnOffsets("Prop_Fan_Small", w, root, 0.9f, 0f, ignoreHub: true,
+        TrySpawnCorridorSynty("SM_Prop_Greeble_08", w, root, NestRole.Greeble, 0.9f, 0f, ignoreHub: true,
             new Vector3(-0.5f, 0f, -1.6f), new Vector3(0.5f, 0f, -1.8f));
-        TrySpawnOffsets("Prop_AccessPoint", w, root, 0.85f, 180f, ignoreHub: true,
+        TrySpawnCorridorSynty("SM_Prop_Generator_PowerCell_01", w, root, NestRole.Crate, 0.85f, 180f, ignoreHub: true,
             new Vector3(0.8f, 0f, 1.8f), new Vector3(-0.8f, 0f, 1.8f));
     }
 
@@ -262,8 +263,13 @@ public class PlaceholderPropDressing : MonoBehaviour
 
         string[] wallProps =
         {
-            "Prop_Crate", "Prop_Barrel1", "Prop_Locker",
-            "Prop_Barrel2_Open", "pipe-large-valve", "Prop_Crate_Tarp"
+            "SM_Prop_Crate_01", "SM_Prop_Barrel_01", "SM_Prop_Locker_01",
+            "SM_Prop_Crate_02", "SM_Prop_Greeble_04", "SM_Prop_Barrel_01"
+        };
+        NestRole[] roles =
+        {
+            NestRole.Crate, NestRole.Barrel, NestRole.Locker,
+            NestRole.Crate, NestRole.Greeble, NestRole.Barrel
         };
 
         int n = 0;
@@ -271,7 +277,6 @@ public class PlaceholderPropDressing : MonoBehaviour
         {
             if (lane == null || lane.PointCount < 2) continue;
 
-            // Two props mid-corridor, pressed to the wall — lived-in, not cluttered.
             int[] idxs =
             {
                 Mathf.Clamp(lane.PointCount / 3, 1, lane.PointCount - 1),
@@ -283,23 +288,26 @@ public class PlaceholderPropDressing : MonoBehaviour
                 Vector3 p = lane.GetPoint(i);
                 Vector3 ahead = lane.GetPoint(Mathf.Min(i + 1, lane.PointCount - 1)) - p;
                 ahead.y = 0f;
-                Vector3 side = Vector3.Cross(Vector3.up, ahead.normalized);
+                if (ahead.sqrMagnitude < 0.01f) ahead = Vector3.forward;
+                ahead.Normalize();
+                Vector3 side = Vector3.Cross(Vector3.up, ahead);
                 if (side.sqrMagnitude < 0.01f) side = Vector3.right;
                 side.Normalize();
 
                 float prefer = (n % 2 == 0) ? 1f : -1f;
-                string prop = wallProps[n % wallProps.Length];
-                // Prefer wall-side offsets; fall back to the opposite side.
-                TrySpawnOffsets(prop, p, root, 0.82f, n * 47f,
-                    side * (prefer * 2.55f),
-                    side * (prefer * 3.05f),
-                    side * (-prefer * 2.55f),
-                    side * (-prefer * 3.05f));
+                int pi = n % wallProps.Length;
+                // Raycast-hug the wall first; fall back to fixed offsets.
+                if (!TrySpawnWallHugSynty(wallProps[pi], p, side * prefer, root, roles[pi], 0.82f, n * 47f))
+                {
+                    TrySpawnCorridorSynty(wallProps[pi], p, root, roles[pi], 0.82f, n * 47f, ignoreHub: false,
+                        side * (prefer * 2.55f),
+                        side * (prefer * 3.05f),
+                        side * (-prefer * 2.55f),
+                        side * (-prefer * 3.05f));
+                }
                 n++;
             }
 
-            // Gate mouth: one crate / barrel — "someone tried to barricade".
-            // Keep clear of the lane mouth; park beside the approach.
             Vector3 gate = lane.GetPoint(0);
             Vector3 inDir = (lane.GetPoint(1) - gate);
             inDir.y = 0f;
@@ -307,7 +315,8 @@ public class PlaceholderPropDressing : MonoBehaviour
             Vector3 gateSide = Vector3.Cross(Vector3.up, inDir);
             if (gateSide.sqrMagnitude < 0.01f) gateSide = Vector3.right;
             gateSide.Normalize();
-            TrySpawnOffsets(wallProps[(n + 2) % wallProps.Length], gate, root, 0.8f, n * 33f,
+            int gi = (n + 2) % wallProps.Length;
+            TrySpawnCorridorSynty(wallProps[gi], gate, root, roles[gi], 0.8f, n * 33f, ignoreHub: false,
                 gateSide * 2.8f + inDir * 2.0f,
                 -gateSide * 2.8f + inDir * 2.0f,
                 gateSide * 3.2f + inDir * 2.6f);
@@ -317,24 +326,97 @@ public class PlaceholderPropDressing : MonoBehaviour
 
     void DressBayDebris(Transform root)
     {
-        // One quiet prop near each vein — salvage left mid-job.
         int i = 0;
         foreach (var node in FindObjectsByType<ResourceNode>(FindObjectsInactive.Exclude))
         {
             if (node == null) continue;
-            // Skip hub vein — nest already dresses that area.
             if (node.transform.position.sqrMagnitude < 80f) continue;
 
-            string prop = (i % 2 == 0) ? "Prop_Crate" : "Prop_Barrel1";
+            string prop = (i % 2 == 0) ? "SM_Prop_Crate_01" : "SM_Prop_Barrel_01";
+            NestRole role = (i % 2 == 0) ? NestRole.Crate : NestRole.Barrel;
             Vector3 origin = node.transform.position;
-            TrySpawnOffsets(prop, origin, root, 0.78f, i * 61f,
+            TrySpawnCorridorSynty(prop, origin, root, role, 0.78f, i * 61f, ignoreHub: false,
                 new Vector3(1.8f, 0f, 1.4f),
                 new Vector3(-1.8f, 0f, -1.4f),
                 new Vector3(1.8f, 0f, -1.4f),
                 new Vector3(-1.8f, 0f, 1.4f));
             i++;
-            if (i >= 6) break; // keep sparse
+            if (i >= 6) break;
         }
+    }
+
+    static void TrySpawnCorridorSynty(string prefabName, Vector3 origin, Transform parent,
+        NestRole role, float scale, float yaw, bool ignoreHub, params Vector3[] offsets)
+    {
+        foreach (var off in offsets)
+        {
+            if (SpawnCorridorSynty(prefabName, origin + off, parent, role, scale, yaw, ignoreHub))
+                return;
+        }
+    }
+
+    /// <summary>Raycast from lane toward a side wall and park the prop just inside the face.</summary>
+    static bool TrySpawnWallHugSynty(string prefabName, Vector3 lanePoint, Vector3 sideDir,
+        Transform parent, NestRole role, float scale, float yaw)
+    {
+        sideDir.y = 0f;
+        if (sideDir.sqrMagnitude < 0.01f) return false;
+        sideDir.Normalize();
+
+        Vector3 origin = lanePoint + Vector3.up * 0.9f;
+        if (!Physics.Raycast(origin, sideDir, out RaycastHit hit, 4.5f, ~0, QueryTriggerInteraction.Ignore))
+            return false;
+        if (!IsWallCollider(hit.collider)) return false;
+
+        // Stand off from the hit face by a small inset so mesh doesn't spear the panel.
+        Vector3 pos = hit.point - sideDir * 0.55f;
+        pos.y = lanePoint.y;
+        return SpawnCorridorSynty(prefabName, pos, parent, role, scale, yaw, ignoreHub: false);
+    }
+
+    static bool SpawnCorridorSynty(string prefabName, Vector3 pos, Transform parent,
+        NestRole role, float scale, float yaw, bool ignoreHub)
+    {
+        if (TooCloseToLane(pos, LaneClearance)) return false;
+        if (!ignoreHub && TooCloseToHub(pos, HubClearance)) return false;
+        foreach (var machine in FindObjectsByType<MachineBase>(FindObjectsInactive.Exclude))
+            if (machine != null && (machine.transform.position - pos).sqrMagnitude < 2.25f)
+                return false;
+        foreach (var defense in FindObjectsByType<DefenseBase>(FindObjectsInactive.Exclude))
+            if (defense != null && (defense.transform.position - pos).sqrMagnitude < 2.25f)
+                return false;
+        if (PointOverlapsWall(pos + Vector3.up * 0.55f, 0.28f)) return false;
+
+        var prefab = SyntyHorrorLoader.LoadProp(prefabName);
+        if (prefab == null) return false;
+
+        float floorY = RuntimeVisualPrimitives.FindDeckY(pos, pos.y);
+        pos.y = floorY;
+
+        Quaternion rotation = Quaternion.Euler(0f, yaw, 0f) * prefab.transform.rotation;
+        var go = Object.Instantiate(prefab, pos, rotation, parent);
+        go.name = "Corr_" + prefabName;
+        go.transform.localScale = prefab.transform.localScale;
+        SyntyHorrorLoader.PrepareInstance(go);
+        FitSyntyNestProp(go, role, pos.y, scale);
+
+        if (BoundsOverlapWall(go) || PropPiercesDeck(go, floorY))
+        {
+            Object.Destroy(go);
+            return false;
+        }
+        return true;
+    }
+
+    static bool PropPiercesDeck(GameObject go, float deckY)
+    {
+        var rends = go.GetComponentsInChildren<Renderer>();
+        if (rends == null || rends.Length == 0) return true;
+        Bounds b = rends[0].bounds;
+        for (int i = 1; i < rends.Length; i++)
+            if (rends[i] != null) b.Encapsulate(rends[i].bounds);
+        // Sunk into deck or floating more than a finger-width.
+        return b.min.y < deckY - 0.12f || b.min.y > deckY + 0.18f;
     }
 
     static void TrySpawnOffsets(string resourcesPath, Vector3 origin, Transform parent,
@@ -466,11 +548,11 @@ public class PlaceholderPropDressing : MonoBehaviour
         if (rends.Length == 0) return false;
         Bounds b = rends[0].bounds;
         for (int i = 1; i < rends.Length; i++) b.Encapsulate(rends[i].bounds);
-        // Shrink so resting against a wall lip isn't a false reject.
+        // Light shrink only — C2 Kenney pierces returned false negatives at 0.12.
         Vector3 e = b.extents;
-        e.x = Mathf.Max(0.05f, e.x - 0.12f);
-        e.y = Mathf.Max(0.05f, e.y - 0.05f);
-        e.z = Mathf.Max(0.05f, e.z - 0.12f);
+        e.x = Mathf.Max(0.05f, e.x - 0.04f);
+        e.y = Mathf.Max(0.05f, e.y - 0.03f);
+        e.z = Mathf.Max(0.05f, e.z - 0.04f);
         var cols = Physics.OverlapBox(b.center, e, Quaternion.identity, ~0, QueryTriggerInteraction.Ignore);
         foreach (var c in cols)
             if (IsWallCollider(c)) return true;

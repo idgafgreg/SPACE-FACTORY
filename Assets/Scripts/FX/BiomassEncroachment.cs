@@ -10,7 +10,8 @@ using UnityEngine;
 /// </summary>
 public class BiomassEncroachment : MonoBehaviour
 {
-    const int DressVersion = 2;
+    // v4 C4: post-fit bounds reject + deck pierce check so growth never blocks walkways.
+    const int DressVersion = 4;
 
     [Tooltip("World-space radius around each breach-lane waypoint to sample spawn anchors.")]
     public float spreadRadius = 2.6f;
@@ -32,6 +33,9 @@ public class BiomassEncroachment : MonoBehaviour
 
     [Tooltip("Height above the deck the residue sits (0 = floor hug).")]
     public float heightAboveDeck = 0.02f;
+
+    [Tooltip("Reject anchors closer than this to any lane centreline.")]
+    public float laneClearance = 2.35f;
 
     [Tooltip("Target max bounds size for early-wave growth props (metres).")]
     public float growthMaxSize = 1.15f;
@@ -154,6 +158,7 @@ public class BiomassEncroachment : MonoBehaviour
                 sample.y = y;
                 if (!IsOpenDeckPoint(sample)) continue;
                 if (NearestWallDistance(sample) > 2.2f) continue;
+                if (TooCloseToLane(sample, laneClearance)) continue;
                 anchors.Add(sample);
             }
         }
@@ -205,6 +210,40 @@ public class BiomassEncroachment : MonoBehaviour
         float jitter = 0.88f + (float)_rng.NextDouble() * 0.28f;
         go.transform.localScale *= jitter;
         SnapBottomToDeck(go, pos.y);
+
+        if (BoundsBlockLane(go, laneClearance * 0.95f) || PiercesDeck(go, pos.y))
+            DestroyImmediate(go);
+    }
+
+    static bool BoundsBlockLane(GameObject go, float clearance)
+    {
+        var rends = go.GetComponentsInChildren<Renderer>();
+        if (rends == null || rends.Length == 0) return true;
+        Bounds b = rends[0].bounds;
+        for (int i = 1; i < rends.Length; i++)
+            if (rends[i] != null) b.Encapsulate(rends[i].bounds);
+
+        Vector3[] samples =
+        {
+            new Vector3(b.center.x, 0f, b.center.z),
+            new Vector3(b.min.x, 0f, b.min.z),
+            new Vector3(b.min.x, 0f, b.max.z),
+            new Vector3(b.max.x, 0f, b.min.z),
+            new Vector3(b.max.x, 0f, b.max.z),
+        };
+        foreach (var s in samples)
+            if (TooCloseToLane(s, clearance)) return true;
+        return false;
+    }
+
+    static bool PiercesDeck(GameObject go, float deckY)
+    {
+        var rends = go.GetComponentsInChildren<Renderer>();
+        if (rends == null || rends.Length == 0) return true;
+        Bounds b = rends[0].bounds;
+        for (int i = 1; i < rends.Length; i++)
+            if (rends[i] != null) b.Encapsulate(rends[i].bounds);
+        return b.min.y < deckY - 0.15f || b.min.y > deckY + 0.35f;
     }
 
     GameObject PickPrefab(int wavesCleared)
@@ -274,6 +313,28 @@ public class BiomassEncroachment : MonoBehaviour
     {
         for (int i = 0; i < BreachLaneIds.Length; i++)
             if (BreachLaneIds[i] == laneId) return true;
+        return false;
+    }
+
+    static bool TooCloseToLane(Vector3 worldPos, float clearance)
+    {
+        var layout = SectorLayout.Instance;
+        if (layout == null || layout.lanes == null) return false;
+        float r2 = clearance * clearance;
+        Vector3 p = worldPos; p.y = 0f;
+        foreach (var lane in layout.lanes)
+        {
+            if (lane == null || lane.PointCount < 2) continue;
+            for (int i = 0; i < lane.PointCount - 1; i++)
+            {
+                Vector3 a = lane.GetPoint(i); a.y = 0f;
+                Vector3 b = lane.GetPoint(i + 1); b.y = 0f;
+                Vector3 ab = b - a;
+                float denom = ab.sqrMagnitude;
+                float t = denom < 1e-6f ? 0f : Mathf.Clamp01(Vector3.Dot(p - a, ab) / denom);
+                if ((p - (a + ab * t)).sqrMagnitude <= r2) return true;
+            }
+        }
         return false;
     }
 

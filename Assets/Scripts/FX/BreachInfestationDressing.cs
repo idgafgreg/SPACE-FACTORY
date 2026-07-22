@@ -9,8 +9,9 @@ using UnityEngine;
 /// </summary>
 public class BreachInfestationDressing : MonoBehaviour
 {
-    const int DressVersion = 1;
-    const float LaneClearance = 1.9f;
+    // v2 C4: stand off INTO the wall (was wrongly pushing into the lane); stricter bounds reject.
+    const int DressVersion = 2;
+    const float LaneClearance = 2.25f;
     const float TargetPanelHeight = 2.55f;
     const float MaxWallSearch = 5.5f;
 
@@ -283,11 +284,11 @@ public class BreachInfestationDressing : MonoBehaviour
             anchor.pos.y - b.min.y,
             anchor.pos.z - b.center.z);
 
-        // Stand off the authored wall so we don't z-fight the hull skin.
+        // Push INTO the wall volume (away from lane). inward faces the walkway.
         b = RendererBounds(go);
-        float depth = Mathf.Max(b.size.x, b.size.z);
-        float standOff = Mathf.Clamp(depth * 0.08f, 0.04f, 0.14f);
-        go.transform.position += anchor.inward * standOff;
+        float depth = Mathf.Min(b.size.x, b.size.z);
+        float standOff = Mathf.Clamp(depth * 0.35f, 0.06f, 0.22f);
+        go.transform.position -= anchor.inward * standOff;
     }
 
     int CountExisting(LanePath lane)
@@ -346,9 +347,23 @@ public class BreachInfestationDressing : MonoBehaviour
     bool BoundsCrossLane(GameObject go)
     {
         Bounds b = RendererBounds(go);
-        // Sample the bounds center + inward edge — reject if centerline is too close.
+        // Footprint corners + center — reject if any sample enters the walkway.
         Vector3 c = b.center; c.y = 0f;
-        return TooCloseToLane(c, LaneClearance * 0.7f);
+        if (TooCloseToLane(c, LaneClearance)) return true;
+        float hx = b.extents.x;
+        float hz = b.extents.z;
+        Vector3[] samples =
+        {
+            new Vector3(b.min.x, 0f, b.min.z),
+            new Vector3(b.min.x, 0f, b.max.z),
+            new Vector3(b.max.x, 0f, b.min.z),
+            new Vector3(b.max.x, 0f, b.max.z),
+            new Vector3(c.x + hx * 0.5f, 0f, c.z),
+            new Vector3(c.x - hx * 0.5f, 0f, c.z),
+        };
+        foreach (var s in samples)
+            if (TooCloseToLane(s, LaneClearance * 0.9f)) return true;
+        return false;
     }
 
     static bool IsAuthoredWall(Collider c, Transform wallsRoot)

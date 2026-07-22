@@ -1,7 +1,7 @@
 #ifndef UNITY_POSTFX_SAMPLING
 #define UNITY_POSTFX_SAMPLING
 
-#include "StdLib.hlsl"
+#include "Packages/com.unity.postprocessing/PostProcessing/Shaders/StdLib.hlsl"
 
 // Better, temporally stable box filtering
 // [Jimenez14] http://goo.gl/eomGso
