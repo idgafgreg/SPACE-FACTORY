@@ -19,6 +19,7 @@ Horror-infused **factory management** on a broken far-future ship under hive-ali
 | Story | Secondary — mood and systems carry more weight than plot |
 | Tone | Sad, lonely, fear — rustic space labor, patched ship, schedule vs survival |
 | View | **Dual-mode: orbit/iso and first-person, both shipped and toggleable** (human decision 2026-07-20) |
+| Deck | **Map footprint stays** (~120×80); empty deck is expansion headroom, not a bug (human decision 2026-07-21) |
 | Scope out | Multiplayer, space walks (for now) |
 
 **First-person rules (2026-07-20):** FP is a supported view mode, not a genre change. It must
@@ -32,6 +33,8 @@ raise dread and diegetic immersion without demoting the factory. Design tests:
 - Does the ship survive being seen at 1.65 m? Enclosure, scale, and surface detail authored for a
   14 m camera do not automatically hold up at eye level.
 - Iso stays fully playable. Neither mode is allowed to rot.
+- Early empty deck in FP is lonely industrial headroom — fill it by growing the factory (machines,
+  belts, lanes, dressing that scales with progress), **not** by shrinking walls or the playable area.
 
 ---
 
@@ -73,6 +76,7 @@ Use these when inventing features, VFX, audio, enemy behavior, or backlog tasks.
 - **Soft director pacing:** raise tension with proximity, failing lights, vent audio, scanner lag — then let it *back off* so the next spike lands. Prep windows are earned quiet, not empty UI time.
 - **Recovery beats:** after combat, return the lonely workplace (routine labor texture, AlarmLevel easing) before the next cycle — dread needs air.
 - Authenticity before haunt: the ship must read as a real labor habitat first; biomass wrongness lands harder on true workplace bones.
+- **Expansion fills emptiness:** unused deck is future workplace. Grow into it (layout, breach pressure, lived-in dressing) rather than cropping the ship to feel “full” early.
 - Anti-comp: **Biofactory** (hive-as-factory) — do not drift into “the factory *is* the hive.” We are ship factory *under* parasite pressure.
 
 ---
@@ -115,6 +119,7 @@ Short, original motifs agents may use in copy, props, systems (no copyrighted qu
 - Vent lanes as habitat, not just spawn points  
 - Muffled PA that might be crew — or might be the ship answering itself  
 - Schedule boards / shift timers that keep ticking through catastrophe  
+- Far deck that still looks like a ship waiting for a crew — empty until *you* industrialize it  
 
 ---
 
@@ -136,6 +141,7 @@ Promote to sections above only via `/lore-bible` when clearly good and north-sta
 - Buy paywalled assets from agents — wishlist only (`wishlist-paywalled.md` + sheet sync)  
 - Replace factory identity with tower-defense or shooter loops (including FP)  
 - Let FP rot iso, or let iso block world-legibility fixes FP needs  
+- Shrink the playable deck / pull walls in to “fix” early emptiness (Decision 2026-07-21)  
 - Invent a second roadmap — tasks go in `BACKLOG.md`  
 - Treat daily digests as canon until distilled here  
 
@@ -156,6 +162,7 @@ Promote to sections above only via `/lore-bible` when clearly good and north-sta
 
 | Date | Change | Source |
 |------|--------|--------|
+| 2026-07-21 | Canonize map footprint: empty deck = expansion headroom (north star Deck lock, factory×horror, FP test, motif, Do not shrink) | Human decision 2026-07-21 in `BACKLOG.md`; newest digest still 2026-07-20 |
 | 2026-07-20 | no canon changes — digest reviewed (newest still 2026-07-20; Decisions unchanged) | re-run `/lore-bible` |
 | 2026-07-20 | Absorb 07-19 pacing: soft director + recovery beats + authenticity-before-haunt; promote shipped menace/HorrorClock/heat-infection out of experiments; Substructure comp row; FP world-legibility diegetic rule; sync living-design scope docs | `lore/2026-07-19/summary.md` + code reality (`ThreatTelegraph`, `HorrorClock`, `RecoveryBeat`, L23) |
 | 2026-07-20 | **First-person moved out of "Scope out" into the north star as a toggleable dual view mode**, with four design tests guarding against shooter drift and against losing factory legibility. Iso protected. | Human decision, logged in `BACKLOG.md` Decisions; implementation tracked as `F1`–`F14` |
@@ -163,7 +170,7 @@ Promote to sections above only via `/lore-bible` when clearly good and north-sta
 
 ## Last absorbed research
 
-- Date: 2026-07-20  
-- Digests: `lore/2026-07-19/summary.md`, `lore/2026-07-20/summary.md`  
-- Focus absorbed: soft director / recovery pacing (19) + Milham diegetic wayfinding + Flood staging + ship-as-living audio + Built-in preference (20); FP dual-mode from human Decision  
+- Date: 2026-07-21 (Decision absorb; digests unchanged)  
+- Digests: `lore/2026-07-19/summary.md`, `lore/2026-07-20/summary.md` (newest)  
+- Focus absorbed: prior 19/20 research + FP dual-mode (2026-07-20) + **deck expansion headroom** (2026-07-21). Process-only Decision “full auto-approval” left out of canon (not lore).  
 )

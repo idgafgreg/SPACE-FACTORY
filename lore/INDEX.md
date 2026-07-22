@@ -10,7 +10,7 @@ Rolling map of useful themes. Updated by daily research runs.
 |--------|----------------|--------|
 | Workplace as trap | Isolation baked into the job, not contrived lockdown | Strong — authenticity research 2026-07-19 (Still Wakes) |
 | Industrial biomass / hive | Threat uses vents, heat, logistics; ship becomes habitat | **Upgraded 2026-07-20** — Flood-style infection staging + recycler/process fiction |
-| Factory pressure = identity | Enemies tied to production loop (Factorio pollution lesson) | Strong; watch StarRupture cycle pressure / keep Biofactory as anti-comp |
+| Factory pressure = identity | Enemies tied to production loop (Factorio pollution lesson) | Strong; watch StarRupture cycle pressure / keep Biofactory as anti-comp; **empty deck = expand into it** (Decision 2026-07-21) |
 | Diegetic dread | Diegetic UI, failing systems, environmental storytelling | **Upgraded 2026-07-20** — Milham diegetic wayfinding + ship-as-living audio |
 | Lonely worker fantasy | Rustic space labor, patched ship, schedule vs survival | Strong — recovery beats + lived-in labor; **dual view (iso+FP)** per Decision 2026-07-20 |
 

@@ -45,6 +45,11 @@
 - Factory layout/throughput remains the primary skill expression in both modes — FP must not become a shooter.
 - Iso stays fully playable; default view mode does not change until FP clears the Wave 1 playtest gate (see `BACKLOG.md` F1–F14 and `lore/BIBLE.md`).
 
+# Deck footprint (human decision 2026-07-21)
+
+- Playable map size stays (~120×80). Early empty deck is expansion headroom, not a bug.
+- Fill emptiness by growing the factory (machines, belts, lanes, progress-scaled dressing) — do not shrink walls or the playable area. See `lore/BIBLE.md`.
+
 # Scope Tiers
 
 - MVP: one strong resource pipeline, one defendable ship environment, a small set of processing machines, a limited unlock tree, and recurring alien wave pressure.
