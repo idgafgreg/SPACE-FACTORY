@@ -1366,7 +1366,7 @@ Method: capture the Game view in Play mode, judge the frame, fix the single wors
   anchored to live lamp pools, collider-free, grounded, lane-rejected with a footprint re-check.
   A/B **11.72%**. Two measured tuning passes: 1 beat → 4 (lamps sit on lanes, so retry four bearings)
   and a guaranteed containment beat (the 35%% roll produced none). C5 gate extended to the story root.
-  Full suite **7/7 PASS**. Console clean. Commit <hash>.
+  Full suite **7/7 PASS**. Console clean. Commit 25dce49.
 
 - 2026-07-22: **auto-dev P6 gate-mouth airlocks — PARTIAL `[?]`.** `SyntyGateDressing` frames 5/5 lane
   mouths with `SM_Bld_Airlock_01` (native scale, FindDeckY grounded, pivot-recentred, oriented along
