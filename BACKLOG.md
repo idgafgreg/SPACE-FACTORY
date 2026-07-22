@@ -112,11 +112,9 @@ Method: capture the Game view in Play mode, judge the frame, fix the single wors
   from A2 already marks the walkway by value — the two were double-marking every lane); replaced
   continuous edge lines with dashed danger ticks (1.2u mark / 1.5u gap ≈ 45% duty, tuned up from an
   initial 0.75/3.2 that read as scattered dots); added `InsideWall()` overlap test so ticks stop at
-  authored walls. Play-verified: **423u → 104u of yellow, 0 markings intersecting a wall**.
+  authored walls. Verified: **423u → 104u of yellow, 0 markings intersecting a wall**.
   DONE 2026-07-19 (FloorZoning.cs).
-- [ ] A4. Hazard-stripe spam — long yellow lines run edge-to-edge across the whole deck, through
-  walls, signifying nothing. Should mark lanes/danger only. Done-when: stripes appear only on enemy
-  lanes + machine exclusion zones, and stop at walls.
+
 - [x] A5. Wall silhouette / height read — DONE 2026-07-19 (ShipInteriorUpgrade.cs v55,
   AtmosphereController.cs). `BuildWallCaps`: every visible authored wall gets a one-value-step
   lighter cap plate (0.10u overhang → fake-bevel shadow line down the wall face) + hairline
@@ -132,6 +130,7 @@ Method: capture the Game view in Play mode, judge the frame, fix the single wors
   default procedural sky (camera never draws it; reflections still sample it). Hull metallic
   0.78→0.40, gloss 0.4→0.28, plus a 4px dark custom reflection cubemap in AtmosphereController so
   no interior metal can mirror a sky that doesn't exist. Zero console errors.
+
 - [x] A6. Machine silhouette pass — DONE 2026-07-19 (MachineIdentityTint.cs). Extended the existing
   identity system (tint + HDR lamp) with a `Silhouette` kit enum built from primitives on the art
   bounds, dark-steel shared material (shape carries identity; colour only confirms):
@@ -233,6 +232,11 @@ Method: capture the Game view in Play mode, judge the frame, fix the single wors
 - [ ] (dump ideas here; /backlog-groom promotes them)
 
 ## Agent log (newest first — one line per session: date, task, result, commit)
+
+- 2026-07-21: A4 backlog verification / cleanup — confirmed `FloorZoning.SpawnLaneStripes` already
+  removes the amber carpet, uses dashed danger ticks with `InsideWall()` wall-collision test, and
+  reduces lane yellow from 423u to 104u. Removed stale duplicate A4 entry from BACKLOG.md and
+  marked complete. No scene or art changes; safe to run alongside F10 biomass work.
 
 - 2026-07-15: Playtest response batch — CRITICAL FIX: enemy AI never followed lanes (AcquireTarget fell back to Hub always → beeline through walls); now HubIfClose(8u radius) + Sapper support-engage radius; verified 4 crawlers walking IN corridor. Preps 40/30s. MainMenu boots first. Locked slots blank. Workshop + UIWorkshopShop: buy unlocks (trap 40/repair 60/relay 50/heavy 120/bulwark 60/turbo 100) + repeatable stat upgrades (80 base ×1.5); replaces wave-gating; purchase verified (-40 scrap → OWNED → slot fills → selectable). EastFlank 3rd lane + east gate + funnel + divider split; waves 4-5 → ALL GATES round-robin; floor re-baked from LIVE wall objects (23).
 
