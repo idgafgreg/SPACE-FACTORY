@@ -71,6 +71,8 @@ public static class SectorRuntimeBootstrap
         go.AddComponent<SyntyHullDressing>();
         // P5: sparse deck plates; needs the deck to exist so it can ground on it.
         go.AddComponent<SyntyFloorDressing>();
+        // P6: visual-only airlock frames at the lane spawn mouths.
+        go.AddComponent<SyntyGateDressing>();
         go.AddComponent<WallSeamSealer>();
         go.AddComponent<WallJunctionPlates>();
         go.AddComponent<MapEdgeGuard>();

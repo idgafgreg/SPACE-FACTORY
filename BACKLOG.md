@@ -320,12 +320,32 @@ Without it, mats may pink; runtime falls back to Standard albedo when Error.
   Also extended C5's `PLACEMENT` gate to police `SyntyFloorRoot` (lane distance + deck flushness), so
   the newest deck geometry is not a blind spot: `platesInLane=0/29 nearest=2.90 worstGap=0.02`.
 
-- [ ] P6. Gate mouths — doors / airlocks
+- [?] P6. Gate mouths — doors / airlocks — mechanics verified; **door "read" needs a human eye**
   Tag: `[asset-pack: POLYGON Sci-Fi Horror]`
   Unity: yes — each lane spawn mouth
   Change: visual-only `SM_Bld_Door_*` / `SM_Bld_Airlock_01` at lane starts; colliders stripped;
   do not block pathing.
   done-when: every gate mouth has a door read; enemies/player still path; console clean
+  **PARTIAL 2026-07-22 (auto-dev). Mechanics fully verified; the aesthetic half is not.**
+  New `SyntyGateDressing` (child root `SyntyGateRoot`, bootstrap-wired after the floor dresser) frames
+  all **5/5** lane mouths with `SM_Bld_Airlock_01`, rotated to face along each lane, native scale (C1),
+  grounded via `FindDeckY` (baseY 0.00), pivot-recentred on the mouth. Chose the airlock over
+  `SM_Bld_Wall_Curve_Door_01` because the latter is 3.96 m deep — the same lane-spearing shape C6 had
+  to strip out; the airlock is 0.63 m.
+  **Verified:** `frames=5 lanes=5 colliders=0`, and the full suite is **7/7 PASS** with WAVE1 green
+  (hub 500/500) — enemies still spawn at the mouths and path to the choke, so nothing blocks pathing.
+  Console clean.
+  **Not demonstrated: "every gate mouth has a door read."** A lane mouth opens onto unlit space, so the
+  frame is dark geometry against black. Measured honestly, in order: bare frame → an A/B toggle of all
+  gate renderers moved **0.11%** of pixels; adding an emissive outline (2 uprights + lintel) still
+  **0.11%**; adding a short-range frame lamp (range 5.5) jumped it to **21.50%**. The lamp clearly
+  lights the mouth — the corridor walls read visibly warmer — but in capture the airlock still reads as
+  part of the surrounding hull rather than as a distinct doorway. Ruled out along the way: wrong
+  pipeline (project is still **Built-in**; URP is installed but not active), broken material (shader
+  `Standard`, `_EMISSION` on, emission 2.2), culling (`isVisible=true`, viewport 0.43/0.49), and fog
+  (Linear 6.0→18.6, so nothing at 4 m). **Needs a human eye** to say whether this reads as a door, or
+  whether the mouth wants a brighter/opaque backing so the frame silhouettes against something.
+  Third task running where light, not geometry, was the limiting factor (F7/F8 → P5 → P6).
 
 #### Phase B — lived-in clutter
 
@@ -1268,6 +1288,15 @@ Method: capture the Game view in Play mode, judge the frame, fix the single wors
 - [ ] Free lead: Abandoned Factory Lite (Asset Store) — safe mood greys for blockout; not gated, but not queued until visual Now is thin.
 
 ## Agent log (newest first — one line per session: date, task, result, commit)
+
+- 2026-07-22: **auto-dev P6 gate-mouth airlocks — PARTIAL `[?]`.** `SyntyGateDressing` frames 5/5 lane
+  mouths with `SM_Bld_Airlock_01` (native scale, FindDeckY grounded, pivot-recentred, oriented along
+  lane). Mechanics verified: `frames=5 colliders=0`, full suite **7/7 PASS** with WAVE1 green
+  (hub 500/500) proving enemies still path through. The *door read* is NOT demonstrated: mouths open
+  onto unlit space, so A/B pixel diffs went 0.11% (bare frame) → 0.11% (emissive outline) → 21.50%
+  (frame lamp), and even lit the airlock reads as hull rather than a distinct doorway. Ruled out
+  pipeline (Built-in, URP inactive), material, culling and fog. Left `[?]` for a human eye rather than
+  claimed. Console clean. Commit <hash>.
 
 - 2026-07-22: **auto-dev P5 Synty floor plates — DONE (Play-verified).** New `SyntyFloorDressing`
   lays 2x2 patches of `SM_Prop_Floor_Panel_01/02` at the hub apron + lane edges; native scale (C1),

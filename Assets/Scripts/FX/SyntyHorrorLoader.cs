@@ -102,6 +102,17 @@ public static class SyntyHorrorLoader
     };
 
     /// <summary>
+    /// P6 — gate-mouth frames at lane spawns. The airlock is 3.00 x 3.01 x 0.63:
+    /// full corridor height but shallow, so it frames the mouth without reaching
+    /// into the walkway. Deliberately not `SM_Bld_Wall_Curve_Door_01` (3.96 m deep
+    /// — the same spear-the-lane shape C6 had to strip out of the hull set).
+    /// </summary>
+    public static readonly string[] GateFramePrefabPaths =
+    {
+        BldRoot + "SM_Bld_Airlock_01.prefab",
+    };
+
+    /// <summary>
     /// P5 — flat 1.42 m deck plates for sparse floor overlays.
     /// Deliberately NOT `SM_Bld_Trim_Curve_Floor_01`: it is a 4.70 m quarter-curve,
     /// and big pack pieces on the deck are exactly what C1/C6 had to clean up.
@@ -121,6 +132,7 @@ public static class SyntyHorrorLoader
     static GameObject[] _exteriorPanels;
     static GameObject[] _ceilingLights;
     static GameObject[] _floorPlates;
+    static GameObject[] _gateFrames;
     static bool _loggedMissing;
 
     /// <summary>Drop cached prefab arrays (call after changing path lists in editor).</summary>
@@ -130,6 +142,7 @@ public static class SyntyHorrorLoader
         _corrPanels = _alcovePanels = _exteriorPanels = null;
         _ceilingLights = null;
         _floorPlates = null;
+        _gateFrames = null;
         _loggedMissing = false;
     }
 
@@ -142,6 +155,7 @@ public static class SyntyHorrorLoader
     public static GameObject[] HullExteriorPanels => _exteriorPanels ??= LoadAll(HullExteriorPanelPaths);
     public static GameObject[] CeilingLightPrefabs => _ceilingLights ??= LoadAll(CeilingLightPrefabPaths);
     public static GameObject[] FloorPlatePrefabs => _floorPlates ??= LoadAll(FloorPlatePrefabPaths);
+    public static GameObject[] GateFramePrefabs => _gateFrames ??= LoadAll(GateFramePrefabPaths);
 
     /// <summary>P2 — lonely shift-nest workplace props (no alien growth).</summary>
     public static GameObject LoadProp(string prefabFileName)
