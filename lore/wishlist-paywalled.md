@@ -2,7 +2,7 @@
 
 Assets and tools found during lore research that require purchase. **Do not buy until funded.** Prices are approximate store listing prices at discovery time and may change.
 
-Last updated: 2026-07-21 (noon supplement)
+Last updated: 2026-07-22
 
 | Priority | Item | Est. price | Link | Why it fits SPACE FACTORY | Notes |
 |----------|------|------------|------|---------------------------|-------|
@@ -11,6 +11,8 @@ Last updated: 2026-07-21 (noon supplement)
 | High | Bionic structures | ~$9.90 | https://assetstore.unity.com/packages/3d/environments/bionic-structures-163649 | Low-cost organic outgrowths/cocoons for hive-on-metal kitbash | Added 2026-07-19; URP/HDRP shaders noted on store page |
 | High | Janky Audio | ~$20 | https://assetstore.unity.com/packages/tools/audio/janky-audio-288290 | Occlusion + non-spherical reverb for diegetic PA / vents / lonely decks | Added 2026-07-20; **Built-in compatible** (matches current project RP) |
 | Medium | Futuristic Industrial Soundscapes | ~$7 | https://assetstore.unity.com/packages/audio/ambient/noise/futuristic-industrial-soundscapes-213106 | Dark factory loops (Haunted_Factory, Machines, The_Hum); machine-lung bed | Added 2026-07-21 noon; try free Industrial Sci-fi Vol. II first |
+| Medium | Low-Poly - 3D Facility Pack | ~$10 | https://assetstore.unity.com/packages/3d/props/industrial/low-poly-3d-facility-pack-322019 | 60+ stylized facility prefabs (desks, conveyors, pipes, cameras) — Built-in + URP | Added 2026-07-22; confirm low-poly art fit; try free pipes/crates first |
+| Medium | Sci-Fi Boxes / Crate | ~€4.59 | https://assetstore.unity.com/packages/3d/props/tools/sci-fi-boxes-crate-333228 | Cheap PBR sci-fi cargo crates; Built-in/URP/HDRP | Added 2026-07-22; use if free wood crates look too earthbound |
 | Medium | Modular Industrial Catwalk Kit [Paid] | ~$10 | https://assetstore.unity.com/packages/3d/props/industrial/modular-industrial-catwalk-kit-paid-287148 | Extra catwalk colors/ladders/ramps/cages for multi-level factory decks | Added 2026-07-21; try free kit first (287064) |
 | Medium | Modular Sci-Fi Corridor Pack | ~$20 | https://assetstore.unity.com/packages/3d/environments/sci-fi/modular-sci-fi-corridor-pack-193228 | Retro modular corridors; Built-in + URP/HDRP packages included | Added 2026-07-20; try free modular kits first |
 | Medium | Slime VFX (Built-in) | ~$39.97 | https://assetstore.unity.com/packages/vfx/slime-vfx-283146 | Drip/tendril/puddle particles for hive residue — Built-in only | Added 2026-07-21 noon; prefer free Particle Pack retints first |
@@ -28,6 +30,7 @@ Last updated: 2026-07-21 (noon supplement)
 
 - Prefer **one** environment kit that matches art direction over stacking three similar packs.
 - Project is **Built-in RP** as of 2026-07-20 — prefer Built-in-compatible tools (e.g. Janky Audio) before URP-only packs.
-- Try free modular kits (3D Free Modular Kit, EmaceArt corridors, free catwalks, free pipelines), free Industrial Sci-fi Vol. II drones, and Unity Particle Pack retints before buying corridor, catwalk, fog, industrial SFX, or slime VFX packs.
+- Try free modular kits (3D Free Modular Kit, EmaceArt corridors, free catwalks, free pipelines, Pipes FREE Collection), free crates/barrels, free Industrial Sci-fi Vol. II drones, Unity Audio Mixer snapshots, and Unity Particle Pack retints before buying corridor, facility, catwalk, fog, industrial SFX, sci-fi crate, or slime VFX packs.
+- Skip URP-only hollow/walkable pipe kits (e.g. LowPoly Modular Pipes Standard Pack) while the project stays on Built-in.
 - Prefer cheap biomass kitbash (**Bionic structures**) before $50+ infestation packs if only prototyping growth props.
 - Re-check prices and Unity version compatibility on purchase day.
