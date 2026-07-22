@@ -107,11 +107,90 @@ Conventions for this block:
 
 ### Asset pack — POLYGON Sci-Fi Horror FULL CONVERSION (purchased 2026-07-21)
 
+**TOP PRIORITY (owner 2026-07-21 night): map cleanup after pack drop.** Playtest diagnostics found
+P3 using `Wall_Trim_*` (0.27 m baseboards) height-fitted to 2.75 m → **74 panels up to 31 m wide**
+clipping the deck, plus InteriorUpgrade trim stacking on Synty walls and biomass in lanes. Cleanup
+tasks **C1+** jump everything (including P4+) until the ship is walkable and readable.
+
 **Owner ask 2026-07-21 evening:** use the pack throughout — make the ship look lively. P0-P2 alone
 could not change the look because the hull was still gray cubes and growth only appeared after a
-wave clear. This block is now the **active art conversion track** and may jump F11-F14 until the
-ship reads as Synty in Play (iso + FP). Pack assets only for tagged tasks; leave authored wall
-**colliders** authoritative; put meshes on dedicated child roots (never hide/reparent SectorRuntime).
+wave clear. This block is the art conversion track; **cleanup first**. Pack assets only; leave
+authored wall **colliders** authoritative; dedicated child roots only.
+
+#### Cleanup (do before more pack content)
+
+- [ ] QA1. FP cursor-lock regression watch — playtest TRANSITION FAIL 2026-07-21 21:26 (LOW confidence)
+  Type: mechanical / QA | Unity: yes — RunFullSuite on a clean, focused tree
+  Context: `RunFullSuite` TRANSITION failed **3/6** — "fp gameplay locks the cursor", "closing the
+  panel re-locks the cursor", "a destroyed panel does not strand the cursor", all `lockState=None`.
+  The MainMenu-frees and rig-release checks (which expect None) still PASSED. Same harness passed
+  **6/6 earlier today**, and the FP-cursor code (`FirstPersonCamera`, `UICursorFocus`) is UNCHANGED
+  in the working tree — the run was against the concurrent Synty agent's 514-line uncommitted WIP +
+  a URP/GraphicsSettings change. Most likely an **editor Game-view-focus artifact** (`Cursor.lockState
+  = Locked` silently no-ops when the Game view is not focused under MCP-driven Play), not a code
+  regression. Report: `SPACE FACTORY INFO/Playtest_Agent_2026-07-21_212626.md`.
+  done-when: re-run `RunFullSuite` on a clean tree with the Game view focused — if TRANSITION passes
+  6/6, close as a focus artifact and note the caveat in the harness; if it still fails, bisect FP
+  cursor lock against the Synty/URP changes and fix. (Not asset-pack; sits here only because the
+  conversion block is top-of-Now.)
+
+- [x] C1. Fix exploded hull panels + mute conflicting trim
+  Tag: `[asset-pack: POLYGON Sci-Fi Horror]` | Unity: yes — Play diagnostics + camera
+  Change: `SyntyHullDressing` uses only full-height Alcoves/Windows/Doors/Reactors (never
+  Wall_Trim_*); cap panel width 3.4 m; no along-wall stretch; mute InteriorUpgrade WallBaseTrim /
+  AccentRail / Kickplates; biomass rejects lane-proximal anchors; flush to FindDeckY; constant height.
+  done-when: Play — max panel width under ~3.5 m; giant count 0; bioInLane 0; walls read as
+  corridor panels not mega-slabs
+  **DONE 2026-07-21 (Play-verified):** before maxW=31.48 / giant=74; after v2 maxW=2.95 /
+  giant=0 / 251 panels / bioInLane=0. v3 deck flush; v4 shallow panels + face snap (see C6).
+
+- [x] C2. Corridor Kenney clutter still clipping walls / floating
+  Tag: `[asset-pack: POLYGON Sci-Fi Horror]`
+  Unity: yes — Play walk + side capture of WestCorridor
+  Change: `PlaceholderPropDressing` v14 — corridor/workshop/bay Synty-only (crates/barrels/lockers);
+  wall-hug raycast; tighter BoundsOverlapWall; reject deck pierce/float.
+  done-when: Play — no bright Kenney cylinders jammed through wall faces; pathing clear
+  **DONE 2026-07-21 (Play-verified):** kenney=0, syntyCorr=21, wallPierce=0, groundFloaters=0.
+
+- [x] C3. Hanging beams / ceiling ribs vs Synty wall tops
+  Tag: `[asset-pack: POLYGON Sci-Fi Horror]`
+  Unity: yes — FP look-up
+  Change: mute `HangBeam` renderers from InteriorUpgrade when Synty hull dresses (keep F6 lid/ribs).
+  done-when: FP look-up — no mid-air beams clipping wall tops; ceiling still present
+  **DONE 2026-07-21 (Play-verified):** hangVisible=0; Ceiling still present (209 renderers).
+
+- [x] C6. Reactor / deep-alcove panels spearing lanes (black slabs / bunks)
+  Tag: `[asset-pack: POLYGON Sci-Fi Horror]`
+  Unity: yes — hub overview + WestCorridor along/side captures
+  Change: `SyntyHullDressing` v4 — corridor/exterior use shallow Window/Door only; drop Reactor_*
+  (pivot offset ~3 m) and Alcove_03/04; snap by interior face not AABB center; depth reject >1.15 m.
+  done-when: Play — no black floor/air slabs at hub; no SYNCOMM bunks in corridor mid; maxW under 3.5
+  **DONE 2026-07-21 (Play-verified):** hullVer=4, panels=257, maxW=2.62, maxDepth≈0.59,
+  reactors=0, deepAlcoves=0; hub eye-west corridor reads clean. Earlier "black slab" hub
+  shots were camera inside Ring_SE.
+
+- [x] C7. InteriorUpgrade pipes / hang structure still intersecting pillars
+  Tag: `[asset-pack: POLYGON Sci-Fi Horror]`
+  Unity: yes — hub eye-west frame
+  Change: `ShipInteriorUpgrade` v60 — overhead pipes at CeilingHeight-0.38, side offset 1.35 m;
+  HangBeam muted by Synty hull (C3).
+  done-when: hub look-west — no beam-through-pillar clips in primary view
+  **DONE 2026-07-21 (Play-verified):** upVer=60 rebuilt.
+
+- [x] C4. Breach infestation / growth sit flush and out of walkway
+  Tag: `[asset-pack: POLYGON Sci-Fi Horror]`
+  Unity: yes — VentBreach FP walk
+  Change: biomass v4 post-fit bounds+deck reject; infestation v2 stand-off INTO wall (was pushing
+  into lane); drop Alien_Wall_Trim; lane clearance 2.25–2.35.
+  done-when: VentBreach walkable; growth hugs walls; no floaters
+  **DONE 2026-07-21 (Play-verified):** bioVer=4 count=3 inLane=0 float=0; infVer=2 count=9 inLane=0.
+
+- [ ] C5. PlaytestHarness visual placement scenario (regression gate)
+  Type: mechanical / QA
+  Unity: yes — suite green
+  Change: add `PlaytestScenarios` check: max SyntyHull panel width, deck-gap histogram, bioInLane=0;
+  fail suite if giants return. Named vantages hub / west / vent.
+  done-when: `/playtest` fails if mega-panels or lane-blocking biomass return
 
 **Enablement (do once in Unity):** Synty → Package Helper → Install Packages (`com.unity.shadergraph`).
 Without it, mats may pink; runtime falls back to Standard albedo when Error.
@@ -233,6 +312,86 @@ Without it, mats may pink; runtime falls back to Standard albedo when Error.
   Unity: yes — sparse diegetic, not spam
   Change: place `Prefabs/FX` steam/sparks near generators/breach; gate on heat/menace; soft director.
   done-when: occasional FX sells life without arcade clutter; console clean
+
+#### Phase E — full-pack utilization (use the ENTIRE pack)
+
+**Added 2026-07-21 (playtest agent, owner ask "utilize the entire asset package").** P0–P15 skin
+the ship's *structure and generic clutter*. These P16–P22 tasks reach the parts of the 1101-prefab
+pack that plan does not: the human-story layer (dead crew, personal effects), the actor viewmodels
+(Synty weapons as tools/defenses), themed set-piece rooms, specific diegetic FX, and the vehicle
+landmark. Same rules as the rest of the block: **pack assets only, dedicated child roots, authored
+colliders authoritative, lanes stay clear, never regress iso, ride the existing rescans.** Do P16–P22
+**after** the P4–P15 structure/dressing they sit on top of. Every prefab named below was verified to
+exist under `Assets/Synty/PolygonSciFiHorror/Prefabs/`. Bible pillars in play: *lonely worker
+fantasy*, *workplace as trap*, *authenticity before haunt*.
+
+- [ ] P16. Dead crew + occupied cryopods (environmental storytelling — the shift that didn't make it)
+  Tag: `[asset-pack: POLYGON Sci-Fi Horror]` | Unity: yes — iso + FP, non-lane
+  Change: new sparse dresser (child root `SyntyStoryRoot`) that scatters **static, collider-free**
+  dead crew and story bodies off the walkways: `SM_Chr_Space_Suit_01_M_Dead` / `01_F_Dead` /
+  `02_M_Dead` / `02_F_Dead`, slumped `SM_Chr_Crew_0{1,2,3}_{F,M}`, and `SM_Prop_Cryopod_*` (6) —
+  some empty, some with `SM_Prop_Body_*` / `SM_Prop_Specimen_*` inside. Animators off, no lane
+  anchors (reuse C4's lane-reject), scale count lightly with WavesCleared (Deck lock: fill by
+  growth). No alien growth in the hub; a few dead near cleared breaches read as aftermath.
+  done-when: Play — 1–3 story bodies + a cryopod cluster read at hub-edge/breach in iso and FP;
+  none in a lane; console clean
+
+- [ ] P17. Human-story micro-prop density (sticky notes, name plates, photos, boards, rations)
+  Tag: `[asset-pack: POLYGON Sci-Fi Horror]` | Unity: yes — hub/workshop close FP
+  Change: extend the P7/P9 prop dresser with the *personal-effects* families the pack is rich in but
+  the current lists skip: `SM_Prop_StickyNote_*` (36), `SM_Prop_Name_*` (16), `SM_Prop_Photo_*` (7),
+  `SM_Prop_Board_*` (6), `SM_Prop_Cartridge_*` (7), `SM_Prop_Food_*` (11). Cluster on workbench tops,
+  console faces and wall lips around the nest + workshop; tiny, dense, collider-free, never in a lane.
+  done-when: FP near hub/workshop — desks and walls carry believable lived-in clutter; readable, not
+  soup; pathing clear; console clean
+
+- [ ] P18. Player tool viewmodels from Synty weapons (fulfils F13's "held tool" half with pack art)
+  Tag: `[asset-pack: POLYGON Sci-Fi Horror]` | Unity: yes — FP each mode; iso unaffected
+  Change: FP-only held viewmodel that swaps with `FPCrosshair` mode — repair → `SM_Wep_Welder_01` /
+  `SM_Wep_Wrench_01`, build → `SM_Wep_Blow_Torch_01` / `SM_Wep_Drill_01`, weapon →
+  `SM_Wep_Mining_Laser_01` / `SM_Wep_Rifle_01` / `SM_Wep_Shock_Stick_01`. Parent to the FP head/hands
+  rig, cull in iso (F6/F10 visibility pattern), collider-free, under-driven (tired shift worker, not
+  a marine). Coordinate with F13 so they don't both add a viewmodel.
+  done-when: FP — the held tool matches the active mode and does not clip the near plane through a
+  death+respawn; Play (iso) — nothing added to the body; console clean
+
+- [ ] P19. Enrich P10 actor meshes with Synty weapons + generators (defense/machine identity)
+  Tag: `[asset-pack: POLYGON Sci-Fi Horror]` | Unity: yes — each type iso + FP, greyscale
+  Change: when P10 remaps `RuntimeArtBackfill`, pull defense/machine art from the weapon + generator
+  families for instant read: AutoTurret → `SM_Wep_Mining_Laser_01` / `SM_Wep_Rifle_01`, ShockTrap →
+  `SM_Wep_Shock_Stick_01`, RepairPost → `SM_Wep_Welder_01` + `SM_Prop_Med_*`, MiningDrill →
+  `SM_Wep_Drill_01` on a `SM_Prop_Generator_*` base, Processor → `SM_Prop_Generator_*` / reactor
+  console. **Must preserve `MachineIdentityTint` silhouettes + F10 eye-level identity** (they ride the
+  same ArtPlaceholder). Extends P10 — fold in, don't duplicate.
+  done-when: Play — each machine/defense reads as its Synty actor AND keeps its A6/F10 identity in
+  greyscale; placement unchanged; console clean
+
+- [ ] P20. Break-room / med-bay set piece (the quarters you can't leave — workplace as trap)
+  Tag: `[asset-pack: POLYGON Sci-Fi Horror]` | Unity: yes — hub-adjacent iso + FP
+  Change: one authored themed cluster near hub/workshop from the domestic + medical families:
+  `SM_Prop_Mattress_*` (4), `SM_Prop_Chair_*` / `SM_Prop_Bench_*` (8), `SM_Prop_Vending_*` (4),
+  `SM_Prop_Kiosk_*` (8), `SM_Prop_Med_*` (4), `SM_Prop_Screen_*` / `SM_Prop_Monitor_*` (9). Diegetic
+  screens can carry a terse status line (ties to F12 machine-face readouts / L28 schedule board).
+  Collider-free dressing; off lanes.
+  done-when: Play — a recognizable abandoned break-room/med corner reads at hub edge in both modes;
+  lanes clear; console clean
+
+- [ ] P21. Specific diegetic FX accents (concretises P15's "pack FX only")
+  Tag: `[asset-pack: POLYGON Sci-Fi Horror]` | Unity: yes — sparse, director-gated
+  Change: place named `Prefabs/FX` accents on the right anchors instead of generic spam:
+  `FX_Dust_Spots_Small_Soft_01` in lamp pools, `FX_Cigarette_Smoke_01` at the nest, `FX_Electricity_
+  Reactor_01` / `FX_Electricity_Surge_01` at PowerTaps, `FX_Steam_01` / `FX_Spark_Shower_01` at
+  generators/drills, `FX_Fog_Ground_01` low in corridors, `FX_BloodSplat_*` / `FX_Blood_Drip` at
+  cleared breaches. Gate on heat / `AlarmLevel` / menace via a soft director; keep it occasional.
+  Extends P15 — fold in.
+  done-when: Play — FX read as ambient life/aftermath tied to state, never arcade clutter; console clean
+
+- [ ] P22. Vehicle landmark — `SM_Veh_Ship_01` docked/wrecked backdrop (optional, low)
+  Tag: `[asset-pack: POLYGON Sci-Fi Horror]` | Unity: yes — iso + FP silhouette
+  Change: one static `SM_Veh_Ship_01` as a docked or wrecked hull landmark parked in the void beyond
+  the playfield edge (Deck lock: fills empty space, does not shrink the deck). Collider-free; reads
+  as scale/orientation anchor. Skip if it fights the void-recede fog (A2).
+  done-when: Play — a ship landmark grounds the map edge without blocking play; console clean
 
 ---
 
@@ -1017,6 +1176,19 @@ Method: capture the Game view in Play mode, judge the frame, fix the single wors
 - [ ] Free lead: Abandoned Factory Lite (Asset Store) — safe mood greys for blockout; not gated, but not queued until visual Now is thin.
 
 ## Agent log (newest first — one line per session: date, task, result, commit)
+
+- 2026-07-21: **playtest: full suite — 5/6 PASS, TRANSITION FAIL (cursor lock).** Report
+  `SPACE FACTORY INFO/Playtest_Agent_2026-07-21_212626.md`. SMOKE PASS (9/9); WAVE1 PASS (hub
+  500/500 → cleared, 1 Barrier + 1 AutoTurret @ west choke (-23,0,0)); MOVEMENT 10/10; BUILD 6/6;
+  COMBAT 5/5. TRANSITION FAIL 3/6 — FP gameplay cursor never reached `lockState=Locked` (+ re-lock
+  on close, destroyed-panel). Ran against the concurrent Synty agent's 514-line **uncommitted** WIP
+  (SyntyHullDressing / PlaceholderPropDressing / BiomassEncroachment / …) + a URP/GraphicsSettings
+  change; FP-cursor code unchanged since the 6/6 pass earlier today → likely an editor Game-view-focus
+  artifact, filed **QA1** to re-verify on a clean focused tree. Two `[MainMenu] button not found:
+  PlayButton/QuitButton` warnings (pre-existing menu issue). **Did not touch Synty code** (live
+  concurrent agent). Owner ask "utilize the entire asset package" → added **Phase E (P16–P22)**:
+  dead crew/cryopods, human-story micro-props, Synty-weapon tool viewmodels, actor-mesh enrichment,
+  break-room/med set piece, specific diegetic FX, vehicle landmark. Committed report + BACKLOG only.
 
 - 2026-07-21: asset-pack FULL CONVERSION track P3-P15 queued (owner: use pack everywhere).
   Implemented P3 `SyntyHullDressing` (Synty Wall_Trim/Alcove/Window/Reactor skins on
