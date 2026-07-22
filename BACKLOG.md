@@ -473,11 +473,11 @@ Conventions for this block:
 
 ---
 
-### Lore-gap refill — 2026-07-20b (bible-backed; after F1–F14)
+### Lore-gap refill — 2026-07-21 (bible + deck expansion Decision)
 
-**Priority note:** F1–F14 (above) remains **TOP PRIORITY** per Decision 2026-07-20. Agents take the next open `F*` task first. Lore tasks below are ready when Phase 1 FP (F1–F5) clears, or when a human/groom pulls one up.
+**Priority note:** Remaining **F11–F14** stay **TOP PRIORITY** (Decision 2026-07-20; F1–F10 shipped / F10 `[?]`). Agents take the next open `F*` first. Lore tasks below are ready in parallel only if a human/groom pulls one up — do **not** shrink the map to “fix” emptiness (Decision 2026-07-21 / `lore/BIBLE.md` Deck lock).
 
-Code reality: L15–L24 shipped; L25–L27 still missing; stage-1 residue + heat share exist; no plaques/quota/PA/vent-carrier; schedule board is a static prop only. Bible current through 2026-07-20. Asset pack: **not purchased** — primitives / existing `Sfx` / runtime meshes only. Visual/audio-only ≤30% of this lore block (L27 only).
+Code reality: L15–L24 shipped (L23 Play-verified); L25–L30 still open; biomass/HorrorClock scale with clears but far-deck labour props stay one-shot; no plaques/quota/vent-carrier/Throughput01. Bible current through Decision 2026-07-21. Asset pack: **not purchased** — primitives / existing `Sfx` / runtime meshes only. Visual/audio-only ≤30% of this lore block (L27 + part of L32).
 
 - [x] L22. Infection-form residue crawlers (stage 1 ecology) — DONE 2026-07-20 (see archive notes below).
 - [x] L23. Factory heat raises infection-form share — DONE 2026-07-20.
@@ -541,6 +541,27 @@ Code reality: L15–L24 shipped; L25–L27 still missing; stage-1 residue + heat
   Unity: **yes** — idle vs high-throughput residue/vent share.
   Change: `FactoryHeatTracker` already folds scrap/min into Heat01 — expose a small **Throughput01** (or use raw `ScrapPerMinute` bands) so WaveController can add a capped residue/vent bias *on top of* heat when belts are screaming but producers are few (or vice versa). Goal: a bigger *running* factory feels more haunted, not only “more powered buildings.” Doc bands in Progression_Spec. W1 lock stays.
   done-when: Play — high scrap/min with modest producer count measurably raises breach residue or vent share vs idle; W1 clean; console clean
+
+- [ ] L32. Far-deck labour dressing scales with progress (fill, don’t shrink)
+  Type: diegetic / systemic | Pillar: Lonely worker fantasy / Factory pressure = identity
+  Lore: `lore/BIBLE.md` Deck lock + “expansion fills emptiness”; Decision 2026-07-21
+  Unity: **yes** — compare W0 vs W3+ prop density on far deck (not hub cluster).
+  Change: extend `PlaceholderPropDressing` (or small companion) so additional lived-in labour clusters (crates, conduit, schedule stubs, spilled parts — primitives only) spawn on **empty far-deck samples** as `WavesCleared` and/or powered machine count rises. Never resize ground/walls. Cap density; keep lane/hub clearance rules from P3. Sector_Layout note: emptiness → industrialization.
+  done-when: Play — after several clears, far deck shows measurable new dressing vs fresh run; map bounds unchanged; lanes clear; console clean
+
+- [ ] L33. Distant scrap/salvage lure toward empty deck
+  Type: systemic | Pillar: Factory pressure = identity / Workplace as trap
+  Lore: `lore/BIBLE.md` expansion fills emptiness; factory layout as primary skill
+  Unity: **yes** — player has a reason to belt/build toward far deck without a map shrink.
+  Change: place or unlock 1–2 high-yield `ScrapVein` and/or `SalvageCrate` clusters in underused far deck (outside starter footprint), readable by scanner. Optional soft gate: second cluster appears after WavesCleared ≥ 2. Risk = distance from hub (existing pattern). Doc in Sector_Layout / Progression_Spec. No new lanes required in this task.
+  done-when: Play — far-deck nodes exist and pay out; starter hub still viable without them; map size unchanged; console clean
+
+- [ ] L34. Uninhabited-deck wrongness eases near powered industry
+  Type: systemic / diegetic | Pillar: Diegetic dread / Factory pressure = identity
+  Lore: `lore/BIBLE.md` cold/quiet decks calm vs heat/industry; expansion headroom reads as lonely ship not missing content
+  Unity: **yes** — far empty vs near running machines.
+  Change: lightweight “habitation” field — samples distance to nearest powered drill/processor/belt; far unused deck gets slight fog pull and/or ambient wrongness (reuse AtmosphereController / HorrorClock-style hooks), easing as industry approaches. Soft only; hub teaching area stays readable. Must not fight F8 FP fog profile (gate or blend per ViewMode if needed). Numbers in Progression_Spec.
+  done-when: Play — standing on empty far deck feels slightly wronger than beside a running line; building out reduces that local wrongness; map bounds unchanged; console clean
 
 ### Done archive — 2026-07-19 lore-gap + map integrity (shipped)
 
@@ -805,6 +826,8 @@ Method: capture the Game view in Play mode, judge the frame, fix the single wors
   Change: procedural metal “answer” creaks to machine pulses / footsteps via existing `Sfx` pool (Built-in only, no pack, no VO library). Quiet between answers — soft director, not sting spam.
   done-when: Play — walking a running deck yields occasional answered creaks; idle dark deck stays quieter; console clean
 
+- [ ] PlaytestHarness named eye-level vantages (hub / west lamp / vent approach) so F11+ visual verifies are comparable — promote from Ice box when touching harness.
+
 - [x] First pass progression design — DONE: SPACE FACTORY INFO/Progression_Spec.md written AND v1 slice implemented (wave-gated unlocks: ShockTrap→1, RepairPost→2, RelayNode→3; wave-clear bonus 10+5×N; hotbar lock display; unlock popups). Play-verified.
 - [x] Progression v2 tier-2 structures — DONE: HeavyTurret (w5, 150 scrap, range 6.5/dmg 22/rate 1.5, 1.5×HP, 1.2× scale, red), Bulwark (w6, 70, 3×HP barrier, taller, steel-blue), TurboDrill (w7, 120, 2× extraction, 4 power, orange). Prefab variants + def assets + catalogue + hotbar registered. Play-verified unlock chain + placement + stats.
 - [x] Progression v3 upgrade offers — DONE: RunUpgrades container (5 modifiers, null-safe statics), UIUpgradeOffer modal (1-of-3 random distinct after every cleared wave, timeScale 0 while open, skippable, Esc-guarded vs pause menu). Pool: turret dmg +15%, drill +20%, repair cost −25%, salvage +50%, sidearm +4 shots. Consumers patched: AutoTurret, MiningDrill, PlayerRepairTool, SalvageCrate, PlayerWeapon (+hotbar heat display). Play-verified full loop.
@@ -819,12 +842,6 @@ Method: capture the Game view in Play mode, judge the frame, fix the single wors
   "CharacterController.Move called on inactive controller" every frame. Harmless in normal play
   (respawn early-returns on `IsDead`, `SoftRecoverToHub` re-enables in the same frame) — surfaced by
   a playtest helper that pinned the transform with the controller off. One-line guard.
-- [ ] **Playtest needs a named eye-level camera viewpoint.** Every visual verification in F6–F8 was
-  hampered by not having a known-good FP vantage: shots landed on empty deck 13.5m from anything, so
-  "the frame looks like nothing" said more about the viewpoint than the lighting. Add a small set of
-  named vantages (hub approach, west corridor under a live lamp, vent approach) to `PlaytestHarness`
-  so visual passes are comparable between sessions instead of re-aimed by hand each time.
-
 - [ ] [asset-pack: Alien Biomass Planet] Replace A10 primitive residue with animated biomass meshes / hue Shader Graph once purchased (path TBD in Asset pack status).
 - [ ] [asset-pack: Bio Horror / Sci-fi Environment] Infestation props for breach corridors — promote after purchase.
 - [ ] [asset-pack: Bionic structures] Cheap tendril/cocoon kitbash for corridor corruption — low-cost experiment if A10 primitives feel thin.
@@ -835,6 +852,8 @@ Method: capture the Game view in Play mode, judge the frame, fix the single wors
 - [ ] Free lead: Abandoned Factory Lite (Asset Store) — safe mood greys for blockout; not gated, but not queued until visual Now is thin.
 
 ## Agent log (newest first — one line per session: date, task, result, commit)
+
+- 2026-07-21: lore-gap — bible current (Deck lock absorbed). Kept F11–F14 top; refreshed L25–L30; added L32 progress far-deck dressing, L33 distant scrap/salvage lure, L34 uninhabited-deck wrongness ease (fill emptiness, never resize map). Next: harness eye-level vantages + L31. No game code.
 
 - 2026-07-21: **auto-dev F10 machine identity at eye level — CODE DONE, `[?]` needs in-editor
   verification (Unity MCP revoked).** Extended `MachineIdentityTint` with `BuildEyeLevelIdentity`:
