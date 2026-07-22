@@ -224,12 +224,28 @@ Without it, mats may pink; runtime falls back to Standard albedo when Error.
   bootstrap. **Unity pass must:** Shader Graph; Play — walls are Synty not cubes; walk/build;
   console shows `[SyntyHullDressing] v1 skinned N panels`; no pink mats (or document fallback).
 
-- [ ] P4. Ceiling light fixtures — Synty housings
+- [x] P4. Ceiling light fixtures — Synty housings — DONE 2026-07-21 (Play-verified)
   Tag: `[asset-pack: POLYGON Sci-Fi Horror]`
   Unity: yes — FP look-up + iso lamp pools
   Change: replace F7 cube lamp housings with `SM_Bld_Light_Ceiling_*` / `SM_Prop_Light_Grid_*`;
   keep point-light values + dead-lamp / HorrorClock logic.
   done-when: FP ceiling shows Synty fixtures; lighting pools still work; console clean
+  **DONE 2026-07-21 (auto-dev, Play-verified).** `SyntyHorrorLoader.CeilingLightPrefabs`
+  (`SM_Bld_Light_Ceiling_01/02`) + `ShipInteriorUpgrade.BuildSyntyLampHousing`: `BuildLampHousing`
+  now instantiates a Synty ceiling-light prefab (fit to ≤1.7 m footprint, recentred over the light
+  point since one pack panel pivots at a corner, mounted flush at `CeilingHeight`), strips colliders,
+  disables the prefab's own Light so it can't double the game's point light, and — for lit fixtures —
+  adds a small emissive glow lens tinted to the lamp colour so it reads as its own source under the
+  Built-in fallback. Dead fixtures get the cold dark lens material. Falls back to the F7 primitive
+  housing when the pack prefab is unavailable (build without Resources). `UpgradeVersion` 60→61 so
+  scenes rebuild. The whole housing rides the existing `CorridorLampFixture` iso-hide. Verified in
+  Play: FP west-corridor capture shows a glowing Synty ceiling panel mounted overhead (fixture bounds
+  1.70×0.06×0.72 centred at (−18, 3.17, 0), glow lens at 3.15); iso hides all 10 housings
+  (syntyRenderersEnabled 0); 7 live point lights intact; console clean.
+  Bug caught + fixed during verification: first build used `Transform.GetInstanceID()` for the prefab
+  pick — Unity 6000.5 marks it `[Obsolete(error:true)]`, a hard compile error that blocked Play
+  ("All compiler errors have to be fixed before you can enter playmode!") while RunCommand probes
+  kept compiling against the last-good assembly and masked it. Replaced with a position hash.
 
 - [ ] P5. Floor panel overlays at hub + lane edges
   Tag: `[asset-pack: POLYGON Sci-Fi Horror]`
@@ -1176,6 +1192,15 @@ Method: capture the Game view in Play mode, judge the frame, fix the single wors
 - [ ] Free lead: Abandoned Factory Lite (Asset Store) — safe mood greys for blockout; not gated, but not queued until visual Now is thin.
 
 ## Agent log (newest first — one line per session: date, task, result, commit)
+
+- 2026-07-21: **auto-dev P4 Synty ceiling light fixtures — DONE (Play-verified).** `BuildLampHousing`
+  now instantiates `SM_Bld_Light_Ceiling_01/02` (fit ≤1.7 m, recentred, flush at CeilingHeight,
+  colliders stripped, prefab light disabled, tinted glow lens for lit / dark lens for dead), primitive
+  fallback kept, `UpgradeVersion` 60→61, rides the F7 iso-hide. FP capture shows a glowing Synty panel
+  overhead; iso hides all 10 housings; 7 point lights intact; console clean. Caught+fixed a Unity
+  6000.5 `GetInstanceID()` obsolete-error that blocked Play. Also committed the concurrent Cursor
+  agent's Synty WIP (hull/prop dressing + URP/ShaderGraph pipeline migration) on owner instruction —
+  commit 3aa5872. Commit <hash>.
 
 - 2026-07-21: **playtest: full suite — 5/6 PASS, TRANSITION FAIL (cursor lock).** Report
   `SPACE FACTORY INFO/Playtest_Agent_2026-07-21_212626.md`. SMOKE PASS (9/9); WAVE1 PASS (hub

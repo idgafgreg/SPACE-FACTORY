@@ -13,7 +13,7 @@ public class ShipInteriorUpgrade : MonoBehaviour
     // 57: F7 lamp fixtures — corridor lights gain housings and per-mode values.
     // 58: skip corridor lamp fixtures inside the hub footprint (clipping fix).
     // 59: F9 — wire the never-called BuildKickplates for eye-level deck-edge detail.
-    const int UpgradeVersion = 60; // C7: overhead pipes higher + farther from pillars
+    const int UpgradeVersion = 61; // P4: corridor lamp housings use Synty ceiling-light prefabs
 
     // TransparentFX — built-in layer, ships with every project (same choice as
     // PostFXBootstrap.VolumeLayer). Wall caps live here so point lights can cull
@@ -660,10 +660,90 @@ public class ShipInteriorUpgrade : MonoBehaviour
         _lampLensDeadMat.DisableKeyword("_EMISSION");
     }
 
+    /// <summary>P4: instantiate a Synty ceiling-light prefab as the fixture housing,
+    /// keeping every F7 rule — collider-free, the prefab's own real-time light disabled
+    /// (the game hangs its tuned point light on the separate LightSource pivot), a small
+    /// tinted emissive lens so a lit fixture still reads as the source of its pool even
+    /// when a pack material falls back to Built-in Standard, and all renderers returned
+    /// so <see cref="CorridorLampFixture"/> hides the whole housing in iso. Returns null
+    /// when the pack prefab is unavailable so the caller drops to the primitive housing.</summary>
+    static Renderer[] BuildSyntyLampHousing(Transform parent, bool dead, Color lampColour)
+    {
+        var prefabs = SyntyHorrorLoader.CeilingLightPrefabs;
+        if (prefabs == null || prefabs.Length == 0) return null;
+
+        // Spatial pick so neighbouring fixtures vary but a given spot is stable.
+        int pick = Mathf.Abs(Mathf.RoundToInt(parent.position.x * 3.1f + parent.position.z * 7.7f));
+        var prefab = prefabs[pick % prefabs.Length];
+        if (prefab == null) return null;
+
+        var inst = Object.Instantiate(prefab, parent);
+        inst.name = "SyntyLampFixture";
+        inst.transform.localPosition = new Vector3(0f, CeilingHeight, 0f);
+        inst.transform.localRotation = Quaternion.identity;
+
+        // Strip colliders / animators and repair any pink pack material.
+        SyntyHorrorLoader.PrepareInstance(inst);
+
+        // A pack light prefab may ship its own real-time Light; disable it so it does
+        // not double the game's tuned point light.
+        foreach (var l in inst.GetComponentsInChildren<Light>(true))
+            if (l != null) l.enabled = false;
+
+        var rends = new System.Collections.Generic.List<Renderer>(
+            inst.GetComponentsInChildren<Renderer>(true));
+        if (rends.Count == 0) { Destroy(inst); return null; }
+
+        // Pack ceiling panels vary — one is ~4.4 m wide, another pivots at a corner.
+        // Fit the footprint to a lamp-sized panel, then slide it so the panel centres
+        // over the light point instead of hanging off to one side.
+        System.Func<Bounds> worldBounds = () =>
+        {
+            Bounds wb = rends[0].bounds;
+            for (int i = 1; i < rends.Count; i++)
+                if (rends[i] != null) wb.Encapsulate(rends[i].bounds);
+            return wb;
+        };
+        Bounds b0 = worldBounds();
+        float maxXZ = Mathf.Max(b0.size.x, b0.size.z);
+        if (maxXZ > 1.7f) inst.transform.localScale *= 1.7f / maxXZ;
+        Bounds b1 = worldBounds();
+        inst.transform.position += new Vector3(
+            parent.position.x - b1.center.x, 0f, parent.position.z - b1.center.z);
+
+        EnsureLampMaterials();
+        if (dead)
+        {
+            // Cold, unlit housing — reads as a failed fixture, not a hole in the lid.
+            foreach (var r in rends)
+                if (r != null) r.sharedMaterial = _lampLensDeadMat;
+        }
+        else
+        {
+            var lens = GameObject.CreatePrimitive(PrimitiveType.Cube);
+            lens.name = "LampGlowLens";
+            lens.transform.SetParent(inst.transform, false);
+            Destroy(lens.GetComponent<Collider>());
+            lens.transform.localPosition = new Vector3(0f, -0.14f, 0f);
+            lens.transform.localScale = new Vector3(0.42f, 0.05f, 0.24f);
+            var instMat = new Material(_lampLensLitMat);
+            instMat.SetColor("_EmissionColor", lampColour * 1.2f);
+            lens.GetComponent<Renderer>().sharedMaterial = instMat;
+            rends.Add(lens.GetComponent<Renderer>());
+        }
+
+        return rends.ToArray();
+    }
+
     /// <summary>Housing + lens bolted to the F6 ceiling. Returns its renderers so the
     /// fixture can hide them in iso.</summary>
     static Renderer[] BuildLampHousing(Transform parent, bool dead, Color lampColour)
     {
+        // P4: prefer the Synty ceiling-light housing; fall back to primitives when the
+        // pack prefab is unavailable (e.g. a standalone build with no Resources mirror).
+        var synty = BuildSyntyLampHousing(parent, dead, lampColour);
+        if (synty != null) return synty;
+
         var rends = new System.Collections.Generic.List<Renderer>();
 
         // Short stem down from the ceiling — reads as mounted, not floating.

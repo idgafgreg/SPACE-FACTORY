@@ -94,6 +94,13 @@ public static class SyntyHorrorLoader
         BldRoot + "SM_Bld_Wall_Door_01.prefab",
     };
 
+    /// <summary>P4 — ceiling light housings for the F7 corridor fixtures.</summary>
+    public static readonly string[] CeilingLightPrefabPaths =
+    {
+        BldRoot + "SM_Bld_Light_Ceiling_01.prefab",
+        BldRoot + "SM_Bld_Light_Ceiling_02.prefab",
+    };
+
     static GameObject[] _growth;
     static GameObject[] _eggs;
     static GameObject[] _walls;
@@ -101,6 +108,7 @@ public static class SyntyHorrorLoader
     static GameObject[] _corrPanels;
     static GameObject[] _alcovePanels;
     static GameObject[] _exteriorPanels;
+    static GameObject[] _ceilingLights;
     static bool _loggedMissing;
 
     /// <summary>Drop cached prefab arrays (call after changing path lists in editor).</summary>
@@ -108,6 +116,7 @@ public static class SyntyHorrorLoader
     {
         _growth = _eggs = _walls = _pillars = null;
         _corrPanels = _alcovePanels = _exteriorPanels = null;
+        _ceilingLights = null;
         _loggedMissing = false;
     }
 
@@ -118,6 +127,7 @@ public static class SyntyHorrorLoader
     public static GameObject[] HullCorridorPanels => _corrPanels ??= LoadAll(HullCorridorPanelPaths);
     public static GameObject[] HullAlcovePanels => _alcovePanels ??= LoadAll(HullAlcovePanelPaths);
     public static GameObject[] HullExteriorPanels => _exteriorPanels ??= LoadAll(HullExteriorPanelPaths);
+    public static GameObject[] CeilingLightPrefabs => _ceilingLights ??= LoadAll(CeilingLightPrefabPaths);
 
     /// <summary>P2 — lonely shift-nest workplace props (no alien growth).</summary>
     public static GameObject LoadProp(string prefabFileName)
