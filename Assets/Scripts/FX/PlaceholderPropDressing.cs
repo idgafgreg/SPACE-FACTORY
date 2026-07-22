@@ -3,12 +3,12 @@ using UnityEngine;
 /// <summary>
 /// Lived-in workplace dressing: a lonely shift nest at the hub, sparse
 /// corridor clutter, and workshop leftovers. Supports sad/lonely mood before
-/// combat (lore/2026-07-17 — "props that look worked in").
+/// combat (lore/2026-07-17 - "props that look worked in").
 /// Runtime-only; colliders stripped so props never block pathing.
 /// </summary>
 public class PlaceholderPropDressing : MonoBehaviour
 {
-    const int PropDressVersion = 10;
+    const int PropDressVersion = 11;
     float _retryAt = 1.05f;
 
     void Start() => Dress();
@@ -48,7 +48,7 @@ public class PlaceholderPropDressing : MonoBehaviour
     }
 
     /// <summary>
-    /// Abandoned crew station — desk, chair, mug, locker. Loneliness reads first.
+    /// Abandoned crew station - desk, chair, mug, locker. Loneliness reads first.
     /// </summary>
     void DressHubNest(Vector3 hub, Transform root)
     {
@@ -62,7 +62,7 @@ public class PlaceholderPropDressing : MonoBehaviour
         Spawn("Prop_Computer", nest + new Vector3(0.9f, 0f, 0.55f), root, 0.85f, 225f);
         Spawn("desk_computerScreen", nest + new Vector3(0.45f, 0f, 0.05f), root, 0.7f, 200f, skipClearance: true);
 
-        // Dim personal lamp — warm vs the ship cyan, "still on" loneliness cue.
+        // Dim personal lamp - warm vs the ship cyan, "still on" loneliness cue.
         var lamp = new GameObject("ShiftNestLamp");
         lamp.transform.SetParent(root, false);
         lamp.transform.position = nest + new Vector3(0.2f, 1.55f, 0.15f);
@@ -73,9 +73,45 @@ public class PlaceholderPropDressing : MonoBehaviour
         light.color = new Color(1f, 0.72f, 0.45f);
         light.shadows = LightShadows.None;
 
-        // Small crates as "personal stash" — not a junkyard.
+        // Small crates as "personal stash" - not a junkyard.
         Spawn("Prop_Crate", nest + new Vector3(1.8f, 0f, -1.1f), root, 0.75f, 35f);
         Spawn("Prop_Barrel1", nest + new Vector3(-2.1f, 0f, -0.8f), root, 0.8f, 70f);
+
+        // A9: hand-written signage + shift schedule board near the nest.
+        SpawnSign(nest + new Vector3(-1.9f, 0f, -1.4f), root, 95f, "SHIFT BOARD");
+        SpawnSign(nest + new Vector3(1.25f, 0f, -1.55f), root, -15f, "LOCK OUT");
+    }
+
+    /// <summary>
+    /// A9: primitive-backed wall signage. Avoids text mesh / font dependencies.
+    /// A dark board with a few colored strips reads as hand-written warning notes.
+    /// </summary>
+    void SpawnSign(Vector3 pos, Transform root, float yaw, string kind)
+    {
+        var board = GameObject.CreatePrimitive(PrimitiveType.Quad);
+        board.name = $"Sign_{kind}";
+        Destroy(board.GetComponent<Collider>());
+        board.transform.SetParent(root, false);
+        board.transform.position = pos + Vector3.up * 1.35f;
+        board.transform.rotation = Quaternion.Euler(60f, yaw, 0f);
+        board.transform.localScale = new Vector3(0.9f, 0.55f, 1f);
+
+        var mat = new Material(Shader.Find("Standard"));
+        mat.color = new Color(0.14f, 0.15f, 0.16f);
+        mat.SetFloat("_Metallic", 0.4f);
+        board.GetComponent<Renderer>().sharedMaterial = mat;
+
+        // One amber strip = a handwritten tape note; one red strip = warning.
+        var strip = GameObject.CreatePrimitive(PrimitiveType.Quad);
+        strip.name = "SignTape";
+        Destroy(strip.GetComponent<Collider>());
+        strip.transform.SetParent(board.transform, false);
+        strip.transform.localPosition = new Vector3(0f, 0.12f, -0.02f);
+        strip.transform.localRotation = Quaternion.identity;
+        strip.transform.localScale = new Vector3(0.75f, 0.08f, 1f);
+        var sm = new Material(Shader.Find("Sprites/Default"));
+        sm.color = kind == "LOCK OUT" ? new Color(0.9f, 0.25f, 0.2f, 0.9f) : new Color(0.9f, 0.7f, 0.35f, 0.85f);
+        strip.GetComponent<Renderer>().sharedMaterial = sm;
     }
 
     void DressWorkshop(Transform root)
@@ -107,7 +143,7 @@ public class PlaceholderPropDressing : MonoBehaviour
         {
             if (lane == null || lane.PointCount < 2) continue;
 
-            // Two props mid-corridor, pressed to the wall — lived-in, not cluttered.
+            // Two props mid-corridor, pressed to the wall - lived-in, not cluttered.
             int[] idxs =
             {
                 Mathf.Clamp(lane.PointCount / 3, 1, lane.PointCount - 1),
@@ -130,7 +166,7 @@ public class PlaceholderPropDressing : MonoBehaviour
                 n++;
             }
 
-            // Gate mouth: one crate / barrel at spawn — "someone tried to barricade".
+            // Gate mouth: one crate / barrel at spawn - "someone tried to barricade".
             Vector3 gate = lane.GetPoint(0);
             Vector3 inDir = (lane.GetPoint(1) - gate);
             inDir.y = 0f;
@@ -144,12 +180,12 @@ public class PlaceholderPropDressing : MonoBehaviour
 
     void DressBayDebris(Transform root)
     {
-        // One quiet prop near each vein — salvage left mid-job.
+        // One quiet prop near each vein - salvage left mid-job.
         int i = 0;
         foreach (var node in FindObjectsByType<ResourceNode>(FindObjectsInactive.Exclude))
         {
             if (node == null) continue;
-            // Skip hub vein — nest already dresses that area.
+            // Skip hub vein - nest already dresses that area.
             if (node.transform.position.sqrMagnitude < 80f) continue;
 
             string prop = (i % 2 == 0) ? "Prop_Crate" : "Prop_Barrel1";
@@ -206,9 +242,45 @@ public class PlaceholderPropDressing : MonoBehaviour
                     nm.SetFloat("_Metallic", 0.65f);
                     mats[i] = nm;
                 }
+                else
+                {
+                    // A9/A6b: recolor bright-white Kenney office props to the ship palette.
+                    mats[i] = TintPropMaterial(mats[i], resourcesPath);
+                }
             }
             r.sharedMaterials = mats;
         }
+    }
+
+    /// <summary>
+    /// A9: steel/amber tint for lived-in workplace props. Bright-white office
+    /// assets break the dark palette; we instance and darken/warm them so the
+    /// shift nest reads as part of the ship rather than a cartoon drop-in.
+    /// </summary>
+    static Material TintPropMaterial(Material source, string resourcePath)
+    {
+        bool isOffice = resourcePath is "Prop_Desk_Small" or "Prop_Chair" or "Prop_Computer"
+            or "Prop_Mug" or "desk_computerScreen";
+        bool isWarmLit = resourcePath is "Prop_Mug" or "desk_computerScreen";
+
+        Color tint = isWarmLit
+            ? new Color(0.65f, 0.55f, 0.42f)   // warm amber - coffee / screen glow
+            : new Color(0.35f, 0.38f, 0.42f);  // cold steel - desk, chair, computer body
+
+        Color baseColor = source.color;
+        float luma = 0.299f * baseColor.r + 0.587f * baseColor.g + 0.114f * baseColor.b;
+
+        // Only touch props that are lighter than the deck. Dark/rust props keep their identity.
+        if (!isOffice || luma < 0.25f) return source;
+
+        var mat = new Material(source);
+        mat.color = Color.Lerp(baseColor, tint, isWarmLit ? 0.55f : 0.75f);
+
+        // Dampen any emission on white props so they don't bloom against the dark deck.
+        if (mat.IsKeywordEnabled("_EMISSION"))
+            mat.SetColor("_EmissionColor", mat.GetColor("_EmissionColor") * 0.35f);
+
+        return mat;
     }
 
     static void FitProp(GameObject go, string resourcePath, float groundY, float sizeMultiplier)

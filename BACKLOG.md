@@ -177,9 +177,13 @@ Method: capture the Game view in Play mode, judge the frame, fix the single wors
   timeScale 0). Test-env note: editing scripts during play mode does a domain reload that can
   orphan the offer panel + leak timeScale=0 — editor-only, not a shipped bug; don't chase it in
   future sessions, just restart play mode.
-- [ ] A9. Lived-in labour props (lore 2026-07-19 #2, Still Wakes the Deep) — lockers, spilled crates,
+- [x] A9. Lived-in labour props (lore 2026-07-19 #2, Still Wakes the Deep) — lockers, spilled crates,
   hand-written signage, cold coffee, shift schedule boards. Done-when: the ship reads as a workplace
-  someone left, not an empty arena.
+  someone left, not an empty arena. DONE 2026-07-21 (PlaceholderPropDressing.cs v11): bright-white
+  Kenney office props (desk, chair, computer, mug, screen) tinted to steel/amber; hand-written shift
+  board + "LOCK OUT" signs added as primitive-backed boards near the shift nest. A6b folded in here.
+  Syntax verified with ad-hoc Roslyn parser; in-editor Play-mode color check still needed.
+
 - [ ] A10. Biomass encroachment on ship systems (lore INDEX pillar "industrial biomass / hive") —
   vents/pipes/filters near breach lanes grow residue that spreads with wave count. Done-when: the
   map visibly degrades over a run.
@@ -232,6 +236,12 @@ Method: capture the Game view in Play mode, judge the frame, fix the single wors
 - [ ] (dump ideas here; /backlog-groom promotes them)
 
 ## Agent log (newest first — one line per session: date, task, result, commit)
+
+- 2026-07-21: A9 lived-in labour props — `PlaceholderPropDressing` v11: bright-white Kenney office
+  props (desk, chair, computer, mug, screen) tinted to steel/amber palette; primitive-backed
+  "SHIFT BOARD" and "LOCK OUT" signs added near the shift nest. A6b folded in here. Syntax verified
+  with ad-hoc Roslyn parser (0 errors); in-editor Play-mode color check still needed.
+  Commit: 41b0b63.
 
 - 2026-07-21: bug pass — fixed upgrade-offer / pause / game-over timeScale and input ownership:
   `PlayerBuildTool`, `PlayerController`, `PlayerAim`, `PlayerWeapon` now block input while
