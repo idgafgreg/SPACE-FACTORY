@@ -932,7 +932,7 @@ Method: capture the Game view in Play mode, judge the frame, fix the single wors
 - 2026-07-21: asset-pack gate opened — POLYGON Sci-Fi Horror at `Assets/Synty/PolygonSciFiHorror/`.
   Promoted P0–P2. Implemented P0: `SyntyHorrorLoader` + `BiomassEncroachment` v2 spawns Synty
   Alien Growth / EggSack (pack-only, collider-free, wave-scaled). Shader Graph via Synty Package
-  Helper (not pinned in manifest). Unity MCP down — marked `[?]`. Wishlist updated. Commit: (this).
+  Helper (not pinned in manifest). Unity MCP down — marked `[?]`. Wishlist updated. Commit: b8de7b4.
 
 - 2026-07-21: auto-dev L26 soft shift-quota pressure — `ResourceInventory.TotalEarned()` +
   `ShiftQuotaHud`: prep-time HUD chip `[SHIFT] SCRAP GOAL n/m`; goal = 35 + 12×wave + up to 25×heat;
