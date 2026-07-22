@@ -44,6 +44,16 @@ public partial class PlaytestHarness
         return $"{LogPrefix} STARTED combat (watch for COMBAT DONE)";
     }
 
+    /// <summary>C5: measures where the dressing actually sits — mega-panels,
+    /// panels floating off the deck, biomass parked in a walkway.</summary>
+    public static string RunPlacementScenario()
+    {
+        var h = Ensure();
+        if (h._suiteRunning) return $"{LogPrefix} BUSY";
+        h.StartCoroutine(h.CoRunSingle("PLACEMENT", h.CoScenarioPlacement));
+        return $"{LogPrefix} STARTED placement (watch for PLACEMENT DONE)";
+    }
+
     /// <summary>
     /// Destructive: loads MainMenu and then reloads the sector. Run last.
     /// </summary>
@@ -617,5 +627,139 @@ public partial class PlaytestHarness
         yield return Settle();
         sb.AppendLine($"  final: scene={SceneManager.GetActiveScene().name} " +
                       $"mode={ViewMode.Current} lockState={Cursor.lockState}");
+    }
+
+    // ── Scenario 5: dressing placement regression gate (C5) ──────────────────
+    //
+    // The asset-pack drop shipped three placement failures that a fully green
+    // suite did not catch, because every existing check asserted gameplay state
+    // and none measured where the art actually SITS:
+    //   * hull panels height-fitted from 0.27 m baseboards exploded to 31 m wide
+    //     and clipped across the deck (C1 measured 74 giants, maxW 31.48),
+    //   * reactor / deep-alcove panels speared the walkway (C6),
+    //   * biomass anchored inside lanes and blocked pathing (C4).
+    // Every one was found by eye and fixed by hand. This scenario is the gate
+    // that keeps them fixed.
+    //
+    // Thresholds are set from MEASURED healthy values with margin, deliberately
+    // not from the dresser's own constants — a gate that reads the same constant
+    // the dresser uses moves its goalposts along with the bug.
+    // Measured healthy 2026-07-22: 257 panels, max width 2.62, every panel bottom
+    // flush at deck y=0.00, 3 biomass clusters, nearest 2.87 m from a lane.
+
+    const float GiantPanelWidth = 3.5f;          // dresser caps at 3.4; C1's regression hit 31.48
+    const float MaxDeckGap = 0.30f;              // F9's floating kickplates measured 0.48
+    const float DeckY = 0f;
+    const float MinBiomassLaneDistance = 2.30f;  // BiomassEncroachment.laneClearance is 2.35
+
+    /// <summary>Named eye-level camera vantages, so visual verifies are comparable
+    /// between passes instead of every agent inventing its own framing.</summary>
+    public struct Vantage
+    {
+        public readonly string name;
+        public readonly Vector3 pos;
+        public readonly Vector3 lookAt;
+        public Vantage(string n, Vector3 p, Vector3 l) { name = n; pos = p; lookAt = l; }
+    }
+
+    public static readonly Vantage[] Vantages =
+    {
+        new Vantage("hub",  new Vector3( 6f, 1.7f,  6f), new Vector3(  0f, 1.5f,   0f)),
+        new Vantage("west", new Vector3(-6f, 1.7f,  0f), new Vector3(-40f, 3.2f,   0f)),
+        new Vantage("vent", new Vector3(-3f, 1.7f, -5f), new Vector3( -2f, 1.0f, -15f)),
+    };
+
+    static bool TryWorldBounds(Transform t, out Bounds b)
+    {
+        b = default;
+        var rs = t.GetComponentsInChildren<Renderer>(true);
+        if (rs == null || rs.Length == 0) return false;
+        bool any = false;
+        foreach (var r in rs)
+        {
+            if (r == null) continue;
+            if (!any) { b = r.bounds; any = true; }
+            else b.Encapsulate(r.bounds);
+        }
+        return any;
+    }
+
+    /// <summary>Planar distance from a point to the nearest lane polyline segment.</summary>
+    static float DistanceToNearestLane(Vector3 p, SectorLayout layout)
+    {
+        float best = float.MaxValue;
+        if (layout == null || layout.lanes == null) return best;
+        var q = new Vector3(p.x, 0f, p.z);
+        foreach (var lane in layout.lanes)
+        {
+            if (lane == null || lane.PointCount < 2) continue;
+            for (int i = 0; i < lane.PointCount - 1; i++)
+            {
+                Vector3 a = lane.GetPoint(i); a.y = 0f;
+                Vector3 c = lane.GetPoint(i + 1); c.y = 0f;
+                Vector3 ac = c - a;
+                float len2 = ac.sqrMagnitude;
+                float t = len2 < 0.0001f ? 0f : Mathf.Clamp01(Vector3.Dot(q - a, ac) / len2);
+                float d = Vector3.Distance(q, a + ac * t);
+                if (d < best) best = d;
+            }
+        }
+        return best;
+    }
+
+    IEnumerator CoScenarioPlacement(StringBuilder sb, Box<bool> pass)
+    {
+        sb.AppendLine($"{LogPrefix} PLACEMENT BEGIN");
+        yield return Settle(2);
+
+        var layout = SectorLayout.Instance;
+        var hullRoot = GameObject.Find("SyntyHullRoot");
+        var bioRoot = GameObject.Find("BiomassEncroachmentRoot");
+
+        // Hull panels: width, and whether they sit on the deck.
+        int panels = 0, giants = 0;
+        float maxWidth = 0f, worstGap = 0f;
+        if (hullRoot != null)
+        {
+            foreach (Transform panel in hullRoot.transform)
+            {
+                if (!TryWorldBounds(panel, out var b)) continue;
+                panels++;
+                float w = Mathf.Max(b.size.x, b.size.z);
+                if (w > maxWidth) maxWidth = w;
+                if (w > GiantPanelWidth) giants++;
+                float gap = Mathf.Abs(b.min.y - DeckY);
+                if (gap > worstGap) worstGap = gap;
+            }
+        }
+
+        Assert("hull is skinned with panels", panels > 0, sb, pass, $"panels={panels}");
+        Assert("no mega-panels", giants == 0, sb, pass,
+            $"giants(>{GiantPanelWidth:0.0}m)={giants} maxWidth={maxWidth:F2}");
+        Assert("panels sit flush on the deck", worstGap <= MaxDeckGap, sb, pass,
+            $"worstDeckGap={worstGap:F2} allowed<={MaxDeckGap:F2}");
+
+        // Biomass: nothing parked in a walkway.
+        int bio = 0, bioInLane = 0;
+        float nearest = float.MaxValue;
+        if (bioRoot != null && layout != null)
+        {
+            foreach (Transform t in bioRoot.transform)
+            {
+                if (!TryWorldBounds(t, out var b)) continue;
+                bio++;
+                float d = DistanceToNearestLane(b.center, layout);
+                if (d < nearest) nearest = d;
+                if (d < MinBiomassLaneDistance) bioInLane++;
+            }
+        }
+
+        Assert("no biomass blocking a lane", bioInLane == 0, sb, pass,
+            $"bioInLane={bioInLane}/{bio} nearest={(bio > 0 ? nearest.ToString("F2") : "n/a")} " +
+            $"required>={MinBiomassLaneDistance:F2}");
+
+        var names = new string[Vantages.Length];
+        for (int i = 0; i < Vantages.Length; i++) names[i] = Vantages[i].name;
+        sb.AppendLine($"  named vantages available: {string.Join(", ", names)}");
     }
 }

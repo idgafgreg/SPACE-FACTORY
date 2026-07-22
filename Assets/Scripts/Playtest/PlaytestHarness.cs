@@ -225,6 +225,7 @@ public partial class PlaytestHarness : MonoBehaviour
         yield return CoSuiteScenario("Movement + look", "MOVEMENT", CoScenarioMovement, report);
         yield return CoSuiteScenario("Build + demolish", "BUILD", CoScenarioBuild, report);
         yield return CoSuiteScenario("Damage / death / respawn", "COMBAT", CoScenarioCombat, report);
+        yield return CoSuiteScenario("Dressing placement", "PLACEMENT", CoScenarioPlacement, report);
         yield return CoSuiteScenario("Cursor ownership", "TRANSITION", CoScenarioTransitions, report);
 
         report.AppendLine();

@@ -201,12 +201,29 @@ authored wall **colliders** authoritative; dedicated child roots only.
   done-when: VentBreach walkable; growth hugs walls; no floaters
   **DONE 2026-07-21 (Play-verified):** bioVer=4 count=3 inLane=0 float=0; infVer=2 count=9 inLane=0.
 
-- [ ] C5. PlaytestHarness visual placement scenario (regression gate)
+- [x] C5. PlaytestHarness visual placement scenario (regression gate) — DONE 2026-07-22 (mutation-tested)
   Type: mechanical / QA
   Unity: yes — suite green
   Change: add `PlaytestScenarios` check: max SyntyHull panel width, deck-gap histogram, bioInLane=0;
   fail suite if giants return. Named vantages hub / west / vent.
   done-when: `/playtest` fails if mega-panels or lane-blocking biomass return
+  **DONE 2026-07-22 (auto-dev).** New `PLACEMENT` scenario (`RunPlacementScenario()` standalone, and
+  folded into `RunFullSuite` between COMBAT and the destructive TRANSITION). It measures where the
+  dressing actually SITS — the class of defect every previous green suite missed, because every other
+  check asserts gameplay state: panel count, max panel width, worst panel-bottom deviation from the
+  deck, and biomass distance to the nearest lane polyline. Thresholds are set from measured healthy
+  values with margin and deliberately NOT from the dresser's own constants (a gate reading the same
+  constant as the bug moves its goalposts with it): giant >3.5 m (dresser caps 3.4, C1's regression
+  hit 31.48), deck gap >0.30 (F9's floating kickplates were 0.48), biomass <2.30 m from a lane
+  (`laneClearance` is 2.35). Also adds a public `Vantages` table (hub / west / vent) so visual
+  verifies are comparable between passes instead of every agent inventing its own framing — closes
+  the Ice box "named eye-level vantages" item.
+  Verified healthy: `panels=257 maxWidth=2.62 worstDeckGap=0.00 bioInLane=0/3 nearest=2.87`.
+  **Mutation-tested** (the project's standing bar — a suite that has never failed proves nothing):
+  injecting the three regressions this gate exists to catch made it fail naming each symptom —
+  `giants=1 maxWidth=28.62`, `worstDeckGap=0.50`, `bioInLane=1/3 nearest=0.01`; reverted and back to
+  PASS. Full suite **7/7 PASS** (SMOKE, WAVE1, MOVEMENT, BUILD, COMBAT, PLACEMENT, TRANSITION),
+  report `SPACE FACTORY INFO/Playtest_Agent_2026-07-22_124613.md`. Console clean.
 
 **Enablement (do once in Unity):** Synty → Package Helper → Install Packages (`com.unity.shadergraph`).
 Without it, mats may pink; runtime falls back to Standard albedo when Error.
@@ -1205,7 +1222,7 @@ Method: capture the Game view in Play mode, judge the frame, fix the single wors
   Change: procedural metal “answer” creaks to machine pulses / footsteps via existing `Sfx` pool (Built-in only, no pack, no VO library). Quiet between answers — soft director, not sting spam.
   done-when: Play — walking a running deck yields occasional answered creaks; idle dark deck stays quieter; console clean
 
-- [ ] PlaytestHarness named eye-level vantages (hub / west lamp / vent approach) so F11+ visual verifies are comparable — promote from Ice box when touching harness.
+- [x] PlaytestHarness named eye-level vantages (hub / west lamp / vent approach) so F11+ visual verifies are comparable — DONE 2026-07-22 via C5: `PlaytestHarness.Vantages` (hub / west / vent) with pos + lookAt.
 
 - [x] First pass progression design — DONE: SPACE FACTORY INFO/Progression_Spec.md written AND v1 slice implemented (wave-gated unlocks: ShockTrap→1, RepairPost→2, RelayNode→3; wave-clear bonus 10+5×N; hotbar lock display; unlock popups). Play-verified.
 - [x] Progression v2 tier-2 structures — DONE: HeavyTurret (w5, 150 scrap, range 6.5/dmg 22/rate 1.5, 1.5×HP, 1.2× scale, red), Bulwark (w6, 70, 3×HP barrier, taller, steel-blue), TurboDrill (w7, 120, 2× extraction, 4 power, orange). Prefab variants + def assets + catalogue + hotbar registered. Play-verified unlock chain + placement + stats.
@@ -1231,6 +1248,17 @@ Method: capture the Game view in Play mode, judge the frame, fix the single wors
 - [ ] Free lead: Abandoned Factory Lite (Asset Store) — safe mood greys for blockout; not gated, but not queued until visual Now is thin.
 
 ## Agent log (newest first — one line per session: date, task, result, commit)
+
+- 2026-07-22: **auto-dev C5 placement regression gate — DONE, mutation-tested.** New `PLACEMENT`
+  scenario in `PlaytestScenarios` (standalone + folded into `RunFullSuite` before the destructive
+  TRANSITION) measuring where the dressing SITS: panel count, max panel width, worst panel-bottom
+  deviation from the deck, biomass distance to nearest lane. Thresholds from measured healthy values
+  with margin, not from the dresser's own constants. Healthy: `panels=257 maxWidth=2.62
+  worstDeckGap=0.00 bioInLane=0/3 nearest=2.87`. Mutation test injected the three regressions it
+  exists to catch → `giants=1 maxWidth=28.62`, `worstDeckGap=0.50`, `bioInLane=1/3 nearest=0.01`,
+  then reverted to PASS. Also ships `PlaytestHarness.Vantages` (hub/west/vent), closing the Ice box
+  named-vantages item. Full suite **7/7 PASS**, report `Playtest_Agent_2026-07-22_124613.md`.
+  Console clean. Commit <hash>.
 
 - 2026-07-22: **auto-dev QA1 FP cursor-lock watch — DONE; it was a harness bug, not an FP regression.**
   Re-ran the suite with the Unity window foregrounded + Game view focused (`Application.isFocused=True`)
