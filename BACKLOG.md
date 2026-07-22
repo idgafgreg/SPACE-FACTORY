@@ -1240,7 +1240,7 @@ Method: capture the Game view in Play mode, judge the frame, fix the single wors
   and that modal legitimately holds the cursor free; the transition scenario inherited it. Fixed by
   giving `CoScenarioTransitions` its own precondition (`UIUpgradeOffer.ForceClose()` +
   `UICursorFocus.Clear()` + timeScale restore). **Full suite now 6/6 PASS.** No product code changed.
-  Report `Playtest_Agent_2026-07-22_123659.md`. Commit <hash>.
+  Report `Playtest_Agent_2026-07-22_123659.md`. Commit 870f5ab.
 
 - 2026-07-21: **unity-pass — cleared 5 parked `[?]` verifications, all PASS.** F10 machine eye-level
   identity (iso 0/14 renderers → byte-unchanged; FP 14/14; Processor vs MiningDrill distinct in a 4 m
