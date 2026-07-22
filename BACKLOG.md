@@ -843,7 +843,7 @@ Method: capture the Game view in Play mode, judge the frame, fix the single wors
   (thin HDR accent bar, colour confirms only). New `EyeLevelIdentityVisibility.cs` (self-scoped
   clone of F6's `CeilingVisibility`) hangs the layer under an FP-only `EyeLevelId` group so iso is
   byte-identical. Rides the 2 s rescan; deduped. Could not compile or Play-capture — self-reviewed
-  only. Commit <hash>.
+  only. Commit f801781.
 
 - 2026-07-21: **auto-dev F8 per-mode grade/fog/ambient — DONE (tuned), unblocks F7.** The earlier
   partial's blocker was self-inflicted: verification aimed the camera at empty floor, so a metric
