@@ -14,6 +14,7 @@ public static class SyntyHorrorLoader
     public const string PackRoot = "Assets/Synty/PolygonSciFiHorror/";
     const string EnvRoot = PackRoot + "Prefabs/Environment/";
     const string BldRoot = PackRoot + "Prefabs/Buildings/";
+    public const string PropRoot = PackRoot + "Prefabs/Props/";
     const string ResourcesRoot = "SyntyHorror/";
 
     /// <summary>Static wall-hugging growth clusters (A10 encroachment).</summary>
@@ -72,6 +73,15 @@ public static class SyntyHorrorLoader
     public static GameObject[] EggSackPrefabs => _eggs ??= LoadAll(EggSackPrefabPaths);
     public static GameObject[] AlienWallPrefabs => _walls ??= LoadAll(AlienWallPrefabPaths);
     public static GameObject[] AlienPillarPrefabs => _pillars ??= LoadAll(AlienPillarPrefabPaths);
+
+    /// <summary>P2 — lonely shift-nest workplace props (no alien growth).</summary>
+    public static GameObject LoadProp(string prefabFileName)
+    {
+        if (string.IsNullOrEmpty(prefabFileName)) return null;
+        if (!prefabFileName.EndsWith(".prefab"))
+            prefabFileName += ".prefab";
+        return Load(PropRoot + prefabFileName);
+    }
 
     public static GameObject Load(string assetPath)
     {

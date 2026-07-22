@@ -6,10 +6,11 @@ using UnityEngine;
 /// combat (lore/2026-07-17 — "props that look worked in").
 /// Runtime-only; colliders stripped so props never block pathing.
 /// P3: snap to deck, reject wall-clip / lane / hub-approach placements.
+/// P2: hub nest uses POLYGON Sci-Fi Horror props only (no Kenney / no growth).
 /// </summary>
 public class PlaceholderPropDressing : MonoBehaviour
 {
-    const int PropDressVersion = 12;
+    const int PropDressVersion = 13;
 
     /// <summary>Keep walkway clear — props must stay outside this lane half-width.</summary>
     const float LaneClearance = 1.85f;
@@ -58,25 +59,30 @@ public class PlaceholderPropDressing : MonoBehaviour
     }
 
     /// <summary>
-    /// Abandoned crew station — desk, chair, mug, locker. Loneliness reads first.
+    /// Abandoned crew station — Synty desk/chair/rations/locker. Loneliness reads first.
+    /// Pack assets only (P2); no alien growth in the nest.
     /// </summary>
     void DressHubNest(Vector3 hub, Transform root)
     {
         // Nest sits off the main approach so it doesn't fight the factory loop.
         Vector3 nest = hub + new Vector3(-5.2f, 0f, 4.4f);
 
-        // Nest is intentionally near the hub — skip hub-approach reject.
-        Spawn("Prop_Desk_Small", nest, root, 1.0f, 200f, ignoreHub: true);
-        Spawn("Prop_Chair", nest + new Vector3(0.15f, 0f, -0.85f), root, 0.95f, 15f, ignoreHub: true);
-        Spawn("Prop_Mug", nest + new Vector3(0.35f, 0f, 0.1f), root, 1.1f, 40f, skipClearance: true, ignoreHub: true);
-        Spawn("Prop_Locker", nest + new Vector3(-1.4f, 0f, 0.6f), root, 0.95f, 110f, ignoreHub: true);
-        Spawn("Prop_Computer", nest + new Vector3(0.9f, 0f, 0.55f), root, 0.85f, 225f, ignoreHub: true);
-        Spawn("desk_computerScreen", nest + new Vector3(0.45f, 0f, 0.05f), root, 0.7f, 200f, skipClearance: true, ignoreHub: true);
+        // Furniture — workplace bones before the scare.
+        SpawnSynty("SM_Prop_Desk_01", nest, root, NestRole.Desk, 1.0f, 200f);
+        SpawnSynty("SM_Prop_Chair_01", nest + new Vector3(0.15f, 0f, -0.85f), root, NestRole.Chair, 0.95f, 15f);
+        SpawnSynty("SM_Prop_Locker_01", nest + new Vector3(-1.45f, 0f, 0.55f), root, NestRole.Locker, 0.95f, 110f);
+        SpawnSynty("SM_Prop_Monitor_02", nest + new Vector3(0.35f, 0f, 0.05f), root, NestRole.DeskTop, 0.85f, 200f);
+        SpawnSynty("SM_Prop_Keyboard_01", nest + new Vector3(0.15f, 0f, -0.15f), root, NestRole.DeskTop, 0.9f, 200f);
+        SpawnSynty("SM_Prop_Cup_01", nest + new Vector3(0.55f, 0f, 0.12f), root, NestRole.DeskTopSmall, 1.0f, 40f);
+        SpawnSynty("SM_Prop_Food_Tray_01", nest + new Vector3(-0.25f, 0f, 0.18f), root, NestRole.DeskTopSmall, 0.95f, 190f);
+        SpawnSynty("SM_Prop_Food_Ration_02", nest + new Vector3(-0.15f, 0f, 0.22f), root, NestRole.DeskTopSmall, 0.85f, 210f);
+        SpawnSynty("SM_Prop_Clipboard_01", nest + new Vector3(0.7f, 0f, -0.05f), root, NestRole.DeskTopSmall, 0.9f, 160f);
 
-        // Dim personal lamp — warm vs the ship cyan, "still on" loneliness cue.
+        // Visual desk lamp + warm point light ("still on" loneliness cue).
+        SpawnSynty("SM_Prop_Lamp_01", nest + new Vector3(-0.45f, 0f, -0.05f), root, NestRole.DeskTop, 0.9f, 200f);
         var lamp = new GameObject("ShiftNestLamp");
         lamp.transform.SetParent(root, false);
-        lamp.transform.position = nest + new Vector3(0.2f, 1.55f, 0.15f);
+        lamp.transform.position = nest + new Vector3(0.05f, 1.45f, 0.05f);
         var light = lamp.AddComponent<Light>();
         light.type = LightType.Point;
         light.range = 4.2f;
@@ -84,43 +90,15 @@ public class PlaceholderPropDressing : MonoBehaviour
         light.color = new Color(1f, 0.72f, 0.45f);
         light.shadows = LightShadows.None;
 
-        // Small crates as "personal stash" — not a junkyard.
-        Spawn("Prop_Crate", nest + new Vector3(1.8f, 0f, -1.1f), root, 0.75f, 35f, ignoreHub: true);
-        Spawn("Prop_Barrel1", nest + new Vector3(-2.1f, 0f, -0.8f), root, 0.8f, 70f, ignoreHub: true);
+        // Personal stash — crates, barrel, quiet generator cell, one greeble.
+        SpawnSynty("SM_Prop_Crate_01", nest + new Vector3(1.8f, 0f, -1.1f), root, NestRole.Crate, 0.85f, 35f);
+        SpawnSynty("SM_Prop_Barrel_01", nest + new Vector3(-2.1f, 0f, -0.8f), root, NestRole.Barrel, 0.9f, 70f);
+        SpawnSynty("SM_Prop_Generator_PowerCell_01", nest + new Vector3(1.55f, 0f, 0.35f), root, NestRole.Crate, 0.8f, 50f);
+        SpawnSynty("SM_Prop_Greeble_04", nest + new Vector3(-1.9f, 0f, 0.15f), root, NestRole.Greeble, 0.85f, 95f);
 
-        DressScheduleBoard(nest, root);
+        // Shift poster + spilled personal crates — crew expected to come back / left in a hurry.
+        SpawnSynty("SM_Prop_Poster_01", nest + new Vector3(-1.85f, 0f, -1.15f), root, NestRole.Poster, 1.0f, -35f);
         DressSpilledCrateCluster(nest, root);
-    }
-
-    /// <summary>
-    /// Hand-written shift schedule on a dark board — the crew expected to come back.
-    /// </summary>
-    void DressScheduleBoard(Vector3 nest, Transform root)
-    {
-        Vector3 boardPos = nest + new Vector3(-1.85f, 0f, -1.15f);
-        float floorY = RuntimeVisualPrimitives.FindDeckY(boardPos, boardPos.y);
-        boardPos.y = floorY + 1.10f;
-
-        var board = GameObject.CreatePrimitive(PrimitiveType.Cube);
-        board.name = "ScheduleBoard";
-        board.transform.SetParent(root, false);
-        board.transform.position = boardPos;
-        board.transform.localScale = new Vector3(1.10f, 0.75f, 0.04f);
-        board.transform.rotation = Quaternion.Euler(0f, -35f, 0f);
-        Destroy(board.GetComponent<Collider>());
-        TintRenderer(board.GetComponent<Renderer>(), new Color(0.18f, 0.20f, 0.23f));
-
-        // Three pale "writing" lines — log entries, not readable text.
-        for (int i = 0; i < 3; i++)
-        {
-            var line = GameObject.CreatePrimitive(PrimitiveType.Cube);
-            line.name = "ScheduleLine";
-            line.transform.SetParent(board.transform, false);
-            line.transform.localPosition = new Vector3(0f, 0.18f - i * 0.18f, 0.52f);
-            line.transform.localScale = new Vector3(0.72f - i * 0.10f, 0.02f, 0.02f);
-            Destroy(line.GetComponent<Collider>());
-            TintRenderer(line.GetComponent<Renderer>(), new Color(0.72f, 0.75f, 0.78f));
-        }
     }
 
     /// <summary>
@@ -129,10 +107,133 @@ public class PlaceholderPropDressing : MonoBehaviour
     void DressSpilledCrateCluster(Vector3 nest, Transform root)
     {
         Vector3 basePos = nest + new Vector3(2.45f, 0f, 1.55f);
-        Spawn("Prop_Crate", basePos + new Vector3(0f, 0f, 0f), root, 0.55f, 35f,
-            skipClearance: true, ignoreHub: true, extraRot: Quaternion.Euler(18f, 0f, -22f));
-        Spawn("Prop_Crate", basePos + new Vector3(0.55f, 0f, 0.35f), root, 0.50f, 70f,
-            skipClearance: true, ignoreHub: true, extraRot: Quaternion.Euler(-12f, 30f, 15f));
+        SpawnSynty("SM_Prop_Crate_02", basePos, root, NestRole.Crate, 0.7f, 35f,
+            skipClearance: true, extraRot: Quaternion.Euler(18f, 0f, -22f));
+        SpawnSynty("SM_Prop_Crate_03", basePos + new Vector3(0.55f, 0f, 0.35f), root, NestRole.Crate, 0.65f, 70f,
+            skipClearance: true, extraRot: Quaternion.Euler(-12f, 30f, 15f));
+        SpawnSynty("SM_Prop_Food_Ration_03", basePos + new Vector3(0.2f, 0f, 0.15f), root, NestRole.DeskTopSmall, 0.8f, 55f,
+            skipClearance: true, extraRot: Quaternion.Euler(8f, 40f, -15f));
+    }
+
+    enum NestRole
+    {
+        Desk,
+        Chair,
+        Locker,
+        DeskTop,
+        DeskTopSmall,
+        Crate,
+        Barrel,
+        Greeble,
+        Poster
+    }
+
+    /// <summary>Instantiate a Synty nest prop. Pack path only — no Kenney Resources.</summary>
+    static bool SpawnSynty(string prefabName, Vector3 pos, Transform parent, NestRole role,
+        float scale, float yaw, bool skipClearance = false, Quaternion extraRot = default)
+    {
+        if (extraRot.Equals(default)) extraRot = Quaternion.identity;
+        if (!skipClearance)
+        {
+            if (TooCloseToLane(pos, LaneClearance)) return false;
+            foreach (var machine in FindObjectsByType<MachineBase>(FindObjectsInactive.Exclude))
+                if (machine != null && (machine.transform.position - pos).sqrMagnitude < 2.25f)
+                    return false;
+            foreach (var defense in FindObjectsByType<DefenseBase>(FindObjectsInactive.Exclude))
+                if (defense != null && (defense.transform.position - pos).sqrMagnitude < 2.25f)
+                    return false;
+        }
+
+        if (PointOverlapsWall(pos + Vector3.up * 0.6f, 0.35f)) return false;
+
+        var prefab = SyntyHorrorLoader.LoadProp(prefabName);
+        if (prefab == null)
+        {
+            Debug.LogWarning($"[PlaceholderPropDressing] Missing Synty nest prop: {prefabName}");
+            return false;
+        }
+
+        float floorY = RuntimeVisualPrimitives.FindDeckY(pos, pos.y);
+        bool onDesk = role is NestRole.DeskTop or NestRole.DeskTopSmall;
+        // Posters hang at eye/chest height on the nest wall side.
+        bool poster = role == NestRole.Poster;
+        pos.y = onDesk ? floorY + 0.92f : poster ? floorY + 1.15f : floorY;
+
+        Quaternion rotation = Quaternion.Euler(0f, yaw, 0f) * prefab.transform.rotation;
+        var go = Object.Instantiate(prefab, pos, rotation, parent);
+        go.name = "Nest_" + prefabName;
+        go.transform.localScale = prefab.transform.localScale;
+        if (extraRot != Quaternion.identity)
+            go.transform.rotation = extraRot * go.transform.rotation;
+
+        SyntyHorrorLoader.PrepareInstance(go);
+        FitSyntyNestProp(go, role, pos.y, scale);
+
+        if (!skipClearance && BoundsOverlapWall(go))
+        {
+            Object.Destroy(go);
+            return false;
+        }
+
+        return true;
+    }
+
+    static void FitSyntyNestProp(GameObject go, NestRole role, float groundY, float sizeMultiplier)
+    {
+        var renderers = go.GetComponentsInChildren<Renderer>();
+        if (renderers == null || renderers.Length == 0) return;
+
+        float targetHeight = role switch
+        {
+            NestRole.Desk => 0.95f,
+            NestRole.Chair => 0.95f,
+            NestRole.Locker => 1.75f,
+            NestRole.DeskTop => 0.55f,
+            NestRole.DeskTopSmall => 0.18f,
+            NestRole.Crate => 0.75f,
+            NestRole.Barrel => 0.95f,
+            NestRole.Greeble => 0.55f,
+            NestRole.Poster => 0.85f,
+            _ => 0.8f
+        };
+        float targetWidth = role switch
+        {
+            NestRole.Desk => 1.45f,
+            NestRole.Chair => 0.7f,
+            NestRole.Locker => 0.7f,
+            NestRole.DeskTop => 0.65f,
+            NestRole.DeskTopSmall => 0.35f,
+            NestRole.Crate => 0.85f,
+            NestRole.Barrel => 0.7f,
+            NestRole.Greeble => 0.55f,
+            NestRole.Poster => 0.7f,
+            _ => 0.9f
+        };
+        targetHeight *= sizeMultiplier;
+        targetWidth *= sizeMultiplier;
+
+        Bounds bounds = renderers[0].bounds;
+        for (int i = 1; i < renderers.Length; i++)
+            if (renderers[i] != null) bounds.Encapsulate(renderers[i].bounds);
+        float horizontal = Mathf.Max(bounds.size.x, bounds.size.z);
+        if (bounds.size.y < 0.0001f || horizontal < 0.0001f) return;
+
+        float factor = Mathf.Min(targetHeight / bounds.size.y, targetWidth / horizontal);
+        go.transform.localScale *= Mathf.Clamp(factor, 0.01f, 500f);
+
+        bounds = renderers[0].bounds;
+        for (int i = 1; i < renderers.Length; i++)
+            if (renderers[i] != null) bounds.Encapsulate(renderers[i].bounds);
+
+        if (role == NestRole.Poster)
+        {
+            // Hang: center at groundY (already set to chest height), don't snap bottom to deck.
+            go.transform.position += new Vector3(0f, groundY - bounds.center.y, 0f);
+        }
+        else
+        {
+            go.transform.position += Vector3.up * (groundY - bounds.min.y);
+        }
     }
 
     void DressWorkshop(Transform root)

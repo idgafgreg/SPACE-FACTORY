@@ -143,7 +143,7 @@ owner requests pack work; otherwise F11–F14 stay top priority.
   VentBreach — Synty wall/pillar on corridor faces, lane walkable, hub clean; no pink mats if
   Shader Graph installed.
 
-- [ ] P2. Lonely shift-nest props from Synty (replace Kenney hub nest)
+- [?] P2. Lonely shift-nest props from Synty (replace Kenney hub nest)
   Type: visual | Pillar: Lonely worker fantasy
   Tag: `[asset-pack: POLYGON Sci-Fi Horror]`
   Unity: **yes** — iso+FP nest readability.
@@ -151,6 +151,12 @@ owner requests pack work; otherwise F11–F14 stay top priority.
   workplace props (rations, trays, generators, greebles — cherry-pick, no alien growth in the nest).
   Pack assets only for the nest swap; leave corridor Kenney until a follow-up.
   done-when: Play — hub nest reads lived-in Synty, not bright Kenney white; pathing clear; console clean
+  **CODE DONE 2026-07-21 — `[?] needs Unity pass.** Hub nest v13: Synty desk/chair/locker/monitor/
+  keyboard/cup/tray/ration/clipboard/lamp + crate/barrel/power-cell/greeble + poster + spilled
+  crates/ration. `SyntyHorrorLoader.LoadProp` + `SpawnSynty`/`FitSyntyNestProp`. Warm nest lamp kept.
+  Corridor/workshop/bay still Kenney. No growth in nest. Unity MCP down — **Unity pass must:**
+  compile; Play iso+FP at hub nest — Synty meshes (not white Kenney), pathing clear, no pink mats
+  if Shader Graph installed; confirm no Alien Growth under nest.
 
 ---
 
@@ -935,6 +941,10 @@ Method: capture the Game view in Play mode, judge the frame, fix the single wors
 - [ ] Free lead: Abandoned Factory Lite (Asset Store) — safe mood greys for blockout; not gated, but not queued until visual Now is thin.
 
 ## Agent log (newest first — one line per session: date, task, result, commit)
+
+- 2026-07-21: asset-pack P2 Synty shift-nest — `PlaceholderPropDressing` v13 hub nest uses pack-only
+  desk/chair/locker/monitor/rations/tray/crates/barrel/greeble/poster via `LoadProp`/`SpawnSynty`;
+  corridors stay Kenney; no growth in nest. Unity MCP down — `[?]`. Commit: TBD.
 
 - 2026-07-21: asset-pack P1 breach infestation dressing — `BreachInfestationDressing` kitbashes
   Synty Alien Wall/Pillar on VentBreach+EastFlank wall faces only; hub excluded; wave-scaled;
