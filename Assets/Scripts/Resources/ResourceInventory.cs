@@ -23,6 +23,9 @@ public class ResourceInventory : MonoBehaviour
 
     readonly Dictionary<ResourceTypeId, int> _amounts = new();
 
+    /// <summary>Lifetime amount of each resource earned (not spent). Updated on Add.</summary>
+    readonly Dictionary<ResourceTypeId, int> _totalEarned = new();
+
     public event Action<ResourceTypeId, int> OnChanged;
 
     void Awake()
@@ -36,11 +39,17 @@ public class ResourceInventory : MonoBehaviour
     public int Get(ResourceTypeId type) =>
         _amounts.TryGetValue(type, out var v) ? v : 0;
 
+    /// <summary>Total amount of this resource earned this run (ignores spending).</summary>
+    public int TotalEarned(ResourceTypeId type) =>
+        _totalEarned.TryGetValue(type, out var v) ? v : 0;
+
     public void Add(ResourceTypeId type, int amount)
     {
         if (amount <= 0) return;
         _amounts.TryAdd(type, 0);
         _amounts[type] += amount;
+        _totalEarned.TryAdd(type, 0);
+        _totalEarned[type] += amount;
         OnChanged?.Invoke(type, _amounts[type]);
     }
 

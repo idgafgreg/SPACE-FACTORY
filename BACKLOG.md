@@ -507,12 +507,12 @@ Code reality: L15–L24 shipped (L23 Play-verified); L25–L30 still open; bioma
   Change: runtime world plaques (primitives + TextMesh or world-anchored labels) at Hub, WestCorridor approach, VentBreach approach, EastFlank approach — terse tags e.g. `[SECTOR] HUB` / `WEST BAY` / `VENT APPROACH` / `EAST FLANK`. Steel/amber palette; no new screen HUD chrome. Wire via bootstrap; Sector_Layout note.
   done-when: Play — all four tags readable near those zones in iso; no extra canvas clutter; console clean. DONE 2026-07-21 (SectorPlaques.cs + SectorRuntimeBootstrap): spawns 1.6×0.55m steel plaques with amber emissive edge strips and TextMesh labels at hub + each lane approach; bootstrapped at runtime. Syntax verified with ad-hoc Roslyn parser; in-editor Play-mode readability check still needed.
 
-- [ ] L26. Soft shift-quota pressure during Prep
+- [x] L26. Soft shift-quota pressure during Prep
   Type: diegetic / systemic | Pillar: Lonely worker fantasy / Factory pressure = identity
   Lore: `lore/BIBLE.md` factory×horror (owed quota + failing habitat); StarRupture cycle pressure cousin (lore/2026-07-20/summary.md #4)
   Unity: **yes** — Prep hit/miss paths.
   Change: during Prep, one-line diegetic quota chip via existing terminal HUD (`[SHIFT] SCRAP GOAL n` from wave + modest heat). Soft only: meet before combat → quiet terminal ack (no green cheer); miss → brief `AlarmLevel` bump into early combat (no scrap tax, no soft-lock). Doc targets in Progression_Spec.
-  done-when: Play — prep shows goal; hit and miss paths both readable; factory loop still primary; console clean
+  done-when: Play — prep shows goal; hit and miss paths both readable; factory loop still primary; console clean. DONE 2026-07-21 (ResourceInventory.TotalEarned + ShiftQuotaHud + bootstrap wire): goal = 35 + 12×wave + up to 25×heat; HUD chip `[SHIFT] SCRAP GOAL n/m`; early-Combat hit/miss evaluation; quiet FloatingText ack or 4s 0.22 AlarmLevel bump. Syntax verified with ad-hoc Roslyn parser; in-editor Play-mode hit/miss paths still needed.
 
 - [ ] L27. Dentist-spot lamp death on active breach lane
   Type: diegetic / visual | Pillar: Diegetic dread
@@ -853,11 +853,17 @@ Method: capture the Game view in Play mode, judge the frame, fix the single wors
 
 ## Agent log (newest first — one line per session: date, task, result, commit)
 
+- 2026-07-21: auto-dev L26 soft shift-quota pressure — `ResourceInventory.TotalEarned()` +
+  `ShiftQuotaHud`: prep-time HUD chip `[SHIFT] SCRAP GOAL n/m`; goal = 35 + 12×wave + up to 25×heat;
+  hit gives a quiet terminal ack, miss adds a 4s 0.22 `AlarmLevel` bump into early combat. Wired
+  into `SectorRuntimeBootstrap`. Syntax verified with ad-hoc Roslyn parser; in-editor Play-mode
+  hit/miss paths still needed. Commit: 0e2ee4f.
+
 - 2026-07-21: auto-dev L25 diegetic sector wayfinding plaques — `SectorPlaques.cs` + bootstrap wire:
   runtime 1.6×0.55m steel plaques with amber emissive edges and TextMesh labels at Hub
   (`[SECTOR] HUB`), WestCorridor (`WEST BAY`), VentBreach (`VENT APPROACH`), EastFlank
   (`EAST FLANK`). No canvas clutter; readable from iso and later FP. Syntax verified with ad-hoc
-  Roslyn parser (0 errors); in-editor Play-mode readability check still needed. Commit: PENDING.
+  Roslyn parser (0 errors); in-editor Play-mode readability check still needed. Commit: fb47631.
 
 - 2026-07-21: lore-gap — bible current (Deck lock absorbed). Kept F11–F14 top; refreshed L25–L30;
 
