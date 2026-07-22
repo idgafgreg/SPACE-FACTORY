@@ -20,8 +20,12 @@ Rules for tasks in this file:
 
 ## Asset pack status
 
-- Status: **not purchased**
-- When purchased: set Status to `purchased`, note Unity path (e.g. `Assets/ThirdParty/<PackName>/`), then run `/lore-gap` or `/backlog-groom` to promote `[asset-pack]` Ice box items.
+- Status: **purchased** (2026-07-21, human)
+- Pack: **POLYGON - Sci-Fi Horror Pack (Synty)** + bundled `PolygonGeneric`
+- Unity path: `Assets/Synty/PolygonSciFiHorror/` (shared shaders/materials also under `Assets/Synty/PolygonGeneric/`)
+- Enablement: open the project and accept **Synty → Package Helper → Install Packages** (`com.unity.shadergraph`) so pack materials compile on Built-in. Until then, runtime code falls back to Standard when a mat is Error/pink.
+- Rule: new art from this pack only for tagged `[asset-pack: POLYGON Sci-Fi Horror]` tasks — do not mix Kenney/Quaternius into those swaps.
+- When purchased: set Status to `purchased`, note Unity path, then promote `[asset-pack]` Ice box items (done for P0 below).
 
 ## Needs human decision
 
@@ -95,7 +99,51 @@ Conventions for this block:
   MCP: implement, self-review the diff for syntax/API errors, then mark `[?] needs Unity pass —
   <what>` instead of `[x]`. `/unity-pass` sweeps those later. See `AGENTS.md`.
 - Never regress iso. Any per-mode value goes behind `ViewMode`, not a replacement of the iso value.
-- No asset-pack work (status: not purchased). Primitives, runtime meshes, existing Kenney only.
+- Asset pack **purchased** (POLYGON Sci-Fi Horror). F* may use it when a task says so; otherwise
+  keep Kenney/primitives. Pack-only swaps live in the **Asset pack** block below F14.
+
+---
+
+### Asset pack — POLYGON Sci-Fi Horror (purchased 2026-07-21)
+
+Human asked to start implementation from this pack. Pack tasks may jump the F* queue when the
+owner requests pack work; otherwise F11–F14 stay top priority.
+
+- [?] P0. Replace A10 primitive biomass with Synty Alien Growth
+  Type: visual | Pillar: Industrial biomass / hive
+  Tag: `[asset-pack: POLYGON Sci-Fi Horror]`
+  Lore: `lore/BIBLE.md` hive ladder (infect → specialize); A10 encroachment lineage
+  Unity: **yes** — accept Synty Shader Graph install if prompted; Play after wave clears; FP+iso
+  frames of VentBreach / EastFlank wall growth (not pink mats); confirm colliders stripped (lanes walkable).
+  Change: `BiomassEncroachment` no longer spawns capsule primitives. Load only
+  `SM_Env_Alien_Growth_*` / `SM_Env_EggSack_*` from `Assets/Synty/PolygonSciFiHorror/Prefabs/Environment/`
+  via `SyntyHorrorLoader` (Editor AssetDatabase; optional `Resources/SyntyHorror/` mirrors for builds).
+  Keep wave-scaled spread, wall-biased anchors, collider-free instances, deck snap + size fit.
+  Egg sacks mix in from cleared wave ≥3 (~25%). Bump dress version so old primitive roots rebuild.
+  done-when: Play — after ≥1 clear, breach corridors show Synty growth (not green capsules); mats
+  readable (Shader Graph or intentional Standard fallback); pathing clear; iso+FP both fine; console clean
+  **CODE DONE 2026-07-21 — `[?] needs Unity pass.** `SyntyHorrorLoader.cs` + `BiomassEncroachment`
+  v2. Unity MCP pipe was down this session (no compile / Play / frame capture). **Unity pass must:**
+  (1) Install Shader Graph via Synty Package Helper if not already; (2) compile clean; (3) Play,
+  clear a wave or `DebugForceDress(3)`, capture VentBreach wall growth — Synty meshes, not capsules;
+  (4) walk the lane (no blocker colliders); (5) confirm no pink Error mats (or document Standard fallback).
+
+- [ ] P1. Breach-corridor infestation dressing (Synty Alien Wall / Pillar kitbash)
+  Type: visual | Pillar: Industrial biomass / hive
+  Tag: `[asset-pack: POLYGON Sci-Fi Horror]`
+  Unity: **yes** — Play FP walk of VentBreach after wave 2+.
+  Change: sparse runtime kitbash of `SM_Bld_Alien_Wall_*` / `SM_Bld_Alien_Pillar_*` on breach-lane
+  wall faces only (not hub). Colliders stripped; scale with `WavesCleared`. Pack assets only.
+  done-when: Play — breach approach reads colonized without blocking lanes; hub stays clean metal; console clean
+
+- [ ] P2. Lonely shift-nest props from Synty (replace Kenney hub nest)
+  Type: visual | Pillar: Lonely worker fantasy
+  Tag: `[asset-pack: POLYGON Sci-Fi Horror]`
+  Unity: **yes** — iso+FP nest readability.
+  Change: `PlaceholderPropDressing` hub nest swaps Kenney desk/chair/mug/crate for Synty horror
+  workplace props (rations, trays, generators, greebles — cherry-pick, no alien growth in the nest).
+  Pack assets only for the nest swap; leave corridor Kenney until a follow-up.
+  done-when: Play — hub nest reads lived-in Synty, not bright Kenney white; pathing clear; console clean
 
 ---
 
@@ -477,7 +525,7 @@ Conventions for this block:
 
 **Priority note:** Remaining **F11–F14** stay **TOP PRIORITY** (Decision 2026-07-20; F1–F10 shipped / F10 `[?]`). Agents take the next open `F*` first. Lore tasks below are ready in parallel only if a human/groom pulls one up — do **not** shrink the map to “fix” emptiness (Decision 2026-07-21 / `lore/BIBLE.md` Deck lock).
 
-Code reality: L15–L24 shipped (L23 Play-verified); L25–L30 still open; biomass/HorrorClock scale with clears but far-deck labour props stay one-shot; no plaques/quota/vent-carrier/Throughput01. Bible current through Decision 2026-07-21. Asset pack: **not purchased** — primitives / existing `Sfx` / runtime meshes only. Visual/audio-only ≤30% of this lore block (L27 + part of L32).
+Code reality: L15–L26 shipped (L23 Play-verified; L25/L26 `[?]` Unity); L27–L30 still open; biomass now Synty growth (P0 `[?]`); HorrorClock scales with clears; far-deck labour props still one-shot. Bible current through Decision 2026-07-21. Asset pack: **POLYGON Sci-Fi Horror purchased** — see Asset pack block (P0–P2). Visual/audio-only ≤30% of this lore block (L27 + part of L32).
 
 - [x] L22. Infection-form residue crawlers (stage 1 ecology) — DONE 2026-07-20 (see archive notes below).
 - [x] L23. Factory heat raises infection-form share — DONE 2026-07-20.
@@ -870,9 +918,9 @@ Method: capture the Game view in Play mode, judge the frame, fix the single wors
   "CharacterController.Move called on inactive controller" every frame. Harmless in normal play
   (respawn early-returns on `IsDead`, `SoftRecoverToHub` re-enables in the same frame) — surfaced by
   a playtest helper that pinned the transform with the controller off. One-line guard.
-- [ ] [asset-pack: Alien Biomass Planet] Replace A10 primitive residue with animated biomass meshes / hue Shader Graph once purchased (path TBD in Asset pack status).
-- [ ] [asset-pack: Bio Horror / Sci-fi Environment] Infestation props for breach corridors — promote after purchase.
-- [ ] [asset-pack: Bionic structures] Cheap tendril/cocoon kitbash for corridor corruption — low-cost experiment if A10 primitives feel thin.
+- [x] [asset-pack: Alien Biomass Planet] Superseded — owner bought POLYGON Sci-Fi Horror instead; P0 covers residue swap.
+- [x] [asset-pack: Bio Horror / Sci-fi Environment] Superseded — P1 uses Synty Alien Wall/Pillar for breach infestation.
+- [x] [asset-pack: Bionic structures] Superseded — not needed while POLYGON growth/wall kitbash is in tree.
 - [ ] Empathy hazard / false vent voice — audio lure / sealed-duct log that pulls player off the factory floor mid-prep (`lore/BIBLE.md` open experiment; lore/2026-07-19 empathy motif). Needs fairness pass so it never soft-locks a wave; groom before Now.
 - [ ] Diegetic radio / PA VO through occluded speakers — muffled “crew” that isn’t there (`lore/BIBLE.md` open experiment). Needs VO policy + occlusion path; not queued while F* owns art budget.
 - [ ] Scanner ghost / solvent misread — brief false residue blip on scanner that may be stress/chemical, not combat spawn (lore/2026-07-20/stories.md Singular Infestation motif). Groom for uncertainty fairness.
@@ -880,6 +928,11 @@ Method: capture the Game view in Play mode, judge the frame, fix the single wors
 - [ ] Free lead: Abandoned Factory Lite (Asset Store) — safe mood greys for blockout; not gated, but not queued until visual Now is thin.
 
 ## Agent log (newest first — one line per session: date, task, result, commit)
+
+- 2026-07-21: asset-pack gate opened — POLYGON Sci-Fi Horror at `Assets/Synty/PolygonSciFiHorror/`.
+  Promoted P0–P2. Implemented P0: `SyntyHorrorLoader` + `BiomassEncroachment` v2 spawns Synty
+  Alien Growth / EggSack (pack-only, collider-free, wave-scaled). Shader Graph via Synty Package
+  Helper (not pinned in manifest). Unity MCP down — marked `[?]`. Wishlist updated. Commit: (this).
 
 - 2026-07-21: auto-dev L26 soft shift-quota pressure — `ResourceInventory.TotalEarned()` +
   `ShiftQuotaHud`: prep-time HUD chip `[SHIFT] SCRAP GOAL n/m`; goal = 35 + 12×wave + up to 25×heat;

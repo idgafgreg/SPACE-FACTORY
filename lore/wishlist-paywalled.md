@@ -6,7 +6,7 @@ Last updated: 2026-07-21 (noon supplement)
 
 | Priority | Item | Est. price | Link | Why it fits SPACE FACTORY | Notes |
 |----------|------|------------|------|---------------------------|-------|
-| High | POLYGON - Sci-Fi Horror Pack (Synty) | ~$149.99 | https://assetstore.unity.com/packages/3d/environments/sci-fi/polygon-sci-fi-horror-pack-art-by-synty-340952 | Modular ship interiors, infestation/growth props, horror sci-fi cast | Stylized POLYGON look — confirm art direction fit before buy |
+| High | POLYGON - Sci-Fi Horror Pack (Synty) | ~$149.99 | https://assetstore.unity.com/packages/3d/environments/sci-fi/polygon-sci-fi-horror-pack-art-by-synty-340952 | Modular ship interiors, infestation/growth props, horror sci-fi cast | **PURCHASED 2026-07-21** — path `Assets/Synty/PolygonSciFiHorror/` (+ `PolygonGeneric`). See BACKLOG Asset pack status. |
 | High | Modular Horror Kit: Industrial Edition | ~$23 | https://assetstore.unity.com/packages/3d/environments/industrial/modular-horror-kit-industrial-edition-342062 | Cheap industrial horror corridors, traps, creatures, URP | Good prototype kit; Dec 2025 release; URP — convert if still on Built-in |
 | High | Bionic structures | ~$9.90 | https://assetstore.unity.com/packages/3d/environments/bionic-structures-163649 | Low-cost organic outgrowths/cocoons for hive-on-metal kitbash | Added 2026-07-19; URP/HDRP shaders noted on store page |
 | High | Janky Audio | ~$20 | https://assetstore.unity.com/packages/tools/audio/janky-audio-288290 | Occlusion + non-spherical reverb for diegetic PA / vents / lonely decks | Added 2026-07-20; **Built-in compatible** (matches current project RP) |
