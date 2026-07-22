@@ -376,7 +376,7 @@ Conventions for this block:
   done-when: Play (FP) — deck holds detail at walking distance, walls have readable scale and
   seams, no mirror-sheen at grazing angles; Play (iso) — A5/A7 reads unchanged; console clean
 
-- [ ] F10. Machine identity at eye level
+- [?] F10. Machine identity at eye level — **needs in-editor verification (Unity MCP revoked)**
   Type: visual | Pillar: Factory pressure = identity
   Lore: Factorio silhouette lesson (A6) — but A6's silhouettes were authored top-down.
   Unity: **yes** — Play captures of each machine type at eye level and in greyscale.
@@ -388,6 +388,24 @@ Conventions for this block:
   so player-built and expansion machines get dressed.
   done-when: Play (FP) — each machine type identifiable from ~4 m at eye level in a greyscale
   capture, before reading any colour; Play (iso) — A6 silhouettes unchanged; console clean
+  **CODE DONE 2026-07-21 (auto-dev) — NOT yet Play-verified; Unity MCP was revoked this session so
+  the greyscale eye-level capture (the core done-when) and the iso-unchanged check could not run.**
+  Shipped: `MachineIdentityTint.BuildEyeLevelIdentity` adds, per silhouette kit, a distinctive
+  dark-steel housing in the walking-height band (KitMaterial — so shape carries the greyscale read):
+  DrillMast → angled front drill-head, TwinStacks → horizontal vessel band, CoilPole → ribbed
+  transformer cabinet, Barrel → low ammo drum beside the mount, CrossMast → flat aid-station locker
+  with a raised cross. Plus a **machine-height marker lamp** — a thin vertical HDR bar on the front
+  face in the same accent as the roof lamp (`LampMaterial`), so colour only confirms. All parts hang
+  under a new FP-only `EyeLevelId` group carrying `EyeLevelIdentityVisibility` (a self-scoped clone
+  of F6's `CeilingVisibility`): shown in FP, hidden in iso, so the top-down A6 silhouette is
+  byte-identical. Rides the existing 2 s rescan; deduped via `art.Find("EyeLevelId")` and the
+  existing `LampName` early-out. New file: `EyeLevelIdentityVisibility.cs` (needs a Unity import to
+  generate its `.meta`). Self-reviewed for syntax/API against the KitPart cylinder/cube size
+  conventions; no compile available. **Unity pass must:** confirm compile clean; FP greyscale
+  capture of each machine type at ~4 m reads distinct before colour; iso top-down unchanged; marker
+  bar reads as a lit LED (not blown out) under the F8 grade; expansion/player-built machines get
+  dressed on rescan. Single-face housings (front +Z) — if FP shows a plain box from the rear,
+  follow-up is to mirror the housing to the −Z face (cheap now that the layer is iso-hidden).
 
 - [ ] F11. Threat readability in FP
   Type: visual / systemic | Pillar: Industrial biomass / hive
@@ -817,6 +835,15 @@ Method: capture the Game view in Play mode, judge the frame, fix the single wors
 - [ ] Free lead: Abandoned Factory Lite (Asset Store) — safe mood greys for blockout; not gated, but not queued until visual Now is thin.
 
 ## Agent log (newest first — one line per session: date, task, result, commit)
+
+- 2026-07-21: **auto-dev F10 machine identity at eye level — CODE DONE, `[?]` needs in-editor
+  verification (Unity MCP revoked).** Extended `MachineIdentityTint` with `BuildEyeLevelIdentity`:
+  per-kit walking-height housing (drill-head / vessel band / transformer cabinet / ammo drum /
+  aid-station locker — dark steel, shape carries the greyscale read) + a machine-height marker lamp
+  (thin HDR accent bar, colour confirms only). New `EyeLevelIdentityVisibility.cs` (self-scoped
+  clone of F6's `CeilingVisibility`) hangs the layer under an FP-only `EyeLevelId` group so iso is
+  byte-identical. Rides the 2 s rescan; deduped. Could not compile or Play-capture — self-reviewed
+  only. Commit <hash>.
 
 - 2026-07-21: **auto-dev F8 per-mode grade/fog/ambient — DONE (tuned), unblocks F7.** The earlier
   partial's blocker was self-inflicted: verification aimed the camera at empty floor, so a metric

@@ -10,6 +10,12 @@ using UnityEngine;
 /// property blocks is unreliable (the _EMISSION keyword may be disabled on
 /// shared materials) and looks radioactive when strong enough to bloom.
 ///
+/// A6's roof silhouettes read top-down; F10 adds an eye-level identity layer
+/// (a per-type side housing + a machine-height marker lamp) so each class is
+/// still identifiable by shape at 1.65 m. That layer is FP-only and hidden in
+/// iso (see <see cref="EyeLevelIdentityVisibility"/>), so the top-down view is
+/// unchanged — shape still carries identity, colour still only confirms.
+///
 /// Rescans continuously: machines are also built mid-run by the player and
 /// by FactoryExpansion, so a one-shot pass would miss most of the factory.
 /// </summary>
@@ -106,7 +112,11 @@ public class MachineIdentityTint : MonoBehaviour
         }
 
         if (!hasBounds) return;
-        if (kit != Silhouette.None) BuildSilhouette(art, bounds, kit, body);
+        if (kit != Silhouette.None)
+        {
+            BuildSilhouette(art, bounds, kit, body);
+            BuildEyeLevelIdentity(art, bounds, kit, accent);
+        }
         if (!lamp) return;
 
         var chip = GameObject.CreatePrimitive(PrimitiveType.Cube);
@@ -232,6 +242,98 @@ public class MachineIdentityTint : MonoBehaviour
                 break;
             }
         }
+    }
+
+    /// <summary>F10: eye-level identity. A6's roof kit reads top-down but sits
+    /// above the 1.65 m sightline; here each type gets a distinctive housing in
+    /// the walking-height band (shape carries the greyscale read) plus a
+    /// machine-height marker lamp in the accent HDR colour (colour only confirms).
+    /// All of it hangs under an FP-only group so iso is byte-identical.</summary>
+    static void BuildEyeLevelIdentity(Transform art, Bounds b, Silhouette kit, Color accent)
+    {
+        if (art.Find("EyeLevelId") != null) return; // already dressed
+
+        var group = new GameObject("EyeLevelId");
+        group.transform.SetParent(art, worldPositionStays: false);
+        group.transform.localPosition = Vector3.zero;
+        group.transform.localRotation = Quaternion.identity;
+        group.transform.localScale = Vector3.one;   // lossyScale == art's, so KitPart compensates the same
+        Transform host = group.transform;
+
+        float front = b.max.z;                       // +Z is machine-forward (matches the Barrel kit)
+        float w = Mathf.Max(b.size.x, b.size.z);
+        Vector3 faceMid = new Vector3(b.center.x, b.min.y + b.size.y * 0.5f, front);
+
+        switch (kit)
+        {
+            case Silhouette.DrillMast:
+                // Angled drill-head housing jutting from the lower front — a
+                // digging head reads even when the roof mast is above the eye.
+                KitPart(host, PrimitiveType.Cube,
+                    new Vector3(b.center.x, b.min.y + b.size.y * 0.34f, front + 0.13f),
+                    new Vector3(w * 0.44f, b.size.y * 0.40f, 0.36f),
+                    Quaternion.Euler(24f, 0f, 0f));
+                break;
+            case Silhouette.TwinStacks:
+                // Horizontal vessel band across the front — round "reactor" read.
+                KitPart(host, PrimitiveType.Cylinder,
+                    faceMid + new Vector3(0f, 0f, 0.07f),
+                    new Vector3(0.30f, w * 0.50f, 0.30f),
+                    Quaternion.Euler(0f, 0f, 90f));
+                break;
+            case Silhouette.CoilPole:
+                // Ribbed transformer cabinet — boxy "power cabinet" read.
+                KitPart(host, PrimitiveType.Cube,
+                    faceMid + new Vector3(0f, 0f, 0.11f),
+                    new Vector3(w * 0.55f, b.size.y * 0.55f, 0.22f), Quaternion.identity);
+                KitPart(host, PrimitiveType.Cube,
+                    faceMid + new Vector3(0f, b.size.y * 0.16f, 0.21f),
+                    new Vector3(w * 0.50f, 0.05f, 0.06f), Quaternion.identity);
+                KitPart(host, PrimitiveType.Cube,
+                    faceMid + new Vector3(0f, -b.size.y * 0.06f, 0.21f),
+                    new Vector3(w * 0.50f, 0.05f, 0.06f), Quaternion.identity);
+                break;
+            case Silhouette.Barrel:
+                // Low ammo drum by the mount — pairs with the roof barrel so the
+                // "gun" still reads when the barrel clears the sightline.
+                KitPart(host, PrimitiveType.Cylinder,
+                    new Vector3(b.center.x + w * 0.30f, b.min.y + b.size.y * 0.40f, b.center.z),
+                    new Vector3(0.28f, b.size.y * 0.32f, 0.28f), Quaternion.identity);
+                break;
+            case Silhouette.CrossMast:
+                // Flat wall cabinet with a raised cross plate — aid-station locker.
+                KitPart(host, PrimitiveType.Cube,
+                    faceMid + new Vector3(0f, 0f, 0.09f),
+                    new Vector3(w * 0.50f, b.size.y * 0.50f, 0.16f), Quaternion.identity);
+                KitPart(host, PrimitiveType.Cube,
+                    faceMid + new Vector3(0f, 0f, 0.19f),
+                    new Vector3(w * 0.30f, 0.08f, 0.05f), Quaternion.identity);
+                KitPart(host, PrimitiveType.Cube,
+                    faceMid + new Vector3(0f, 0f, 0.19f),
+                    new Vector3(0.08f, b.size.y * 0.30f, 0.05f), Quaternion.identity);
+                break;
+        }
+
+        // Machine-height marker lamp on the front face — same HDR material as the
+        // roof lamp, dropped into the eye band so colour confirms the shape read.
+        var mark = GameObject.CreatePrimitive(PrimitiveType.Cube);
+        mark.name = "IdentityMarker";
+        Object.Destroy(mark.GetComponent<Collider>());
+        mark.transform.SetParent(host, worldPositionStays: true);
+        float markY = b.min.y + Mathf.Clamp(b.size.y * 0.62f, 0.40f, 1.45f);
+        mark.transform.position = new Vector3(b.center.x, markY, front + 0.07f);
+        mark.transform.rotation = Quaternion.identity;
+        Vector3 ls = host.lossyScale;
+        mark.transform.localScale = new Vector3(
+            0.09f / Mathf.Max(ls.x, 0.01f),
+            Mathf.Clamp(b.size.y * 0.30f, 0.18f, 0.5f) / Mathf.Max(ls.y, 0.01f),
+            0.05f / Mathf.Max(ls.z, 0.01f));
+        mark.GetComponent<Renderer>().sharedMaterial = LampMaterial(accent);
+
+        // FP-only: hide the whole group in iso so the top-down silhouette is unchanged.
+        var vis = group.AddComponent<EyeLevelIdentityVisibility>();
+        vis.Rescan();
+        vis.Apply();
     }
 
     static Material LampMaterial(Color accent)
