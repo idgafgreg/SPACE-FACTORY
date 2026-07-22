@@ -293,12 +293,32 @@ Without it, mats may pink; runtime falls back to Standard albedo when Error.
   ("All compiler errors have to be fixed before you can enter playmode!") while RunCommand probes
   kept compiling against the last-good assembly and masked it. Replaced with a position hash.
 
-- [ ] P5. Floor panel overlays at hub + lane edges
+- [x] P5. Floor panel overlays at hub + lane edges — DONE 2026-07-22 (Play-verified)
   Tag: `[asset-pack: POLYGON Sci-Fi Horror]`
   Unity: yes — hub approach iso+FP
   Change: sparse `SM_Prop_Floor_Panel_*` / `SM_Bld_Trim_Curve_Floor_*` overlays; keep procedural
   deck mat + FloorZoning ticks (pack has no full floor kit).
   done-when: hub/approaches read kit floor without blanketing Ground; pathing clear
+  **DONE 2026-07-22 (auto-dev, Play-verified).** New `SyntyFloorDressing` (child root
+  `SyntyFloorRoot`, wired in `SectorRuntimeBootstrap` after the hull dresser) lays 2x2 patches of
+  `SM_Prop_Floor_Panel_01/02` at the hub apron and along lane edges. Uses **native scale** (C1: never
+  height-fit a pack piece) and grounds every plate through `FindDeckY` (F9: lanes are authored at
+  y≈0.5 while the deck renders at y≈0). Plates are collider-free and each tile is individually
+  clearance-checked, so a patch near a walkway loses its inner tiles instead of intruding — 29 placed,
+  31 rejected. Skipped `SM_Bld_Trim_Curve_Floor_01` deliberately: it is a 4.70 m quarter-curve, and
+  large pack pieces on the deck are exactly what C1/C6 had to clean up.
+  **The verification is the interesting part.** First build placed the hub apron at radius 7.0 and
+  the plates were *invisible*: an A/B render toggling all 40 plate renderers changed **0.43%** of
+  pixels with 14 of them inside the frustum. They were not broken — right shader
+  (`Synty/Generic_Standard`, no pink fallback), flat (thickness 0.040), on top (nothing above them),
+  correctly grounded. They were simply dark plating on a dark deck in an *unlit* spot. Same lesson
+  F7/F8 landed on: light is the lever. Moving the apron inside the hub light pool (radius 7.0 → 5.2)
+  took the same A/B to **2.87%** and the plates now read as grated deck panels in frame.
+  Verified: `plates=29 maxPlateSize=1.42 worstDeckGap=0.020 nearestLane=2.90 colliders=0`; hub iso +
+  FP captures show the teal FloorZoning, hazard stripes and hub ring all still fully legible (no
+  blanketing, ~0.6% of deck area). Console clean.
+  Also extended C5's `PLACEMENT` gate to police `SyntyFloorRoot` (lane distance + deck flushness), so
+  the newest deck geometry is not a blind spot: `platesInLane=0/29 nearest=2.90 worstGap=0.02`.
 
 - [ ] P6. Gate mouths — doors / airlocks
   Tag: `[asset-pack: POLYGON Sci-Fi Horror]`
@@ -1248,6 +1268,15 @@ Method: capture the Game view in Play mode, judge the frame, fix the single wors
 - [ ] Free lead: Abandoned Factory Lite (Asset Store) — safe mood greys for blockout; not gated, but not queued until visual Now is thin.
 
 ## Agent log (newest first — one line per session: date, task, result, commit)
+
+- 2026-07-22: **auto-dev P5 Synty floor plates — DONE (Play-verified).** New `SyntyFloorDressing`
+  lays 2x2 patches of `SM_Prop_Floor_Panel_01/02` at the hub apron + lane edges; native scale (C1),
+  `FindDeckY` grounding (F9), collider-free, per-tile lane clearance (29 placed / 31 rejected).
+  First build was *invisible* — an A/B toggling all plates moved only **0.43%** of pixels despite 14
+  in frustum; they were unlit dark plating on a dark deck, not broken. Moving the apron into the hub
+  light pool (r 7.0→5.2) took it to **2.87%** and they now read as grated deck panels, with the teal
+  zone / hazard stripes / hub ring still fully legible. Extended C5's PLACEMENT gate to police the
+  new floor root too. Console clean. Commit <hash>.
 
 - 2026-07-22: **auto-dev C5 placement regression gate — DONE, mutation-tested.** New `PLACEMENT`
   scenario in `PlaytestScenarios` (standalone + folded into `RunFullSuite` before the destructive

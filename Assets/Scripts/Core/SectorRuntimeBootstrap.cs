@@ -69,6 +69,8 @@ public static class SectorRuntimeBootstrap
         go.AddComponent<ShipInteriorUpgrade>();
         // P3: Synty wall skins after interior upgrade (caps build on cube renderers first).
         go.AddComponent<SyntyHullDressing>();
+        // P5: sparse deck plates; needs the deck to exist so it can ground on it.
+        go.AddComponent<SyntyFloorDressing>();
         go.AddComponent<WallSeamSealer>();
         go.AddComponent<WallJunctionPlates>();
         go.AddComponent<MapEdgeGuard>();

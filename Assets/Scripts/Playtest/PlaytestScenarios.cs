@@ -758,6 +758,31 @@ public partial class PlaytestHarness
             $"bioInLane={bioInLane}/{bio} nearest={(bio > 0 ? nearest.ToString("F2") : "n/a")} " +
             $"required>={MinBiomassLaneDistance:F2}");
 
+        // P5 deck plates are the newest thing that can land in a walkway or float,
+        // so they get policed by the same gate rather than trusted.
+        var floorRoot = GameObject.Find("SyntyFloorRoot");
+        int plates = 0, platesInLane = 0;
+        float platesWorstGap = 0f, platesNearest = float.MaxValue, platesMaxSize = 0f;
+        if (floorRoot != null && layout != null)
+        {
+            foreach (Transform t in floorRoot.transform)
+            {
+                if (!TryWorldBounds(t, out var b)) continue;
+                plates++;
+                platesMaxSize = Mathf.Max(platesMaxSize, Mathf.Max(b.size.x, b.size.z));
+                platesWorstGap = Mathf.Max(platesWorstGap, Mathf.Abs(b.min.y - DeckY));
+                float d = DistanceToNearestLane(b.center, layout);
+                if (d < platesNearest) platesNearest = d;
+                if (d < MinBiomassLaneDistance) platesInLane++;
+            }
+        }
+
+        Assert("no deck plate in a lane", platesInLane == 0, sb, pass,
+            $"platesInLane={platesInLane}/{plates} " +
+            $"nearest={(plates > 0 ? platesNearest.ToString("F2") : "n/a")}");
+        Assert("deck plates lie flat on the deck", platesWorstGap <= MaxDeckGap, sb, pass,
+            $"worstGap={platesWorstGap:F2} maxPlateSize={platesMaxSize:F2} allowed<={MaxDeckGap:F2}");
+
         var names = new string[Vantages.Length];
         for (int i = 0; i < Vantages.Length; i++) names[i] = Vantages[i].name;
         sb.AppendLine($"  named vantages available: {string.Join(", ", names)}");

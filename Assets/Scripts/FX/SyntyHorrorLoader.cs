@@ -101,6 +101,17 @@ public static class SyntyHorrorLoader
         BldRoot + "SM_Bld_Light_Ceiling_02.prefab",
     };
 
+    /// <summary>
+    /// P5 — flat 1.42 m deck plates for sparse floor overlays.
+    /// Deliberately NOT `SM_Bld_Trim_Curve_Floor_01`: it is a 4.70 m quarter-curve,
+    /// and big pack pieces on the deck are exactly what C1/C6 had to clean up.
+    /// </summary>
+    public static readonly string[] FloorPlatePrefabPaths =
+    {
+        PropRoot + "SM_Prop_Floor_Panel_01.prefab",
+        PropRoot + "SM_Prop_Floor_Panel_02.prefab",
+    };
+
     static GameObject[] _growth;
     static GameObject[] _eggs;
     static GameObject[] _walls;
@@ -109,6 +120,7 @@ public static class SyntyHorrorLoader
     static GameObject[] _alcovePanels;
     static GameObject[] _exteriorPanels;
     static GameObject[] _ceilingLights;
+    static GameObject[] _floorPlates;
     static bool _loggedMissing;
 
     /// <summary>Drop cached prefab arrays (call after changing path lists in editor).</summary>
@@ -117,6 +129,7 @@ public static class SyntyHorrorLoader
         _growth = _eggs = _walls = _pillars = null;
         _corrPanels = _alcovePanels = _exteriorPanels = null;
         _ceilingLights = null;
+        _floorPlates = null;
         _loggedMissing = false;
     }
 
@@ -128,6 +141,7 @@ public static class SyntyHorrorLoader
     public static GameObject[] HullAlcovePanels => _alcovePanels ??= LoadAll(HullAlcovePanelPaths);
     public static GameObject[] HullExteriorPanels => _exteriorPanels ??= LoadAll(HullExteriorPanelPaths);
     public static GameObject[] CeilingLightPrefabs => _ceilingLights ??= LoadAll(CeilingLightPrefabPaths);
+    public static GameObject[] FloorPlatePrefabs => _floorPlates ??= LoadAll(FloorPlatePrefabPaths);
 
     /// <summary>P2 — lonely shift-nest workplace props (no alien growth).</summary>
     public static GameObject LoadProp(string prefabFileName)
