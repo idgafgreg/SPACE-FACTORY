@@ -58,8 +58,10 @@ public class BiomassEncroachment : MonoBehaviour
         if (WaveController.Instance != null)
             WaveController.Instance.onWaveCleared.AddListener(OnWaveCleared);
 
+        // Seed a visible foothold in prep (WavesCleared==0) so the pack reads
+        // immediately — density still scales up on each clear.
         int cleared = WaveController.Instance != null ? WaveController.Instance.WavesCleared : 0;
-        if (cleared > 0) Dress(cleared);
+        Dress(Mathf.Max(1, cleared));
     }
 
     void OnDestroy()

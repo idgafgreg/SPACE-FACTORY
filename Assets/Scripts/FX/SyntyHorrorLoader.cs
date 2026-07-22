@@ -63,16 +63,54 @@ public static class SyntyHorrorLoader
         BldRoot + "SM_Bld_Alien_Pillar_03.prefab",
     };
 
+    /// <summary>P3 — corridor / ring wall skins (Synty modular wall kit).</summary>
+    public static readonly string[] HullCorridorPanelPaths =
+    {
+        BldRoot + "SM_Bld_Wall_Trim_01.prefab",
+        BldRoot + "SM_Bld_Wall_Trim_02.prefab",
+        BldRoot + "SM_Bld_Wall_Trim_03.prefab",
+        BldRoot + "SM_Bld_Wall_Trim_04.prefab",
+        BldRoot + "SM_Bld_Wall_Trim_05.prefab",
+        BldRoot + "SM_Bld_Wall_Trim_Large_01.prefab",
+        BldRoot + "SM_Bld_Wall_Trim_Large_02.prefab",
+    };
+
+    public static readonly string[] HullAlcovePanelPaths =
+    {
+        BldRoot + "SM_Bld_Wall_Alcove_01.prefab",
+        BldRoot + "SM_Bld_Wall_Alcove_02.prefab",
+        BldRoot + "SM_Bld_Wall_Alcove_03.prefab",
+        BldRoot + "SM_Bld_Wall_Alcove_04.prefab",
+        BldRoot + "SM_Bld_Wall_Window_01.prefab",
+        BldRoot + "SM_Bld_Wall_Window_02.prefab",
+    };
+
+    public static readonly string[] HullExteriorPanelPaths =
+    {
+        BldRoot + "SM_Bld_Wall_Reactor_01.prefab",
+        BldRoot + "SM_Bld_Wall_Reactor_02.prefab",
+        BldRoot + "SM_Bld_Wall_Trim_Large_01.prefab",
+        BldRoot + "SM_Bld_Wall_Trim_Large_02.prefab",
+        BldRoot + "SM_Bld_Wall_Trim_01.prefab",
+        BldRoot + "SM_Bld_Wall_Trim_03.prefab",
+    };
+
     static GameObject[] _growth;
     static GameObject[] _eggs;
     static GameObject[] _walls;
     static GameObject[] _pillars;
+    static GameObject[] _corrPanels;
+    static GameObject[] _alcovePanels;
+    static GameObject[] _exteriorPanels;
     static bool _loggedMissing;
 
     public static GameObject[] AlienGrowthPrefabs => _growth ??= LoadAll(AlienGrowthPrefabPaths);
     public static GameObject[] EggSackPrefabs => _eggs ??= LoadAll(EggSackPrefabPaths);
     public static GameObject[] AlienWallPrefabs => _walls ??= LoadAll(AlienWallPrefabPaths);
     public static GameObject[] AlienPillarPrefabs => _pillars ??= LoadAll(AlienPillarPrefabPaths);
+    public static GameObject[] HullCorridorPanels => _corrPanels ??= LoadAll(HullCorridorPanelPaths);
+    public static GameObject[] HullAlcovePanels => _alcovePanels ??= LoadAll(HullAlcovePanelPaths);
+    public static GameObject[] HullExteriorPanels => _exteriorPanels ??= LoadAll(HullExteriorPanelPaths);
 
     /// <summary>P2 — lonely shift-nest workplace props (no alien growth).</summary>
     public static GameObject LoadProp(string prefabFileName)

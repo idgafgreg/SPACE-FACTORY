@@ -43,8 +43,10 @@ public class BreachInfestationDressing : MonoBehaviour
         if (WaveController.Instance != null)
             WaveController.Instance.onWaveCleared.AddListener(OnWaveCleared);
 
+        // Seed colonization on first load so breach approaches aren't bare cubes
+        // until the player clears a wave. Still scales with further clears.
         int cleared = WaveController.Instance != null ? WaveController.Instance.WavesCleared : 0;
-        if (cleared > 0) Dress(cleared);
+        Dress(Mathf.Max(1, cleared));
     }
 
     void OnDestroy()

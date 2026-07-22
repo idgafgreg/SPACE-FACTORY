@@ -25,7 +25,8 @@ Rules for tasks in this file:
 - Unity path: `Assets/Synty/PolygonSciFiHorror/` (shared shaders/materials also under `Assets/Synty/PolygonGeneric/`)
 - Enablement: open the project and accept **Synty → Package Helper → Install Packages** (`com.unity.shadergraph`) so pack materials compile on Built-in. Until then, runtime code falls back to Standard when a mat is Error/pink.
 - Rule: new art from this pack only for tagged `[asset-pack: POLYGON Sci-Fi Horror]` tasks — do not mix Kenney/Quaternius into those swaps.
-- When purchased: set Status to `purchased`, note Unity path, then promote `[asset-pack]` Ice box items (done for P0 below).
+- Conversion track: **P0-P15** under Now (full ship reskin). Active priority until ship reads Synty in Play.
+- When purchased: set Status to `purchased`, note Unity path, then promote `[asset-pack]` Ice box items (done).
 
 ## Needs human decision
 
@@ -99,64 +100,139 @@ Conventions for this block:
   MCP: implement, self-review the diff for syntax/API errors, then mark `[?] needs Unity pass —
   <what>` instead of `[x]`. `/unity-pass` sweeps those later. See `AGENTS.md`.
 - Never regress iso. Any per-mode value goes behind `ViewMode`, not a replacement of the iso value.
-- Asset pack **purchased** (POLYGON Sci-Fi Horror). F* may use it when a task says so; otherwise
-  keep Kenney/primitives. Pack-only swaps live in the **Asset pack** block below F14.
+- Asset pack **purchased** (POLYGON Sci-Fi Horror). Owner 2026-07-21: full conversion track
+  **P3-P15 jumps F11-F14** until the ship reads Synty. Pack-only for tagged tasks.
 
 ---
 
-### Asset pack — POLYGON Sci-Fi Horror (purchased 2026-07-21)
+### Asset pack — POLYGON Sci-Fi Horror FULL CONVERSION (purchased 2026-07-21)
 
-Human asked to start implementation from this pack. Pack tasks may jump the F* queue when the
-owner requests pack work; otherwise F11–F14 stay top priority.
+**Owner ask 2026-07-21 evening:** use the pack throughout — make the ship look lively. P0-P2 alone
+could not change the look because the hull was still gray cubes and growth only appeared after a
+wave clear. This block is now the **active art conversion track** and may jump F11-F14 until the
+ship reads as Synty in Play (iso + FP). Pack assets only for tagged tasks; leave authored wall
+**colliders** authoritative; put meshes on dedicated child roots (never hide/reparent SectorRuntime).
+
+**Enablement (do once in Unity):** Synty → Package Helper → Install Packages (`com.unity.shadergraph`).
+Without it, mats may pink; runtime falls back to Standard albedo when Error.
+
+**Why earlier work looked like "nothing":** (1) hull still procedural cubes; (2) P0/P1 gated on
+`WavesCleared > 0` (now seeded at prep); (3) P2 only swaps the hub nest corner — corridors stayed Kenney.
+
+#### Phase A — structure (biggest bang)
 
 - [?] P0. Replace A10 primitive biomass with Synty Alien Growth
-  Type: visual | Pillar: Industrial biomass / hive
-  Tag: `[asset-pack: POLYGON Sci-Fi Horror]`
-  Lore: `lore/BIBLE.md` hive ladder (infect → specialize); A10 encroachment lineage
-  Unity: **yes** — accept Synty Shader Graph install if prompted; Play after wave clears; FP+iso
-  frames of VentBreach / EastFlank wall growth (not pink mats); confirm colliders stripped (lanes walkable).
-  Change: `BiomassEncroachment` no longer spawns capsule primitives. Load only
-  `SM_Env_Alien_Growth_*` / `SM_Env_EggSack_*` from `Assets/Synty/PolygonSciFiHorror/Prefabs/Environment/`
-  via `SyntyHorrorLoader` (Editor AssetDatabase; optional `Resources/SyntyHorror/` mirrors for builds).
-  Keep wave-scaled spread, wall-biased anchors, collider-free instances, deck snap + size fit.
-  Egg sacks mix in from cleared wave ≥3 (~25%). Bump dress version so old primitive roots rebuild.
-  done-when: Play — after ≥1 clear, breach corridors show Synty growth (not green capsules); mats
-  readable (Shader Graph or intentional Standard fallback); pathing clear; iso+FP both fine; console clean
-  **CODE DONE 2026-07-21 — `[?] needs Unity pass.** `SyntyHorrorLoader.cs` + `BiomassEncroachment`
-  v2. Unity MCP pipe was down this session (no compile / Play / frame capture). **Unity pass must:**
-  (1) Install Shader Graph via Synty Package Helper if not already; (2) compile clean; (3) Play,
-  clear a wave or `DebugForceDress(3)`, capture VentBreach wall growth — Synty meshes, not capsules;
-  (4) walk the lane (no blocker colliders); (5) confirm no pink Error mats (or document Standard fallback).
+  Tag: `[asset-pack: POLYGON Sci-Fi Horror]` | Unity: yes — VentBreach after load + after clears
+  **CODE DONE** — seeded foothold at prep (`Dress(Max(1,cleared))`). Unity pass still needed.
 
-- [?] P1. Breach-corridor infestation dressing (Synty Alien Wall / Pillar kitbash)
-  Type: visual | Pillar: Industrial biomass / hive
-  Tag: `[asset-pack: POLYGON Sci-Fi Horror]`
-  Unity: **yes** — Play FP walk of VentBreach after wave 2+.
-  Change: sparse runtime kitbash of `SM_Bld_Alien_Wall_*` / `SM_Bld_Alien_Pillar_*` on breach-lane
-  wall faces only (not hub). Colliders stripped; scale with `WavesCleared`. Pack assets only.
-  done-when: Play — breach approach reads colonized without blocking lanes; hub stays clean metal; console clean
-  **CODE DONE 2026-07-21 — `[?] needs Unity pass.** `BreachInfestationDressing` + loader wall/pillar
-  paths + bootstrap wire. Child root `BreachInfestationRoot` (not SectorRuntime). Raycasts from
-  VentBreach/EastFlank toward authored walls; skips hub (inside 6.5 m) and spawn/hub mouth waypoints;
-  lane-clearance reject; density = 3 + 2×clears (cap 14/lane); ~28% pillars. Pack-only. Unity MCP
-  down — **Unity pass must:** compile; Play + clear ≥2 waves (or `DebugForceDress(3)`); FP walk
-  VentBreach — Synty wall/pillar on corridor faces, lane walkable, hub clean; no pink mats if
-  Shader Graph installed.
+- [?] P1. Breach-corridor Alien Wall / Pillar kitbash
+  Tag: `[asset-pack: POLYGON Sci-Fi Horror]` | Unity: yes — FP VentBreach
+  **CODE DONE** — seeded at prep. Unity pass still needed.
 
-- [?] P2. Lonely shift-nest props from Synty (replace Kenney hub nest)
-  Type: visual | Pillar: Lonely worker fantasy
+- [?] P2. Lonely shift-nest props from Synty
+  Tag: `[asset-pack: POLYGON Sci-Fi Horror]` | Unity: yes — hub nest iso+FP
+  **CODE DONE** — nest v13. Unity pass still needed.
+
+- [?] P3. Hull wall panels — Synty modular walls (BIGGEST BANG)
+  Type: visual | Pillar: Workplace as trap / Diegetic dread
   Tag: `[asset-pack: POLYGON Sci-Fi Horror]`
-  Unity: **yes** — iso+FP nest readability.
-  Change: `PlaceholderPropDressing` hub nest swaps Kenney desk/chair/mug/crate for Synty horror
-  workplace props (rations, trays, generators, greebles — cherry-pick, no alien growth in the nest).
-  Pack assets only for the nest swap; leave corridor Kenney until a follow-up.
-  done-when: Play — hub nest reads lived-in Synty, not bright Kenney white; pathing clear; console clean
-  **CODE DONE 2026-07-21 — `[?] needs Unity pass.** Hub nest v13: Synty desk/chair/locker/monitor/
-  keyboard/cup/tray/ration/clipboard/lamp + crate/barrel/power-cell/greeble + poster + spilled
-  crates/ration. `SyntyHorrorLoader.LoadProp` + `SpawnSynty`/`FitSyntyNestProp`. Warm nest lamp kept.
-  Corridor/workshop/bay still Kenney. No growth in nest. Unity MCP down — **Unity pass must:**
-  compile; Play iso+FP at hub nest — Synty meshes (not white Kenney), pathing clear, no pink mats
-  if Shader Graph installed; confirm no Alien Growth under nest.
+  Unity: **yes** — Play iso + FP; walls must not be gray cubes; pathing unchanged.
+  Change: revive hull skinning with `SM_Bld_Wall_Trim_*` / `Alcove_*` / `Window_*` / `Reactor_*`
+  via new `SyntyHullDressing` (child `SyntyHullRoot`). Hide cube MeshRenderers only; keep colliders.
+  Mix alcoves/windows every ~5th corridor panel for life. Wire after `ShipInteriorUpgrade`.
+  done-when: Play — Corr_/Hull_/Ring_ read as Synty panels immediately on load; lanes/build ok; console clean
+  **CODE DONE 2026-07-21 — `[?] needs Unity pass.** `SyntyHullDressing` + loader panel paths +
+  bootstrap. **Unity pass must:** Shader Graph; Play — walls are Synty not cubes; walk/build;
+  console shows `[SyntyHullDressing] v1 skinned N panels`; no pink mats (or document fallback).
+
+- [ ] P4. Ceiling light fixtures — Synty housings
+  Tag: `[asset-pack: POLYGON Sci-Fi Horror]`
+  Unity: yes — FP look-up + iso lamp pools
+  Change: replace F7 cube lamp housings with `SM_Bld_Light_Ceiling_*` / `SM_Prop_Light_Grid_*`;
+  keep point-light values + dead-lamp / HorrorClock logic.
+  done-when: FP ceiling shows Synty fixtures; lighting pools still work; console clean
+
+- [ ] P5. Floor panel overlays at hub + lane edges
+  Tag: `[asset-pack: POLYGON Sci-Fi Horror]`
+  Unity: yes — hub approach iso+FP
+  Change: sparse `SM_Prop_Floor_Panel_*` / `SM_Bld_Trim_Curve_Floor_*` overlays; keep procedural
+  deck mat + FloorZoning ticks (pack has no full floor kit).
+  done-when: hub/approaches read kit floor without blanketing Ground; pathing clear
+
+- [ ] P6. Gate mouths — doors / airlocks
+  Tag: `[asset-pack: POLYGON Sci-Fi Horror]`
+  Unity: yes — each lane spawn mouth
+  Change: visual-only `SM_Bld_Door_*` / `SM_Bld_Airlock_01` at lane starts; colliders stripped;
+  do not block pathing.
+  done-when: every gate mouth has a door read; enemies/player still path; console clean
+
+#### Phase B — lived-in clutter
+
+- [ ] P7. Corridor + workshop + bay props — Kenney to Synty
+  Tag: `[asset-pack: POLYGON Sci-Fi Horror]`
+  Unity: yes — walk all lanes
+  Change: `PlaceholderPropDressing` corridors/workshop/bay use `SM_Prop_Crate_/Barrel_/Locker_/
+  Vent_/Greeble_/Pipe_*` only (finish P2 follow-up). Bump PropDressVersion.
+  done-when: no bright Kenney white clutter on decks; pathing clear; nest still Synty
+
+- [ ] P8. Overhead pipes — Synty pipe kit
+  Tag: `[asset-pack: POLYGON Sci-Fi Horror]`
+  Unity: yes — FP look-up in corridors
+  Change: `ShipInteriorUpgrade` overhead pipes load `SM_Prop_Pipe_*` instead of Kenney
+  `pipe_straight`; collider-free; no wall spears.
+  done-when: FP ducts are Synty; console clean
+
+- [ ] P9. Dense lived-in dressing pass (posters, signs, lockers, food)
+  Tag: `[asset-pack: POLYGON Sci-Fi Horror]`
+  Unity: yes — hub + WestCorridor + VentBreach
+  Change: extra sparse clusters of posters/signs/lockers/rations/trays along non-lane wall lips;
+  scale lightly with WavesCleared so the ship fills as the run progresses (Deck lock — fill by
+  growth, not shrink). No alien growth in hub.
+  done-when: ship feels occupied/abandoned-workplace, not empty box; lanes clear
+
+#### Phase C — gameplay actors
+
+- [ ] P10. Machine + defense ArtPlaceholder → Synty
+  Tag: `[asset-pack: POLYGON Sci-Fi Horror]`
+  Unity: yes — each machine/defense type iso+FP
+  Change: `RuntimeArtBackfill` remaps drills/processors/belts/turrets/barriers to Synty
+  generators/consoles/kiosks/weapon racks; keep MachineIdentityTint / silhouette rules.
+  done-when: no Kenney machine blobs; identity still readable; placement ok
+
+- [ ] P11. Hub + Workshop landmark meshes
+  Tag: `[asset-pack: POLYGON Sci-Fi Horror]`
+  Unity: yes — CommandHub + Workshop
+  Change: replace hub fortified blob / workshop computer with Synty console/kiosk/cockpit-scale
+  pieces (`SM_Bld_Cockpit_01`, kiosks, consoles).
+  done-when: landmarks read horror-industrial; nest still readable beside hub
+
+- [ ] P12. Player character → Synty suit
+  Tag: `[asset-pack: POLYGON Sci-Fi Horror]`
+  Unity: yes — iso body + FP no self-clip
+  Change: `PlayerArtAttach` uses `SM_Chr_Space_Suit_*` or `SM_Chr_Mining_Suit_01`; keep FP hide.
+  done-when: iso shows Synty suit; FP clean; fitter heights ok
+
+- [ ] P13. Enemy meshes → Synty alien / zub
+  Tag: `[asset-pack: POLYGON Sci-Fi Horror]`
+  Unity: yes — combat readability + EnemyArtPulse
+  Change: `RuntimeArtBackfill.PickEnemyModel` → `SM_Chr_Alien_*` / `SM_Chr_Zub_*` (+ attach heads);
+  keep threat pulse/glow.
+  done-when: enemies are Synty silhouettes; pulse still reads in dark
+
+#### Phase D — polish + ship
+
+- [ ] P14. Build Resources mirrors + Shader Graph verify
+  Tag: `[asset-pack: POLYGON Sci-Fi Horror]`
+  Unity: yes — Editor Play AND a player build smoke
+  Change: editor tool copies used prefabs into `Resources/SyntyHorror/{Environment,Props,Buildings}/`
+  so builds match Editor; confirm Package Helper Shader Graph; document in Asset pack status.
+  done-when: standalone build loads same Synty dress; no pink Error mats; console clean
+
+- [ ] P15. Optional FX — steam/sparks/fog accents (pack FX only)
+  Tag: `[asset-pack: POLYGON Sci-Fi Horror]`
+  Unity: yes — sparse diegetic, not spam
+  Change: place `Prefabs/FX` steam/sparks near generators/breach; gate on heat/menace; soft director.
+  done-when: occasional FX sells life without arcade clutter; console clean
 
 ---
 
@@ -941,6 +1017,11 @@ Method: capture the Game view in Play mode, judge the frame, fix the single wors
 - [ ] Free lead: Abandoned Factory Lite (Asset Store) — safe mood greys for blockout; not gated, but not queued until visual Now is thin.
 
 ## Agent log (newest first — one line per session: date, task, result, commit)
+
+- 2026-07-21: asset-pack FULL CONVERSION track P3-P15 queued (owner: use pack everywhere).
+  Implemented P3 `SyntyHullDressing` (Synty Wall_Trim/Alcove/Window/Reactor skins on
+  Hull_/Corr_/Ring_); seeded P0/P1 foothold at prep so growth shows without clearing a wave.
+  Why "nothing changed" before: hull still cubes + growth gated on WavesCleared. Commit: TBD.
 
 - 2026-07-21: asset-pack P2 Synty shift-nest — `PlaceholderPropDressing` v13 hub nest uses pack-only
   desk/chair/locker/monitor/rations/tray/crates/barrel/greeble/poster via `LoadProp`/`SpawnSynty`;

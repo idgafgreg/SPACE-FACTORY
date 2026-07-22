@@ -67,6 +67,8 @@ public static class SectorRuntimeBootstrap
         go.AddComponent<MachineWorkingFX>();
         go.AddComponent<ConveyorFlowFX>();
         go.AddComponent<ShipInteriorUpgrade>();
+        // P3: Synty wall skins after interior upgrade (caps build on cube renderers first).
+        go.AddComponent<SyntyHullDressing>();
         go.AddComponent<WallSeamSealer>();
         go.AddComponent<WallJunctionPlates>();
         go.AddComponent<MapEdgeGuard>();
