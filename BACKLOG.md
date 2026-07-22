@@ -1258,7 +1258,7 @@ Method: capture the Game view in Play mode, judge the frame, fix the single wors
   exists to catch → `giants=1 maxWidth=28.62`, `worstDeckGap=0.50`, `bioInLane=1/3 nearest=0.01`,
   then reverted to PASS. Also ships `PlaytestHarness.Vantages` (hub/west/vent), closing the Ice box
   named-vantages item. Full suite **7/7 PASS**, report `Playtest_Agent_2026-07-22_124613.md`.
-  Console clean. Commit <hash>.
+  Console clean. Commit 7d6a080.
 
 - 2026-07-22: **auto-dev QA1 FP cursor-lock watch — DONE; it was a harness bug, not an FP regression.**
   Re-ran the suite with the Unity window foregrounded + Game view focused (`Application.isFocused=True`)
