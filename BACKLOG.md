@@ -500,12 +500,12 @@ Code reality: L15–L24 shipped (L23 Play-verified); L25–L30 still open; bioma
   hot 1.00 → 0.70, 14/20; W1 0/20 at both heat extremes; monotonic idle ≤ mid ≤ hot. Console clean.
 - [x] L24. Contaminated slurry beat on infected processors — DONE 2026-07-20.
 
-- [ ] L25. Diegetic sector wayfinding plaques
+- [x] L25. Diegetic sector wayfinding plaques
   Type: diegetic | Pillar: Diegetic dread
   Lore: `lore/BIBLE.md` diegetic grammar + motifs (sector tags); Milham wayfinding (lore/2026-07-20/summary.md #1)
   Unity: **yes** — readable from iso camera; still useful later in FP (F12 cousin, do not block on F*).
   Change: runtime world plaques (primitives + TextMesh or world-anchored labels) at Hub, WestCorridor approach, VentBreach approach, EastFlank approach — terse tags e.g. `[SECTOR] HUB` / `WEST BAY` / `VENT APPROACH` / `EAST FLANK`. Steel/amber palette; no new screen HUD chrome. Wire via bootstrap; Sector_Layout note.
-  done-when: Play — all four tags readable near those zones in iso; no extra canvas clutter; console clean
+  done-when: Play — all four tags readable near those zones in iso; no extra canvas clutter; console clean. DONE 2026-07-21 (SectorPlaques.cs + SectorRuntimeBootstrap): spawns 1.6×0.55m steel plaques with amber emissive edge strips and TextMesh labels at hub + each lane approach; bootstrapped at runtime. Syntax verified with ad-hoc Roslyn parser; in-editor Play-mode readability check still needed.
 
 - [ ] L26. Soft shift-quota pressure during Prep
   Type: diegetic / systemic | Pillar: Lonely worker fantasy / Factory pressure = identity
@@ -853,7 +853,13 @@ Method: capture the Game view in Play mode, judge the frame, fix the single wors
 
 ## Agent log (newest first — one line per session: date, task, result, commit)
 
-- 2026-07-21: lore-gap — bible current (Deck lock absorbed). Kept F11–F14 top; refreshed L25–L30; added L32 progress far-deck dressing, L33 distant scrap/salvage lure, L34 uninhabited-deck wrongness ease (fill emptiness, never resize map). Next: harness eye-level vantages + L31. No game code.
+- 2026-07-21: auto-dev L25 diegetic sector wayfinding plaques — `SectorPlaques.cs` + bootstrap wire:
+  runtime 1.6×0.55m steel plaques with amber emissive edges and TextMesh labels at Hub
+  (`[SECTOR] HUB`), WestCorridor (`WEST BAY`), VentBreach (`VENT APPROACH`), EastFlank
+  (`EAST FLANK`). No canvas clutter; readable from iso and later FP. Syntax verified with ad-hoc
+  Roslyn parser (0 errors); in-editor Play-mode readability check still needed. Commit: PENDING.
+
+- 2026-07-21: lore-gap — bible current (Deck lock absorbed). Kept F11–F14 top; refreshed L25–L30;
 
 - 2026-07-21: **auto-dev F10 machine identity at eye level — CODE DONE, `[?]` needs in-editor
   verification (Unity MCP revoked).** Extended `MachineIdentityTint` with `BuildEyeLevelIdentity`:
