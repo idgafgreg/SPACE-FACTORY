@@ -1021,7 +1021,7 @@ Method: capture the Game view in Play mode, judge the frame, fix the single wors
 - 2026-07-21: asset-pack FULL CONVERSION track P3-P15 queued (owner: use pack everywhere).
   Implemented P3 `SyntyHullDressing` (Synty Wall_Trim/Alcove/Window/Reactor skins on
   Hull_/Corr_/Ring_); seeded P0/P1 foothold at prep so growth shows without clearing a wave.
-  Why "nothing changed" before: hull still cubes + growth gated on WavesCleared. Commit: TBD.
+  Why "nothing changed" before: hull still cubes + growth gated on WavesCleared. Commit: c10c6b7.
 
 - 2026-07-21: asset-pack P2 Synty shift-nest — `PlaceholderPropDressing` v13 hub nest uses pack-only
   desk/chair/locker/monitor/rations/tray/crates/barrel/greeble/poster via `LoadProp`/`SpawnSynty`;
