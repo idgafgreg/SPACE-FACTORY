@@ -512,6 +512,24 @@ public partial class PlaytestHarness
         sb.AppendLine($"{LogPrefix} TRANSITION BEGIN");
         var startMode = ViewMode.Current;
 
+        // Establish our own cursor-ownership precondition instead of inheriting the
+        // previous scenario's UI state.
+        //
+        // In the full suite the Wave 1 gate runs BEFORE this scenario, and clearing a
+        // wave opens the upgrade offer. That modal legitimately holds the cursor free
+        // (UIUpgradeOffer.IsOpen plus a UICursorFocus push), so every "cursor is
+        // Locked" assert below fails and the scenario reports a first-person cursor
+        // regression that is really just the modal doing its job. Measured 2026-07-22
+        // while chasing exactly that false alarm: upgradeOpen=True, cursorFocus=True,
+        // FP rig enabled, cursor correctly None — the product was fine, the test was
+        // not isolated. Standalone runs passed because no wave had been cleared.
+        UIUpgradeOffer.ForceClose();
+        UICursorFocus.Clear();
+        // ForceClose deliberately leaves the freeze to its caller; this scenario needs
+        // real time for its settles.
+        if (Time.timeScale == 0f) Time.timeScale = 1f;
+        yield return Settle(2);
+
         // Enter first person and let it take the cursor, the way a player would.
         ViewMode.Current = ViewMode.Mode.FirstPerson;
         yield return Settle();

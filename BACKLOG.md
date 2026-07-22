@@ -119,7 +119,7 @@ authored wall **colliders** authoritative; dedicated child roots only.
 
 #### Cleanup (do before more pack content)
 
-- [ ] QA1. FP cursor-lock regression watch — playtest TRANSITION FAIL 2026-07-21 21:26 (LOW confidence)
+- [x] QA1. FP cursor-lock regression watch — RESOLVED 2026-07-22: harness isolation bug, not an FP regression
   Type: mechanical / QA | Unity: yes — RunFullSuite on a clean, focused tree
   Context: `RunFullSuite` TRANSITION failed **3/6** — "fp gameplay locks the cursor", "closing the
   panel re-locks the cursor", "a destroyed panel does not strand the cursor", all `lockState=None`.
@@ -133,6 +133,22 @@ authored wall **colliders** authoritative; dedicated child roots only.
   6/6, close as a focus artifact and note the caveat in the harness; if it still fails, bisect FP
   cursor lock against the Synty/URP changes and fix. (Not asset-pack; sits here only because the
   conversion block is top-of-Now.)
+  **DONE 2026-07-22 (auto-dev). Both hypotheses were wrong; the real cause is a harness bug.**
+  Re-ran the full suite on a clean tree with the Unity window foregrounded, the Game view focused and
+  `Application.isFocused=True` — TRANSITION **still failed the same 3 checks**, so it was never a
+  focus artifact. Bisected by probing the actual inputs to `FirstPersonCamera.UpdateCursorLock`:
+  `upgradeOpen=True, cursorFocus=True, FP rig enabled, lockState=None` — i.e. the cursor code was
+  behaving **exactly as designed**. Root cause: the full suite runs the **Wave 1 gate before** the
+  transition scenario, clearing wave 1 **opens the upgrade offer**, and that modal legitimately holds
+  the cursor free (`UIUpgradeOffer.IsOpen` + a `UICursorFocus` push). The scenario inherited that UI
+  state, so "cursor is Locked" could never pass — it was testing the modal, not cursor ownership.
+  Standalone runs passed because no wave had been cleared, which is why this only showed up in the
+  full suite. Fix: `CoScenarioTransitions` now establishes its own precondition
+  (`UIUpgradeOffer.ForceClose()` + `UICursorFocus.Clear()`, restoring `timeScale` since `ForceClose`
+  leaves the freeze to its caller) before asserting. Verified: full suite **6/6 PASS** — SMOKE,
+  WAVE1, MOVEMENT, BUILD, COMBAT and TRANSITION all green, `lockState=Locked visible=False` on the FP
+  check. Report `SPACE FACTORY INFO/Playtest_Agent_2026-07-22_123659.md` (failing run kept alongside
+  as `..._123346.md`). No product code changed — FP cursor lock was correct the whole time.
 
 - [x] C1. Fix exploded hull panels + mute conflicting trim
   Tag: `[asset-pack: POLYGON Sci-Fi Horror]` | Unity: yes — Play diagnostics + camera
@@ -1215,6 +1231,16 @@ Method: capture the Game view in Play mode, judge the frame, fix the single wors
 - [ ] Free lead: Abandoned Factory Lite (Asset Store) — safe mood greys for blockout; not gated, but not queued until visual Now is thin.
 
 ## Agent log (newest first — one line per session: date, task, result, commit)
+
+- 2026-07-22: **auto-dev QA1 FP cursor-lock watch — DONE; it was a harness bug, not an FP regression.**
+  Re-ran the suite with the Unity window foregrounded + Game view focused (`Application.isFocused=True`)
+  and TRANSITION still failed the same 3 checks → not a focus artifact. Probed
+  `UpdateCursorLock`'s inputs: `upgradeOpen=True cursorFocus=True` with the FP rig enabled — the cursor
+  code was correct. Cause: the suite's Wave 1 gate runs first, clearing wave 1 opens the upgrade offer,
+  and that modal legitimately holds the cursor free; the transition scenario inherited it. Fixed by
+  giving `CoScenarioTransitions` its own precondition (`UIUpgradeOffer.ForceClose()` +
+  `UICursorFocus.Clear()` + timeScale restore). **Full suite now 6/6 PASS.** No product code changed.
+  Report `Playtest_Agent_2026-07-22_123659.md`. Commit <hash>.
 
 - 2026-07-21: **unity-pass — cleared 5 parked `[?]` verifications, all PASS.** F10 machine eye-level
   identity (iso 0/14 renderers → byte-unchanged; FP 14/14; Processor vs MiningDrill distinct in a 4 m
