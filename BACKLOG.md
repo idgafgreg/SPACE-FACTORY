@@ -1296,7 +1296,7 @@ Method: capture the Game view in Play mode, judge the frame, fix the single wors
   onto unlit space, so A/B pixel diffs went 0.11% (bare frame) → 0.11% (emissive outline) → 21.50%
   (frame lamp), and even lit the airlock reads as hull rather than a distinct doorway. Ruled out
   pipeline (Built-in, URP inactive), material, culling and fog. Left `[?]` for a human eye rather than
-  claimed. Console clean. Commit <hash>.
+  claimed. Console clean. Commit a986cb3.
 
 - 2026-07-22: **auto-dev P5 Synty floor plates — DONE (Play-verified).** New `SyntyFloorDressing`
   lays 2x2 patches of `SM_Prop_Floor_Panel_01/02` at the hub apron + lane edges; native scale (C1),
