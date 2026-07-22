@@ -427,7 +427,48 @@ colliders authoritative, lanes stay clear, never regress iso, ride the existing 
 exist under `Assets/Synty/PolygonSciFiHorror/Prefabs/`. Bible pillars in play: *lonely worker
 fantasy*, *workplace as trap*, *authenticity before haunt*.
 
-- [ ] P16. Dead crew + occupied cryopods (environmental storytelling — the shift that didn't make it)
+**PLAN + GOVERNING RULE — added 2026-07-22 after P4/P5/P6.**
+
+> **Dress into the light, or bring light. Unlit dressing does not exist.**
+
+This is measured, not a preference. Three consecutive tasks hit it:
+- **P5** deck plates at hub radius 7.0 (outside the light pool): an A/B toggle of all 40 plates moved
+  **0.43%** of pixels with 14 in frustum. Same plates at radius 5.2 (inside the pool): **2.87%**.
+- **P6** airlock frames at the lane mouths (unlit perimeter): bare frame **0.11%**, adding a full
+  emissive outline **still 0.11%**, adding one short-range lamp **21.50%**.
+- **F7/F8** reached the same conclusion for the corridor lamps before either of them.
+
+So every Phase E task must, before tuning anything else, either anchor its dressing near an existing
+light (corridor lamp pools, hub flood, workshop) or ship its own small light/emissive with it. Budget
+a verification A/B (`toggle the new root's renderers, diff the frame`) as the *first* check, not the
+last — a dressing task that cannot move ~2%+ of pixels in its own frame is not done, however correct
+its transforms are. Reuse `PlaytestHarness.Vantages` (hub/west/vent) so shots stay comparable.
+
+**Sequence (value first, and light-safety first):**
+1. **P16** dead crew / cryopods — highest bible value, self-contained new root. Must anchor to lit spots.
+2. **P17** micro-props — lands on workbench/console surfaces at hub+workshop, which are already lit.
+3. **P20** break-room set piece — one authored cluster at the lit hub edge.
+4. **P21** FX accents — particles/emissive are self-illuminating, so light-independent and low risk.
+5. **P18** tool viewmodels — FP-only, camera-anchored; different problem (near-plane clipping, not light).
+
+**⚠ PACK LIMITATION — measured 2026-07-22, affects P12/P13/P16.** The POLYGON Sci-Fi Horror pack
+ships **exactly one AnimationClip** (`SM_Env_Alien_Growth_Rigged_01`) and its rigged characters have a
+**NULL animator controller**. So every `SM_Chr_*` prefab renders in its **bind pose — a full T-pose**.
+Verified by spawning `SM_Chr_Space_Suit_01_M_Dead` in the lit hub and capturing it: standing, arms
+straight out. The `_Dead` suffix names a skin variant, not a baked pose. Consequences:
+- **P16** cannot use the `_Dead` characters — built from static story props instead (see its note).
+- **P12** (player → `SM_Chr_Space_Suit_*`) and **P13** (enemies → `SM_Chr_Alien_*` / `Zub`) will hit
+  this head-on, and those actors *move*, so a frozen T-pose would be far more visible than on a prop.
+  Neither is a drop-in swap: both need an animation source (retarget an existing rig's clips, author
+  poses, or keep the current meshes). Budget for that before starting either, or descope them.
+
+**Held back deliberately:**
+- **P19** is `[!] blocked` on **P10** — it enriches a remap that does not exist yet. Do P10 first.
+- **P22** (vehicle landmark) is deferred: it parks a large mesh in the unlit perimeter void, which is
+  exactly the configuration P6 proved invisible. Revisit only once the open P6 question — whether the
+  map perimeter should stay pitch black — is answered by a human.
+
+- [x] P16. Dead crew + occupied cryopods (environmental storytelling — the shift that didn't make it)
   Tag: `[asset-pack: POLYGON Sci-Fi Horror]` | Unity: yes — iso + FP, non-lane
   Change: new sparse dresser (child root `SyntyStoryRoot`) that scatters **static, collider-free**
   dead crew and story bodies off the walkways: `SM_Chr_Space_Suit_01_M_Dead` / `01_F_Dead` /
@@ -437,6 +478,28 @@ fantasy*, *workplace as trap*, *authenticity before haunt*.
   growth). No alien growth in the hub; a few dead near cleared breaches read as aftermath.
   done-when: Play — 1–3 story bodies + a cryopod cluster read at hub-edge/breach in iso and FP;
   none in a lane; console clean
+  **DONE 2026-07-22 (auto-dev, Play-verified).** New `SyntyStoryDressing` (child root
+  `SyntyStoryRoot`, bootstrap-wired after the gate dresser) places **4 beats: 3 body bags + a broken
+  SYNCOMM specimen tank**. Collider-free, native scale (C1), `FindDeckY`-grounded (worstDeckGap 0.020),
+  per-item lane rejection incl. a footprint re-check so a 2.5 m tank cannot reach a lane its centre
+  clears (nearest 2.67).
+  **Scope change, and the reason matters: the `_Dead` characters are unusable.** The task named
+  `SM_Chr_Space_Suit_*_Dead`; spawning one in the lit hub showed it **standing in a full T-pose**. The
+  pack ships **one AnimationClip total** and its characters have a **null animator controller**, so
+  `_Dead` is a skin variant, not a pose. Rebuilt the task on static story props instead — a zipped body
+  bag says the same thing, carries no rig, and cannot break. See the Phase E pack-limitation note; this
+  blocks P12/P13 too.
+  **Applied the Phase E light rule from the start:** beats anchor to LIVE `CorridorLampFixture`
+  positions and the hub, never arbitrary deck points, so they land inside existing light pools.
+  A/B verification (toggle the root, diff the frame) = **11.72%**, far above the ~2% bar; captures
+  confirm the body bag reads unmistakably as a corpse on a gurney under a lamp, and the specimen tank
+  as failed containment with a live red alarm panel.
+  Two tuning passes, both from measurement: first build placed **1** beat in the whole sector because
+  corridor lamps sit ON the lanes, so a single random bearing usually landed in the walkway — now
+  retries four bearings (the offset-retry shape `PlaceholderPropDressing` already uses). And the pod
+  beat was left to a 35% roll and came up empty, so it is now **guaranteed**: if the sweep places no
+  containment beat, one is forced at a lit anchor. Also extended C5's `PLACEMENT` gate to police the
+  story root. Full suite **7/7 PASS** (`beatsInLane=0/4 nearest=2.67`). Console clean.
 
 - [ ] P17. Human-story micro-prop density (sticky notes, name plates, photos, boards, rations)
   Tag: `[asset-pack: POLYGON Sci-Fi Horror]` | Unity: yes — hub/workshop close FP
@@ -457,7 +520,8 @@ fantasy*, *workplace as trap*, *authenticity before haunt*.
   done-when: FP — the held tool matches the active mode and does not clip the near plane through a
   death+respawn; Play (iso) — nothing added to the body; console clean
 
-- [ ] P19. Enrich P10 actor meshes with Synty weapons + generators (defense/machine identity)
+- [!] P19. **BLOCKED on P10** — enriches a `RuntimeArtBackfill` remap that does not exist yet. Do P10 first.
+  Enrich P10 actor meshes with Synty weapons + generators (defense/machine identity)
   Tag: `[asset-pack: POLYGON Sci-Fi Horror]` | Unity: yes — each type iso + FP, greyscale
   Change: when P10 remaps `RuntimeArtBackfill`, pull defense/machine art from the weapon + generator
   families for instant read: AutoTurret → `SM_Wep_Mining_Laser_01` / `SM_Wep_Rifle_01`, ShockTrap →
@@ -488,7 +552,9 @@ fantasy*, *workplace as trap*, *authenticity before haunt*.
   Extends P15 — fold in.
   done-when: Play — FX read as ambient life/aftermath tied to state, never arcade clutter; console clean
 
-- [ ] P22. Vehicle landmark — `SM_Veh_Ship_01` docked/wrecked backdrop (optional, low)
+- [ ] P22. **DEFERRED** (see Phase E plan) — parks a large mesh in the unlit perimeter void, the exact
+  configuration P6 measured as invisible. Revisit after the human answers P6's perimeter-darkness question.
+  Vehicle landmark — `SM_Veh_Ship_01` docked/wrecked backdrop (optional, low)
   Tag: `[asset-pack: POLYGON Sci-Fi Horror]` | Unity: yes — iso + FP silhouette
   Change: one static `SM_Veh_Ship_01` as a docked or wrecked hull landmark parked in the void beyond
   the playfield edge (Deck lock: fills empty space, does not shrink the deck). Collider-free; reads
@@ -1288,6 +1354,19 @@ Method: capture the Game view in Play mode, judge the frame, fix the single wors
 - [ ] Free lead: Abandoned Factory Lite (Asset Store) — safe mood greys for blockout; not gated, but not queued until visual Now is thin.
 
 ## Agent log (newest first — one line per session: date, task, result, commit)
+
+- 2026-07-22: **Phase E planned + P16 shipped.** Plan: wrote the governing rule **"dress into the
+  light, or bring light"** into the Phase E preamble with the three measurements behind it (P5
+  0.43%→2.87%, P6 0.11%→21.50%, F7/F8), sequenced E as P16→P17→P20→P21→P18, marked **P19 `[!]`
+  blocked on P10**, and **deferred P22** (parks a big mesh in the perimeter void P6 proved invisible).
+  Recorded a **pack limitation**: the pack ships ONE AnimationClip and its characters have a null
+  controller, so every `SM_Chr_*` renders in a T-pose — verified by spawning a `_Dead` suit. That
+  kills the dead-crew idea and **blocks P12/P13** as drop-in swaps.
+  **P16 DONE:** `SyntyStoryDressing` places 4 beats (3 body bags + a guaranteed broken specimen tank)
+  anchored to live lamp pools, collider-free, grounded, lane-rejected with a footprint re-check.
+  A/B **11.72%**. Two measured tuning passes: 1 beat → 4 (lamps sit on lanes, so retry four bearings)
+  and a guaranteed containment beat (the 35%% roll produced none). C5 gate extended to the story root.
+  Full suite **7/7 PASS**. Console clean. Commit <hash>.
 
 - 2026-07-22: **auto-dev P6 gate-mouth airlocks — PARTIAL `[?]`.** `SyntyGateDressing` frames 5/5 lane
   mouths with `SM_Bld_Airlock_01` (native scale, FindDeckY grounded, pivot-recentred, oriented along

@@ -123,6 +123,29 @@ public static class SyntyHorrorLoader
         PropRoot + "SM_Prop_Floor_Panel_02.prefab",
     };
 
+    /// <summary>
+    /// P16 — "the shift that didn't make it". STATIC meshes only, on purpose: the
+    /// pack's rigged `SM_Chr_*_Dead` characters have a null animator controller and
+    /// the pack ships one animation clip total, so they render in a T-pose. A body
+    /// bag says the same thing and cannot break.
+    /// </summary>
+    public static readonly string[] StoryBodyPrefabPaths =
+    {
+        PropRoot + "SM_Prop_Body_Bag_01.prefab",
+        PropRoot + "SM_Prop_Body_Bag_02.prefab",
+        PropRoot + "SM_Prop_Body_Bag_03.prefab",
+    };
+
+    /// <summary>P16 — failed cryo / containment, the larger story beats.</summary>
+    public static readonly string[] StoryPodPrefabPaths =
+    {
+        PropRoot + "SM_Prop_Cryopod_01.prefab",
+        PropRoot + "SM_Prop_Cryopod_Broken_01.prefab",
+        PropRoot + "SM_Prop_Specimen_Tank_01.prefab",
+        PropRoot + "SM_Prop_Specimen_Tank_01_Broken_01.prefab",
+        PropRoot + "SM_Prop_Specimen_Chamber_01.prefab",
+    };
+
     static GameObject[] _growth;
     static GameObject[] _eggs;
     static GameObject[] _walls;
@@ -133,6 +156,8 @@ public static class SyntyHorrorLoader
     static GameObject[] _ceilingLights;
     static GameObject[] _floorPlates;
     static GameObject[] _gateFrames;
+    static GameObject[] _storyBodies;
+    static GameObject[] _storyPods;
     static bool _loggedMissing;
 
     /// <summary>Drop cached prefab arrays (call after changing path lists in editor).</summary>
@@ -143,6 +168,8 @@ public static class SyntyHorrorLoader
         _ceilingLights = null;
         _floorPlates = null;
         _gateFrames = null;
+        _storyBodies = null;
+        _storyPods = null;
         _loggedMissing = false;
     }
 
@@ -156,6 +183,8 @@ public static class SyntyHorrorLoader
     public static GameObject[] CeilingLightPrefabs => _ceilingLights ??= LoadAll(CeilingLightPrefabPaths);
     public static GameObject[] FloorPlatePrefabs => _floorPlates ??= LoadAll(FloorPlatePrefabPaths);
     public static GameObject[] GateFramePrefabs => _gateFrames ??= LoadAll(GateFramePrefabPaths);
+    public static GameObject[] StoryBodyPrefabs => _storyBodies ??= LoadAll(StoryBodyPrefabPaths);
+    public static GameObject[] StoryPodPrefabs => _storyPods ??= LoadAll(StoryPodPrefabPaths);
 
     /// <summary>P2 — lonely shift-nest workplace props (no alien growth).</summary>
     public static GameObject LoadProp(string prefabFileName)

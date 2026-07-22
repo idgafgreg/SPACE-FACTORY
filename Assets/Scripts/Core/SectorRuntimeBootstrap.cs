@@ -73,6 +73,8 @@ public static class SectorRuntimeBootstrap
         go.AddComponent<SyntyFloorDressing>();
         // P6: visual-only airlock frames at the lane spawn mouths.
         go.AddComponent<SyntyGateDressing>();
+        // P16: story beats — anchored to live lamps, so runs after the lamp fixtures exist.
+        go.AddComponent<SyntyStoryDressing>();
         go.AddComponent<WallSeamSealer>();
         go.AddComponent<WallJunctionPlates>();
         go.AddComponent<MapEdgeGuard>();

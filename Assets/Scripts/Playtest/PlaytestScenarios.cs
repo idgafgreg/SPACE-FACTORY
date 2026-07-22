@@ -780,6 +780,26 @@ public partial class PlaytestHarness
         Assert("no deck plate in a lane", platesInLane == 0, sb, pass,
             $"platesInLane={platesInLane}/{plates} " +
             $"nearest={(plates > 0 ? platesNearest.ToString("F2") : "n/a")}");
+
+        // P16 story beats are floor-level props off the walkways; same gate.
+        var storyRoot = GameObject.Find("SyntyStoryRoot");
+        int beats = 0, beatsInLane = 0;
+        float beatsNearest = float.MaxValue;
+        if (storyRoot != null && layout != null)
+        {
+            foreach (Transform t in storyRoot.transform)
+            {
+                if (!TryWorldBounds(t, out var b)) continue;
+                beats++;
+                float d = DistanceToNearestLane(b.center, layout);
+                if (d < beatsNearest) beatsNearest = d;
+                if (d < MinBiomassLaneDistance) beatsInLane++;
+            }
+        }
+
+        Assert("no story beat in a lane", beatsInLane == 0, sb, pass,
+            $"beatsInLane={beatsInLane}/{beats} " +
+            $"nearest={(beats > 0 ? beatsNearest.ToString("F2") : "n/a")}");
         Assert("deck plates lie flat on the deck", platesWorstGap <= MaxDeckGap, sb, pass,
             $"worstGap={platesWorstGap:F2} maxPlateSize={platesMaxSize:F2} allowed<={MaxDeckGap:F2}");
 
