@@ -1276,7 +1276,7 @@ Method: capture the Game view in Play mode, judge the frame, fix the single wors
   in frustum; they were unlit dark plating on a dark deck, not broken. Moving the apron into the hub
   light pool (r 7.0→5.2) took it to **2.87%** and they now read as grated deck panels, with the teal
   zone / hazard stripes / hub ring still fully legible. Extended C5's PLACEMENT gate to police the
-  new floor root too. Console clean. Commit <hash>.
+  new floor root too. Console clean. Commit 2f17f2e.
 
 - 2026-07-22: **auto-dev C5 placement regression gate — DONE, mutation-tested.** New `PLACEMENT`
   scenario in `PlaytestScenarios` (standalone + folded into `RunFullSuite` before the destructive
