@@ -944,7 +944,7 @@ Method: capture the Game view in Play mode, judge the frame, fix the single wors
 
 - 2026-07-21: asset-pack P2 Synty shift-nest — `PlaceholderPropDressing` v13 hub nest uses pack-only
   desk/chair/locker/monitor/rations/tray/crates/barrel/greeble/poster via `LoadProp`/`SpawnSynty`;
-  corridors stay Kenney; no growth in nest. Unity MCP down — `[?]`. Commit: TBD.
+  corridors stay Kenney; no growth in nest. Unity MCP down — `[?]`. Commit: b3458d8.
 
 - 2026-07-21: asset-pack P1 breach infestation dressing — `BreachInfestationDressing` kitbashes
   Synty Alien Wall/Pillar on VentBreach+EastFlank wall faces only; hub excluded; wave-scaled;
