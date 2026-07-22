@@ -38,14 +38,40 @@ public class UIUpgradeOffer : MonoBehaviour
     readonly int[]     _offerIdx    = new int[3];
     Font _font;
     bool _open;
+    UnityEngine.Events.UnityAction<int> _waveClearedHandler;
 
     /// <summary>True while the offer modal is up — UIPauseMenu ignores Esc then.</summary>
     public static bool IsOpen { get; private set; }
 
     void Start()
     {
+        _waveClearedHandler = _ => Open();
         if (WaveController.Instance != null)
-            WaveController.Instance.onWaveCleared.AddListener(_ => Open());
+            WaveController.Instance.onWaveCleared.AddListener(_waveClearedHandler);
+    }
+
+    void OnDestroy()
+    {
+        if (WaveController.Instance != null && _waveClearedHandler != null)
+            WaveController.Instance.onWaveCleared.RemoveListener(_waveClearedHandler);
+        if (_open) { IsOpen = false; Time.timeScale = 1f; }
+    }
+
+    /// <summary>Emergency close — called by UIEndOfRunScreen so game-over can take over the screen.</summary>
+    public static void ForceClose()
+    {
+        // Find the live instance (if any) and close it without touching Time.timeScale here;
+        // the caller owns the freeze after this.
+        var live = FindObjectsByType<UIUpgradeOffer>(FindObjectsInactive.Include);
+        foreach (var o in live)
+        {
+            if (o._open)
+            {
+                o._panel?.SetActive(false);
+                o._open = false;
+            }
+        }
+        IsOpen = false;
     }
 
     void Open()
@@ -70,6 +96,7 @@ public class UIUpgradeOffer : MonoBehaviour
         Time.timeScale = 0f;
         _open = true;
         IsOpen = true;
+        Sfx.RadioSilence(1.2f);          // B2: shift-end radio silence
         UICursorFocus.Push(this);
         Sfx.WaveHorn();
         ScreenFlash.Flash(new Color(0.45f, 0.3f, 0.7f), 0.18f, 2f);
@@ -93,8 +120,6 @@ public class UIUpgradeOffer : MonoBehaviour
         IsOpen = false;
         UICursorFocus.Pop(this);
     }
-
-    void OnDestroy() { if (_open) { IsOpen = false; Time.timeScale = 1f; UICursorFocus.Pop(this); } }
 
     // ── Construction ─────────────────────────────────────────────────────────
 

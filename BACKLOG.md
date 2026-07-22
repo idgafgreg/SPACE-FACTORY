@@ -720,8 +720,9 @@ Method: capture the Game view in Play mode, judge the frame, fix the single wors
   from A2 already marks the walkway by value — the two were double-marking every lane); replaced
   continuous edge lines with dashed danger ticks (1.2u mark / 1.5u gap ≈ 45% duty, tuned up from an
   initial 0.75/3.2 that read as scattered dots); added `InsideWall()` overlap test so ticks stop at
-  authored walls. Play-verified: **423u → 104u of yellow, 0 markings intersecting a wall**.
+  authored walls. Verified: **423u → 104u of yellow, 0 markings intersecting a wall**.
   DONE 2026-07-19 (FloorZoning.cs).
+
 - [x] A5. Wall silhouette / height read — DONE 2026-07-19 (ShipInteriorUpgrade.cs v55,
   AtmosphereController.cs). `BuildWallCaps`: every visible authored wall gets a one-value-step
   lighter cap plate (0.10u overhang → fake-bevel shadow line down the wall face) + hairline
@@ -737,6 +738,7 @@ Method: capture the Game view in Play mode, judge the frame, fix the single wors
   default procedural sky (camera never draws it; reflections still sample it). Hull metallic
   0.78→0.40, gloss 0.4→0.28, plus a 4px dark custom reflection cubemap in AtmosphereController so
   no interior metal can mirror a sky that doesn't exist. Zero console errors.
+
 - [x] A6. Machine silhouette pass — DONE 2026-07-19 (MachineIdentityTint.cs). Extended the existing
   identity system (tint + HDR lamp) with a `Silhouette` kit enum built from primitives on the art
   bounds, dark-steel shared material (shape carries identity; colour only confirms):
@@ -781,8 +783,34 @@ Method: capture the Game view in Play mode, judge the frame, fix the single wors
   timeScale 0). Test-env note: editing scripts during play mode does a domain reload that can
   orphan the offer panel + leak timeScale=0 — editor-only, not a shipped bug; don't chase it in
   future sessions, just restart play mode.
-- [x] A9 (old stub) — superseded by refreshed A9 under Remaining visual (2026-07-19 lore-gap).
-- [x] A10 (old stub) — superseded by refreshed A10 under Remaining visual (2026-07-19 lore-gap).
+
+- [x] A9. Lived-in labour props (lore 2026-07-19 #2, Still Wakes the Deep) — lockers, spilled crates,
+  hand-written signage, cold coffee, shift schedule boards. Done-when: the ship reads as a workplace
+  someone left, not an empty arena. DONE 2026-07-21 (PlaceholderPropDressing.cs v11/v12): bright-white
+  Kenney office props (desk, chair, computer, mug, screen) tinted to steel/amber; hand-written shift
+  board + spilled crate cluster near the shift nest. A6b folded in here.
+  Syntax verified with ad-hoc Roslyn parser; in-editor Play-mode color check still needed.
+
+- [x] A10. Biomass encroachment on ship systems (lore INDEX pillar "industrial biomass / hive") —
+  vents/pipes/filters near breach lanes grow residue that spreads with wave count. Done-when: the
+  map visibly degrades over a run. DONE 2026-07-20 (BiomassEncroachment.cs): breach-lane residue
+  clusters scale with WavesCleared; collider-free; wired into SectorRuntimeBootstrap. Play-verified
+  growth 7→15. Commit: 285946b / 95318df.
+
+- [x] B1. Shift quota ticker — cumulative scrap + construction-parts production this run vs an
+  escalating per-wave quota, shown in the bottom-left stats line. Reinforces the factory-management
+  pillar beyond survival. Done-when: player can read current production versus the wave target.
+  DONE 2026-07-21 (RunStatsTracker.cs): tracks PartsEarned, computes quota = 100 × 1.3^wavesCleared,
+  weights parts at 5× scrap, displays as "Quota 000/000" in amber/green. No scene edits.
+  Syntax verified with ad-hoc Roslyn parser; in-editor Play-mode layout check still needed.
+  Commit: 310d8d8.
+
+- [x] B2. Shift-end radio silence — ambient ship hum drops to silence for ~1.2s when the between-wave
+  upgrade offer appears, then fades back in, emphasizing the lonely pause between shifts. Pure code,
+  no scene edits. Done-when: audio hush coincides with the offer modal.
+  DONE 2026-07-21 (Sfx.RadioSilence + UIUpgradeOffer.Open): 1.2s silence window on offer open.
+  Syntax verified with ad-hoc Roslyn parser; in-editor Play-mode audio check still needed.
+  Commit: cc27223.
 
 ### Visual parity pass (compare target: Factorio readability + Dead Space / Alien Isolation mood; see lore/INDEX.md pillars)
 
