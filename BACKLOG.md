@@ -939,7 +939,7 @@ Method: capture the Game view in Play mode, judge the frame, fix the single wors
 - 2026-07-21: asset-pack P1 breach infestation dressing — `BreachInfestationDressing` kitbashes
   Synty Alien Wall/Pillar on VentBreach+EastFlank wall faces only; hub excluded; wave-scaled;
   collider-free; wired in `SectorRuntimeBootstrap`. Loader gained wall/pillar paths. Unity MCP
-  down — `[?]`. Commit: TBD.
+  down — `[?]`. Commit: 78ed076.
 
 - 2026-07-21: asset-pack gate opened — POLYGON Sci-Fi Horror at `Assets/Synty/PolygonSciFiHorror/`.
   Promoted P0–P2. Implemented P0: `SyntyHorrorLoader` + `BiomassEncroachment` v2 spawns Synty
