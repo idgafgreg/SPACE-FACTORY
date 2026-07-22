@@ -233,10 +233,18 @@ Method: capture the Game view in Play mode, judge the frame, fix the single wors
 
 ## Agent log (newest first — one line per session: date, task, result, commit)
 
+- 2026-07-21: bug pass — fixed upgrade-offer / pause / game-over timeScale and input ownership:
+  `PlayerBuildTool`, `PlayerController`, `PlayerAim`, `PlayerWeapon` now block input while
+  `UIUpgradeOffer.IsOpen`; `UIPauseMenu.Resume()` refuses to resume under an open offer;
+  `UIUpgradeOffer` unsubscribes from `WaveController.onWaveCleared` in `OnDestroy` and adds
+  `ForceClose()`; `UIEndOfRunScreen.Show()` closes any open offer and freezes time.
+  Syntax verified with ad-hoc Roslyn parser (0 errors across 7 changed files).
+  In-editor Play-mode verification still needed (Unity MCP not connected). Commit: 69b60bb.
+
 - 2026-07-21: A4 backlog verification / cleanup — confirmed `FloorZoning.SpawnLaneStripes` already
   removes the amber carpet, uses dashed danger ticks with `InsideWall()` wall-collision test, and
   reduces lane yellow from 423u to 104u. Removed stale duplicate A4 entry from BACKLOG.md and
-  marked complete. No scene or art changes; safe to run alongside F10 biomass work.
+  marked complete. No scene or art changes; safe to run alongside F10 biomass work. Commit: a479eb9.
 
 - 2026-07-15: Playtest response batch — CRITICAL FIX: enemy AI never followed lanes (AcquireTarget fell back to Hub always → beeline through walls); now HubIfClose(8u radius) + Sapper support-engage radius; verified 4 crawlers walking IN corridor. Preps 40/30s. MainMenu boots first. Locked slots blank. Workshop + UIWorkshopShop: buy unlocks (trap 40/repair 60/relay 50/heavy 120/bulwark 60/turbo 100) + repeatable stat upgrades (80 base ×1.5); replaces wave-gating; purchase verified (-40 scrap → OWNED → slot fills → selectable). EastFlank 3rd lane + east gate + funnel + divider split; waves 4-5 → ALL GATES round-robin; floor re-baked from LIVE wall objects (23).
 

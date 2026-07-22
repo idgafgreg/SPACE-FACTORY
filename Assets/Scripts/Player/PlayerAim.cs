@@ -39,6 +39,7 @@ public class PlayerAim : MonoBehaviour
     void LateUpdate()
     {
         if (!torso) return;
+        if (UIPauseMenu.IsPaused || UIUpgradeOffer.IsOpen) return;
         if (!aimCamera) aimCamera = Camera.main;
         if (!aimCamera) return;
 

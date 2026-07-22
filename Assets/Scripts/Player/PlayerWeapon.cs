@@ -51,7 +51,7 @@ public class PlayerWeapon : MonoBehaviour
 
     void Update()
     {
-        if (UIPauseMenu.IsPaused) return;
+        if (UIPauseMenu.IsPaused || UIUpgradeOffer.IsOpen) return;
         _cooldown -= Time.deltaTime;
 
         // Left-click is overloaded: placing buildings (ghost active) and UI

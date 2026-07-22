@@ -59,6 +59,9 @@ public class UIPauseMenu : MonoBehaviour
 
     void Resume()
     {
+        // Upgrade offer owns the screen and its own timeScale; don't resume under it.
+        if (UIUpgradeOffer.IsOpen) return;
+
         Sfx.UIClick();
         _panel?.SetActive(false);
         Time.timeScale = 1f;

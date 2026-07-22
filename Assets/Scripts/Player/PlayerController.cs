@@ -36,7 +36,7 @@ public class PlayerController : MonoBehaviour
 
     void Update()
     {
-        if (IsDead) return;
+        if (IsDead || UIPauseMenu.IsPaused || UIUpgradeOffer.IsOpen) return;
         HandleMovement();
     }
 

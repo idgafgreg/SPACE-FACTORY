@@ -96,7 +96,7 @@ public class PlayerBuildTool : MonoBehaviour
 
     void Update()
     {
-        if (UIPauseMenu.IsPaused) return;
+        if (UIPauseMenu.IsPaused || UIUpgradeOffer.IsOpen) return;
         ReadHotbar();
         if (Input.GetKeyDown(demolishKey)) ToggleDemolishMode();
         ReadRotation();

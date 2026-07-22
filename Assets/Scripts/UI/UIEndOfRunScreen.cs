@@ -33,6 +33,11 @@ public class UIEndOfRunScreen : MonoBehaviour
 
     public void Show(bool playerWon)
     {
+        // If an upgrade offer is open, the modal owns the screen; force it closed
+        // before the end-of-run UI takes over.
+        UIUpgradeOffer.ForceClose();
+        Time.timeScale = 0f;
+
         panel?.SetActive(true);
         onResultText.Invoke(playerWon ? "SECTOR SECURED" : "RUN FAILED");
 
