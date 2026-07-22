@@ -13,6 +13,7 @@ public static class SyntyHorrorLoader
 {
     public const string PackRoot = "Assets/Synty/PolygonSciFiHorror/";
     const string EnvRoot = PackRoot + "Prefabs/Environment/";
+    const string BldRoot = PackRoot + "Prefabs/Buildings/";
     const string ResourcesRoot = "SyntyHorror/";
 
     /// <summary>Static wall-hugging growth clusters (A10 encroachment).</summary>
@@ -42,12 +43,35 @@ public static class SyntyHorrorLoader
         EnvRoot + "SM_Env_EggSack_Empty_01.prefab",
     };
 
+    /// <summary>P1 — colonized wall faces on breach approaches.</summary>
+    public static readonly string[] AlienWallPrefabPaths =
+    {
+        BldRoot + "SM_Bld_Alien_Wall_01.prefab",
+        BldRoot + "SM_Bld_Alien_Wall_02.prefab",
+        BldRoot + "SM_Bld_Alien_Wall_03.prefab",
+        BldRoot + "SM_Bld_Alien_Wall_04.prefab",
+        BldRoot + "SM_Bld_Alien_Wall_Trim_01.prefab",
+        BldRoot + "SM_Bld_Alien_Wall_Trim_02.prefab",
+    };
+
+    /// <summary>P1 — sparse pillars along colonized breach walls.</summary>
+    public static readonly string[] AlienPillarPrefabPaths =
+    {
+        BldRoot + "SM_Bld_Alien_Pillar_01.prefab",
+        BldRoot + "SM_Bld_Alien_Pillar_02.prefab",
+        BldRoot + "SM_Bld_Alien_Pillar_03.prefab",
+    };
+
     static GameObject[] _growth;
     static GameObject[] _eggs;
+    static GameObject[] _walls;
+    static GameObject[] _pillars;
     static bool _loggedMissing;
 
     public static GameObject[] AlienGrowthPrefabs => _growth ??= LoadAll(AlienGrowthPrefabPaths);
     public static GameObject[] EggSackPrefabs => _eggs ??= LoadAll(EggSackPrefabPaths);
+    public static GameObject[] AlienWallPrefabs => _walls ??= LoadAll(AlienWallPrefabPaths);
+    public static GameObject[] AlienPillarPrefabs => _pillars ??= LoadAll(AlienPillarPrefabPaths);
 
     public static GameObject Load(string assetPath)
     {

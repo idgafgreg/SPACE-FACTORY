@@ -128,13 +128,20 @@ owner requests pack work; otherwise F11–F14 stay top priority.
   clear a wave or `DebugForceDress(3)`, capture VentBreach wall growth — Synty meshes, not capsules;
   (4) walk the lane (no blocker colliders); (5) confirm no pink Error mats (or document Standard fallback).
 
-- [ ] P1. Breach-corridor infestation dressing (Synty Alien Wall / Pillar kitbash)
+- [?] P1. Breach-corridor infestation dressing (Synty Alien Wall / Pillar kitbash)
   Type: visual | Pillar: Industrial biomass / hive
   Tag: `[asset-pack: POLYGON Sci-Fi Horror]`
   Unity: **yes** — Play FP walk of VentBreach after wave 2+.
   Change: sparse runtime kitbash of `SM_Bld_Alien_Wall_*` / `SM_Bld_Alien_Pillar_*` on breach-lane
   wall faces only (not hub). Colliders stripped; scale with `WavesCleared`. Pack assets only.
   done-when: Play — breach approach reads colonized without blocking lanes; hub stays clean metal; console clean
+  **CODE DONE 2026-07-21 — `[?] needs Unity pass.** `BreachInfestationDressing` + loader wall/pillar
+  paths + bootstrap wire. Child root `BreachInfestationRoot` (not SectorRuntime). Raycasts from
+  VentBreach/EastFlank toward authored walls; skips hub (inside 6.5 m) and spawn/hub mouth waypoints;
+  lane-clearance reject; density = 3 + 2×clears (cap 14/lane); ~28% pillars. Pack-only. Unity MCP
+  down — **Unity pass must:** compile; Play + clear ≥2 waves (or `DebugForceDress(3)`); FP walk
+  VentBreach — Synty wall/pillar on corridor faces, lane walkable, hub clean; no pink mats if
+  Shader Graph installed.
 
 - [ ] P2. Lonely shift-nest props from Synty (replace Kenney hub nest)
   Type: visual | Pillar: Lonely worker fantasy
@@ -928,6 +935,11 @@ Method: capture the Game view in Play mode, judge the frame, fix the single wors
 - [ ] Free lead: Abandoned Factory Lite (Asset Store) — safe mood greys for blockout; not gated, but not queued until visual Now is thin.
 
 ## Agent log (newest first — one line per session: date, task, result, commit)
+
+- 2026-07-21: asset-pack P1 breach infestation dressing — `BreachInfestationDressing` kitbashes
+  Synty Alien Wall/Pillar on VentBreach+EastFlank wall faces only; hub excluded; wave-scaled;
+  collider-free; wired in `SectorRuntimeBootstrap`. Loader gained wall/pillar paths. Unity MCP
+  down — `[?]`. Commit: TBD.
 
 - 2026-07-21: asset-pack gate opened — POLYGON Sci-Fi Horror at `Assets/Synty/PolygonSciFiHorror/`.
   Promoted P0–P2. Implemented P0: `SyntyHorrorLoader` + `BiomassEncroachment` v2 spawns Synty

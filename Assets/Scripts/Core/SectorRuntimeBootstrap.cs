@@ -73,6 +73,7 @@ public static class SectorRuntimeBootstrap
 
         go.AddComponent<PlaceholderPropDressing>();
         go.AddComponent<BiomassEncroachment>();
+        go.AddComponent<BreachInfestationDressing>();
         go.AddComponent<EnvironmentalLore>();
 
         go.AddComponent<SectorPlaques>();
