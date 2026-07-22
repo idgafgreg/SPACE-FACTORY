@@ -200,19 +200,29 @@ Without it, mats may pink; runtime falls back to Standard albedo when Error.
 
 #### Phase A — structure (biggest bang)
 
-- [?] P0. Replace A10 primitive biomass with Synty Alien Growth
+- [x] P0. Replace A10 primitive biomass with Synty Alien Growth
   Tag: `[asset-pack: POLYGON Sci-Fi Horror]` | Unity: yes — VentBreach after load + after clears
-  **CODE DONE** — seeded foothold at prep (`Dress(Max(1,cleared))`). Unity pass still needed.
+  **CODE DONE** — seeded foothold at prep (`Dress(Max(1,cleared))`).
+  UNITY-PASS 2026-07-21 — verified: 3 Synty `SM_Env_Alien_Growth_*` / `EggSack` instances seeded at
+  prep, none in a lane (C4 already Play-verified inLane=0), no pink/error materials, render as growth
+  at the breach. Console clean.
 
-- [?] P1. Breach-corridor Alien Wall / Pillar kitbash
+- [x] P1. Breach-corridor Alien Wall / Pillar kitbash
   Tag: `[asset-pack: POLYGON Sci-Fi Horror]` | Unity: yes — FP VentBreach
-  **CODE DONE** — seeded at prep. Unity pass still needed.
+  **CODE DONE** — seeded at prep.
+  UNITY-PASS 2026-07-21 — verified: 7 `SM_Bld_Alien_Wall_*` renderers + 2 `Alien_Pillar` instances on
+  the breach approaches, 0 pink/error materials, mounted on the walls (organic shapes read on the
+  wall faces; the lampless east breach segment is dark — the known F8 eye-level grade tension, not a
+  P1 defect). Console clean.
 
-- [?] P2. Lonely shift-nest props from Synty
+- [x] P2. Lonely shift-nest props from Synty
   Tag: `[asset-pack: POLYGON Sci-Fi Horror]` | Unity: yes — hub nest iso+FP
-  **CODE DONE** — nest v13. Unity pass still needed.
+  **CODE DONE** — nest v13.
+  UNITY-PASS 2026-07-21 — verified: 29 `SM_Prop_*` Synty props in the scene (biohazard barrels /
+  lockers read in FP corridor + hub captures); no Kenney white clutter in frame; pathing clear.
+  Console clean.
 
-- [?] P3. Hull wall panels — Synty modular walls (BIGGEST BANG)
+- [x] P3. Hull wall panels — Synty modular walls (BIGGEST BANG)
   Type: visual | Pillar: Workplace as trap / Diegetic dread
   Tag: `[asset-pack: POLYGON Sci-Fi Horror]`
   Unity: **yes** — Play iso + FP; walls must not be gray cubes; pathing unchanged.
@@ -220,9 +230,12 @@ Without it, mats may pink; runtime falls back to Standard albedo when Error.
   via new `SyntyHullDressing` (child `SyntyHullRoot`). Hide cube MeshRenderers only; keep colliders.
   Mix alcoves/windows every ~5th corridor panel for life. Wire after `ShipInteriorUpgrade`.
   done-when: Play — Corr_/Hull_/Ring_ read as Synty panels immediately on load; lanes/build ok; console clean
-  **CODE DONE 2026-07-21 — `[?] needs Unity pass.** `SyntyHullDressing` + loader panel paths +
-  bootstrap. **Unity pass must:** Shader Graph; Play — walls are Synty not cubes; walk/build;
-  console shows `[SyntyHullDressing] v1 skinned N panels`; no pink mats (or document fallback).
+  **CODE DONE 2026-07-21.** `SyntyHullDressing` + loader panel paths + bootstrap.
+  UNITY-PASS 2026-07-21 — **verified PASS.** 80 Synty wall panels (windows / alcoves / doors /
+  diamond hull) skin the hull; multiple FP captures show the corridors read as Synty modular walls,
+  NOT gray cubes (C1/C6 already fixed the mega-panel/lane issues: maxW 2.62, giants 0, bioInLane 0).
+  Build/pathing unaffected (playtest BUILD scenario PASS both modes). No pink materials in frame.
+  Console clean.
 
 - [x] P4. Ceiling light fixtures — Synty housings — DONE 2026-07-21 (Play-verified)
   Tag: `[asset-pack: POLYGON Sci-Fi Horror]`
@@ -688,7 +701,17 @@ fantasy*, *workplace as trap*, *authenticity before haunt*.
   done-when: Play (FP) — deck holds detail at walking distance, walls have readable scale and
   seams, no mirror-sheen at grazing angles; Play (iso) — A5/A7 reads unchanged; console clean
 
-- [?] F10. Machine identity at eye level — **needs in-editor verification (Unity MCP revoked)**
+- [x] F10. Machine identity at eye level — DONE 2026-07-21 (Play-verified in /unity-pass)
+  UNITY-PASS 2026-07-21 — **verified PASS.** All 7 prep-time machines carry an `EyeLevelId` group
+  (7 groups, 7 markers, 14 renderers). **Iso unchanged:** 0/14 eye-level renderers enabled in iso —
+  the A6 top-down silhouette is byte-identical. **FP:** 14/14 enabled; an eye-level greyscale capture
+  at ~4 m distinguishes the built types by shape (Processor = octagonal body + twin stacks; MiningDrill
+  = blockier housing) before colour, and the colour frame confirms via the amber/cyan markers. Caveat:
+  only Processor + MiningDrill were built at prep, so PowerTap/turret/repair/trap eye-level kits are
+  covered by construction (the `Dress` switch + rescan dress every kit type) but were not individually
+  greyscale-captured this pass; and readability is grade-limited in unlit gaps (machines read as dark
+  blobs away from light — the known F8 eye-level tension, best paired with P10 Synty machine meshes +
+  P4 lamp coverage). Console clean.
   Type: visual | Pillar: Factory pressure = identity
   Lore: Factorio silhouette lesson (A6) — but A6's silhouettes were authored top-down.
   Unity: **yes** — Play captures of each machine type at eye level and in greyscale.
@@ -1193,6 +1216,13 @@ Method: capture the Game view in Play mode, judge the frame, fix the single wors
 
 ## Agent log (newest first — one line per session: date, task, result, commit)
 
+- 2026-07-21: **unity-pass — cleared 5 parked `[?]` verifications, all PASS.** F10 machine eye-level
+  identity (iso 0/14 renderers → byte-unchanged; FP 14/14; Processor vs MiningDrill distinct in a 4 m
+  greyscale capture), P0 Synty growth (3, no lane, no pink), P1 alien walls+pillars (7 renderers + 2,
+  0 pink), P2 Synty nest props (29), P3 Synty hull walls (80 panels, read as Synty not cubes; C1/C6
+  placement holds). No editor-side fixes needed beyond P4's earlier GetInstanceID fix. Console clean.
+  Commit <hash>.
+
 - 2026-07-21: **auto-dev P4 Synty ceiling light fixtures — DONE (Play-verified).** `BuildLampHousing`
   now instantiates `SM_Bld_Light_Ceiling_01/02` (fit ≤1.7 m, recentred, flush at CeilingHeight,
   colliders stripped, prefab light disabled, tinted glow lens for lit / dark lens for dead), primitive
@@ -1200,7 +1230,7 @@ Method: capture the Game view in Play mode, judge the frame, fix the single wors
   overhead; iso hides all 10 housings; 7 point lights intact; console clean. Caught+fixed a Unity
   6000.5 `GetInstanceID()` obsolete-error that blocked Play. Also committed the concurrent Cursor
   agent's Synty WIP (hull/prop dressing + URP/ShaderGraph pipeline migration) on owner instruction —
-  commit 3aa5872. Commit <hash>.
+  commit 3aa5872. Commit 1536e58.
 
 - 2026-07-21: **playtest: full suite — 5/6 PASS, TRANSITION FAIL (cursor lock).** Report
   `SPACE FACTORY INFO/Playtest_Agent_2026-07-21_212626.md`. SMOKE PASS (9/9); WAVE1 PASS (hub
