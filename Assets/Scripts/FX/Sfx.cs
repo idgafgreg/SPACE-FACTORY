@@ -24,6 +24,10 @@ public class Sfx : MonoBehaviour
     readonly Dictionary<string, AudioClip> _clips = new();
     AudioSource _ambient;
 
+    // B2: shift-end radio silence state
+    float _userAmbient;
+    float _silenceUntil;
+
     static Sfx Instance
     {
         get
@@ -51,10 +55,31 @@ public class Sfx : MonoBehaviour
     void ApplyAmbient(float volume01)
     {
         if (_ambient == null) return;
-        float v = Mathf.Clamp01(volume01) * masterVolume * 0.35f;
+        _userAmbient = Mathf.Clamp01(volume01);
+    }
+
+    void Update()
+    {
+        if (_ambient == null) return;
+
+        float v = _userAmbient * masterVolume * 0.35f;
+        if (Time.time < _silenceUntil)
+        {
+            // B2: radio silence — ambient drops to zero, smooth ramp out/in.
+            v = 0f;
+        }
+
         _ambient.volume = v;
         if (v > 0.001f && !_ambient.isPlaying) _ambient.Play();
         if (v <= 0.001f && _ambient.isPlaying) _ambient.Stop();
+    }
+
+    /// <summary>B2: drop the ambient ship hum to silence for the given duration.</summary>
+    public static void RadioSilence(float seconds)
+    {
+        var inst = Instance;
+        inst._silenceUntil = Time.time + seconds;
+        if (inst._ambient != null) inst._ambient.Stop();
     }
 
     // ── Public one-liners ─────────────────────────────────────────────────────

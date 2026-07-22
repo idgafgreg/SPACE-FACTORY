@@ -194,7 +194,11 @@ Method: capture the Game view in Play mode, judge the frame, fix the single wors
   DONE 2026-07-21 (RunStatsTracker.cs): tracks PartsEarned, computes quota = 100 × 1.3^wavesCleared,
   weights parts at 5× scrap, displays as "Quota 000/000" in amber/green. No scene edits.
   Syntax verified with ad-hoc Roslyn parser; in-editor Play-mode layout check still needed.
-  Commit: 5d0f604.
+  Commit: 310d8d8.
+
+- [x] B2. Shift-end radio silence — ambient ship hum drops to silence for ~1.2s when the between-wave
+  upgrade offer appears, then fades back in, emphasizing the lonely pause between shifts. Pure code,
+  no scene edits. Done-when: audio hush coincides with the offer modal. Commit: PENDING.
 
 ### Visual parity pass (compare target: Factorio readability + Dead Space / Alien Isolation mood; see lore/INDEX.md pillars)
 
@@ -245,11 +249,16 @@ Method: capture the Game view in Play mode, judge the frame, fix the single wors
 
 ## Agent log (newest first — one line per session: date, task, result, commit)
 
+- 2026-07-21: B2 shift-end radio silence — `Sfx.RadioSilence()` + `Sfx` Update loop now stores the
+  user-requested ambient level and enforces a timed silence window; `UIUpgradeOffer.Open()` triggers
+  1.2s of silence when the between-wave modal appears. Pure code, no scene edits. Syntax verified with
+  ad-hoc Roslyn parser (0 errors); in-editor Play-mode audio check still needed. Commit: PENDING.
+
 - 2026-07-21: B1 shift quota ticker — `RunStatsTracker` now tracks PartsEarned and displays a
   cumulative production quota (100 × 1.3^wavesCleared, parts weighted 5× scrap) in the bottom-left
   stats line as "Quota 000/000" (amber when behind, green when met). No scene edits. Syntax verified
-  with ad-hoc Roslyn parser (0 errors); in-editor Play-mode layout check still needed.
-  Commit: 5d0f604.
+  with ad-hoc Roslyn parser (0 errors); in-editor Play-mode layout check still needed. Commit: 310d8d8.
+
 
 - 2026-07-21: A9 lived-in labour props — `PlaceholderPropDressing` v11: bright-white Kenney office
   props (desk, chair, computer, mug, screen) tinted to steel/amber palette; primitive-backed
