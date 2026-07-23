@@ -164,7 +164,7 @@ public class SyntyFloorDressing : MonoBehaviour
         // These plates pivot at a corner, so a raw position sets the corner, not the
         // centre; measured offset is ~0.9m. Recentre on the intended spot.
         var rends = inst.GetComponentsInChildren<Renderer>(true);
-        if (rends.Length == 0) { Destroy(inst); return false; }
+        if (rends.Length == 0) { FxSafe.Destroy(inst); return false; }
         Bounds b = rends[0].bounds;
         for (int i = 1; i < rends.Length; i++) b.Encapsulate(rends[i].bounds);
         inst.transform.position += new Vector3(spot.x - b.center.x, 0f, spot.z - b.center.z);

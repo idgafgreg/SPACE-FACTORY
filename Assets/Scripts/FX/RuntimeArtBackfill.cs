@@ -182,7 +182,7 @@ public class RuntimeArtBackfill : MonoBehaviour
         if (artMarker == null) artMarker = art.AddComponent<ArtPlaceholderMarker>();
         if (!string.IsNullOrEmpty(preferTag)) artMarker.artTag = preferTag;
         foreach (var c in art.GetComponentsInChildren<Collider>())
-            Destroy(c);
+            FxSafe.Destroy(c);
 
         HideHostRenderers(host, art.transform);
         ArtPlaceholderFitter.Fit(art.transform);
@@ -224,7 +224,7 @@ public class RuntimeArtBackfill : MonoBehaviour
         var go = GameObject.CreatePrimitive(PrimitiveType.Quad);
         go.name = "BlobShadow";
         go.transform.SetParent(t, false);
-        Destroy(go.GetComponent<Collider>());
+        FxSafe.Destroy(go.GetComponent<Collider>());
         go.transform.localPosition = new Vector3(0f, 0.02f, 0f);
         go.transform.localRotation = Quaternion.Euler(90f, 0f, 0f);
         go.transform.localScale = Vector3.one * scale;

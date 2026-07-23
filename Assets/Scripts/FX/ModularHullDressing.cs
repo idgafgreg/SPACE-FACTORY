@@ -116,7 +116,7 @@ public static class ModularHullDressing
         Bounds pb = RendererBounds(probe);
         float panelLen = Mathf.Max(0.6f, alongX ? pb.size.x : pb.size.z);
         float panelDepth = Mathf.Max(0.08f, alongX ? pb.size.z : pb.size.x);
-        Object.Destroy(probe);
+        FxSafe.Destroy(probe);
 
         // Slightly denser on hub ring so yellow accents read; looser on long hull.
         float step = panelLen * (hubAccent ? 0.92f : exterior ? 1.05f : 0.98f) - PanelOverlap;
@@ -215,7 +215,7 @@ public static class ModularHullDressing
     static void StripColliders(GameObject go)
     {
         foreach (var c in go.GetComponentsInChildren<Collider>(true))
-            Object.Destroy(c);
+            FxSafe.Destroy(c);
     }
 
     static void TintPanel(GameObject go, Color tint, float strength)

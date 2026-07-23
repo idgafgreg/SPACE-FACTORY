@@ -92,7 +92,7 @@ public class EnemyArtPulse : MonoBehaviour
             {
                 var eye = GameObject.CreatePrimitive(PrimitiveType.Cube);
                 eye.name = "ThreatEye";
-                Destroy(eye.GetComponent<Collider>());
+                FxSafe.Destroy(eye.GetComponent<Collider>());
                 eye.transform.SetParent(artRoot, false);
                 var b = new Bounds(host.position, Vector3.one);
                 foreach (var r in bodies) { b = r.bounds; break; }

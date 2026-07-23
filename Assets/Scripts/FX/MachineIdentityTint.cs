@@ -121,7 +121,7 @@ public class MachineIdentityTint : MonoBehaviour
 
         var chip = GameObject.CreatePrimitive(PrimitiveType.Cube);
         chip.name = LampName;
-        Object.Destroy(chip.GetComponent<Collider>());
+        FxSafe.Destroy(chip.GetComponent<Collider>());
         chip.transform.SetParent(art, worldPositionStays: true);
         chip.transform.position = new Vector3(
             bounds.center.x, bounds.max.y + 0.05f, bounds.center.z);
@@ -158,7 +158,7 @@ public class MachineIdentityTint : MonoBehaviour
     {
         var go = GameObject.CreatePrimitive(prim);
         go.name = "SilhouettePart";
-        Object.Destroy(go.GetComponent<Collider>());
+        FxSafe.Destroy(go.GetComponent<Collider>());
         go.transform.SetParent(art, worldPositionStays: true);
         go.transform.position = worldPos;
         go.transform.rotation = worldRot;
@@ -318,7 +318,7 @@ public class MachineIdentityTint : MonoBehaviour
         // roof lamp, dropped into the eye band so colour confirms the shape read.
         var mark = GameObject.CreatePrimitive(PrimitiveType.Cube);
         mark.name = "IdentityMarker";
-        Object.Destroy(mark.GetComponent<Collider>());
+        FxSafe.Destroy(mark.GetComponent<Collider>());
         mark.transform.SetParent(host, worldPositionStays: true);
         float markY = b.min.y + Mathf.Clamp(b.size.y * 0.62f, 0.40f, 1.45f);
         mark.transform.position = new Vector3(b.center.x, markY, front + 0.07f);

@@ -22,7 +22,7 @@ public class SpaceBackdrop : MonoBehaviour
     {
         var go = GameObject.CreatePrimitive(PrimitiveType.Quad);
         go.name = "SpaceBackdrop";
-        Destroy(go.GetComponent<Collider>());
+        FxSafe.Destroy(go.GetComponent<Collider>());
         go.transform.SetParent(transform, false);
         go.transform.position = new Vector3(0f, PlaneY, 0f);
         go.transform.rotation = Quaternion.Euler(90f, 0f, 0f); // face up
@@ -108,7 +108,7 @@ public class SpaceBackdrop : MonoBehaviour
 
             var win = GameObject.CreatePrimitive(PrimitiveType.Quad);
             win.name = "DeckWindow";
-            Destroy(win.GetComponent<Collider>());
+            FxSafe.Destroy(win.GetComponent<Collider>());
             win.transform.SetParent(windowRoot.transform, false);
             win.transform.position = s + Vector3.up * 0.03f;
             win.transform.rotation = Quaternion.Euler(90f, 0f, 0f);
@@ -130,7 +130,7 @@ public class SpaceBackdrop : MonoBehaviour
             // Diagonal sheen bar — a moving-highlight cue that a solid pane is there.
             var sheen = GameObject.CreatePrimitive(PrimitiveType.Quad);
             sheen.name = "WindowSheen";
-            Destroy(sheen.GetComponent<Collider>());
+            FxSafe.Destroy(sheen.GetComponent<Collider>());
             sheen.transform.SetParent(win.transform, false);
             sheen.transform.localPosition = new Vector3(0.1f, 0.05f, -0.02f);
             sheen.transform.localRotation = Quaternion.Euler(0f, 0f, 22f);
@@ -144,7 +144,7 @@ public class SpaceBackdrop : MonoBehaviour
             {
                 var bar = GameObject.CreatePrimitive(PrimitiveType.Cube);
                 bar.name = "WindowFrame";
-                Destroy(bar.GetComponent<Collider>());
+                FxSafe.Destroy(bar.GetComponent<Collider>());
                 bar.transform.SetParent(win.transform, false);
                 bool horiz = i < 2;
                 bar.transform.localPosition = horiz

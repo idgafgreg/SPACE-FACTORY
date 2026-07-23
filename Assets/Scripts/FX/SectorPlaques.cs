@@ -89,7 +89,7 @@ public class SectorPlaques : MonoBehaviour
         board.transform.position = pos;
         board.transform.rotation = Quaternion.Euler(0f, yaw, 0f);
         board.transform.localScale = new Vector3(1.6f, 0.55f, 0.06f);
-        Destroy(board.GetComponent<Collider>());
+        FxSafe.Destroy(board.GetComponent<Collider>());
 
         var r = board.GetComponent<Renderer>();
         if (r != null)
@@ -107,7 +107,7 @@ public class SectorPlaques : MonoBehaviour
         strip.transform.SetParent(board.transform, false);
         strip.transform.localPosition = new Vector3(0f, 0f, -0.04f);
         strip.transform.localScale = new Vector3(1.04f, 1.04f, 0.10f);
-        Destroy(strip.GetComponent<Collider>());
+        FxSafe.Destroy(strip.GetComponent<Collider>());
         var sr = strip.GetComponent<Renderer>();
         if (sr != null)
         {

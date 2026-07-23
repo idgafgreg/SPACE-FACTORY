@@ -80,7 +80,7 @@ public class ShipDressing : MonoBehaviour
             var post = GameObject.CreatePrimitive(PrimitiveType.Cube);
             post.name = "GateLamp_" + id;
             post.transform.SetParent(parent, false);
-            Destroy(post.GetComponent<Collider>());
+            FxSafe.Destroy(post.GetComponent<Collider>());
             post.transform.position = gate + side * (s * 2.2f) + Vector3.up * 1.4f;
             post.transform.localScale = new Vector3(0.35f, 2.6f, 0.35f);
             post.GetComponent<Renderer>().sharedMaterial = mat;
@@ -105,7 +105,7 @@ public class ShipDressing : MonoBehaviour
         var go = GameObject.CreatePrimitive(PrimitiveType.Cube);
         go.name = "LaneStripe";
         go.transform.SetParent(parent, false);
-        Destroy(go.GetComponent<Collider>());
+        FxSafe.Destroy(go.GetComponent<Collider>());
         go.transform.position = mid;
         go.transform.localScale = new Vector3(0.32f, 0.025f, Mathf.Max(0.2f, len - 0.4f));
         go.transform.rotation = Quaternion.LookRotation(b - a, Vector3.up);

@@ -11,7 +11,7 @@ public class VeinHighlight : MonoBehaviour
     public static void Attach(GameObject host, float duration, Color color)
     {
         var existing = host.GetComponent<VeinHighlight>();
-        if (existing != null) Destroy(existing);
+        if (existing != null) FxSafe.Destroy(existing);
 
         var h = host.AddComponent<VeinHighlight>();
         h._life = duration;
@@ -53,9 +53,9 @@ public class VeinHighlight : MonoBehaviour
         }
         if (_age >= _life)
         {
-            if (_light) Destroy(_light.gameObject);
-            if (_lr) Destroy(_lr);
-            Destroy(this);
+            if (_light) FxSafe.Destroy(_light.gameObject);
+            if (_lr) FxSafe.Destroy(_lr);
+            FxSafe.Destroy(this);
         }
     }
 }

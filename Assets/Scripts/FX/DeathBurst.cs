@@ -59,7 +59,7 @@ public class StainFade : MonoBehaviour
             float s = Mathf.Lerp(0.4f, 1.2f, k);
             transform.localScale = new Vector3(s, s, 1f);
         }
-        if (_age >= _life) Destroy(gameObject);
+        if (_age >= _life) FxSafe.Destroy(gameObject);
     }
 }
 
@@ -87,6 +87,6 @@ public class DeathBit : MonoBehaviour
         transform.localScale = Vector3.one * (transform.localScale.x * 0.98f);
 
         if (_age >= _life || transform.position.y < -1f)
-            Destroy(gameObject);
+            FxSafe.Destroy(gameObject);
     }
 }

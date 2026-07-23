@@ -29,7 +29,7 @@ public class VisualCleanupPass : MonoBehaviour
                 t.gameObject.SetActive(false);
                 continue;
             }
-            Destroy(t.gameObject);
+            FxSafe.Destroy(t.gameObject);
         }
     }
 }

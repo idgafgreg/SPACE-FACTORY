@@ -39,7 +39,7 @@ public class WallJunctionPlates : MonoBehaviour
         foreach (Transform seal in seals.transform)
         {
             var old = seal.Find("JunctionPlate");
-            if (old != null) Destroy(old.gameObject);
+            if (old != null) FxSafe.Destroy(old.gameObject);
         }
 
         EnsureMaterial();
@@ -62,7 +62,7 @@ public class WallJunctionPlates : MonoBehaviour
             size.z = Mathf.Max(0.35f, size.z);
             plate.transform.localScale = size;
 
-            Destroy(plate.GetComponent<Collider>());
+            FxSafe.Destroy(plate.GetComponent<Collider>());
             var r = plate.GetComponent<Renderer>();
             if (r != null) r.sharedMaterial = _plateMat;
 

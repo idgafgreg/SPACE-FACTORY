@@ -34,7 +34,9 @@ public class Sfx : MonoBehaviour
         {
             if (_instance != null) return _instance;
             var go = new GameObject("Sfx");
-            DontDestroyOnLoad(go);
+            // Edit mode forbids DontDestroyOnLoad and throws, which used to abort
+            // AtmosphereController.Start midway through the dressing preview.
+            if (Application.isPlaying) DontDestroyOnLoad(go);
             _instance = go.AddComponent<Sfx>();
             for (int i = 0; i < PoolSize; i++)
             {

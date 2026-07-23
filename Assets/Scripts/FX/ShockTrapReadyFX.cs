@@ -26,7 +26,7 @@ public class ShockTrapReadyFX : MonoBehaviour
                 var go = GameObject.CreatePrimitive(PrimitiveType.Cylinder);
                 go.name = "TrapReadyBeacon";
                 go.transform.SetParent(trap.transform, false);
-                Destroy(go.GetComponent<Collider>());
+                FxSafe.Destroy(go.GetComponent<Collider>());
                 go.transform.localPosition = Vector3.up * 0.05f;
                 go.transform.localScale = new Vector3(trap.radius * 2f, 0.02f, trap.radius * 2f);
                 var mat = new Material(Shader.Find("Standard"))

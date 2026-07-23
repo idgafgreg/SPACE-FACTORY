@@ -6,7 +6,23 @@ using UnityEngine;
 /// </summary>
 public class SectorLayout : MonoBehaviour
 {
-    public static SectorLayout Instance { get; private set; }
+    static SectorLayout _instance;
+
+    /// <summary>
+    /// Awake fills this in play mode. The edit-mode dressing preview never runs
+    /// Awake on objects that were already in the scene, so fall back to a scene
+    /// lookup instead of reporting the layout as missing (which made
+    /// <see cref="SectorPlaques"/> skip every plaque in the preview).
+    /// </summary>
+    public static SectorLayout Instance
+    {
+        get
+        {
+            if (_instance == null) _instance = FindAnyObjectByType<SectorLayout>();
+            return _instance;
+        }
+        private set => _instance = value;
+    }
 
     [Header("Command Hub")]
     public Transform commandHubTransform;

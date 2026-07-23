@@ -159,7 +159,7 @@ public class FloorZoning : MonoBehaviour
             float yaw = (float)(rng.NextDouble() * 360.0);
             var quad = GameObject.CreatePrimitive(PrimitiveType.Quad);
             quad.name = "GrimeDecal";
-            Destroy(quad.GetComponent<Collider>());
+            FxSafe.Destroy(quad.GetComponent<Collider>());
             quad.transform.SetParent(transform, false);
             quad.transform.position = new Vector3(x, 0.015f, z);
             quad.transform.rotation = Quaternion.Euler(90f, yaw, 0f);
@@ -179,7 +179,7 @@ public class FloorZoning : MonoBehaviour
         if (length < 0.2f || width < 0.05f) return;
         var go = GameObject.CreatePrimitive(PrimitiveType.Cube);
         go.name = name;
-        Destroy(go.GetComponent<Collider>());
+        FxSafe.Destroy(go.GetComponent<Collider>());
         go.transform.SetParent(transform, false);
         mid.y = y;
         go.transform.position = mid;
@@ -196,7 +196,7 @@ public class FloorZoning : MonoBehaviour
     {
         var quad = GameObject.CreatePrimitive(PrimitiveType.Quad);
         quad.name = name;
-        Destroy(quad.GetComponent<Collider>());
+        FxSafe.Destroy(quad.GetComponent<Collider>());
         quad.transform.SetParent(transform, false);
         quad.transform.position = pos;
         quad.transform.rotation = Quaternion.Euler(90f, 0f, 0f);

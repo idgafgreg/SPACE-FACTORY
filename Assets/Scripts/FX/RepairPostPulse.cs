@@ -25,7 +25,7 @@ public class RepairPostPulse : MonoBehaviour
                 var go = GameObject.CreatePrimitive(PrimitiveType.Cylinder);
                 go.name = "RepairRadiusRing";
                 go.transform.SetParent(post.transform, false);
-                Destroy(go.GetComponent<Collider>());
+                FxSafe.Destroy(go.GetComponent<Collider>());
                 go.transform.localPosition = Vector3.up * 0.04f;
                 var mat = new Material(Shader.Find("Standard"))
                 {

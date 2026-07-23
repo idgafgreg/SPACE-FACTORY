@@ -25,6 +25,6 @@ public class TransientFx : MonoBehaviour
         transform.localScale = Vector3.one * (_startScale * k);
         if (_light) _light.intensity = _startIntensity * k;
 
-        if (_age >= _life) Destroy(gameObject);
+        if (_age >= _life) FxSafe.Destroy(gameObject);
     }
 }

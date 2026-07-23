@@ -32,7 +32,7 @@ public class WallSeamSealer : MonoBehaviour
     {
         // Idempotent — wipe prior runtime seals.
         var existing = GameObject.Find("WallSeamSeals");
-        if (existing != null) Destroy(existing);
+        if (existing != null) FxSafe.Destroy(existing);
 
         var wallsRoot = GameObject.Find("Walls");
         if (wallsRoot == null)

@@ -123,7 +123,7 @@ public class SyntyStoryDressing : MonoBehaviour
     static List<Vector3> LitAnchors(SectorLayout layout)
     {
         var list = new List<Vector3>();
-        foreach (var fx in FindObjectsByType<CorridorLampFixture>(FindObjectsSortMode.None))
+        foreach (var fx in FindObjectsByType<CorridorLampFixture>(FindObjectsInactive.Exclude))
         {
             if (fx == null || fx.isDead) continue;   // a dead fixture lights nothing
             list.Add(new Vector3(fx.transform.position.x, 0f, fx.transform.position.z));
@@ -147,7 +147,7 @@ public class SyntyStoryDressing : MonoBehaviour
         SyntyHorrorLoader.PrepareInstance(inst);   // colliders off, animators off, mats repaired
 
         var rends = inst.GetComponentsInChildren<Renderer>(true);
-        if (rends.Length == 0) { Destroy(inst); return false; }
+        if (rends.Length == 0) { FxSafe.Destroy(inst); return false; }
 
         // Several of these pivot at an end rather than their centre (the cryopod is
         // offset ~1.2m); centre on the spot, then sit on the deck.
@@ -160,7 +160,7 @@ public class SyntyStoryDressing : MonoBehaviour
         if (NearestLaneDistance(b.center, layout) < MinLaneDistance ||
             NearestLaneDistance(b.center, layout) < Mathf.Max(b.extents.x, b.extents.z) + 1.2f)
         {
-            Destroy(inst);
+            FxSafe.Destroy(inst);
             return false;
         }
 

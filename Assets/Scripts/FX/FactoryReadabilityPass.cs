@@ -121,7 +121,7 @@ public class FactoryReadabilityPass : MonoBehaviour
     void DressPowerNetwork()
     {
         if (_powerRoot != null)
-            Destroy(_powerRoot.gameObject);
+            FxSafe.Destroy(_powerRoot.gameObject);
         _powerLinks.Clear();
 
         var root = new GameObject("PowerLinksRoot");
@@ -197,7 +197,7 @@ public class FactoryReadabilityPass : MonoBehaviour
         var go = GameObject.CreatePrimitive(PrimitiveType.Cylinder);
         go.name = "ReadabilityPlinth";
         go.transform.SetParent(host, false);
-        Destroy(go.GetComponent<Collider>());
+        FxSafe.Destroy(go.GetComponent<Collider>());
         go.transform.localPosition = new Vector3(0f, 0.012f, 0f);
         go.transform.localRotation = Quaternion.identity;
         go.transform.localScale = new Vector3(width, 0.03f, width);
@@ -213,7 +213,7 @@ public class FactoryReadabilityPass : MonoBehaviour
         var go = GameObject.CreatePrimitive(PrimitiveType.Cylinder);
         go.name = "PowerGlowRing";
         go.transform.SetParent(host, false);
-        Destroy(go.GetComponent<Collider>());
+        FxSafe.Destroy(go.GetComponent<Collider>());
         go.transform.localPosition = new Vector3(0f, 0.04f, 0f);
         go.transform.localScale = new Vector3(2.1f, 0.015f, 2.1f);
 

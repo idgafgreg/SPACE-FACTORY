@@ -206,7 +206,7 @@ public class PlaceholderPropDressing : MonoBehaviour
 
         if (!skipClearance && BoundsOverlapWall(go))
         {
-            Object.Destroy(go);
+            FxSafe.Destroy(go);
             return false;
         }
 
@@ -419,7 +419,7 @@ public class PlaceholderPropDressing : MonoBehaviour
         // Collect the LIVE lamps once and pull each cluster to the lane point nearest one,
         // so the dressing lands inside a pool instead of in the dark between them.
         var litAnchors = new List<Vector3>();
-        foreach (var f in FindObjectsByType<CorridorLampFixture>(FindObjectsSortMode.None))
+        foreach (var f in FindObjectsByType<CorridorLampFixture>(FindObjectsInactive.Exclude))
             if (f != null && !f.isDead) litAnchors.Add(f.transform.position);
 
         for (int n = 0; n < clusters; n++)
@@ -508,7 +508,7 @@ public class PlaceholderPropDressing : MonoBehaviour
 
         if (BoundsOverlapWall(go))
         {
-            Object.Destroy(go);
+            FxSafe.Destroy(go);
             return false;
         }
         return true;
@@ -571,7 +571,7 @@ public class PlaceholderPropDressing : MonoBehaviour
 
         if (BoundsOverlapWall(go) || PropPiercesDeck(go, floorY))
         {
-            Object.Destroy(go);
+            FxSafe.Destroy(go);
             return false;
         }
         return true;

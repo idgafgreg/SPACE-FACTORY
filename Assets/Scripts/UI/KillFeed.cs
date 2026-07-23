@@ -27,7 +27,8 @@ public class KillFeed : MonoBehaviour
     {
         if (_instance != null) return _instance;
         var go = new GameObject("KillFeed");
-        DontDestroyOnLoad(go);
+        // Edit mode forbids DontDestroyOnLoad and throws; see Sfx for the same guard.
+        if (Application.isPlaying) DontDestroyOnLoad(go);
         _instance = go.AddComponent<KillFeed>();
         return _instance;
     }

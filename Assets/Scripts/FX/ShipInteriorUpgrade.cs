@@ -182,7 +182,7 @@ public class ShipInteriorUpgrade : MonoBehaviour
         // Calm sick-green beacon on the roof — the ship is alive, watching.
         var beacon = GameObject.CreatePrimitive(PrimitiveType.Cube);
         beacon.name = "HubBeacon";
-        Destroy(beacon.GetComponent<Collider>());
+        FxSafe.Destroy(beacon.GetComponent<Collider>());
         beacon.transform.SetParent(parent, false);
         beacon.transform.position = new Vector3(b.center.x, b.max.y + 0.18f, b.center.z);
         beacon.transform.localScale = new Vector3(0.18f, 0.32f, 0.18f);
@@ -199,7 +199,7 @@ public class ShipInteriorUpgrade : MonoBehaviour
     {
         var w = GameObject.CreatePrimitive(PrimitiveType.Cube);
         w.name = "HubWindow";
-        Destroy(w.GetComponent<Collider>());
+        FxSafe.Destroy(w.GetComponent<Collider>());
         w.transform.SetParent(parent, false);
         w.transform.position = pos;
         w.transform.localScale = scale;
@@ -258,7 +258,7 @@ public class ShipInteriorUpgrade : MonoBehaviour
 
             var cap = GameObject.CreatePrimitive(PrimitiveType.Cube);
             cap.name = "WallCap";
-            Destroy(cap.GetComponent<Collider>());
+            FxSafe.Destroy(cap.GetComponent<Collider>());
             cap.transform.SetParent(parent, false);
             // CapLayer: point lights hang at y≈3.5 and caps sit at y≈2.9, so a
             // lamp-lit cap gets ~30× the deck's light (inverse square) and blows
@@ -277,7 +277,7 @@ public class ShipInteriorUpgrade : MonoBehaviour
             {
                 var edge = GameObject.CreatePrimitive(PrimitiveType.Cube);
                 edge.name = "WallCapEdge";
-                Destroy(edge.GetComponent<Collider>());
+                FxSafe.Destroy(edge.GetComponent<Collider>());
                 edge.transform.SetParent(parent, false);
                 if (longIsX)
                 {
@@ -456,7 +456,7 @@ public class ShipInteriorUpgrade : MonoBehaviour
         var floor = GameObject.CreatePrimitive(PrimitiveType.Cylinder);
         floor.name = "VoidDeck";
         floor.transform.SetParent(parent, false);
-        Destroy(floor.GetComponent<Collider>());
+        FxSafe.Destroy(floor.GetComponent<Collider>());
         floor.transform.position = center + Vector3.down * 0.08f;
         floor.transform.localScale = new Vector3(90f, 0.05f, 90f);
         floor.GetComponent<Renderer>().sharedMaterial = _voidMat;
@@ -471,7 +471,7 @@ public class ShipInteriorUpgrade : MonoBehaviour
             var wall = GameObject.CreatePrimitive(PrimitiveType.Cube);
             wall.name = "VoidHull";
             wall.transform.SetParent(parent, false);
-            Destroy(wall.GetComponent<Collider>());
+            FxSafe.Destroy(wall.GetComponent<Collider>());
             wall.transform.position = pos;
             wall.transform.localScale = new Vector3(32f, 8f, 1.2f);
             wall.transform.rotation = Quaternion.LookRotation(center - pos, Vector3.up);
@@ -501,7 +501,7 @@ public class ShipInteriorUpgrade : MonoBehaviour
             var go = GameObject.CreatePrimitive(PrimitiveType.Cube);
             go.name = "HazardStripe";
             go.transform.SetParent(parent, false);
-            Destroy(go.GetComponent<Collider>());
+            FxSafe.Destroy(go.GetComponent<Collider>());
             go.transform.position = mid;
             go.transform.localScale = new Vector3(0.14f, 0.02f, len * 0.78f);
             go.transform.rotation = Quaternion.LookRotation(p1 - p0, Vector3.up);
@@ -542,7 +542,7 @@ public class ShipInteriorUpgrade : MonoBehaviour
                 var stripe = GameObject.CreatePrimitive(PrimitiveType.Cube);
                 stripe.name = "LaneDeckStripe";
                 stripe.transform.SetParent(parent, false);
-                Destroy(stripe.GetComponent<Collider>());
+                FxSafe.Destroy(stripe.GetComponent<Collider>());
                 stripe.transform.position = mid;
                 stripe.transform.localScale = new Vector3(1.55f, 0.02f, Mathf.Min(len * 0.95f, 6f));
                 stripe.transform.rotation = Quaternion.LookRotation(dir, Vector3.up);
@@ -693,7 +693,7 @@ public class ShipInteriorUpgrade : MonoBehaviour
 
         var rends = new System.Collections.Generic.List<Renderer>(
             inst.GetComponentsInChildren<Renderer>(true));
-        if (rends.Count == 0) { Destroy(inst); return null; }
+        if (rends.Count == 0) { FxSafe.Destroy(inst); return null; }
 
         // Pack ceiling panels vary — one is ~4.4 m wide, another pivots at a corner.
         // Fit the footprint to a lamp-sized panel, then slide it so the panel centres
@@ -724,7 +724,7 @@ public class ShipInteriorUpgrade : MonoBehaviour
             var lens = GameObject.CreatePrimitive(PrimitiveType.Cube);
             lens.name = "LampGlowLens";
             lens.transform.SetParent(inst.transform, false);
-            Destroy(lens.GetComponent<Collider>());
+            FxSafe.Destroy(lens.GetComponent<Collider>());
             lens.transform.localPosition = new Vector3(0f, -0.14f, 0f);
             lens.transform.localScale = new Vector3(0.42f, 0.05f, 0.24f);
             var instMat = new Material(_lampLensLitMat);
@@ -751,7 +751,7 @@ public class ShipInteriorUpgrade : MonoBehaviour
         var stem = GameObject.CreatePrimitive(PrimitiveType.Cube);
         stem.name = "LampStem";
         stem.transform.SetParent(parent, false);
-        Destroy(stem.GetComponent<Collider>());
+        FxSafe.Destroy(stem.GetComponent<Collider>());
         stem.transform.localPosition = new Vector3(0f, CeilingHeight - 0.10f, 0f);
         stem.transform.localScale = new Vector3(0.10f, 0.20f, 0.10f);
         stem.GetComponent<Renderer>().sharedMaterial = _lampHousingMat;
@@ -761,7 +761,7 @@ public class ShipInteriorUpgrade : MonoBehaviour
         var shell = GameObject.CreatePrimitive(PrimitiveType.Cube);
         shell.name = "LampHousing";
         shell.transform.SetParent(parent, false);
-        Destroy(shell.GetComponent<Collider>());
+        FxSafe.Destroy(shell.GetComponent<Collider>());
         shell.transform.localPosition = new Vector3(0f, CeilingHeight - 0.26f, 0f);
         shell.transform.localScale = new Vector3(0.62f, 0.14f, 0.30f);
         shell.GetComponent<Renderer>().sharedMaterial = _lampHousingMat;
@@ -771,7 +771,7 @@ public class ShipInteriorUpgrade : MonoBehaviour
         var lens = GameObject.CreatePrimitive(PrimitiveType.Cube);
         lens.name = dead ? "LampLensDead" : "LampLens";
         lens.transform.SetParent(parent, false);
-        Destroy(lens.GetComponent<Collider>());
+        FxSafe.Destroy(lens.GetComponent<Collider>());
         lens.transform.localPosition = new Vector3(0f, CeilingHeight - 0.35f, 0f);
         lens.transform.localScale = new Vector3(0.52f, 0.05f, 0.22f);
 
@@ -825,7 +825,7 @@ public class ShipInteriorUpgrade : MonoBehaviour
                     var trim = GameObject.CreatePrimitive(PrimitiveType.Cube);
                     trim.name = "WallBaseTrim";
                     trim.transform.SetParent(parent, false);
-                    Destroy(trim.GetComponent<Collider>());
+                    FxSafe.Destroy(trim.GetComponent<Collider>());
                     trim.transform.position = mid;
                     trim.transform.localScale = new Vector3(0.16f, 0.22f, Mathf.Min(len * 0.92f, 5.5f));
                     trim.transform.rotation = Quaternion.LookRotation(dir, Vector3.up);
@@ -867,7 +867,7 @@ public class ShipInteriorUpgrade : MonoBehaviour
                     var rail = GameObject.CreatePrimitive(PrimitiveType.Cube);
                     rail.name = "WallAccentRail";
                     rail.transform.SetParent(parent, false);
-                    Destroy(rail.GetComponent<Collider>());
+                    FxSafe.Destroy(rail.GetComponent<Collider>());
                     rail.transform.position = mid;
                     rail.transform.localScale = new Vector3(0.08f, 0.1f, Mathf.Min(len * 0.88f, 5f));
                     rail.transform.rotation = Quaternion.LookRotation(dir, Vector3.up);
@@ -902,7 +902,7 @@ public class ShipInteriorUpgrade : MonoBehaviour
         var pad = GameObject.CreatePrimitive(PrimitiveType.Cylinder);
         pad.name = "HubDeckPad";
         pad.transform.SetParent(parent, false);
-        Destroy(pad.GetComponent<Collider>());
+        FxSafe.Destroy(pad.GetComponent<Collider>());
         pad.transform.position = hub.position + Vector3.up * 0.02f;
         pad.transform.localScale = new Vector3(5.2f, 0.03f, 5.2f);
         var mat = new Material(_deckMat);
@@ -994,7 +994,7 @@ public class ShipInteriorUpgrade : MonoBehaviour
                 var p = GameObject.CreatePrimitive(PrimitiveType.Cube);
                 p.name = "CeilingPanel";
                 p.transform.SetParent(ceilingRoot.transform, false);
-                Destroy(p.GetComponent<Collider>());
+                FxSafe.Destroy(p.GetComponent<Collider>());
                 p.layer = CapLayer;
                 p.transform.position = new Vector3(cx, CeilingHeight + 0.09f, cz);
                 p.transform.localScale = new Vector3(sx + overlap, 0.18f, sz + overlap);
@@ -1030,7 +1030,7 @@ public class ShipInteriorUpgrade : MonoBehaviour
             var rib = GameObject.CreatePrimitive(PrimitiveType.Cube);
             rib.name = "CeilingRib";
             rib.transform.SetParent(parent, false);
-            Destroy(rib.GetComponent<Collider>());
+            FxSafe.Destroy(rib.GetComponent<Collider>());
             rib.layer = CapLayer;
             rib.transform.position = new Vector3(x, CeilingHeight - 0.12f, area.center.z);
             rib.transform.localScale = new Vector3(0.35f, 0.24f, area.size.z);
@@ -1103,7 +1103,7 @@ public class ShipInteriorUpgrade : MonoBehaviour
                 var beam = GameObject.CreatePrimitive(PrimitiveType.Cube);
                 beam.name = "HangBeam";
                 beam.transform.SetParent(parent, false);
-                Destroy(beam.GetComponent<Collider>());
+                FxSafe.Destroy(beam.GetComponent<Collider>());
                 beam.transform.position = mid;
                 beam.transform.localScale = new Vector3(0.22f, 0.12f, Mathf.Min(len * 0.8f, 4.5f));
                 beam.transform.rotation = Quaternion.LookRotation(dir, Vector3.up);
@@ -1189,7 +1189,7 @@ public class ShipInteriorUpgrade : MonoBehaviour
                     var pipe = GameObject.CreatePrimitive(PrimitiveType.Cylinder);
                     pipe.name = "OverheadPipe";
                     pipe.transform.SetParent(parent, false);
-                    Destroy(pipe.GetComponent<Collider>());
+                    FxSafe.Destroy(pipe.GetComponent<Collider>());
                     pipe.transform.position = (p0 + p1) * 0.5f;
                     pipe.transform.localScale = new Vector3(0.12f, len * 0.5f, 0.12f);
                     pipe.transform.rotation = Quaternion.LookRotation(dir, Vector3.up)
@@ -1200,7 +1200,7 @@ public class ShipInteriorUpgrade : MonoBehaviour
                 var bracket = GameObject.CreatePrimitive(PrimitiveType.Cube);
                 bracket.name = "PipeBracket";
                 bracket.transform.SetParent(parent, false);
-                Destroy(bracket.GetComponent<Collider>());
+                FxSafe.Destroy(bracket.GetComponent<Collider>());
                 bracket.transform.position = (p0 + p1) * 0.5f + Vector3.up * 0.18f;
                 bracket.transform.localScale = new Vector3(0.28f, 0.06f, 0.28f);
                 bracket.GetComponent<Renderer>().sharedMaterial = _hullMat;
@@ -1271,7 +1271,7 @@ public class ShipInteriorUpgrade : MonoBehaviour
             go.name = "WallDetail";
             go.transform.localScale = wallModel.transform.localScale;
             foreach (var col in go.GetComponentsInChildren<Collider>())
-                Destroy(col);
+                FxSafe.Destroy(col);
             FitWallDetail(go, pos);
 
             foreach (var renderer in go.GetComponentsInChildren<Renderer>())
@@ -1325,7 +1325,7 @@ public class ShipInteriorUpgrade : MonoBehaviour
             var trim = GameObject.CreatePrimitive(PrimitiveType.Cube);
             trim.name = "WallTrim";
             trim.transform.SetParent(parent, false);
-            Destroy(trim.GetComponent<Collider>());
+            FxSafe.Destroy(trim.GetComponent<Collider>());
             Vector3 c = r.bounds.center;
             trim.transform.position = new Vector3(c.x, r.bounds.min.y + 0.35f, c.z);
             trim.transform.localScale = new Vector3(
@@ -1375,7 +1375,7 @@ public class ShipInteriorUpgrade : MonoBehaviour
                     var plate = GameObject.CreatePrimitive(PrimitiveType.Cube);
                     plate.name = "Kickplate";
                     plate.transform.SetParent(parent, false);
-                    Destroy(plate.GetComponent<Collider>());
+                    FxSafe.Destroy(plate.GetComponent<Collider>());
                     plate.transform.position = mid;
                     plate.transform.localScale = new Vector3(0.08f, plateH, Mathf.Min(len * 0.7f, 4f));
                     plate.transform.rotation = Quaternion.LookRotation(dir, Vector3.up);

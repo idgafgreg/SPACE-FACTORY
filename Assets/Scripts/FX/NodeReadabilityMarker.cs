@@ -79,7 +79,7 @@ public class NodeReadabilityMarker : MonoBehaviour
             // the first version of this cluster.
             shard.name = "ReadabilityShard";
             shard.transform.SetParent(root.transform, false);
-            Destroy(shard.GetComponent<Collider>());
+            FxSafe.Destroy(shard.GetComponent<Collider>());
             shard.transform.localPosition = new Vector3(Mathf.Cos(ang) * rad, height * 0.5f, Mathf.Sin(ang) * rad);
             // Lean the outer shards outward so the cluster splays like ore.
             float lean = centre ? 0f : 16f;

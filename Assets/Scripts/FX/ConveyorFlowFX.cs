@@ -98,7 +98,7 @@ public class ConveyorFlowFX : MonoBehaviour
         {
             if (_entries[i].belt == null)
             {
-                if (_entries[i].line != null) Destroy(_entries[i].line.gameObject);
+                if (_entries[i].line != null) FxSafe.Destroy(_entries[i].line.gameObject);
                 _entries.RemoveAt(i);
             }
         }

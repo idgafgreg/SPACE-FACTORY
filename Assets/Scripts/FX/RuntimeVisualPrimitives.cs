@@ -26,7 +26,7 @@ public static class RuntimeVisualPrimitives
     {
         var go = GameObject.CreatePrimitive(PrimitiveType.Quad);
         go.name = name;
-        Object.Destroy(go.GetComponent<Collider>());
+        FxSafe.Destroy(go.GetComponent<Collider>());
         go.transform.position = position;
         go.transform.rotation = Quaternion.Euler(-90f, 0f, 0f);
         go.transform.localScale = new Vector3(scale, scale, 1f);

@@ -42,6 +42,6 @@ public class ScanPulseFX : MonoBehaviour
             }
         }
 
-        if (_age >= _life) Destroy(gameObject);
+        if (_age >= _life) FxSafe.Destroy(gameObject);
     }
 }

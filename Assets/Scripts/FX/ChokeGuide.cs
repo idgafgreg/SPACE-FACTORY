@@ -71,7 +71,7 @@ public class ChokeGuide : MonoBehaviour
             var ghost = GameObject.CreatePrimitive(PrimitiveType.Quad);
             ghost.name = "ChokeGhost_" + lane.laneId;
             ghost.transform.SetParent(_root, false);
-            Destroy(ghost.GetComponent<Collider>());
+            FxSafe.Destroy(ghost.GetComponent<Collider>());
             ghost.transform.position = pos;
             // Flat on deck for iso camera (Quad faces +Z by default).
             ghost.transform.rotation = Quaternion.Euler(90f, Quaternion.LookRotation(across).eulerAngles.y, 0f);
@@ -84,7 +84,7 @@ public class ChokeGuide : MonoBehaviour
     {
         if (_root != null)
         {
-            Destroy(_root.gameObject);
+            FxSafe.Destroy(_root.gameObject);
             _root = null;
         }
     }

@@ -36,7 +36,7 @@ public class MapEdgeGuard : MonoBehaviour
     public void Build()
     {
         var existing = GameObject.Find("MapEdgeRails");
-        if (existing != null) Destroy(existing);
+        if (existing != null) FxSafe.Destroy(existing);
 
         RailsCreated = 0;
         _hasDeck = TryGetDeckBounds(out _deck);

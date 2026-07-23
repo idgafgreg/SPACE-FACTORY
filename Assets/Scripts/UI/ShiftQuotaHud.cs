@@ -41,9 +41,6 @@ public class ShiftQuotaHud : MonoBehaviour
     /// <summary>True if the quota was already acknowledged this cycle.</summary>
     bool _hitAckedThisCycle;
 
-    /// <summary>True if the miss alarm bump is currently active.</summary>
-    bool _missBumpActive;
-
     float _missAlarmTimer;
     float _spawnStartTime = float.MinValue;
 
@@ -63,7 +60,6 @@ public class ShiftQuotaHud : MonoBehaviour
             {
                 _spawnStartTime = Time.time;
                 _missAlarmTimer = 0f;
-                _missBumpActive = false;
             }
 
             if (!_evaluatedThisCycle && Time.time - _spawnStartTime >= missDelayAfterSpawn)

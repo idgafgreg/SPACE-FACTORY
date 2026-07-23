@@ -67,9 +67,14 @@ public class AmbientDustMotes : MonoBehaviour
             });
         colorOver.color = grad;
 
-        var renderer = host.GetComponent<ParticleSystemRenderer>();
-        renderer.material = new Material(Shader.Find("Particles/Standard Unlit"));
-        renderer.material.color = new Color(0.75f, 0.85f, 1f, 0.5f);
+        // Build the material fully, then assign once. Reading back renderer.material
+        // to tint it clones the material, and in edit mode (the dressing preview)
+        // that logs "Instantiating material ... will leak materials into the scene".
+        var motes = new Material(Shader.Find("Particles/Standard Unlit"))
+        {
+            color = new Color(0.75f, 0.85f, 1f, 0.5f)
+        };
+        host.GetComponent<ParticleSystemRenderer>().sharedMaterial = motes;
 
         _built = true;
         enabled = false;

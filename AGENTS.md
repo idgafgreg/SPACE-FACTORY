@@ -80,6 +80,20 @@ reveal the defect:** a head-on corridor shot hides a floating prop through fores
 float from the SIDE and cross-check placement against a ground reference (a lane stripe's Y, the deck
 surface). A frame from the wrong angle lies as readily as a bad metric.
 
+**2b. Capture in Play mode. Offscreen `cam.Render()` in EDIT mode paints the background pure magenta.**
+Rendering `Camera.main` (or any camera) into a `RenderTexture` from a `RunCommand` while **not** in Play
+mode returns exact `RGBA(1,0,1,1)` for every pixel no geometry covers — sky, open corridor ends, gaps.
+Geometry itself renders correctly, so the frame looks like a catastrophic missing-shader bug that does
+not exist. A full pass was spent excluding: unsupported shaders (0 of 752 renderers), material and
+texture colours, the PPv2 post stack, `clearFlags`/`backgroundColor` (forcing SolidColor green still
+came back magenta), `RenderSettings.skybox` (nulling it changed nothing), HDR, MSAA, camera command
+buffers, extra cameras, additive scenes, async shader compilation, and a throwaway capture camera —
+none of it is the cause. `Camera.RenderWithShader` renders the same view with **0%** magenta, and Play
+mode via `ScreenCapture.CaptureScreenshotAsTexture()` is **0%** magenta and correct. **Rule:** to verify
+a visual claim, enter Play mode and use `ScreenCapture.CaptureScreenshotAsTexture()`. Treat magenta in
+an edit-mode offscreen capture as an artifact of the capture, never as a project defect — and do not
+re-investigate it.
+
 **3. State set this frame is not readable this frame.** `LateUpdate` writes (camera rig, `PlayerAim`
 torso), `ViewMode.OnChanged` reactions, and physics/gravity settle *after* your `RunCommand` returns.
 Reading them in the same command gave a 28-degree aim error that was really 0, an "iso torso not

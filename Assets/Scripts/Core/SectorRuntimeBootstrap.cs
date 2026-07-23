@@ -48,6 +48,18 @@ public static class SectorRuntimeBootstrap
         // Idempotent: never stack a second runtime container on the same scene.
         if (Object.FindAnyObjectByType<SectorRuntimeMarker>() != null) return;
 
+        CreateRuntimeContainer();
+    }
+
+    /// <summary>
+    /// Builds the SectorRuntime container and everything hung off it. Split out
+    /// of <see cref="HandleScene"/> so the editor preview tool
+    /// (Tools → Space Factory → Preview Sector Dressing) can raise the same
+    /// stack in edit mode instead of duplicating this list and drifting from it.
+    /// Callers are responsible for the duplicate check.
+    /// </summary>
+    public static GameObject CreateRuntimeContainer()
+    {
         var go = new GameObject("SectorRuntime");
         go.AddComponent<SectorRuntimeMarker>();
         go.AddComponent<SceneScanCache>();
@@ -136,5 +148,7 @@ public static class SectorRuntimeBootstrap
         var cam = Camera.main;
         if (cam != null && cam.GetComponent<FirstPersonCamera>() == null)
             cam.gameObject.AddComponent<FirstPersonCamera>();
+
+        return go;
     }
 }

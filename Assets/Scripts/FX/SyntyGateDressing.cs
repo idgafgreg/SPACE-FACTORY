@@ -89,7 +89,7 @@ public class SyntyGateDressing : MonoBehaviour
             SyntyHorrorLoader.PrepareInstance(inst);   // strips the airlock's 2 colliders
 
             var rends = inst.GetComponentsInChildren<Renderer>(true);
-            if (rends.Length == 0) { Destroy(inst); continue; }
+            if (rends.Length == 0) { FxSafe.Destroy(inst); continue; }
 
             // The airlock pivots at one edge, not its centre — centre it on the mouth
             // and sit it on the deck.
@@ -173,7 +173,7 @@ public class SyntyGateDressing : MonoBehaviour
     static float VoidClearInset(Vector3 mouth, Vector3 inward)
     {
         float inset = 0f;
-        foreach (var r in FindObjectsByType<Renderer>(FindObjectsSortMode.None))
+        foreach (var r in FindObjectsByType<Renderer>(FindObjectsInactive.Exclude))
         {
             if (r == null || !r.enabled || !r.name.Contains("VoidHull")) continue;
             var b = r.bounds;
@@ -222,7 +222,7 @@ public class SyntyGateDressing : MonoBehaviour
 
         var wall = GameObject.CreatePrimitive(PrimitiveType.Cube);
         wall.name = "GateBackdrop";
-        Destroy(wall.GetComponent<Collider>());
+        FxSafe.Destroy(wall.GetComponent<Collider>());
         wall.transform.SetParent(frame, worldPositionStays: true);
         wall.transform.rotation = Quaternion.LookRotation(inward, Vector3.up);
         wall.transform.position = baseC - inward * 1.9f + Vector3.up * 2.0f;
@@ -238,7 +238,7 @@ public class SyntyGateDressing : MonoBehaviour
     {
         var bar = GameObject.CreatePrimitive(PrimitiveType.Cube);
         bar.name = "GateIndicator";
-        Destroy(bar.GetComponent<Collider>());
+        FxSafe.Destroy(bar.GetComponent<Collider>());
         bar.transform.SetParent(frame, worldPositionStays: true);
         bar.transform.rotation = rot;
         bar.transform.position = worldPos;

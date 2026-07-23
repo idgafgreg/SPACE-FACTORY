@@ -58,7 +58,6 @@ public class PostFXBootstrap : MonoBehaviour
 
     ColorGrading _grade;
     Vignette _vignette;
-    bool _built;
 
     /// <summary>Swap the grade for the active view mode. Iso restores A1 exactly.</summary>
     public void ApplyViewProfile()
@@ -88,7 +87,36 @@ public class PostFXBootstrap : MonoBehaviour
     // volume/layer pairing can never break on a fresh checkout.
     const int VolumeLayer = 1; // TransparentFX
 
+    /// <summary>Resources-folder copy — the only path a build can load from.</summary>
+    public const string ResourcesAssetName = "PostProcessResources";
+
+    /// <summary>Package original the Resources copy is synced from.</summary>
+    public const string PackageAssetPath =
+        "Packages/com.unity.postprocessing/PostProcessing/PostProcessResources.asset";
+
     PostProcessVolume _volume;
+
+    /// <summary>
+    /// A PostProcessLayer added at runtime has no PostProcessResources reference
+    /// and NREs on first render, so it must be Init'd explicitly.
+    ///
+    /// Resources first, package second — deliberately in that order. The editor
+    /// used to load the package copy while builds loaded Resources, so the two
+    /// could silently diverge (and did: nothing lived in Resources at all, which
+    /// meant post-processing was dead in every build while looking fine in the
+    /// editor). Loading the same Resources asset in both makes editor Play mode
+    /// an honest preview of the build. The package fallback only exists so a
+    /// fresh checkout that has not run "Sync Post FX Resources" still renders.
+    /// </summary>
+    public static PostProcessResources LoadResources()
+    {
+        var res = Resources.Load<PostProcessResources>(ResourcesAssetName);
+#if UNITY_EDITOR
+        if (res == null)
+            res = UnityEditor.AssetDatabase.LoadAssetAtPath<PostProcessResources>(PackageAssetPath);
+#endif
+        return res;
+    }
 
     void Start()
     {
@@ -97,20 +125,22 @@ public class PostFXBootstrap : MonoBehaviour
 
         cam.allowHDR = true; // bloom needs HDR headroom
 
+        // Resolve resources before touching the camera. An uninitialised
+        // PostProcessLayer NREs once per frame inside the render loop and buries
+        // every other log, so never add one we cannot Init.
+        var resources = LoadResources();
+        if (resources == null)
+        {
+            Debug.LogError(
+                "[PostFXBootstrap] PostProcessResources not found — post-processing disabled. " +
+                "Run Tools > Space Factory > Sync Post FX Resources to restore " +
+                "Assets/Resources/PostProcessResources.asset.");
+            return;
+        }
+
         var layer = cam.GetComponent<PostProcessLayer>();
         if (layer == null) layer = cam.gameObject.AddComponent<PostProcessLayer>();
-
-        // A layer added at runtime has no PostProcessResources reference and
-        // NREs on first render. In the editor load it straight from the
-        // package; in a build it must live in a Resources folder.
-        var resources =
-#if UNITY_EDITOR
-            UnityEditor.AssetDatabase.LoadAssetAtPath<PostProcessResources>(
-                "Packages/com.unity.postprocessing/PostProcessing/PostProcessResources.asset");
-#else
-            Resources.Load<PostProcessResources>("PostProcessResources");
-#endif
-        if (resources != null) layer.Init(resources);
+        layer.Init(resources);
 
         layer.volumeTrigger = cam.transform;
         layer.volumeLayer = 1 << VolumeLayer;
@@ -164,7 +194,6 @@ public class PostFXBootstrap : MonoBehaviour
         volumeGo.transform.SetParent(transform, false);
         volumeGo.layer = VolumeLayer;
         _volume = volumeGo.AddComponent<PostProcessVolume>();
-        _built = true;
         _volume.isGlobal = true;
         _volume.profile = profile;
     }
@@ -172,7 +201,10 @@ public class PostFXBootstrap : MonoBehaviour
     void OnDestroy()
     {
         ViewMode.OnChanged -= ApplyViewProfile;
-        if (_volume != null && _volume.profile != null)
-            Destroy(_volume.profile);
+        if (_volume == null || _volume.profile == null) return;
+
+        // FxSafe: the edit-mode dressing preview tears this down outside Play
+        // mode, where plain Destroy is illegal.
+        FxSafe.Destroy(_volume.profile);
     }
 }

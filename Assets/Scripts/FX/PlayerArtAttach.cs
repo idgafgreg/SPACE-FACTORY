@@ -53,7 +53,7 @@ public class PlayerArtAttach : MonoBehaviour
         if (art.GetComponent<ArtPlaceholderMarker>() == null)
             art.AddComponent<ArtPlaceholderMarker>();
         foreach (var c in art.GetComponentsInChildren<Collider>())
-            Destroy(c);
+            FxSafe.Destroy(c);
 
         HideCapsule(art.transform);
         ArtPlaceholderFitter.Fit(art.transform);
