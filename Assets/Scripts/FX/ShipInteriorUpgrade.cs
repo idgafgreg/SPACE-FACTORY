@@ -13,7 +13,8 @@ public class ShipInteriorUpgrade : MonoBehaviour
     // 57: F7 lamp fixtures — corridor lights gain housings and per-mode values.
     // 58: skip corridor lamp fixtures inside the hub footprint (clipping fix).
     // 59: F9 — wire the never-called BuildKickplates for eye-level deck-edge detail.
-    const int UpgradeVersion = 61; // P4: corridor lamp housings use Synty ceiling-light prefabs
+    // 62: P8 overhead pipes switch from Kenney `pipe_straight` to Synty `SM_Prop_Pipe_Straight_Full_01`.
+    const int UpgradeVersion = 62; // P8: Synty overhead pipe kit
 
     // TransparentFX — built-in layer, ships with every project (same choice as
     // PostFXBootstrap.VolumeLayer). Wall caps live here so point lights can cull
@@ -1116,7 +1117,8 @@ public class ShipInteriorUpgrade : MonoBehaviour
         var layout = SectorLayout.Instance;
         if (layout == null || layout.lanes == null) return;
 
-        var pipePrefab = Resources.Load<GameObject>("ArtPlaceholders/pipe_straight");
+        var pipePrefab = SyntyHorrorLoader.LoadProp("SM_Prop_Pipe_Straight_Full_01");
+        float prefabLength = PrefabLength(pipePrefab);
         int pipeCount = 0;
 
         foreach (var lane in layout.lanes)
@@ -1146,19 +1148,17 @@ public class ShipInteriorUpgrade : MonoBehaviour
                 float len = Vector3.Distance(p0, p1);
                 if (len < 0.8f || len > 8f) continue;
 
-                if (pipePrefab != null)
+                if (pipePrefab != null && prefabLength > 0f)
                 {
                     var go = Instantiate(pipePrefab, (p0 + p1) * 0.5f,
                         Quaternion.LookRotation(dir, Vector3.up), parent);
                     go.name = "OverheadPipe";
-                    // Kenney pipes are unit-ish; scale gently so they don't spear walls
-                    go.transform.localScale = new Vector3(0.85f, 0.85f, Mathf.Clamp(len * 0.55f, 0.8f, 3.5f));
-                    foreach (var c in go.GetComponentsInChildren<Collider>())
-                        Destroy(c);
+                    // Synty straight pipe is assumed aligned along its local Z; stretch
+                    // Z to span the segment while keeping XY radius unchanged.
+                    go.transform.localScale = new Vector3(1f, 1f, len / prefabLength);
+                    SyntyHorrorLoader.PrepareInstance(go);
                     foreach (var r in go.GetComponentsInChildren<Renderer>())
-                    {
                         if (r != null) r.sharedMaterial = _pipeMat;
-                    }
                 }
                 else
                 {
@@ -1182,6 +1182,17 @@ public class ShipInteriorUpgrade : MonoBehaviour
                 bracket.GetComponent<Renderer>().sharedMaterial = _hullMat;
             }
         }
+    }
+
+    static float PrefabLength(GameObject prefab)
+    {
+        if (prefab == null) return 0f;
+        var rs = prefab.GetComponentsInChildren<Renderer>(true);
+        if (rs == null || rs.Length == 0) return 1f;
+        Bounds b = rs[0].bounds;
+        for (int i = 1; i < rs.Length; i++)
+            if (rs[i] != null) b.Encapsulate(rs[i].bounds);
+        return Mathf.Max(b.size.z, 0.01f);
     }
 
     static bool IsOpenAirSegment(Vector3 p0, Vector3 p1)

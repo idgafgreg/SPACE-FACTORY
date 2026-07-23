@@ -490,12 +490,17 @@ Without it, mats may pink; runtime falls back to Standard albedo when Error.
   (`Crate_01`, `Barrel_01`); dead Kenney `Spawn`/`RecolorProp`/`FitProp` helpers removed.
   Syntax verified with ad-hoc Roslyn parser; in-editor Play-mode lane walk + VoidHull check still needed.
 
-- [ ] P8. Overhead pipes — Synty pipe kit
+- [x] P8. Overhead pipes — Synty pipe kit
   Tag: `[asset-pack: POLYGON Sci-Fi Horror]`
   Unity: yes — FP look-up in corridors
-  Change: `ShipInteriorUpgrade` overhead pipes load `SM_Prop_Pipe_*` instead of Kenney
+  Change: `ShipInteriorUpgrade` overhead pipes load `SM_Prop_Pipe_Straight_Full_01` instead of Kenney
   `pipe_straight`; collider-free; no wall spears.
-  done-when: FP ducts are Synty; console clean
+  done-when: FP ducts are Synty; console clean.
+  DONE 2026-07-22 (ShipInteriorUpgrade.cs v62): `BuildOverheadPipes` now uses
+  `SyntyHorrorLoader.LoadProp("SM_Prop_Pipe_Straight_Full_01")`, scales along local Z to span each
+  segment, calls `PrepareInstance` for collider-free + material fallback; primitive cylinder fallback
+  kept if the pack prefab is unavailable. Syntax verified with ad-hoc Roslyn parser; in-editor FP
+  look-up + wall-spear check still needed.
 
 - [ ] P9. Dense lived-in dressing pass (posters, signs, lockers, food)
   Tag: `[asset-pack: POLYGON Sci-Fi Horror]`
@@ -1539,12 +1544,17 @@ Method: capture the Game view in Play mode, judge the frame, fix the single wors
 
 ## Agent log (newest first — one line per session: date, task, result, commit)
 
+- 2026-07-22: auto-dev P8 overhead pipes Synty — `ShipInteriorUpgrade.cs` v62:
+  `BuildOverheadPipes` uses `SM_Prop_Pipe_Straight_Full_01`, scales along local Z per segment,
+  `PrepareInstance` for collider-free/material fallback; primitive fallback kept. Syntax verified.
+  In-editor FP look-up + wall-spear check still needed. Commit: PENDING.
+
 - 2026-07-22: auto-dev P7 corridor/workshop/bay props Synty-only — `PlaceholderPropDressing.cs` v15:
   corridors use `SM_Prop_Crate_01/02`, `SM_Prop_Barrel_01`, `SM_Prop_Locker_01`, `SM_Prop_Greeble_04`;
   workshop uses `Locker_01`, `Barrel_01`, `Crate_01`, `Greeble_08`, `Generator_PowerCell_01`; bay debris
   uses `Crate_01`, `Barrel_01`. Dead Kenney `Spawn`/`RecolorProp`/`FitProp` helpers removed.
   Syntax verified with ad-hoc Roslyn parser; in-editor Play-mode lane walk + VoidHull check still needed.
-  Commit: PENDING.
+  Commit: `b971b67`.
 
 - 2026-07-22: **Human rulings applied.** (1) SectorLighting reverted (`c73c748`, was dd445f0).
   (2) P12/P13 = retarget/author poses — unblocked with that requirement. (3) Prep lock **40s / 30s**
