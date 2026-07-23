@@ -1528,7 +1528,7 @@ Method: capture the Game view in Play mode, judge the frame, fix the single wors
   albedo 0.34. **A/B 0.11% → 61.93%**; the mouth now reads as a SYNCOMM airlock door with lock wheel
   and hazard chevrons inside a lit amber frame. 5/5 mouths, colliders=0, full suite **7/7 PASS** with
   WAVE1 green. Recorded the VoidHull occlusion as a standing gotcha for all perimeter dressing and
-  sharpened P22's deferral reason. Commit <hash>.
+  sharpened P22's deferral reason. Commit 7e6879a.
 
 - 2026-07-22: **Audio / sounds gate CLOSED** — added `## Audio / sounds status` mirroring the old
   asset-pack gate. Tag `[wait-until-sounds]`; SND1–SND11 parked (Sfx replace, machine beds,
