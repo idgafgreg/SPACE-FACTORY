@@ -273,6 +273,8 @@ public class RuntimeArtBackfill : MonoBehaviour
         }
     }
 
+    static int _blobIndex;
+
     static void EnsureBlobShadow(Transform t, float scale)
     {
         if (t == null || t.Find("BlobShadow") != null) return;
@@ -281,7 +283,13 @@ public class RuntimeArtBackfill : MonoBehaviour
         go.name = "BlobShadow";
         go.transform.SetParent(t, false);
         FxSafe.Destroy(go.GetComponent<Collider>());
-        go.transform.localPosition = new Vector3(0f, 0.02f, 0f);
+        // Per-instance vertical stagger, same reason the deck plates need one: two
+        // blob shadows at the same ground height that overlap are exactly coplanar
+        // with the same material, and flicker. Static props rarely collide, but
+        // enemies and residue bunch up constantly in combat - which is precisely
+        // when the player is looking. Sub-millimetre, so the shadow still reads as
+        // lying on the deck.
+        go.transform.localPosition = new Vector3(0f, 0.02f + (_blobIndex++ % 16) * 0.0012f, 0f);
         go.transform.localRotation = Quaternion.Euler(90f, 0f, 0f);
         go.transform.localScale = Vector3.one * scale;
 

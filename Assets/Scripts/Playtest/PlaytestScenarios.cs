@@ -583,6 +583,27 @@ public partial class PlaytestHarness
         bool rigWasEnabled = fpRig != null && fpRig.enabled;
         if (fpRig != null) fpRig.enabled = false;
 
+        // MainMenuController.Awake also raises MainMenuAtmosphere, which is built for
+        // the menu scene and rewrites this one: it overwrites RenderSettings fog,
+        // ambient and the main camera's clear flags / FOV, then hangs a MenuSilhouette
+        // (deck, hazard stripes, lamps, props) in the middle of the sector. Nothing
+        // put it back, so every suite run left the sector with menu fog, menu ambient,
+        // a 48 FOV camera and a fake corridor sitting inside the hub for the rest of
+        // the session — and any measurement taken afterwards was against that. Snapshot
+        // what the probe is about to clobber and restore it when the probe is done.
+        var camForProbe = Camera.main;
+        bool  sFog       = RenderSettings.fog;
+        var   sFogMode   = RenderSettings.fogMode;
+        Color sFogColor  = RenderSettings.fogColor;
+        float sFogStart  = RenderSettings.fogStartDistance;
+        float sFogEnd    = RenderSettings.fogEndDistance;
+        var   sAmbMode   = RenderSettings.ambientMode;
+        Color sAmbient   = RenderSettings.ambientLight;
+        var   sClear     = camForProbe != null ? camForProbe.clearFlags : CameraClearFlags.Skybox;
+        Color sBg        = camForProbe != null ? camForProbe.backgroundColor : Color.black;
+        float sFov       = camForProbe != null ? camForProbe.fieldOfView : 60f;
+        bool  sHdr       = camForProbe != null && camForProbe.allowHDR;
+
         Cursor.lockState = CursorLockMode.Locked;
         Cursor.visible = false;
         var menuProbe = new GameObject("PlaytestMenuProbe");
@@ -596,8 +617,39 @@ public partial class PlaytestHarness
             $"lockState={Cursor.lockState} visible={Cursor.visible}");
 
         DestroyImmediate(menuProbe);
+
+        // Tear down the menu atmosphere and everything parented under it
+        // (MenuSilhouette, MenuKeyLight, MenuFillLight), plus its loose UI chrome.
+        foreach (var atmos in FindObjectsByType<MainMenuAtmosphere>(FindObjectsSortMode.None))
+            if (atmos != null) DestroyImmediate(atmos.gameObject);
+        foreach (var stray in FindObjectsByType<Transform>(FindObjectsSortMode.None))
+            if (stray != null && (stray.name == "MenuSilhouette" || stray.name == "MenuVignette"
+                                  || stray.name == "MenuStatus" || stray.name == "MenuStarfield"))
+                DestroyImmediate(stray.gameObject);
+
+        RenderSettings.fog = sFog;
+        RenderSettings.fogMode = sFogMode;
+        RenderSettings.fogColor = sFogColor;
+        RenderSettings.fogStartDistance = sFogStart;
+        RenderSettings.fogEndDistance = sFogEnd;
+        RenderSettings.ambientMode = sAmbMode;
+        RenderSettings.ambientLight = sAmbient;
+        if (camForProbe != null)
+        {
+            camForProbe.clearFlags = sClear;
+            camForProbe.backgroundColor = sBg;
+            camForProbe.fieldOfView = sFov;
+            camForProbe.allowHDR = sHdr;
+        }
+
         if (fpRig != null) fpRig.enabled = rigWasEnabled;
         yield return null;
+
+        Assert("menu probe leaves no atmosphere behind",
+            FindObjectsByType<MainMenuAtmosphere>(FindObjectsSortMode.None).Length == 0
+            && Mathf.Approximately(RenderSettings.fogEndDistance, sFogEnd), sb, pass,
+            $"atmosphereObjects={FindObjectsByType<MainMenuAtmosphere>(FindObjectsSortMode.None).Length} " +
+            $"fogEnd={RenderSettings.fogEndDistance:F1} expected={sFogEnd:F1}");
 
         // The sector-side guard: tearing down the rig must release the lock it
         // took, so leaving for ANY scene restores a usable cursor.
