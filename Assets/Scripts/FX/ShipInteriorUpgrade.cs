@@ -603,15 +603,6 @@ public class ShipInteriorUpgrade : MonoBehaviour
                 var rig = fixture.AddComponent<CorridorLampFixture>();
                 rig.isDead = dead;
 
-                // Sector lighting (owner 2026-07-22): the fixture belongs to this
-                // lane's sector, and while that sector is derelict every SECOND
-                // surviving fixture is also out. Combined with the permanent
-                // every-third dead housing that leaves a corridor running on a
-                // couple of failing lamps until the player pays to restore it —
-                // then these come back and the corridor reads as a workplace again.
-                rig.zone = lane.laneId;
-                rig.deadUntilRestored = !dead && (lit % 2 == 0);
-
                 if (dead)
                 {
                     rig.Bind(null, null, null, housing);

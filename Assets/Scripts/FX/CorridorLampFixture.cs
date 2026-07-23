@@ -55,30 +55,6 @@ public class CorridorLampFixture : MonoBehaviour
     /// <summary>Dead fixtures get a housing and no light — visible neglect.</summary>
     public bool isDead;
 
-    [Header("Sector lighting (owner 2026-07-22)")]
-    [Tooltip("Which sector this fixture belongs to. Empty = always behaves as restored.")]
-    public string zone;
-
-    [Tooltip("Fixtures that are dead ONLY because the sector is derelict — they " +
-             "come back when the player restores the zone, unlike isDead housings " +
-             "which are permanently neglected.")]
-    public bool deadUntilRestored;
-
-    [Header("Derelict profile — the ship before you pay for it")]
-    [Tooltip("Emergency power in FIRST PERSON: a fraction of the tuned intensity. Dimmer, " +
-             "never strobier (bible: 'lights die, rooms get blacker — not flashier').")]
-    public float derelictIntensityMult = 0.42f;
-    [Tooltip("Emergency power in ISO — deliberately gentler than the FP value. Iso is the " +
-             "factory-management view and the 2026-07-20 decision keeps layout/throughput the " +
-             "primary skill expression, so an unrestored sector reads as visibly failing without " +
-             "making the belts unreadable. The dead-fixture set stays the SAME in both modes: the " +
-             "ship's state should not disagree with itself between views.")]
-    public float derelictIntensityMultIso = 0.75f;
-    [Tooltip("Deeper breathing dips on a failing grid.")]
-    public float derelictDip = 0.55f;
-    [Tooltip("Brownout stutters land far more often than the healthy 45s.")]
-    public float derelictStutterEvery = 11f;
-
     Light _light;
     LampFlicker _flicker;
     Renderer[] _housingRenderers;
@@ -87,15 +63,12 @@ public class CorridorLampFixture : MonoBehaviour
     void Start()
     {
         ViewMode.OnChanged += Apply;
-        SectorLighting.OnChanged += Apply;
-        SectorLighting.Register(zone);
         Apply();
     }
 
     void OnDestroy()
     {
         ViewMode.OnChanged -= Apply;
-        SectorLighting.OnChanged -= Apply;
     }
 
     /// <summary>Called by ShipInteriorUpgrade once the geometry is built.</summary>
@@ -126,28 +99,7 @@ public class CorridorLampFixture : MonoBehaviour
         _light.range = fp ? fpRange : isoRange;
 
         float intensity = fp ? fpIntensity : isoIntensity;
-
-        // Until the player pays to restore this sector, the fixture runs on
-        // emergency power: dimmer, breathing harder, stuttering far more often —
-        // and some fixtures are simply out. Restoring the zone brings all of it
-        // back to the tuned F7/F8 values.
-        bool restored = SectorLighting.IsRestored(zone);
-        if (!restored)
-        {
-            intensity *= fp ? derelictIntensityMult : derelictIntensityMultIso;
-            if (_light != null) _light.range *= fp ? 0.88f : 0.95f;
-        }
-
-        if (_flicker != null)
-        {
-            _flicker.dipAmount    = restored ? 0.22f : derelictDip;
-            _flicker.stutterEvery = restored ? 45f   : derelictStutterEvery;
-            _flicker.forceDead    = deadUntilRestored && !restored;
-            _flicker.SetBaseIntensity(intensity);
-        }
-        else if (_light != null)
-        {
-            _light.intensity = deadUntilRestored && !restored ? 0f : intensity;
-        }
+        if (_flicker != null) _flicker.SetBaseIntensity(intensity);
+        else _light.intensity = intensity;
     }
 }
