@@ -15,18 +15,18 @@ Rules for tasks in this file:
 - One task = one commit-sized change (fits in a single session, testable).
 - Each task states **done-when** criteria so the agent knows when to stop.
 - `SPACE FACTORY INFO/` is **living design** — numbers and systems may change when it makes the game better; keep docs in sync in the same commit.
-- Tag pack-dependent work `[asset-pack: <name>]` and leave it out of active Now until Asset pack status says purchased.
+- Tag pack-dependent work `[asset-pack: POLYGON Sci-Fi Horror]` so agents use the purchased Synty path (see Asset pack status). Do **not** skip those tasks — the gate is open.
 - Prefer systemic / mechanical / diegetic tasks; cap visual/audio-only at ~30% of Now.
 
 ## Asset pack status
 
-- Status: **purchased** (2026-07-21, human)
+- **Gate: OPEN** (purchased 2026-07-21, human) — agents must implement `[asset-pack]` Now tasks, not skip them.
 - Pack: **POLYGON - Sci-Fi Horror Pack (Synty)** + bundled `PolygonGeneric`
-- Unity path: `Assets/Synty/PolygonSciFiHorror/` (shared shaders/materials also under `Assets/Synty/PolygonGeneric/`)
-- Enablement: open the project and accept **Synty → Package Helper → Install Packages** (`com.unity.shadergraph`) so pack materials compile on Built-in. Until then, runtime code falls back to Standard when a mat is Error/pink.
-- Rule: new art from this pack only for tagged `[asset-pack: POLYGON Sci-Fi Horror]` tasks — do not mix Kenney/Quaternius into those swaps.
-- Conversion track: **P0-P15** under Now (full ship reskin). Active priority until ship reads Synty in Play.
-- When purchased: set Status to `purchased`, note Unity path, then promote `[asset-pack]` Ice box items (done).
+- Unity path: `Assets/Synty/PolygonSciFiHorror/` (shared shaders/materials under `Assets/Synty/PolygonGeneric/`) — both present in tree
+- Enablement: `com.unity.shadergraph` **17.5.0** is in `Packages/manifest.json`. If materials go pink/Error, run **Synty → Package Helper → Install Packages**; runtime still falls back to Standard when a mat is broken.
+- Rule: for tagged `[asset-pack: POLYGON Sci-Fi Horror]` tasks, use **this pack only** — do not mix Kenney/Quaternius into those swaps. Untagged lore/system tasks may stay primitives.
+- Conversion track: **P0–P22** under Now (full ship reskin + Phase E story dressing). Prefer next open pack task when it is the top eligible Now item.
+- Other paywalled packs: still wishlist-only — agents do **not** buy or download new paid assets. Ice box alt-pack tags superseded.
 
 ## Needs human decision
 
@@ -1402,6 +1402,12 @@ Method: capture the Game view in Play mode, judge the frame, fix the single wors
 - [ ] Free lead: Abandoned Factory Lite (Asset Store) — safe mood greys for blockout; not gated, but not queued until visual Now is thin.
 
 ## Agent log (newest first — one line per session: date, task, result, commit)
+
+- 2026-07-22: **Asset pack gate → OPEN (docs fix).** BACKLOG status already purchased; agent
+  instructions still read as "skip pack / prefer no paid pack." Rewrote gate in `BACKLOG.md`,
+  `AGENTS.md`, `.cursor/rules/space-factory-lore.mdc`, `CLAUDE.md`, and auto-dev/lore-gap/
+  backlog-groom/unity-pass commands: do **not** skip `[asset-pack: POLYGON Sci-Fi Horror]`;
+  path + Shader Graph confirmed. No game code. Commit pending.
 
 - 2026-07-22: **lore-gap** — absorbed post-bible `lore/2026-07-21` into Now as **L35–L39**
   (staged contamination, process→belt cascade, PA mid-loop cut, organ-literacy tags,

@@ -46,7 +46,7 @@ Read `BACKLOG.md`. Collect, in this order:
 
 Report the queue to the human before working it. Then work it top-down.
 
-Skip anything gated by `## Asset pack status` when the pack is not purchased.
+Skip `[asset-pack]` work only when `## Asset pack status` is still not purchased (or the tag names a different unpurchased pack). When **Gate: OPEN**, clear pack-tagged `[?]` items using the noted Synty path.
 
 ## 3. Per task
 

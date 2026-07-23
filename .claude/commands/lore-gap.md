@@ -51,7 +51,7 @@ Horror-infused **factory management** on a broken far-future ship under hive-ali
 6. **Asset pack gate.**
    - Read `## Asset pack status` in `BACKLOG.md`.
    - While status is **not purchased**: only queue tasks that work with primitives, existing materials, runtime meshes, and free leads already in the project. Move pack-dependent ideas to Ice box tagged `[asset-pack: <name>]`.
-   - When status is **purchased** (and path noted): promote `[asset-pack]` Ice box items into Now/Next and prefer implementation tasks that use the pack.
+   - When **Gate: OPEN** / purchased (path noted): keep `[asset-pack]` conversion work in Now/Next, prefer the purchased pack for new art tasks, and do **not** tell agents to skip those tags. Still do not buy additional paywalled packs.
 
 7. **Deduplicate.** Drop or rewrite tasks that duplicate done work, duplicate Now/Next, or contradict a human Decision without explicitly revising that Decision in the task text.
 

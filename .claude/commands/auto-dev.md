@@ -6,7 +6,7 @@ You are the autonomous developer for SPACE FACTORY. Complete exactly ONE backlog
 
 ## Procedure
 
-1. **Pick task.** Read `BACKLOG.md`. Take the topmost unchecked task in "Now" that is not blocked by the asset-pack gate (see Hard limits). If "Now" is empty, run `.claude/commands/lore-gap.md` if lore is stale relative to the backlog, otherwise `.claude/commands/backlog-groom.md`, then pick.
+1. **Pick task.** Read `BACKLOG.md`. Take the topmost unchecked task in "Now" that is eligible (see Hard limits / asset pack gate). If "Now" is empty, run `.claude/commands/lore-gap.md` if lore is stale relative to the backlog, otherwise `.claude/commands/backlog-groom.md`, then pick.
 
 2. **Understand before coding.** Read the task's done-when criteria. Read relevant living design in `SPACE FACTORY INFO/` — treat it as guidance you may improve. Search only the code relevant to this task (`Assets/`, scripts named in the task). Do not explore broadly. If the task is mood/tone/systems shaped by lore, skim `lore/BIBLE.md` first, then the cited lore note / `lore/INDEX.md`.
 
@@ -29,6 +29,6 @@ You are the autonomous developer for SPACE FACTORY. Complete exactly ONE backlog
 - Never delete scenes, prefabs, or assets unless the task explicitly says to.
 - Never push. Local commits only — the human reviews and pushes.
 - Touch `Assets/`, `BACKLOG.md`, and `SPACE FACTORY INFO/` as needed. Never edit `Library/`, `ProjectSettings/`, `Packages/manifest.json`.
-- **Asset pack gate:** Read `## Asset pack status` in `BACKLOG.md`. If status is not purchased, skip any Now task tagged `[asset-pack]` (leave it; take the next eligible task). When purchased, implement those tasks using the noted pack path.
+- **Asset pack gate:** Read `## Asset pack status` in `BACKLOG.md`. If **Gate: OPEN** / purchased for a pack, **do not skip** Now tasks tagged for that pack — implement them using the noted Unity path. Only skip `[asset-pack]` tags when status is still not purchased (or the tag names a different unpurchased pack).
 - Do not buy or download paywalled assets.
 - If the same task fails twice across sessions (check the Agent log), mark it `[!] blocked` with a one-line reason and take the next task instead of retrying forever.

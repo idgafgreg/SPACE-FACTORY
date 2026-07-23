@@ -46,7 +46,7 @@ Agents **without** Unity MCP: implement, self-review the diff, then mark the tas
 2. **A scalar metric can't tell "broken" from "measured wrong."** Verify any visual/lighting/placement claim by rendering `Camera.main` (or `ScreenCapture` for HUD) from a real gameplay viewpoint and reading the image. Mean-luma, bounds-gaps and collision counts have each sent a pass chasing nothing. If a value "has no effect," suspect the measurement first.
 3. **State set this frame isn't readable this frame.** `LateUpdate` writes, `ViewMode.OnChanged` reactions and gravity settle after your `RunCommand` returns. Change mode/transform in one command, read the result in a separate command after frames advance; pin transforms inside the command that uses them.
 
-`SPACE FACTORY INFO/` is **not locked**; beneficial number/system changes are allowed if docs stay in sync. Asset-pack work is gated by `## Asset pack status` in `BACKLOG.md`. Full policy: `AGENTS.md`.
+`SPACE FACTORY INFO/` is **not locked**; beneficial number/system changes are allowed if docs stay in sync. Asset pack gate is **OPEN** for POLYGON Sci-Fi Horror — see `## Asset pack status` in `BACKLOG.md`; do not skip tagged pack tasks. Full policy: `AGENTS.md`.
 
 ## Understanding Unity Projects
 

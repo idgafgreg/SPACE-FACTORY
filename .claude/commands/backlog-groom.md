@@ -21,7 +21,7 @@ You are the producer for SPACE FACTORY. Groom `BACKLOG.md` so the autonomous dev
    - "Now" holds 3–7 tasks, ordered: broken things first, then unverified fixes, then lore/systemic gaps, then design-doc gaps, then polish.
    - Cap visual/audio-only tasks at ~30% of Now.
    - Every task must be one-commit-sized with an explicit **done-when** line. Split anything bigger.
-   - Tag pack-dependent work `[asset-pack: <name>]` and keep it out of Now until Asset pack status is purchased (leave in Next/Ice box).
+   - Tag pack-dependent work `[asset-pack: <name>]`. When Asset pack status is **OPEN**/purchased for that pack, keep those tasks in Now/Next and eligible; only park unpurchased-pack tags in Ice box.
    - `[!] blocked` tasks: either rewrite them so they're unblocked, or move them to "Ice box" with the blocking reason attached.
    - Delete stale tasks that no longer match the code or the current design intent.
 

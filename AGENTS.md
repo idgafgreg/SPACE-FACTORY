@@ -120,7 +120,7 @@ Hooks are installed with `pwsh -File tools/install-hooks.ps1` (safe to re-run). 
 
 ### Asset pack gate
 
-See `## Asset pack status` in `BACKLOG.md`. Until a pack is purchased, queue and implement only work that uses primitives / existing project content. Pack-dependent tasks stay in Ice box/Next tagged `[asset-pack: …]`. After purchase (path noted in the backlog), promote and implement those tasks.
+See `## Asset pack status` in `BACKLOG.md`. **Current state: OPEN** for **POLYGON Sci-Fi Horror** at `Assets/Synty/PolygonSciFiHorror/` (+ `PolygonGeneric`). Agents **must not skip** Now tasks tagged `[asset-pack: POLYGON Sci-Fi Horror]` — implement them with that path. Untagged work may still use primitives. Do not buy additional paywalled packs; other wishlist items stay wishlist-only.
 
 ### Hard rules that stay
 
