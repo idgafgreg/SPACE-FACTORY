@@ -133,7 +133,17 @@ Parked until Gate: OPEN. Commit-sized; bible-aligned; no code until sounds exist
 
 ## Needs human decision
 
-- (none open)
+- 2026-07-22: **P12 / P13 animation path.** Pack `SM_Chr_*` characters T-pose (one clip in pack,
+  null animator). Pick one before agents start either task: (A) keep current player/enemy meshes
+  and descope P12/P13, (B) retarget clips from another rig / author poses, (C) buy/import a
+  compatible animation source later. Until answered, both stay `[!]` blocked.
+
+- 2026-07-22: **Uncommitted `SectorLighting` WIP in the working tree.** New
+  `Assets/Scripts/Systems/SectorLighting.cs` + hooks in `CorridorLampFixture` /
+  `ShipInteriorUpgrade` (owner Alien Isolation “buy lights per room” experiment). Not a backlog
+  task yet; not wired to Workshop UI / bootstrap fully. Choose: (A) finish as a named Now task,
+  (B) stash/revert so agents have a clean tree, (C) leave parked and tell agents to ignore those
+  files. **Agents must not expand or “finish” this WIP until answered.**
 
 ## Decisions (human-made, newest first)
 
@@ -180,45 +190,41 @@ Parked until Gate: OPEN. Commit-sized; bible-aligned; no code until sounds exist
 
 ## Now (agent works top-down)
 
-### F1–F14. First-person view mode — TOP PRIORITY (human decision 2026-07-20)
+### Work next — read this first
 
-Goal: a **toggleable** first-person mode that looks and reads at least as well as the current
-orbit/iso build. Both view modes stay shipped and playable; iso is not deleted until F14 passes.
+| | |
+|--|--|
+| **Next task** | **P7** — Corridor + workshop + bay props (Kenney → Synty) |
+| **Command** | `/auto-dev` (Unity MCP preferred; else mark `[?]` for `/unity-pass`) |
+| **Why** | Cleanup **C1–C7** done. Pack skin **P0–P6** + story **P16** done. Asset pack gate **OPEN**. Owner rule: conversion still **jumps F11–F14** until the ship reads Synty. Phase B clutter is the next open slice. |
+| **After P7** | **P8** → **P9** → then Phase E **P17** (extends P7/P9 dressers) → **P20** → **P21** → **P18**. Parallel Phase C when ready: **P10** (unblocks **P19**). |
+| **Skip** | `[wait-until-sounds]` (audio gate **CLOSED**). `[!] P12` / `[!] P13` (need human anim ruling). `[!] P19` until P10. **P22** deferred (VoidHull). Lore **L\*** only if a human/groom pulls one up. |
+| **Do not touch** | Uncommitted `SectorLighting` WIP — see Needs human decision. Do not expand, “finish,” or revert it without a ruling. |
+| **Gates** | Asset pack **OPEN** · Audio **CLOSED** · Deck size locked (Decision 2026-07-21) |
 
-**Read before starting any F task:** `lore/BIBLE.md` (north star + diegetic grammar), the
-2026-07-20 decision entry above, and this preamble.
+---
 
-Why the art phase is not optional: every visual pass A5–A10 was authored to read from a camera
-~14 m up on a steep pitch (`CameraFollow.initialOffset = (0, 14, -11)`). At eye height those
-choices invert — wall caps are above the eye line instead of catching a top-down bevel, deck texel
-density is tuned for distance, corridor lamps are *invisible anchors* with no fixture geometry
-("iso game has no real ceiling", `ShipInteriorUpgrade.cs:561`), hanging beams are fake mid-height
-greeble silhouetted against void (`ShipInteriorUpgrade.cs:723`), and **the ship has no ceilings at
-all** — in FP, looking up is empty skybox. F6 unblocks the rest of the art phase.
+### F1–F14. First-person view mode (human decision 2026-07-20)
 
-Order matters: F1–F5 = playable FP; F6–F13 = art/lighting re-pass; F14 = gate.
+**Status:** F1–F10 shipped. **F11–F14 deferred** until pack conversion makes the ship read Synty
+(owner 2026-07-21 — P-track jumps this block). Do **not** take F11 while open P7–P11 / P14–P18
+work remains, unless a human reorders.
 
-Conventions for this block:
-- Every task states `Unity:` — what needs the Unity Editor / Unity MCP. Agents **without** Unity
-  MCP: implement, self-review the diff for syntax/API errors, then mark `[?] needs Unity pass —
-  <what>` instead of `[x]`. `/unity-pass` sweeps those later. See `AGENTS.md`.
-- Never regress iso. Any per-mode value goes behind `ViewMode`, not a replacement of the iso value.
-- Asset pack **purchased** (POLYGON Sci-Fi Horror). Owner 2026-07-21: full conversion track
-  **P3-P15 jumps F11-F14** until the ship reads Synty. Pack-only for tagged tasks.
+Goal: toggleable FP that looks/reads at least as well as iso. Iso stays until F14 passes.
+
+**Read before any F task:** `lore/BIBLE.md`, the 2026-07-20 Decision, F preamble history below.
+F11 audio half = **SND6**; F13 footstep half = **SND7** (`[wait-until-sounds]`).
+
+Conventions: every task has `Unity:`; agents without Unity MCP mark `[?]` for `/unity-pass`.
+Never regress iso. Pack-tagged tasks use Synty only.
 
 ---
 
 ### Asset pack — POLYGON Sci-Fi Horror FULL CONVERSION (purchased 2026-07-21)
 
-**TOP PRIORITY (owner 2026-07-21 night): map cleanup after pack drop.** Playtest diagnostics found
-P3 using `Wall_Trim_*` (0.27 m baseboards) height-fitted to 2.75 m → **74 panels up to 31 m wide**
-clipping the deck, plus InteriorUpgrade trim stacking on Synty walls and biomass in lanes. Cleanup
-tasks **C1+** jump everything (including P4+) until the ship is walkable and readable.
-
-**Owner ask 2026-07-21 evening:** use the pack throughout — make the ship look lively. P0-P2 alone
-could not change the look because the hull was still gray cubes and growth only appeared after a
-wave clear. This block is the art conversion track; **cleanup first**. Pack assets only; leave
-authored wall **colliders** authoritative; dedicated child roots only.
+**Active priority:** Phase B → C → E as listed under Work next. Cleanup **C1–C7** is done (was
+blocking after the Wall_Trim explosion). Pack assets only; authored wall **colliders** stay
+authoritative; dedicated child roots only; watch **VoidHull** on perimeter work (P6 note).
 
 #### Cleanup (do before more pack content)
 
@@ -469,12 +475,13 @@ Without it, mats may pink; runtime falls back to Standard albedo when Error.
 
 #### Phase B — lived-in clutter
 
-- [ ] P7. Corridor + workshop + bay props — Kenney to Synty
+- [ ] P7. Corridor + workshop + bay props — Kenney to Synty  ← **NEXT**
   Tag: `[asset-pack: POLYGON Sci-Fi Horror]`
-  Unity: yes — walk all lanes
+  Unity: yes — walk all lanes; A/B pixel check on a lit vantage (Phase E light rule)
   Change: `PlaceholderPropDressing` corridors/workshop/bay use `SM_Prop_Crate_/Barrel_/Locker_/
-  Vent_/Greeble_/Pipe_*` only (finish P2 follow-up). Bump PropDressVersion.
-  done-when: no bright Kenney white clutter on decks; pathing clear; nest still Synty
+  Vent_/Greeble_/Pipe_*` only (finish P2 follow-up). Bump PropDressVersion. Collider-free;
+  lane/hub clearance; if a prop vanishes at a mouth, check **VoidHull** before “fixing” lights.
+  done-when: no bright Kenney white clutter on decks; pathing clear; nest still Synty; console clean
 
 - [ ] P8. Overhead pipes — Synty pipe kit
   Tag: `[asset-pack: POLYGON Sci-Fi Horror]`
@@ -507,18 +514,20 @@ Without it, mats may pink; runtime falls back to Standard albedo when Error.
   pieces (`SM_Bld_Cockpit_01`, kiosks, consoles).
   done-when: landmarks read horror-industrial; nest still readable beside hub
 
-- [ ] P12. Player character → Synty suit
+- [!] P12. Player character → Synty suit — **BLOCKED** (pack T-pose; Needs human decision)
   Tag: `[asset-pack: POLYGON Sci-Fi Horror]`
   Unity: yes — iso body + FP no self-clip
   Change: `PlayerArtAttach` uses `SM_Chr_Space_Suit_*` or `SM_Chr_Mining_Suit_01`; keep FP hide.
-  done-when: iso shows Synty suit; FP clean; fitter heights ok
+  **Blocked:** every `SM_Chr_*` bind-poses (T-pose); not a drop-in. See Phase E pack-limitation note.
+  done-when: iso shows Synty suit with a non-T-pose locomotion/idle story; FP clean; fitter heights ok
 
-- [ ] P13. Enemy meshes → Synty alien / zub
+- [!] P13. Enemy meshes → Synty alien / zub — **BLOCKED** (pack T-pose; Needs human decision)
   Tag: `[asset-pack: POLYGON Sci-Fi Horror]`
   Unity: yes — combat readability + EnemyArtPulse
   Change: `RuntimeArtBackfill.PickEnemyModel` → `SM_Chr_Alien_*` / `SM_Chr_Zub_*` (+ attach heads);
   keep threat pulse/glow.
-  done-when: enemies are Synty silhouettes; pulse still reads in dark
+  **Blocked:** same T-pose limitation as P12 — moving T-pose enemies would be worse than props.
+  done-when: enemies are Synty silhouettes with usable motion/pose; pulse still reads in dark
 
 #### Phase D — polish + ship
 
@@ -683,13 +692,13 @@ fog all check out, enumerate renderers along the sight line before touching anyt
   Extends P15 — fold in.
   done-when: Play — FX read as ambient life/aftermath tied to state, never arcade clutter; console clean
 
-- [ ] P22. **DEFERRED** (see Phase E plan) — parks a large mesh in the unlit perimeter void, the exact
-  configuration P6 measured as invisible. Revisit after the human answers P6's perimeter-darkness question.
+- [!] P22. **DEFERRED** — VoidHull occludes perimeter void (P6 measured). Not blocked on a human
+  question anymore (P6 door-read resolved). Revisit only with an explicit VoidHull window / inside-shell
+  placement plan.
   Vehicle landmark — `SM_Veh_Ship_01` docked/wrecked backdrop (optional, low)
   Tag: `[asset-pack: POLYGON Sci-Fi Horror]` | Unity: yes — iso + FP silhouette
-  Change: one static `SM_Veh_Ship_01` as a docked or wrecked hull landmark parked in the void beyond
-  the playfield edge (Deck lock: fills empty space, does not shrink the deck). Collider-free; reads
-  as scale/orientation anchor. Skip if it fights the void-recede fog (A2).
+  Change: one static `SM_Veh_Ship_01` as a docked or wrecked hull landmark. Must sit where VoidHull
+  does not paint over it (inside shell or cut a window — not “drop in the black”). Collider-free.
   done-when: Play — a ship landmark grounds the map edge without blocking play; console clean
 
 ---
@@ -1081,9 +1090,12 @@ fog all check out, enumerate renderers along the sight line before touching anyt
 
 ### Lore-gap refill — 2026-07-21 (bible + deck expansion Decision)
 
-**Priority note:** Remaining **F11–F14** stay **TOP PRIORITY** (Decision 2026-07-20; F1–F10 shipped / F10 `[?]`). Agents take the next open `F*` first. Lore tasks below are ready in parallel only if a human/groom pulls one up — do **not** shrink the map to “fix” emptiness (Decision 2026-07-21 / `lore/BIBLE.md` Deck lock).
+**Priority note:** Lore tasks are **below** pack conversion. Agents take **P7+** first (see Work next).
+Pull an `L*` only if a human/groom moves it up. Do **not** shrink the map (Decision 2026-07-21 /
+`lore/BIBLE.md` Deck lock). F11–F14 still deferred behind Synty conversion.
 
-Code reality: L15–L26 shipped (L23 Play-verified; L25/L26 `[?]` Unity); L27–L30 still open; biomass now Synty growth (P0 `[?]`); HorrorClock scales with clears; far-deck labour props still one-shot. Bible current through Decision 2026-07-21. Asset pack: **POLYGON Sci-Fi Horror purchased** — see Asset pack block (P0–P2). Visual/audio-only ≤30% of this lore block (L27 + part of L32).
+Code reality: L15–L26 shipped (Play-verified where noted); L27–L30 / L32–L34 open; biomass = Synty
+(P0); audio beds gated under `[wait-until-sounds]`. Bible current through 2026-07-21 absorb.
 
 - [x] L22. Infection-form residue crawlers (stage 1 ecology) — DONE 2026-07-20 (see archive notes below).
 - [x] L23. Factory heat raises infection-form share — DONE 2026-07-20.
@@ -1171,9 +1183,11 @@ Code reality: L15–L26 shipped (L23 Play-verified; L25/L26 `[?]` Unity); L27–
 
 ### Lore-gap refill — 2026-07-22 (bible absorb: employment trap / organ logic / contamination)
 
-**Priority note:** Remaining **F11–F14** and open **P\*/C\*** conversion work stay ahead of lore tasks unless a human/groom pulls one up. Do **not** shrink the map (Decision 2026-07-21). Bible current through `lore/2026-07-21` absorb (Last absorbed 2026-07-22).
+**Priority note:** Same as above — **P7+ first**. L35–L39 wait unless groomed up. Map size locked.
+Bible current through `lore/2026-07-21` absorb.
 
-Code reality: L15–L26 + B1/B2 shipped; `ProcessInfection` is still binary infect + slurry stall (no stages); B1/L26 cover HUD quota (no rising *world* board — L28 owns schedule text); audio beds/PA/HVAC parked under **Audio / sounds status** (`[wait-until-sounds]`); sector plaques are HUB/WEST/VENT/EAST only (no organ literacy); employment copy is partial (RecoveryBeat / nest / P16). Visual/audio-only ≤30% of this block (none — L37 moved to SND4).
+Code reality: `ProcessInfection` still binary (L35 stages open); L28 owns world schedule text; audio
+under `[wait-until-sounds]`; organ tags / leased-copy = L38/L39. No audio-only tasks in this block.
 
 - [ ] L35. Staged processor contamination (copy → slow → ecology)
   Type: systemic / diegetic | Pillar: Industrial biomass / hive
@@ -1530,11 +1544,16 @@ Method: capture the Game view in Play mode, judge the frame, fix the single wors
   WAVE1 green. Recorded the VoidHull occlusion as a standing gotcha for all perimeter dressing and
   sharpened P22's deferral reason. Commit 7e6879a.
 
+- 2026-07-22: **Backlog groom — agent-ready.** Added **Work next** strip (next = **P7**); F11–F14
+  explicitly deferred behind pack conversion; marked **P12/P13 `[!]`** + Needs human (T-pose);
+  P22 deferral = VoidHull only (P6 closed); lore priority notes de-staled; Needs human for
+  uncommitted `SectorLighting` WIP. No game code in this groom. Commit pending.
+
 - 2026-07-22: **Audio / sounds gate CLOSED** — added `## Audio / sounds status` mirroring the old
   asset-pack gate. Tag `[wait-until-sounds]`; SND1–SND11 parked (Sfx replace, machine beds,
   L31→SND3, L37→SND4, L40→SND5, F11/F13 sound halves, contamination audio, occlusion, PA VO,
   empathy lure). Removed audio tasks from Now/Next; F11/F13/L35 non-audio halves may proceed.
-  No audio code. Commit pending.
+  No audio code.
 
 - 2026-07-22: **Asset pack gate → OPEN (docs fix).** BACKLOG status already purchased; agent
   instructions still read as "skip pack / prefer no paid pack." Rewrote gate in `BACKLOG.md`,
