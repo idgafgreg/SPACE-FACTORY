@@ -17,16 +17,42 @@ public class SalvageSpawner : MonoBehaviour
     public float minRadius = 8f;
     public float maxRadius = 28f;
     public float crateY    = 0.85f;
-    [Tooltip("Keep crates on the ship deck (half-extents).")]
+    [Tooltip("Measure the spawn area from the scene's own hull/deck geometry. Leave " +
+             "on for hand-authored maps; the half-extents below are only the fallback " +
+             "for when no Buildable/Ground geometry can be found.")]
+    public bool deriveAreaFromScene = true;
+    [Tooltip("Keep crates clear of the hull by this much.")]
+    public float edgeInset = 2f;
+
+    [Tooltip("Fallback spawn area (half-extents) when it cannot be measured.")]
     public float deckHalfX = 46f;
     public float deckHalfZ = 26f;
 
     WaveController.Phase _lastPhase = WaveController.Phase.Prep;
     int _activeCrates;
 
+    /// <summary>Resolved once — the geometry does not move mid-run.</summary>
+    Bounds _area;
+    bool _areaResolved;
+
     void Start()
     {
+        ResolveArea();
         for (int i = 0; i < initialCrates; i++) SpawnCrate();
+    }
+
+    void ResolveArea()
+    {
+        if (_areaResolved) return;
+        _areaResolved = true;
+
+        if (deriveAreaFromScene && SectorBounds.TryGetPlayArea(out var measured, edgeInset))
+        {
+            _area = measured;
+            return;
+        }
+
+        _area = new Bounds(Vector3.zero, new Vector3(deckHalfX * 2f, 1f, deckHalfZ * 2f));
     }
 
     void Update()
@@ -44,6 +70,7 @@ public class SalvageSpawner : MonoBehaviour
     void SpawnCrate()
     {
         if (_activeCrates >= maxActiveCrates) return;
+        ResolveArea();
 
         Vector3 pos = Vector3.zero;
         int mask = LayerMask.GetMask("Buildable");
@@ -53,8 +80,8 @@ public class SalvageSpawner : MonoBehaviour
             Vector2 dir = Random.insideUnitCircle.normalized;
             float dist  = Random.Range(minRadius, maxRadius);
             pos = new Vector3(dir.x * dist, crateY, dir.y * dist);
-            pos.x = Mathf.Clamp(pos.x, -deckHalfX, deckHalfX);
-            pos.z = Mathf.Clamp(pos.z, -deckHalfZ, deckHalfZ);
+            pos.x = Mathf.Clamp(pos.x, _area.min.x, _area.max.x);
+            pos.z = Mathf.Clamp(pos.z, _area.min.z, _area.max.z);
 
             if (mask == 0 || !Physics.CheckSphere(pos, 0.6f, mask, QueryTriggerInteraction.Ignore))
             {

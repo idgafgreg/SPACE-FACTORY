@@ -24,7 +24,14 @@ public class FactoryExpansion : MonoBehaviour
     public float searchRadius  = 7f;
     public int   sampleAngles  = 24;
     public float minLaneClear  = 4f;
-    [Tooltip("Keep the auto-built factory line inside the ship deck.")]
+    [Tooltip("Measure the deck from the scene's own hull/deck geometry. Leave on for " +
+             "hand-authored maps; the half-extents below are only the fallback for when " +
+             "no Buildable/Ground geometry can be found.")]
+    public bool deriveAreaFromScene = true;
+    [Tooltip("Keep the expansion line clear of the hull by this much.")]
+    public float edgeInset = 2f;
+
+    [Tooltip("Fallback deck area (half-extents) when it cannot be measured.")]
     public float deckHalfX = 44f;
     public float deckHalfZ = 24f;
 
@@ -97,6 +104,12 @@ public class FactoryExpansion : MonoBehaviour
         // Only walls/structures block us — never the ground plane.
         int obstacleMask = LayerMask.GetMask("Buildable");
 
+        // Measure the deck rather than trusting the generated-map constants, so a
+        // hand-authored sector does not place the expansion line inside a wall.
+        Bounds area = deriveAreaFromScene && SectorBounds.TryGetPlayArea(out var measured, edgeInset)
+            ? measured
+            : new Bounds(Vector3.zero, new Vector3(deckHalfX * 2f, 1f, deckHalfZ * 2f));
+
         float bestScore = float.NegativeInfinity;
         // Prefer a known open bay SE of hub (inside the ring, clear of corridors).
         Vector3 best = hubPos + new Vector3(7f, 0f, -3f);
@@ -107,21 +120,22 @@ public class FactoryExpansion : MonoBehaviour
             Vector3 dir = new Vector3(Mathf.Cos(ang), 0f, Mathf.Sin(ang));
             Vector3 cand = hubPos + dir * searchRadius;
             cand.y = groundY;
-            cand.x = Mathf.Clamp(cand.x, -deckHalfX, deckHalfX);
-            cand.z = Mathf.Clamp(cand.z, -deckHalfZ, deckHalfZ);
+            cand.x = Mathf.Clamp(cand.x, area.min.x, area.max.x);
+            cand.z = Mathf.Clamp(cand.z, area.min.z, area.max.z);
 
             float laneClear = MinLaneDistance(cand, lanes);
             bool blocked = obstacleMask != 0 &&
                            Physics.CheckSphere(cand + Vector3.up * 0.6f, 3.5f, obstacleMask);
-            bool offDeck = Mathf.Abs(cand.x) > deckHalfX - 2f || Mathf.Abs(cand.z) > deckHalfZ - 2f;
+            bool offDeck = cand.x < area.min.x + 2f || cand.x > area.max.x - 2f ||
+                           cand.z < area.min.z + 2f || cand.z > area.max.z - 2f;
             float score = laneClear - (blocked ? 1000f : 0f) - (offDeck ? 500f : 0f);
 
             if (score > bestScore) { bestScore = score; best = cand; }
         }
 
         best.y = groundY;
-        best.x = Mathf.Clamp(best.x, -deckHalfX, deckHalfX);
-        best.z = Mathf.Clamp(best.z, -deckHalfZ, deckHalfZ);
+        best.x = Mathf.Clamp(best.x, area.min.x, area.max.x);
+        best.z = Mathf.Clamp(best.z, area.min.z, area.max.z);
         return best;
     }
 

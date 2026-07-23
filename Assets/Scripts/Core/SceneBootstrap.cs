@@ -1,6 +1,3 @@
-#if UNITY_EDITOR
-using UnityEditor;
-#endif
 using System.Text;
 using UnityEngine;
 using UnityEngine.Events;
@@ -9,8 +6,9 @@ using UnityEngine.Events;
 /// Runtime validator that logs a clear checklist on scene start.
 /// Attach to any root GameObject in the sector scene (e.g., "GameSystems").
 ///
-/// Also exposes a Unity Editor menu item:
-///   Tools → Space Factory → Validate Scene
+/// The editor-side equivalent — which also checks the hand-authoring contract
+/// (layers, lane ids, hub wiring, measured play area) — is
+/// Tools → Space Factory → Validate Scene, in Assets/Editor/SectorValidate.cs.
 ///
 /// All checks are warnings only — the game still runs if something is missing.
 /// </summary>
@@ -86,38 +84,7 @@ public class SceneBootstrap : MonoBehaviour
         if (rp == null) sb.AppendLine("  [MISSING] UIResourcePanel — HUD resource counts won't show.");
     }
 
-    // ── Editor menu ───────────────────────────────────────────────────────────
-
-#if UNITY_EDITOR
-    [MenuItem("Tools/Space Factory/Validate Scene")]
-    static void EditorValidate()
-    {
-        var sb = new StringBuilder();
-        sb.AppendLine("[Space Factory] Editor scene validation:");
-
-        bool hasPower   = FindAny<PowerSystem>() != null;
-        bool hasInv     = FindAny<ResourceInventory>() != null;
-        bool hasLayout  = FindAny<SectorLayout>() != null;
-        bool hasSpawner = FindAny<WaveController>() != null;
-        bool hasProc    = FindAny<Processor>() != null;
-
-        void Line(bool ok, string label) =>
-            sb.AppendLine($"  [{(ok ? " OK " : "MISS")}] {label}");
-
-        Line(hasPower,   "PowerSystem");
-        Line(hasInv,     "ResourceInventory");
-        Line(hasLayout,  "SectorLayout");
-        Line(hasSpawner, "WaveController");
-        Line(hasProc,    "Processor (ScrapMetal → ConstructionParts loop)");
-
-        var bs = FindAny<BuildSystem>();
-        Line(bs != null, "BuildSystem");
-        if (bs != null && bs.buildableDefs == null)
-            sb.AppendLine("    ⚠ BuildSystem.buildableDefs not assigned.");
-
-        Debug.Log(sb.ToString());
-        EditorUtility.DisplayDialog("Space Factory — Scene Validation",
-            sb.ToString(), "OK");
-    }
-#endif
+    // The Tools > Space Factory > Validate Scene menu item lives in
+    // Assets/Editor/SectorValidate.cs — it also checks the hand-authoring
+    // contract, which needs editor-only APIs.
 }
