@@ -11,6 +11,18 @@ public class WorkshopBeacon : MonoBehaviour
 
     void Start()
     {
+        EnsureBeaconLight();
+    }
+
+    /// <summary>
+    /// Puts the warm beacon lamp on the workshop. Public so the editor bake can
+    /// place it too — it is the only light the workshop has, so without it the
+    /// Scene view showed that corner of the deck unlit while the game pooled warm
+    /// amber on it. The pulse in <see cref="Update"/> rides on top; the value
+    /// stored here is its midpoint.
+    /// </summary>
+    public void EnsureBeaconLight()
+    {
         var t = SectorLayout.Workshop;
         if (t == null) return;
         var go = t.gameObject;

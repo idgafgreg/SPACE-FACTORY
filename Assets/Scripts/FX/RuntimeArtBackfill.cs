@@ -19,7 +19,16 @@ public class RuntimeArtBackfill : MonoBehaviour
         Backfill();
     }
 
-    void Backfill()
+    /// <summary>
+    /// One art pass over everything currently in the scene. Public rather than
+    /// private so the editor bake (Tools → Space Factory → Bake Gameplay Art Into
+    /// Scene) can run the very same pass in edit mode: whatever this would attach
+    /// at play time becomes a real scene object instead, and the idempotent
+    /// "ensure" guards below make the play-time pass a no-op on top of it.
+    /// Driving <see cref="Update"/> would not work — it is gated on
+    /// <c>Time.unscaledDeltaTime</c>, which does not advance outside Play mode.
+    /// </summary>
+    public void Backfill()
     {
         foreach (var m in FindObjectsByType<MachineBase>(FindObjectsInactive.Exclude))
         {
@@ -240,10 +249,40 @@ public class RuntimeArtBackfill : MonoBehaviour
             if (placeholder != null && r.transform.IsChildOf(placeholder)) continue;
             if (r.name.Contains("BlobShadow")) continue;
             if (r.name.Contains("Readability") || r.name.Contains("Plinth")) continue;
-            if (r.GetComponent<MeshFilter>() == null) continue;   // decals/quads only
+            var mf = r.GetComponent<MeshFilter>();
+            if (mf == null) continue;                             // decals/quads only
+            if (IsProxyPrimitive(mf.sharedMesh)) continue;
             return true;
         }
         return false;
+    }
+
+    /// <summary>
+    /// Is this one of Unity's built-in primitive meshes?
+    ///
+    /// Every gameplay object here carries a primitive as its hit box and editor
+    /// handle — a machine is a Cube, a resource node is a Sphere — and that proxy
+    /// is precisely what the placeholder art exists to cover. Counting it as the
+    /// host's own art made <see cref="HasAuthoredArt"/> answer yes for every
+    /// machine, drill, node and turret, so play mode deleted their baked art and
+    /// re-showed the bare grey box while the Scene view kept displaying the art.
+    /// Real art — Synty props, Kenney placeholders — never uses these meshes.
+    /// </summary>
+    static bool IsProxyPrimitive(Mesh mesh)
+    {
+        if (mesh == null) return true;
+        switch (mesh.name)
+        {
+            case "Cube":
+            case "Sphere":
+            case "Capsule":
+            case "Cylinder":
+            case "Plane":
+            case "Quad":
+                return true;
+            default:
+                return false;
+        }
     }
 
     /// <summary>Re-show the host's own art and drop a placeholder left by an earlier

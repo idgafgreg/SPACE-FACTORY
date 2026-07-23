@@ -32,14 +32,27 @@ public class FactoryReadabilityPass : MonoBehaviour
 
     void Apply()
     {
-        ColorNodes();
-        DressMachines();
-        DressDefenses();
+        ApplyStaticDressing();
         if (Time.time >= _nextPowerLinks)
         {
             _nextPowerLinks = Time.time + PowerLinkInterval;
             DressPowerNetwork();
         }
+    }
+
+    /// <summary>
+    /// The part of the pass that produces persistent geometry — plinths and power
+    /// rings. Split out so the editor bake can put the same plinths under the
+    /// hand-authored machines and nodes, which is the only way the Scene view can
+    /// show what Play mode shows. The power links are deliberately left out: they
+    /// are rebuilt from the live power graph every few seconds and baking a
+    /// snapshot of them would just leave stale lines in the scene.
+    /// </summary>
+    public void ApplyStaticDressing()
+    {
+        ColorNodes();
+        DressMachines();
+        DressDefenses();
     }
 
     void ColorNodes()

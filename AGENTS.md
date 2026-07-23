@@ -49,7 +49,7 @@ is not.
 
 ### Verified pitfalls — read before touching runtime FX, visuals, or view modes
 
-Three mistakes have each been made **more than once** on this project, cost real debugging, and shipped
+These mistakes have each been made **more than once** on this project, cost real debugging, and shipped
 regressions a human playtest caught. They are not hypothetical. Read them every time; they do not fit
 in one context window of trial and error.
 
@@ -101,6 +101,22 @@ restored" that restored fine one frame later, and a camera that "didn't move" be
 between commands. **Rule:** change mode/transform in one `RunCommand`, then read the result in a
 **separate** command after frames advance. Pin transforms you depend on inside the same command that
 uses them.
+
+**4. Sector01 is hand-authored: runtime dressing may ADD, never delete or hide what the scene owns.**
+The Scene view is now the source of truth for the map, so any pass that disables a scene renderer or
+destroys a scene child is a bug even when its own logic is sound. Two shipped this way. `RuntimeArtBackfill`
+learned to skip hosts that "already have art", but read a machine's grey proxy `Cube` (and a node's
+`Sphere`) as art — so play mode deleted the baked placeholder meshes off every machine, drill, node and
+turret and re-showed the bare box, while the Scene view kept displaying the art. And the scene stored the
+first-person fog/ambient profile while the game booted into iso, so the editor lit the map at 6–26 m over
+0.17 ambient and the game at 12–44 m over 0.075. **Rules:** a Unity built-in primitive mesh is a gameplay
+proxy, never authored art. Anything the runtime attaches to a scene-owned object belongs in the scene —
+run `Tools → Space Factory → Bake Gameplay Art Into Scene`, which drives the same passes in edit mode
+and stamps the lighting and the view-mode-gated groups (ceiling, deck windows, eye-level housings) for
+the mode the next Play will boot into. **Verify with `Tools → Space Factory → Capture Scene Fingerprint`:**
+run it in edit mode, press Play, run it again, diff the two files in `Temp/`. Objects on the play side
+only are fine if the game genuinely spawns them during a run (loot, enemies, wave dressing, particles);
+**anything on the edit side only is a regression.**
 
 ### Encoding: a pre-commit hook blocks mojibake
 

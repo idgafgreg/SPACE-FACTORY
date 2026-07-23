@@ -35,7 +35,18 @@ public class MachineIdentityTint : MonoBehaviour
         Apply();
     }
 
-    void Apply()
+    /// <summary>
+    /// Builds the identity dressing for every machine and defense currently in the
+    /// scene. Public so the editor bake can run it outside Play mode — the roof
+    /// silhouettes are real geometry in the iso frame, so leaving them Play-only
+    /// meant the Scene view showed a different factory than the game did. Guarded
+    /// on the lamp it creates, so the play-time rescan is a no-op after a bake.
+    ///
+    /// The per-machine body tint does NOT survive a bake: it is written through a
+    /// MaterialPropertyBlock, which is runtime-only state and never serializes.
+    /// It re-applies on the first rescan in Play mode.
+    /// </summary>
+    public void Apply()
     {
         foreach (var m in FindObjectsByType<MachineBase>(FindObjectsInactive.Exclude))
         {

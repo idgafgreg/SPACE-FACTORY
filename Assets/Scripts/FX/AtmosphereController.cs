@@ -62,15 +62,9 @@ public class AtmosphereController : MonoBehaviour
 
     void Start()
     {
-        // Re-bind defaults in case an old scene serialized gray values.
-        fogColor = ShipPalette.Fog;
-        ambientColor = new Color(0.075f, 0.09f, 0.115f);
-        sunColor = ShipPalette.Sun;
-        playerLightColor = ShipPalette.PlayerLamp;
-        hubLightColor = ShipPalette.HubCalm;
-        hubAlarmColor = ShipPalette.HubAlarm;
+        BindPaletteDefaults();
 
-        ApplyViewProfile();
+        ApplyViewProfile(ViewMode.IsFirstPerson);
 
         ApplyGlobal();
         SetupSun();
@@ -101,8 +95,54 @@ public class AtmosphereController : MonoBehaviour
 
     void OnViewModeChanged()
     {
-        ApplyViewProfile();
+        ApplyViewProfile(ViewMode.IsFirstPerson);
         ApplyGlobal();
+    }
+
+    /// <summary>Re-bind defaults in case an old scene serialized gray values.</summary>
+    void BindPaletteDefaults()
+    {
+        fogColor = ShipPalette.Fog;
+        ambientColor = new Color(0.075f, 0.09f, 0.115f);
+        sunColor = ShipPalette.Sun;
+        playerLightColor = ShipPalette.PlayerLamp;
+        hubLightColor = ShipPalette.HubCalm;
+        hubAlarmColor = ShipPalette.HubAlarm;
+    }
+
+    /// <summary>
+    /// Writes just the global fog/ambient/reflection state for a view mode — no
+    /// lights, no camera, no QualitySettings.
+    ///
+    /// The Scene view has no AtmosphereController and no view mode, so it renders
+    /// whatever lighting the scene file last stored. Sector01 had the F8
+    /// first-person profile saved into it while the game boots into the iso one,
+    /// which is why the editor showed a 6-26 m fog band over a 0.17 ambient and
+    /// Play mode showed 12-44 m over 0.075. The editor bake calls this on a
+    /// throwaway instance so the scene stores exactly what Play mode applies.
+    /// </summary>
+    public void ApplyRenderSettingsForMode(ViewMode.Mode mode)
+    {
+        BindPaletteDefaults();
+        ApplyViewProfile(mode == ViewMode.Mode.FirstPerson);
+        ApplyRenderSettings();
+    }
+
+    /// <summary>
+    /// Places the lights that belong to fixed scene objects — the sun's mood values
+    /// and the hub's pool lamp. Public for the same reason as above: the hub lamp
+    /// is created at play time, so the Scene view lit the command hub with nothing
+    /// while the game gave it a 12.5 m pool. Baking it is the difference between
+    /// authoring the hub area blind and seeing it.
+    ///
+    /// Only the calm baseline is placed. The breathe and alarm pulse in
+    /// <see cref="Update"/> ride on top of it at runtime.
+    /// </summary>
+    public void SetupStaticLights()
+    {
+        BindPaletteDefaults();
+        SetupSun();
+        SetupHubLight();
     }
 
     /// <summary>
@@ -112,7 +152,7 @@ public class AtmosphereController : MonoBehaviour
     /// changing them here means L20's per-zone decay scales off whichever
     /// profile is live rather than a hardcoded iso baseline.
     /// </summary>
-    void ApplyViewProfile()
+    void ApplyViewProfile(bool firstPerson)
     {
         if (!_isoCaptured)
         {
@@ -122,7 +162,7 @@ public class AtmosphereController : MonoBehaviour
             _isoCaptured = true;
         }
 
-        if (ViewMode.IsFirstPerson)
+        if (firstPerson)
         {
             fogStart     = fpFogStart;
             fogEnd       = fpFogEnd;
@@ -137,6 +177,24 @@ public class AtmosphereController : MonoBehaviour
     }
 
     void ApplyGlobal()
+    {
+        ApplyRenderSettings();
+
+        var cam = Camera.main;
+        if (cam != null)
+        {
+            cam.clearFlags = CameraClearFlags.SolidColor;
+            cam.backgroundColor = fogColor;
+            if (!cam.orthographic)
+                cam.fieldOfView = Mathf.Clamp(cam.fieldOfView, 40f, 50f);
+        }
+
+        QualitySettings.shadowDistance = 60f;
+        QualitySettings.shadows = ShadowQuality.All;
+        QualitySettings.antiAliasing = Mathf.Max(QualitySettings.antiAliasing, 2);
+    }
+
+    void ApplyRenderSettings()
     {
         RenderSettings.fog = true;
         RenderSettings.fogMode = FogMode.Linear;
@@ -163,19 +221,6 @@ public class AtmosphereController : MonoBehaviour
             _darkReflection.Apply();
         }
         RenderSettings.customReflectionTexture = _darkReflection;
-
-        var cam = Camera.main;
-        if (cam != null)
-        {
-            cam.clearFlags = CameraClearFlags.SolidColor;
-            cam.backgroundColor = fogColor;
-            if (!cam.orthographic)
-                cam.fieldOfView = Mathf.Clamp(cam.fieldOfView, 40f, 50f);
-        }
-
-        QualitySettings.shadowDistance = 60f;
-        QualitySettings.shadows = ShadowQuality.All;
-        QualitySettings.antiAliasing = Mathf.Max(QualitySettings.antiAliasing, 2);
     }
 
     void SetupSun()

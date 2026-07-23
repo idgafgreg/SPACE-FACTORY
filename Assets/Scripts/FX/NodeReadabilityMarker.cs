@@ -35,7 +35,13 @@ public class NodeReadabilityMarker : MonoBehaviour
         _                                => new Color(0.92f, 0.58f, 0.24f), // scrap / default amber
     };
 
-    void Build()
+    /// <summary>
+    /// Builds the shard cluster. Public so the editor bake can call it directly:
+    /// outside Play mode <see cref="Start"/> never fires, and without the cluster
+    /// the Scene view shows a bare sphere where the game shows an ore deposit.
+    /// Guarded on the existing child, so the play-time call is a no-op after a bake.
+    /// </summary>
+    public void Build()
     {
         if (transform.Find("NodeMarker") != null) return;
 
