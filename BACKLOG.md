@@ -1537,7 +1537,7 @@ Method: capture the Game view in Play mode, judge the frame, fix the single wors
 - 2026-07-22: **Human rulings applied.** (1) SectorLighting reverted (`c73c748`, was dd445f0).
   (2) P12/P13 = retarget/author poses — unblocked with that requirement. (3) Prep lock **40s / 30s**
   supersedes all 240s prep language; live docs + WaveController tooltip cleaned. Needs human empty.
-  Next remains **P7**. Commit pending.
+  Next remains **P7**. Commit e8795ca.
 
 - 2026-07-22: **P6 CLOSED — owner chose "light + back the mouths", and backing it exposed the real
   cause.** The blocker was never light: an Unlit **white** test material with fog off still sampled
