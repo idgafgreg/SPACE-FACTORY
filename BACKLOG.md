@@ -1407,7 +1407,7 @@ Method: capture the Game view in Play mode, judge the frame, fix the single wors
   instructions still read as "skip pack / prefer no paid pack." Rewrote gate in `BACKLOG.md`,
   `AGENTS.md`, `.cursor/rules/space-factory-lore.mdc`, `CLAUDE.md`, and auto-dev/lore-gap/
   backlog-groom/unity-pass commands: do **not** skip `[asset-pack: POLYGON Sci-Fi Horror]`;
-  path + Shader Graph confirmed. No game code. Commit pending.
+  path + Shader Graph confirmed. No game code. Commit d1b3cac.
 
 - 2026-07-22: **lore-gap** — absorbed post-bible `lore/2026-07-21` into Now as **L35–L39**
   (staged contamination, process→belt cascade, PA mid-loop cut, organ-literacy tags,
