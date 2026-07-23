@@ -1590,7 +1590,7 @@ Method: capture the Game view in Play mode, judge the frame, fix the single wors
   discarded the pack texture. Ducts now read with joints and a marking band. **P9** placement was fine
   but unlit — clusters now snap to live lamp pools (Phase E light rule), and density went from 2 props
   ship-wide at wave 0 to one per lane growing per wave. Full suite **7/7 PASS**. Console clean.
-  Commit <hash>.
+  Commit 2376f20.
 
 - 2026-07-22: auto-dev P9 dense wall-lip dressing — `PlaceholderPropDressing.cs` v16:
   `DressWallLips` spawns Synty posters/signs/lockers/crates/barrels/rations/trays/clipboards/cups
@@ -1714,7 +1714,7 @@ Method: capture the Game view in Play mode, judge the frame, fix the single wors
   greyscale capture), P0 Synty growth (3, no lane, no pink), P1 alien walls+pillars (7 renderers + 2,
   0 pink), P2 Synty nest props (29), P3 Synty hull walls (80 panels, read as Synty not cubes; C1/C6
   placement holds). No editor-side fixes needed beyond P4's earlier GetInstanceID fix. Console clean.
-  Commit <hash>.
+  Commit 2376f20.
 
 - 2026-07-21: **auto-dev P4 Synty ceiling light fixtures — DONE (Play-verified).** `BuildLampHousing`
   now instantiates `SM_Bld_Light_Ceiling_01/02` (fit ≤1.7 m, recentred, flush at CeilingHeight,
