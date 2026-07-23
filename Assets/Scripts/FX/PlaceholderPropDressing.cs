@@ -10,8 +10,8 @@ using UnityEngine;
 /// </summary>
 public class PlaceholderPropDressing : MonoBehaviour
 {
-    // v14 C2: corridor/workshop/bay use Synty only (no Kenney cylinders piercing walls).
-    const int PropDressVersion = 14;
+    // v15 C2/P7: dead Kenney Resources path removed; corridors/workshop/bay fully Synty.
+    const int PropDressVersion = 15;
 
     /// <summary>Keep walkway clear — props must stay outside this lane half-width.</summary>
     const float LaneClearance = 1.95f;
@@ -419,89 +419,6 @@ public class PlaceholderPropDressing : MonoBehaviour
         return b.min.y < deckY - 0.12f || b.min.y > deckY + 0.18f;
     }
 
-    static void TrySpawnOffsets(string resourcesPath, Vector3 origin, Transform parent,
-        float scale, float yaw, params Vector3[] offsets) =>
-        TrySpawnOffsets(resourcesPath, origin, parent, scale, yaw, false, offsets);
-
-    static void TrySpawnOffsets(string resourcesPath, Vector3 origin, Transform parent,
-        float scale, float yaw, bool ignoreHub, params Vector3[] offsets)
-    {
-        foreach (var off in offsets)
-        {
-            if (Spawn(resourcesPath, origin + off, parent, scale, yaw, false, ignoreHub, Quaternion.identity))
-                return;
-        }
-    }
-
-    static bool Spawn(string resourcesPath, Vector3 pos, Transform parent, float scale, float yaw,
-        bool skipClearance = false, bool ignoreHub = false, Quaternion extraRot = default)
-    {
-        if (extraRot.Equals(default)) extraRot = Quaternion.identity;
-        if (!skipClearance)
-        {
-            if (TooCloseToLane(pos, LaneClearance)) return false;
-            if (!ignoreHub && TooCloseToHub(pos, HubClearance)) return false;
-            foreach (var machine in FindObjectsByType<MachineBase>(FindObjectsInactive.Exclude))
-                if (machine != null && (machine.transform.position - pos).sqrMagnitude < 2.25f)
-                    return false;
-            foreach (var defense in FindObjectsByType<DefenseBase>(FindObjectsInactive.Exclude))
-                if (defense != null && (defense.transform.position - pos).sqrMagnitude < 2.25f)
-                    return false;
-        }
-
-        // Rough pre-check: don't even instantiate inside a wall volume.
-        if (PointOverlapsWall(pos + Vector3.up * 0.6f, 0.35f)) return false;
-
-        var prefab = Resources.Load<GameObject>("ArtPlaceholders/" + resourcesPath);
-        if (prefab == null) return false;
-
-        float floorY = RuntimeVisualPrimitives.FindDeckY(pos, pos.y);
-        // Mug / screen sit on the desk surface, not the deck.
-        bool onDesk = resourcesPath is "Prop_Mug" or "desk_computerScreen";
-        pos.y = onDesk ? floorY + 0.92f : floorY;
-
-        Quaternion rotation = Quaternion.Euler(0f, yaw, 0f) * prefab.transform.rotation;
-        var go = Instantiate(prefab, pos, rotation, parent);
-        go.name = resourcesPath;
-        go.transform.localScale = prefab.transform.localScale;
-        // Apply tilt/spill after base yaw but before ground fitting so the
-        // rotated bounds rest naturally on the deck.
-        if (extraRot != Quaternion.identity)
-            go.transform.rotation = extraRot * go.transform.rotation;
-        foreach (var c in go.GetComponentsInChildren<Collider>())
-            Destroy(c);
-        FitProp(go, resourcesPath, pos.y, scale);
-
-        // P3: reject after fit if the mesh still spears a wall (thin shelves etc.).
-        if (BoundsOverlapWall(go))
-        {
-            Destroy(go);
-            return false;
-        }
-
-        // A9: tint bright-white Kenney office props into the dark ship palette.
-        RecolorProp(go, resourcesPath);
-
-        foreach (var r in go.GetComponentsInChildren<Renderer>())
-        {
-            var mats = r.sharedMaterials;
-            for (int i = 0; i < mats.Length; i++)
-            {
-                if (mats[i] == null) continue;
-                string sn = mats[i].shader != null ? mats[i].shader.name : "";
-                if (sn.Contains("Universal") || sn.Contains("HDRP") || sn.Contains("Error"))
-                {
-                    var nm = new Material(Shader.Find("Standard"));
-                    nm.color = new Color(0.45f, 0.48f, 0.52f);
-                    nm.SetFloat("_Metallic", 0.65f);
-                    mats[i] = nm;
-                }
-            }
-            r.sharedMaterials = mats;
-        }
-        return true;
-    }
-
     static bool TooCloseToLane(Vector3 worldPos, float clearance)
     {
         var layout = SectorLayout.Instance;
@@ -582,88 +499,5 @@ public class PlaceholderPropDressing : MonoBehaviour
         if (denom < 1e-6f) return (p - a).sqrMagnitude;
         float t = Mathf.Clamp01(Vector3.Dot(p - a, ab) / denom);
         return (p - (a + ab * t)).sqrMagnitude;
-    }
-
-    /// <summary>Map default bright Kenney colours to the ship's cold steel/amber palette.
-    /// Keeps the shift nest from reading as bright office furniture on a horror ship.</summary>
-    static void RecolorProp(GameObject go, string resourcePath)
-    {
-        Color tint = resourcePath switch
-        {
-            "Prop_Desk_Small" => new Color(0.32f, 0.34f, 0.38f),
-            "Prop_Chair" => new Color(0.30f, 0.32f, 0.36f),
-            "Prop_Computer" => new Color(0.35f, 0.38f, 0.42f),
-            "desk_computerScreen" => new Color(0.42f, 0.35f, 0.22f),
-            "Prop_Locker" => ShipPalette.HullLight,
-            "Prop_Shelves_WideTall" => ShipPalette.HullLight,
-            "Prop_Fan_Small" => new Color(0.28f, 0.30f, 0.34f),
-            "Prop_AccessPoint" => new Color(0.32f, 0.35f, 0.40f),
-            "Prop_Crate" => new Color(0.50f, 0.48f, 0.45f),
-            "Prop_Crate_Tarp" => new Color(0.40f, 0.38f, 0.36f),
-            "Prop_Barrel1" => ShipPalette.Pipe,
-            "Prop_Barrel2_Open" => ShipPalette.Pipe * 1.1f,
-            "pipe-large-valve" => ShipPalette.Pipe,
-            _ => new Color(0.38f, 0.41f, 0.45f)
-        };
-
-        foreach (var r in go.GetComponentsInChildren<Renderer>())
-        {
-            if (r == null) continue;
-            TintRenderer(r, tint);
-        }
-    }
-
-    static void TintRenderer(Renderer r, Color tint)
-    {
-        if (r == null) return;
-        var block = new MaterialPropertyBlock();
-        r.GetPropertyBlock(block);
-        block.SetColor("_Color", tint);
-        r.SetPropertyBlock(block);
-    }
-
-    static void FitProp(GameObject go, string resourcePath, float groundY, float sizeMultiplier)
-    {
-        var renderers = go.GetComponentsInChildren<Renderer>();
-        if (renderers.Length == 0) return;
-
-        float targetHeight = resourcePath switch
-        {
-            "Prop_Locker" => 1.7f,
-            "Prop_Shelves_WideTall" => 1.75f,
-            "Prop_Computer" => 1.05f,
-            "Prop_Desk_Small" => 0.95f,
-            "Prop_Chair" => 0.95f,
-            "Prop_Mug" => 0.18f,
-            "desk_computerScreen" => 0.45f,
-            "Prop_Fan_Small" => 0.7f,
-            "Prop_AccessPoint" => 1.1f,
-            "Prop_Crate_Tarp" => 0.85f,
-            "Prop_Barrel2_Open" => 0.9f,
-            _ => 0.8f,
-        };
-        float targetWidth = resourcePath switch
-        {
-            "Prop_Shelves_WideTall" => 1.6f,
-            "Prop_Computer" => 1.2f,
-            "Prop_Desk_Small" => 1.35f,
-            "Prop_Mug" => 0.22f,
-            "desk_computerScreen" => 0.55f,
-            _ => 0.9f,
-        };
-        targetHeight *= sizeMultiplier;
-        targetWidth *= sizeMultiplier;
-
-        Bounds bounds = renderers[0].bounds;
-        for (int i = 1; i < renderers.Length; i++) bounds.Encapsulate(renderers[i].bounds);
-        float horizontal = Mathf.Max(bounds.size.x, bounds.size.z);
-        if (bounds.size.y < 0.0001f || horizontal < 0.0001f) return;
-
-        float factor = Mathf.Min(targetHeight / bounds.size.y, targetWidth / horizontal);
-        go.transform.localScale *= Mathf.Clamp(factor, 0.01f, 500f);
-
-        bounds = renderers[0].bounds;
-        for (int i = 1; i < renderers.Length; i++) bounds.Encapsulate(renderers[i].bounds);
-        go.transform.position += Vector3.up * (groundY - bounds.min.y);
     }
 }
