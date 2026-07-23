@@ -46,6 +46,12 @@ public class UIWorkshopShop : MonoBehaviour
     readonly List<BuildableDef> _lockedDefs = new();
     readonly int[]  _upgradeCounts = new int[5];
     readonly Text[] _upgradeLabels = new Text[5];
+    // Sector lighting restoration (owner 2026-07-22). Zones are discovered by the
+    // fixtures at runtime, which is safe here because the panel is built lazily on
+    // the first Open() — long after Start().
+    readonly List<string> _lightZones   = new();
+    readonly List<Button> _lightButtons = new();
+    readonly List<Text>   _lightLabels  = new();
     Font _font;
     bool _open;
 
@@ -126,6 +132,26 @@ public class UIWorkshopShop : MonoBehaviour
         RefreshLabels();
     }
 
+    void BuyLighting(int i)
+    {
+        if (i < 0 || i >= _lightZones.Count) return;
+        string zone = _lightZones[i];
+        if (SectorLighting.IsRestored(zone)) return;
+
+        int price = SectorLighting.PriceFor(zone);
+        var inv = ResourceInventory.Instance;
+        if (!inv.CanAfford(ResourceTypeId.ScrapMetal, price)) return;
+
+        inv.Spend(ResourceTypeId.ScrapMetal, price);
+        SectorLighting.Restore(zone);          // fixtures re-apply via OnChanged
+        Sfx.Unlock();
+        var player = PlayerController.Instance;
+        if (player != null)
+            FloatingText.Spawn(player.transform.position, "LIGHTS RESTORED: " + zone,
+                ShipPalette.Amber, 1.4f);
+        RefreshLabels();
+    }
+
     int UpgradePrice(int i) =>
         Mathf.RoundToInt(upgradeBasePrice * Mathf.Pow(upgradePriceGrowth, _upgradeCounts[i]));
 
@@ -141,6 +167,17 @@ public class UIWorkshopShop : MonoBehaviour
         }
         for (int i = 0; i < Upgrades.Count; i++)
             _upgradeLabels[i].text = Upgrades[i].name + " (" + Upgrades[i].desc + ")  — " + UpgradePrice(i) + " scrap";
+
+        for (int i = 0; i < _lightLabels.Count && i < _lightZones.Count; i++)
+        {
+            string zone = _lightZones[i];
+            bool lit = SectorLighting.IsRestored(zone);
+            _lightLabels[i].text = lit
+                ? zone + "  — POWERED"
+                : zone + "  — " + SectorLighting.PriceFor(zone) + " scrap";
+            _lightLabels[i].color = lit ? ShipTerminalUI.TextGood : ShipTerminalUI.TextPrimary;
+            if (i < _lightButtons.Count) _lightButtons[i].interactable = !lit;
+        }
     }
 
     // ── Construction ─────────────────────────────────────────────────────────
@@ -168,10 +205,16 @@ public class UIWorkshopShop : MonoBehaviour
         foreach (var d in PlayerBuildTool.Instance.buildableDefs)
             if (d != null && d.unlockWave > 0) _lockedDefs.Add(d);
 
+        // Sector lighting rows: one per zone the fixtures registered.
+        _lightZones.Clear();
+        foreach (var z in SectorLighting.KnownZones) _lightZones.Add(z);
+
         _panel = new GameObject("WorkshopPanel", typeof(RectTransform), typeof(Image));
         var rt = (RectTransform)_panel.transform;
         rt.SetParent(transform, false);
-        rt.sizeDelta = new Vector2(680f, 90f + 34f * Mathf.Max(_lockedDefs.Count, Upgrades.Count));
+        float colRows = 34f * Mathf.Max(_lockedDefs.Count, Upgrades.Count);
+        float lightRows = _lightZones.Count > 0 ? 44f + 34f * _lightZones.Count : 0f;
+        rt.sizeDelta = new Vector2(680f, 90f + colRows + lightRows);
         rt.anchoredPosition = Vector2.zero;
         _panel.GetComponent<Image>().color = ShipTerminalUI.PanelBg;
 
@@ -199,6 +242,25 @@ public class UIWorkshopShop : MonoBehaviour
             int idx = i;
             var (_, label) = MakeRowButton(rt, new Vector2(170f, top - 30f - 34f * i), () => BuyUpgrade(idx));
             _upgradeLabels[i] = label;
+        }
+
+        // The ship arrives derelict; buying a sector's lighting back is the player's
+        // lever against the dark. Full-width row under both columns.
+        if (_lightZones.Count > 0)
+        {
+            float lowest = top - 30f - colRows;
+            var colC = MakeText("LightHeader", rt, "SECTOR LIGHTING  (RESTORE POWER)", 14,
+                new Vector2(400f, 24f), new Vector2(0f, lowest - 8f));
+            colC.alignment = TextAnchor.MiddleCenter;
+            colC.color = ShipTerminalUI.TextAmber;
+
+            for (int i = 0; i < _lightZones.Count; i++)
+            {
+                int idx = i;
+                var (btn, label) = MakeRowButton(rt, new Vector2(0f, lowest - 40f - 34f * i), () => BuyLighting(idx));
+                _lightButtons.Add(btn);
+                _lightLabels.Add(label);
+            }
         }
 
         _panel.SetActive(false);

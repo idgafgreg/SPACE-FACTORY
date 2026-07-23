@@ -1531,6 +1531,19 @@ Method: capture the Game view in Play mode, judge the frame, fix the single wors
 
 ## Agent log (newest first — one line per session: date, task, result, commit)
 
+- 2026-07-22: **Sector lighting restoration — the ship now starts derelict (owner request: "eerie
+  like Alien Isolation until the player can upgrade the lights in that specific room").** New
+  `SectorLighting` (state on `RunUpgrades`, id `light:<zone>`) + derelict/restored profile on
+  `CorridorLampFixture` + a `SECTOR LIGHTING (RESTORE POWER)` section in the Workshop. Five zones
+  (WestCorridor / VentBreach / EastFlank / BowApproach / AftEngineering) all start on emergency power:
+  dimmer, deeper flicker dips, stutters every ~11s instead of 45s, and every 2nd surviving fixture
+  out on top of A8's permanent every-3rd dead housing. Buying a zone restores the F7/F8 tuned values.
+  **Measured 0.0272 → 0.1602 luma (5.88x)** on a west-corridor vantage; per-room isolation verified
+  (buying WestCorridor left VentBreach dark); price escalates 90 → 130 → 189. Iso uses a gentler
+  0.75x (vs FP 0.42x) so the factory stays readable per the 2026-07-20 decision, while the dead
+  fixture set stays identical across modes. Docs: Progression_Spec.md. Full suite **7/7 PASS**.
+  Console clean. Commit <hash>.
+
 - 2026-07-22: **P6 CLOSED — owner chose "light + back the mouths", and backing it exposed the real
   cause.** The blocker was never light: an Unlit **white** test material with fog off still sampled
   (0.000,0.004,0.043), which is impossible for a lit-independent surface. Enumerating renderers along
