@@ -1547,7 +1547,7 @@ Method: capture the Game view in Play mode, judge the frame, fix the single wors
 - 2026-07-22: **Backlog groom — agent-ready.** Added **Work next** strip (next = **P7**); F11–F14
   explicitly deferred behind pack conversion; marked **P12/P13 `[!]`** + Needs human (T-pose);
   P22 deferral = VoidHull only (P6 closed); lore priority notes de-staled; Needs human for
-  uncommitted `SectorLighting` WIP. No game code in this groom. Commit pending.
+  uncommitted `SectorLighting` WIP. No game code in this groom. Commit 8893026.
 
 - 2026-07-22: **Audio / sounds gate CLOSED** — added `## Audio / sounds status` mirroring the old
   asset-pack gate. Tag `[wait-until-sounds]`; SND1–SND11 parked (Sfx replace, machine beds,
