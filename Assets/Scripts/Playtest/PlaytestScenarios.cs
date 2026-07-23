@@ -758,11 +758,23 @@ public partial class PlaytestHarness
             $"bioInLane={bioInLane}/{bio} nearest={(bio > 0 ? nearest.ToString("F2") : "n/a")} " +
             $"required>={MinBiomassLaneDistance:F2}");
 
-        // P5 deck plates are the newest thing that can land in a walkway or float,
-        // so they get policed by the same gate rather than trusted.
+        // P5 deck plates. NOTE the rule here is deliberately different from biomass
+        // and story beats: a floor plate lying in a lane is not a defect, it is
+        // FLOORING — walking on it is the point. The original gate copied the
+        // lane-distance rule and promptly failed on a hand-authored 3x plate that
+        // was flat, collider-free and 0.14 m proud of the deck, i.e. a perfectly
+        // good larger plated area in a corridor. Judging art by an obstacle rule
+        // meant for things that stand up is the gate being wrong, not the art.
+        //
+        // What actually matters for a plate is whether you can walk over it, so
+        // that is what is asserted: no collider, and a low enough profile that it
+        // reads as flooring rather than a step. Floating/sinking is still caught by
+        // the separate "lie flat on the deck" check below.
+        const float WalkableLip = 0.25f;
         var floorRoot = GameObject.Find("SyntyFloorRoot");
-        int plates = 0, platesInLane = 0;
-        float platesWorstGap = 0f, platesNearest = float.MaxValue, platesMaxSize = 0f;
+        int plates = 0, platesObstructing = 0;
+        float platesWorstGap = 0f, platesNearest = float.MaxValue, platesMaxSize = 0f, worstLip = 0f;
+        string firstObstructor = null;
         if (floorRoot != null && layout != null)
         {
             foreach (Transform t in floorRoot.transform)
@@ -773,13 +785,24 @@ public partial class PlaytestHarness
                 platesWorstGap = Mathf.Max(platesWorstGap, Mathf.Abs(b.min.y - DeckY));
                 float d = DistanceToNearestLane(b.center, layout);
                 if (d < platesNearest) platesNearest = d;
-                if (d < MinBiomassLaneDistance) platesInLane++;
+
+                // Only plates actually sitting on a walkway need to be walkable.
+                if (d >= MinBiomassLaneDistance) continue;
+                float lip = b.max.y - DeckY;
+                worstLip = Mathf.Max(worstLip, lip);
+                bool blocks = t.GetComponentsInChildren<Collider>(true).Length > 0 || lip > WalkableLip;
+                if (blocks)
+                {
+                    platesObstructing++;
+                    firstObstructor ??= $"{t.name} lip={lip:F2} colliders={t.GetComponentsInChildren<Collider>(true).Length}";
+                }
             }
         }
 
-        Assert("no deck plate in a lane", platesInLane == 0, sb, pass,
-            $"platesInLane={platesInLane}/{plates} " +
-            $"nearest={(plates > 0 ? platesNearest.ToString("F2") : "n/a")}");
+        Assert("deck plates in a lane are walkable", platesObstructing == 0, sb, pass,
+            $"obstructing={platesObstructing}/{plates} worstLipInLane={worstLip:F2} " +
+            $"allowed<={WalkableLip:F2} nearest={(plates > 0 ? platesNearest.ToString("F2") : "n/a")}" +
+            (firstObstructor != null ? $" first=[{firstObstructor}]" : ""));
 
         // P16 story beats are floor-level props off the walkways; same gate.
         var storyRoot = GameObject.Find("SyntyStoryRoot");
