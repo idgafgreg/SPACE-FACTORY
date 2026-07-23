@@ -129,9 +129,11 @@ public class PlayerController : MonoBehaviour
         IsDead             = false;
         characterController.enabled = true;
 
-        // Only show ArtPlaceholder — re-enabling every renderer brings back the
-        // yellow capsule Visual/Torso primitives under the astronaut.
-        var art = transform.Find("ArtPlaceholder");
+        // Only show the body — re-enabling every renderer brings back the yellow
+        // capsule Visual/Torso primitives underneath it. Resolved through
+        // PlayerArtAttach so a character model authored into the scene survives
+        // respawn; looking up "ArtPlaceholder" by name blanked it on every death.
+        var art = PlayerArtAttach.ResolveBody(transform);
         foreach (var r in GetComponentsInChildren<Renderer>(true))
         {
             if (r == null) continue;

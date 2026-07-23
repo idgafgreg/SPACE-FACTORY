@@ -2,8 +2,15 @@ using UnityEngine;
 using UnityEngine.Rendering.PostProcessing;
 
 /// <summary>
-/// Runtime post-processing for sector scenes — built entirely in code so no
-/// scene-file surgery is needed (same pattern as <see cref="AtmosphereController"/>).
+/// Post-processing for sector scenes.
+///
+/// The stack can live in the scene or be built in code. If the scene already has
+/// a global <c>PostFXVolume</c> pointing at a saved profile — which
+/// <c>Tools > Space Factory > Bake Gameplay Art Into Scene</c> creates — that one
+/// is adopted, so the Scene view is graded exactly like the game. Otherwise the
+/// whole stack is raised from scratch at play time, which is how this worked
+/// before the sector was hand-authored and is still the fallback for any sector
+/// that has not been baked.
 ///
 /// The sector previously rendered with zero post: no tonemapping (flat,
 /// crushed image), no bloom (emissives read as painted-on), visible aliasing.
@@ -96,6 +103,9 @@ public class PostFXBootstrap : MonoBehaviour
 
     PostProcessVolume _volume;
 
+    /// <summary>True when this component created the volume rather than adopting a baked one.</summary>
+    bool _ownsVolume;
+
     /// <summary>
     /// A PostProcessLayer added at runtime has no PostProcessResources reference
     /// and NREs on first render, so it must be Init'd explicitly.
@@ -150,7 +160,65 @@ public class PostFXBootstrap : MonoBehaviour
         // are unaffected.
         layer.antialiasingMode = PostProcessLayer.Antialiasing.None;
 
-        var profile = ScriptableObject.CreateInstance<PostProcessProfile>();
+        var baked = FindBakedVolume();
+        if (baked != null)
+        {
+            _volume = baked;
+            // PostProcessVolume.profile hands back a runtime clone of sharedProfile,
+            // so the per-view-mode overrides below write to the clone and the saved
+            // asset is never rewritten by playing the game.
+            var live = baked.profile;
+            _grade = live.GetSetting<ColorGrading>();
+            _vignette = live.GetSetting<Vignette>();
+        }
+        else
+        {
+            var profile = ScriptableObject.CreateInstance<PostProcessProfile>();
+            PopulateProfile(profile);
+            _grade = profile.GetSetting<ColorGrading>();
+            _vignette = profile.GetSetting<Vignette>();
+
+            var volumeGo = new GameObject("PostFXVolume");
+            volumeGo.transform.SetParent(transform, false);
+            volumeGo.layer = VolumeLayer;
+            _volume = volumeGo.AddComponent<PostProcessVolume>();
+            _volume.isGlobal = true;
+            _volume.profile = profile;
+            _ownsVolume = true;
+        }
+
+        ApplyViewProfile();
+        ViewMode.OnChanged += ApplyViewProfile;
+    }
+
+    /// <summary>
+    /// A global volume already in the scene, recognised by having a <b>saved</b>
+    /// profile — the one this component builds at play time assigns
+    /// <c>profile</c> (a runtime instance) and leaves <c>sharedProfile</c> null,
+    /// so the two can never be confused for each other.
+    /// </summary>
+    static PostProcessVolume FindBakedVolume()
+    {
+        foreach (var v in FindObjectsByType<PostProcessVolume>(
+                     FindObjectsInactive.Include, FindObjectsSortMode.None))
+        {
+            if (v != null && v.isGlobal && v.sharedProfile != null) return v;
+        }
+        return null;
+    }
+
+    /// <summary>
+    /// Fills a profile with the sector's stack: bloom, ACES grade, vignette, AO.
+    /// Public and separate from <see cref="Start"/> so the editor bake writes the
+    /// same numbers into the saved asset that play mode would have built — one
+    /// definition, so the scene and the game cannot drift apart.
+    ///
+    /// Values are the iso baseline; <see cref="ApplyViewProfile"/> swaps exposure,
+    /// shadow lift and vignette per view mode on top.
+    /// </summary>
+    public void PopulateProfile(PostProcessProfile profile)
+    {
+        if (profile == null) return;
 
         var bloom = profile.AddSettings<Bloom>();
         bloom.intensity.Override(bloomIntensity);
@@ -184,23 +252,16 @@ public class PostFXBootstrap : MonoBehaviour
         ao.mode.Override(AmbientOcclusionMode.ScalableAmbientObscurance);
         ao.intensity.Override(0.55f);
         ao.radius.Override(0.4f);
-
-        _grade = grade;
-        _vignette = vignette;
-        ApplyViewProfile();
-        ViewMode.OnChanged += ApplyViewProfile;
-
-        var volumeGo = new GameObject("PostFXVolume");
-        volumeGo.transform.SetParent(transform, false);
-        volumeGo.layer = VolumeLayer;
-        _volume = volumeGo.AddComponent<PostProcessVolume>();
-        _volume.isGlobal = true;
-        _volume.profile = profile;
     }
 
     void OnDestroy()
     {
         ViewMode.OnChanged -= ApplyViewProfile;
+
+        // Only the volume this component built owns a profile worth freeing. A
+        // baked scene volume holds a saved asset; destroying that would delete the
+        // file's contents out from under the scene.
+        if (!_ownsVolume) return;
         if (_volume == null || _volume.profile == null) return;
 
         // FxSafe: the edit-mode dressing preview tears this down outside Play

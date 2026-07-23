@@ -1,9 +1,11 @@
 #if UNITY_EDITOR
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using UnityEditor;
 using UnityEditor.SceneManagement;
 using UnityEngine;
+using UnityEngine.Rendering.PostProcessing;
 using UnityEngine.SceneManagement;
 
 /// <summary>
@@ -39,6 +41,10 @@ using UnityEngine.SceneManagement;
 ///     the work-spark emitters that only fire while a machine is running
 ///   • runtime-only material state: MaterialPropertyBlock tints do not serialize
 ///
+/// Note the Scene view only shows the baked post stack when its effects toggle
+/// (the sphere icon in the Scene view toolbar) has Post Processing enabled. The
+/// Game view and any camera render show it unconditionally.
+///
 /// Tools → Space Factory → Bake Gameplay Art Into Scene
 /// </summary>
 public static class GameplayArtBake
@@ -52,6 +58,19 @@ public static class GameplayArtBake
     /// a texture that only exists while the game runs.
     /// </summary>
     const string ReflectionAssetPath = "Assets/Art/DarkReflection.cubemap";
+
+    /// <summary>Where the sector's post-processing profile is saved.</summary>
+    const string PostFXProfilePath = "Assets/Art/SectorPostFX.asset";
+
+    /// <summary>Scene object holding the global post volume.</summary>
+    const string PostFXVolumeName = "PostFXVolume";
+
+    /// <summary>
+    /// TransparentFX — a built-in layer that ships with every project, so the
+    /// volume/layer pairing can never break on a fresh checkout. Must match
+    /// <see cref="PostFXBootstrap"/>'s VolumeLayer.
+    /// </summary>
+    const int PostFXLayer = 1;
 
     [MenuItem(BakeMenu)]
     public static void BakeMenuItem() => Bake(showDialogs: true);
@@ -87,7 +106,8 @@ public static class GameplayArtBake
         if (showDialogs && !EditorUtility.DisplayDialog("Bake Gameplay Art Into Scene",
                 $"Attach the play-time art to the gameplay objects in '{scene.name}' as real " +
                 "scene objects: placeholder meshes, blob shadows, readability plinths and " +
-                "resource-vein shard clusters.\n\n" +
+                "resource-vein shard clusters, plus the post-processing stack " +
+                "(bloom, ACES grade, vignette, AO).\n\n" +
                 $"Lighting and the view-mode-gated groups (ceiling, deck windows, eye-level " +
                 $"housings) are stamped for the current view mode: {ViewMode.Current}.\n\n" +
                 "Re-running is harmless — every pass skips what is already there. " +
@@ -203,6 +223,8 @@ public static class GameplayArtBake
 
         host.AddComponent<WorkshopBeacon>().EnsureBeaconLight();
 
+        BakePostFX(host);
+
         // The controller hands us a cubemap it generated in memory. A scene file
         // cannot reference that, so persist it once and point the scene at the asset.
         var reflection = RenderSettings.customReflectionTexture as Cubemap;
@@ -218,6 +240,96 @@ public static class GameplayArtBake
             }
             RenderSettings.customReflectionTexture = saved;
         }
+    }
+
+    /// <summary>
+    /// Puts the post-processing stack in the scene instead of building it at play time.
+    ///
+    /// Bloom, the ACES grade, the vignette and AO were the last thing the Scene view
+    /// could not show: <see cref="PostFXBootstrap"/> created the profile as a
+    /// throwaway ScriptableObject and the volume as a runtime child, so the editor
+    /// rendered a flat, ungraded, bloom-less version of a frame the game tonemaps.
+    /// This writes the same stack — same code path, so the numbers cannot drift —
+    /// into a real profile asset, hangs a global volume off it, and puts an
+    /// initialised <see cref="PostProcessLayer"/> on the camera. The layer is
+    /// <c>[ExecuteAlways]</c> and scene-view-enabled, so the editor grades from here on.
+    ///
+    /// Play mode then adopts this volume rather than raising a second one, and works
+    /// on a runtime copy of the profile so a play session never rewrites the asset.
+    ///
+    /// Antialiasing stays off: every PPv2 AA mode draws a corrupted magenta
+    /// fullscreen triangle on Unity 6000.5 + built-in deferred (see AGENTS.md).
+    /// </summary>
+    static void BakePostFX(GameObject host)
+    {
+        var resources = PostFXBootstrap.LoadResources();
+        if (resources == null)
+        {
+            Debug.LogWarning("[GameplayArtBake] PostProcessResources not found — post FX not baked. " +
+                             "Run Tools > Space Factory > Sync Post FX Resources first.");
+            return;
+        }
+
+        var profile = LoadOrCreateProfile();
+        host.AddComponent<PostFXBootstrap>().PopulateProfile(profile);
+        foreach (var settings in profile.settings)
+            if (settings != null && !AssetDatabase.Contains(settings))
+                AssetDatabase.AddObjectToAsset(settings, profile);
+        EditorUtility.SetDirty(profile);
+        AssetDatabase.SaveAssets();
+
+        var volumeGo = GameObject.Find(PostFXVolumeName);
+        if (volumeGo == null) volumeGo = new GameObject(PostFXVolumeName);
+        // The layer pairing is what makes the camera see this volume and nothing else.
+        volumeGo.layer = PostFXLayer;
+        var volume = volumeGo.GetComponent<PostProcessVolume>();
+        if (volume == null) volume = volumeGo.AddComponent<PostProcessVolume>();
+        volume.isGlobal = true;
+        volume.sharedProfile = profile;
+        EditorUtility.SetDirty(volume);
+
+        var cam = Camera.main;
+        if (cam == null)
+        {
+            Debug.LogWarning("[GameplayArtBake] No MainCamera — post FX volume baked, " +
+                             "but the camera has no PostProcessLayer to render it.");
+            return;
+        }
+
+        cam.allowHDR = true; // bloom needs HDR headroom
+        var layer = cam.GetComponent<PostProcessLayer>();
+        if (layer == null) layer = cam.gameObject.AddComponent<PostProcessLayer>();
+        layer.Init(resources);
+        layer.volumeTrigger = cam.transform;
+        layer.volumeLayer = 1 << PostFXLayer;
+        layer.antialiasingMode = PostProcessLayer.Antialiasing.None;
+        EditorUtility.SetDirty(layer);
+        EditorUtility.SetDirty(cam);
+    }
+
+    /// <summary>
+    /// The profile asset, kept across re-bakes so the scene's reference survives.
+    /// Its effect settings are sub-assets and are cleared first — repopulating
+    /// without clearing would stack a second Bloom on every run.
+    /// </summary>
+    static PostProcessProfile LoadOrCreateProfile()
+    {
+        var profile = AssetDatabase.LoadAssetAtPath<PostProcessProfile>(PostFXProfilePath);
+        if (profile == null)
+        {
+            Directory.CreateDirectory(Path.GetDirectoryName(PostFXProfilePath));
+            profile = ScriptableObject.CreateInstance<PostProcessProfile>();
+            AssetDatabase.CreateAsset(profile, PostFXProfilePath);
+            return profile;
+        }
+
+        foreach (var settings in profile.settings.ToArray())
+        {
+            if (settings == null) continue;
+            Object.DestroyImmediate(settings, allowDestroyingAssets: true);
+        }
+        profile.settings.Clear();
+        return profile;
     }
 
     /// <summary>Counts the objects this bake is responsible for, so the log can report a delta.</summary>

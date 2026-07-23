@@ -1,10 +1,22 @@
 using UnityEngine;
 
 /// <summary>
-/// Keeps a Kenney astronaut on the player. Re-attaches after respawn/domain reload.
+/// Keeps a body on the player and the grey capsule proxy hidden underneath it.
+/// Re-attaches after respawn/domain reload.
+///
+/// Authored art wins. Drop a real character model (a Synty
+/// <c>SM_Chr_*</c> prefab, say) under the Player object in the scene and this
+/// leaves it alone — it only falls back to instantiating the Kenney astronaut
+/// when the player has nothing but its capsule. Before that, dropping a model in
+/// did nothing visible: this component saw no <c>ArtPlaceholder</c>, built the
+/// astronaut anyway, and then disabled every other renderer under the player —
+/// including the model you just placed.
 /// </summary>
 public class PlayerArtAttach : MonoBehaviour
 {
+    /// <summary>Fallback body, used only when the scene authored none.</summary>
+    const string FallbackModel = "ArtPlaceholders/astronautA";
+
     float _nextCheck;
 
     void Update()
@@ -32,6 +44,15 @@ public class PlayerArtAttach : MonoBehaviour
             return;
         }
 
+        // A model placed under the player in the scene is the body. It is not
+        // fitted or rescaled — it was posed by hand, and the fitter would undo that.
+        var authored = FindAuthoredBody(transform);
+        if (authored != null)
+        {
+            HideCapsule(authored);
+            return;
+        }
+
         var existing = transform.Find("ArtPlaceholder");
         if (existing != null)
         {
@@ -42,7 +63,7 @@ public class PlayerArtAttach : MonoBehaviour
             return;
         }
 
-        var model = Resources.Load<GameObject>("ArtPlaceholders/astronautA");
+        var model = Resources.Load<GameObject>(FallbackModel);
         if (model == null) return;
 
         var art = Instantiate(model, transform);
@@ -58,6 +79,35 @@ public class PlayerArtAttach : MonoBehaviour
         HideCapsule(art.transform);
         ArtPlaceholderFitter.Fit(art.transform);
     }
+
+    /// <summary>
+    /// The player's visible body: a hand-placed model if the scene has one,
+    /// otherwise the <c>ArtPlaceholder</c> this component attaches.
+    ///
+    /// Shared so respawn re-shows the same thing — <see cref="PlayerController"/>
+    /// used to look for <c>ArtPlaceholder</c> by name and would have blanked an
+    /// authored body on every death. Returns the direct child of the player that
+    /// owns the art, since that whole subtree is what gets shown or hidden.
+    /// </summary>
+    public static Transform FindAuthoredBody(Transform player)
+    {
+        if (player == null) return null;
+
+        foreach (Transform child in player)
+        {
+            if (child == null) continue;
+            if (child.name == "ArtPlaceholder") continue;
+            if (child.name.Contains("BlobShadow") || child.name.Contains("Light")) continue;
+
+            foreach (var r in child.GetComponentsInChildren<Renderer>(true))
+                if (!RuntimeArtBackfill.IsProxyRenderer(r)) return child;
+        }
+        return null;
+    }
+
+    /// <summary>The body to show, authored or attached — null if the player has neither yet.</summary>
+    public static Transform ResolveBody(Transform player) =>
+        FindAuthoredBody(player) ?? (player != null ? player.Find("ArtPlaceholder") : null);
 
     void HideCapsule(Transform art)
     {

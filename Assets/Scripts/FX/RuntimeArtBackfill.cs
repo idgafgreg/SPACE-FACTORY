@@ -249,25 +249,36 @@ public class RuntimeArtBackfill : MonoBehaviour
             if (placeholder != null && r.transform.IsChildOf(placeholder)) continue;
             if (r.name.Contains("BlobShadow")) continue;
             if (r.name.Contains("Readability") || r.name.Contains("Plinth")) continue;
-            var mf = r.GetComponent<MeshFilter>();
-            if (mf == null) continue;                             // decals/quads only
-            if (IsProxyPrimitive(mf.sharedMesh)) continue;
+            if (IsProxyRenderer(r)) continue;
             return true;
         }
         return false;
     }
 
     /// <summary>
-    /// Is this one of Unity's built-in primitive meshes?
+    /// Does this renderer draw a gameplay proxy rather than art?
     ///
-    /// Every gameplay object here carries a primitive as its hit box and editor
-    /// handle — a machine is a Cube, a resource node is a Sphere — and that proxy
-    /// is precisely what the placeholder art exists to cover. Counting it as the
-    /// host's own art made <see cref="HasAuthoredArt"/> answer yes for every
-    /// machine, drill, node and turret, so play mode deleted their baked art and
-    /// re-showed the bare grey box while the Scene view kept displaying the art.
-    /// Real art — Synty props, Kenney placeholders — never uses these meshes.
+    /// Every gameplay object here carries a Unity primitive as its hit box and
+    /// editor handle — a machine is a Cube, a resource node is a Sphere, the
+    /// player is a Capsule — and that proxy is precisely what the art exists to
+    /// cover. Counting it as the host's own art made <see cref="HasAuthoredArt"/>
+    /// answer yes for every machine, drill, node and turret, so play mode deleted
+    /// their baked art and re-showed the bare grey box while the Scene view kept
+    /// displaying the art. Real art — Synty props and characters, Kenney
+    /// placeholders — never uses these meshes.
+    ///
+    /// This is the single definition of that rule; <see cref="PlayerArtAttach"/>
+    /// resolves the player's body with it too. Anything that is not a mesh or
+    /// skinned-mesh renderer (line, trail, particle, decal quad) is not art either.
     /// </summary>
+    public static bool IsProxyRenderer(Renderer r)
+    {
+        if (r == null) return true;
+        if (r is SkinnedMeshRenderer smr) return IsProxyPrimitive(smr.sharedMesh);
+        var mf = r.GetComponent<MeshFilter>();
+        return mf == null || IsProxyPrimitive(mf.sharedMesh);
+    }
+
     static bool IsProxyPrimitive(Mesh mesh)
     {
         if (mesh == null) return true;
