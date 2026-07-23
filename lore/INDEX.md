@@ -8,28 +8,28 @@ Rolling map of useful themes. Updated by daily research runs.
 
 | Pillar | What to mine | Status |
 |--------|----------------|--------|
-| Workplace as trap | Isolation baked into the job, not contrived lockdown | **Upgraded 2026-07-21** — employment/pride trap (Shipbreaker) + Site 17 facility-ops mood |
-| Industrial biomass / hive | Threat uses vents, heat, logistics; ship becomes habitat | **Upgraded 2026-07-21** — timed contamination stages + cascading vessel failure (Barotrauma husk energy) on top of Flood ladder |
-| Factory pressure = identity | Enemies tied to production loop (Factorio pollution lesson) | Strong; quota-as-trap adjacent (Lethal Company — solo only); StarRupture cycle; Biofactory anti-comp; **empty deck = expand** (Decision 2026-07-21) |
-| Diegetic dread | Diegetic UI, failing systems, environmental storytelling | **Upgraded 2026-07-21** — silent organ logic + machine-lung HVAC (ROUTINE) on Milham wayfinding |
-| Lonely worker fantasy | Rustic space labor, patched ship, schedule vs survival | Strong — pride-under-debt + recovery beats; **dual view (iso+FP)** per Decision 2026-07-20 |
+| Workplace as trap | Isolation baked into the job, not contrived lockdown | Strong — authenticity 07-19; **protocol/rules-as-threat** (Working Joe cousin) 2026-07-22 |
+| Industrial biomass / hive | Threat uses vents, heat, logistics; ship becomes habitat | Upgraded 2026-07-20 — Flood staging + recycler fiction |
+| Factory pressure = identity | Enemies tied to production loop (Factorio pollution lesson) | Strong; StarRupture/Lethal Company quota cousins; empty deck = expand (Decision 2026-07-21) |
+| Diegetic dread | Diegetic UI, failing systems, environmental storytelling | Upgraded 2026-07-20; **Audio Mixer infection EQ + metal-as-score** 2026-07-22 |
+| Lonely worker fantasy | Rustic space labor, patched ship, schedule vs survival | Strong — recovery beats; dual view; **distant-signal loneliness** (Outer Wilds light) 2026-07-22 |
 
 ## Comp watchlist
 
 - Factorio (pressure tied to factory growth)
 - Dead Space / Dead Space remake (industrial ship body-horror + Intensity Director + Milham art direction)
-- Hardspace: Shipbreaker (pride in labor inside company debt — tone, not salvage sandbox)
-- Lethal Company (rising solo quota dread — not co-op comedy)
-- Barotrauma (cascading vessel systems + staged infection — not mandatory co-op)
-- ROUTINE (machine-lung HVAC + diegetic tools — not hide-and-seek FPS)
-- Alien: Isolation (isolation + Director/menace pacing)
-- Still Wakes the Deep / Self-Contained (workplace horror + art pillars)
+- Alien: Isolation (isolation + Director/menace pacing + **Working Joe protocol threat**)
+- Still Wakes the Deep / Self-Contained (workplace horror + art pillars + metal-sculpture audio)
 - Halo Flood (infection ecology ladder — design energy)
+- System Shock / Citadel (corporate bureaucracy station — apparatus dread)
 - StarRupture (corporate debt + catastrophe prep windows — watch, don’t copy planet loop)
 - Drill Deep (incremental dread via depth — adjacent)
 - Substructure (factory + descent dread — watch)
-- Site 17 / Haze (facility-ops trap / derelict+corruption mood — adjacent)
 - Biofactory (hive-as-factory **anti-comp** — do not drift)
+- ROUTINE, Haze, Site 17 (adjacent industrial/sci-fi horror)
+- Control / Oldest House (bureaucratic Brutalism — adjacent)
+- Viscera Cleanup Detail (aftermath labor — mood only; refuse comedy)
+- Outer Wilds (lonely melancholy — light touch only)
 
 ## Branch policy
 
@@ -50,8 +50,8 @@ Paid + free lore asset leads export to [`assets-wishlist.csv`](assets-wishlist.c
 
 ## Last run
 
-- Date: 2026-07-20
+- Date: 2026-07-22
 - Landed on: `main`
-- Focus weight: industrial art direction + Flood infection ecology + diegetic ship audio; balanced articles / videos / reviews / stories / assets
-- Prior run: 2026-07-19
+- Focus weight: Citadel bureaucracy + Working Joe protocol threat + Outer Wilds loneliness (light) + Still Wakes metal-as-score + Mixer snapshots; free pipes/crates + Facility Pack wishlist
+- Prior run: 2026-07-21 (morning + noon)
 - Render pipeline note: project currently **Built-in** (prefer Built-in-compatible kits)
