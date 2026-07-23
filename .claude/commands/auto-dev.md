@@ -30,5 +30,6 @@ You are the autonomous developer for SPACE FACTORY. Complete exactly ONE backlog
 - Never push. Local commits only — the human reviews and pushes.
 - Touch `Assets/`, `BACKLOG.md`, and `SPACE FACTORY INFO/` as needed. Never edit `Library/`, `ProjectSettings/`, `Packages/manifest.json`.
 - **Asset pack gate:** Read `## Asset pack status` in `BACKLOG.md`. If **Gate: OPEN** / purchased for a pack, **do not skip** Now tasks tagged for that pack — implement them using the noted Unity path. Only skip `[asset-pack]` tags when status is still not purchased (or the tag names a different unpurchased pack).
+- **Audio / sounds gate:** Read `## Audio / sounds status` in `BACKLOG.md`. If **Gate: CLOSED**, skip any task tagged `[wait-until-sounds]` (leave it; take the next eligible task). Do not expand procedural `Sfx` to substitute. When OPEN, implement those tasks using the noted audio path.
 - Do not buy or download paywalled assets.
 - If the same task fails twice across sessions (check the Agent log), mark it `[!] blocked` with a one-line reason and take the next task instead of retrying forever.

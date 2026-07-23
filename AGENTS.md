@@ -122,6 +122,10 @@ Hooks are installed with `pwsh -File tools/install-hooks.ps1` (safe to re-run). 
 
 See `## Asset pack status` in `BACKLOG.md`. **Current state: OPEN** for **POLYGON Sci-Fi Horror** at `Assets/Synty/PolygonSciFiHorror/` (+ `PolygonGeneric`). Agents **must not skip** Now tasks tagged `[asset-pack: POLYGON Sci-Fi Horror]` — implement them with that path. Untagged work may still use primitives. Do not buy additional paywalled packs; other wishlist items stay wishlist-only.
 
+### Audio / sounds gate
+
+See `## Audio / sounds status` in `BACKLOG.md`. **Current state: CLOSED** — wait until the owner imports an audio pack or custom sounds and opens the gate. Skip any task tagged `[wait-until-sounds]`. Do **not** expand the procedural `Sfx` synth to fake those tasks. Mixed tasks (F11/F13/L35) may ship non-audio halves only.
+
 ### Hard rules that stay
 
 - One queue only: `BACKLOG.md` (no parallel roadmap files)

@@ -53,6 +53,11 @@ Horror-infused **factory management** on a broken far-future ship under hive-ali
    - While status is **not purchased**: only queue tasks that work with primitives, existing materials, runtime meshes, and free leads already in the project. Move pack-dependent ideas to Ice box tagged `[asset-pack: <name>]`.
    - When **Gate: OPEN** / purchased (path noted): keep `[asset-pack]` conversion work in Now/Next, prefer the purchased pack for new art tasks, and do **not** tell agents to skip those tags. Still do not buy additional paywalled packs.
 
+6b. **Audio / sounds gate.**
+   - Read `## Audio / sounds status` in `BACKLOG.md`.
+   - While **Gate: CLOSED**: new sound-dependent ideas go under the gated Audio track tagged `[wait-until-sounds]` — do **not** put them in active Now, and do not queue “procedural beep substitutes.”
+   - When **Gate: OPEN** (path noted): promote `[wait-until-sounds]` items into Now/Next.
+
 7. **Deduplicate.** Drop or rewrite tasks that duplicate done work, duplicate Now/Next, or contradict a human Decision without explicitly revising that Decision in the task text.
 
 8. **Commit.** Commit `BACKLOG.md` (and any doc-only updates you made under `SPACE FACTORY INFO/` if you chose to sync a decision into docs this session) with message `lore-gap: refill backlog from research`.

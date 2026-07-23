@@ -41,7 +41,7 @@ Horror-infused **factory management** on a broken far-future ship under hive-ali
 
 ## Autonomous cycle (when improving the game from lore)
 
-Use `/lore-bible` → `/lore-gap` → `/auto-dev` → `/bug-pass` against `BACKLOG.md` (see `AGENTS.md`). Skip `/lore-bible` only when the bible is already current with the latest digest. `SPACE FACTORY INFO/` is living design — beneficial changes allowed; keep docs in sync. Asset pack gate is **OPEN** for POLYGON Sci-Fi Horror (`BACKLOG.md` → Asset pack status) — do not skip tagged pack tasks; do not buy additional paywalled packs.
+Use `/lore-bible` → `/lore-gap` → `/auto-dev` → `/bug-pass` against `BACKLOG.md` (see `AGENTS.md`). Skip `/lore-bible` only when the bible is already current with the latest digest. `SPACE FACTORY INFO/` is living design — beneficial changes allowed; keep docs in sync. Asset pack gate is **OPEN** for POLYGON Sci-Fi Horror (`BACKLOG.md` → Asset pack status) — do not skip tagged pack tasks; do not buy additional paywalled packs. Audio / sounds gate is **CLOSED** — skip `[wait-until-sounds]` tasks; do not invent procedural audio to bypass the gate.
 
 ## No Unity MCP here — park editor work, do not fake it
 

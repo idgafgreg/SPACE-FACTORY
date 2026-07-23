@@ -33,4 +33,5 @@ You are the closer for SPACE FACTORY autonomous cycles. Fix regressions and unfi
 - Never delete scenes, prefabs, or assets unless required to fix a break you introduced in-scope.
 - Touch `Assets/`, `BACKLOG.md`, and `SPACE FACTORY INFO/` only as needed. Never edit `Library/`, `ProjectSettings/`, `Packages/manifest.json`.
 - Asset pack: prefer the purchased POLYGON Sci-Fi Horror path when a fix is on a pack-tagged system. If a fix truly needs a *different* unpurchased pack, mark `[!] blocked: needs asset pack` and stop that item.
+- Audio: do not expand procedural `Sfx` to “fix” gated sound work. If a bug fix truly needs real clips and Audio / sounds status is CLOSED, mark `[!] blocked: wait-until-sounds` and stop that item.
 - If the same bug fails twice across sessions (Agent log), mark `[!] blocked` with a one-line reason and move on.

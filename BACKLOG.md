@@ -16,6 +16,7 @@ Rules for tasks in this file:
 - Each task states **done-when** criteria so the agent knows when to stop.
 - `SPACE FACTORY INFO/` is **living design** — numbers and systems may change when it makes the game better; keep docs in sync in the same commit.
 - Tag pack-dependent work `[asset-pack: POLYGON Sci-Fi Horror]` so agents use the purchased Synty path (see Asset pack status). Do **not** skip those tasks — the gate is open.
+- Tag sound-dependent work `[wait-until-sounds]` and leave it out of active work until Audio / sounds status says OPEN (see below). Do **not** invent procedural beeps as a substitute for those tasks.
 - Prefer systemic / mechanical / diegetic tasks; cap visual/audio-only at ~30% of Now.
 
 ## Asset pack status
@@ -27,6 +28,108 @@ Rules for tasks in this file:
 - Rule: for tagged `[asset-pack: POLYGON Sci-Fi Horror]` tasks, use **this pack only** — do not mix Kenney/Quaternius into those swaps. Untagged lore/system tasks may stay primitives.
 - Conversion track: **P0–P22** under Now (full ship reskin + Phase E story dressing). Prefer next open pack task when it is the top eligible Now item.
 - Other paywalled packs: still wishlist-only — agents do **not** buy or download new paid assets. Ice box alt-pack tags superseded.
+
+## Audio / sounds status
+
+- **Gate: CLOSED** — wait until the owner adds an audio pack **or** drops custom sounds into the project and flips this gate.
+- Tag: `[wait-until-sounds]`
+- Current audio: procedural synth only (`Assets/Scripts/FX/Sfx.cs`) — ship hum + one-liners. **Do not** expand that synth to “finish” gated tasks below.
+- Rule: agents must **skip** any task tagged `[wait-until-sounds]` (Now, Next, Ice box, or SND block). Non-audio halves of mixed tasks (e.g. F11 light spill, F13 scale audit / viewmodel) may proceed; their sound halves stay gated.
+- When sounds land: set **Gate: OPEN**, note Unity path (e.g. `Assets/Audio/…` or pack path), then promote the SND block into Now / Next. Prefer real clips over more procedural tones.
+- Wishlist leads (do not buy): Janky Audio (occlusion/reverb), Futuristic Industrial Soundscapes — `lore/wishlist-paywalled.md`. Free Industrial Sci-fi Vol. II is fine if the owner imports it and opens the gate.
+- Opening checklist: Status → `OPEN`, path noted, promote `[wait-until-sounds]` items (mirror of the old asset-pack gate).
+
+### Audio track — gated (`[wait-until-sounds]` — do not start)
+
+Parked until Gate: OPEN. Commit-sized; bible-aligned; no code until sounds exist.
+
+- [ ] SND1. Replace core `Sfx` one-liners with real clips
+  Tag: `[wait-until-sounds]`
+  Type: audio | Pillar: Diegetic dread
+  Lore: `lore/BIBLE.md` diegetic / lonely industrial mood — authenticity before haunt
+  Unity: **yes** — A/B hear each mapped event
+  Change: map existing `Sfx` API (`Shot`, `TurretShot`, `Impact`, `EnemyDie`, `Pickup`, `Place`, `Demolish`, `WaveHorn`, `Unlock`, `HubHit`, `UIClick`, `Warning`, `Scan`, `DryFire`, `Skitter`, `Alarm`, ambient hum) to imported clips (or thin wrappers). Keep pitch jitter / pool. Fallback to synth only if a clip slot is empty.
+  done-when: Play — listed events play real samples; missing-slot fallback still silent-safe; console clean
+
+- [ ] SND2. Factory machine beds (drill / processor / belt hum)
+  Tag: `[wait-until-sounds]`
+  Type: audio / diegetic | Pillar: Lonely worker fantasy / Factory pressure = identity
+  Lore: `lore/BIBLE.md` authenticity-before-haunt; ROUTINE machine-lung cousin
+  Unity: **yes** — walk a running line vs idle deck
+  Change: looping spatial (or attenuated) beds on powered drills/processors/belts; volume scales with local activity; dies with power/infection stall. Dedicated child AudioSources — never on SectorRuntime root.
+  done-when: Play — running factory is audibly busier than idle hub; unpowered machines quiet; console clean
+
+- [ ] SND3. Ship-as-living call-and-response ambience *(was L31)*
+  Tag: `[wait-until-sounds]`
+  Type: audio / diegetic | Pillar: Diegetic dread / Lonely worker fantasy
+  Lore: `lore/BIBLE.md` diegetic grammar (metal structure as living organism); lore/2026-07-20/summary.md #2
+  Unity: **yes** — running deck vs dark deck
+  Change: metal “answer” creaks/groans to machine pulses / footsteps using **real** metal/hull clips (not new synth). Quiet between answers — soft director, not sting spam.
+  done-when: Play — walking a running deck yields occasional answered creaks; idle dark deck stays quieter; console clean
+
+- [ ] SND4. Company PA loop cuts under hive pressure *(was L37)*
+  Tag: `[wait-until-sounds]`
+  Type: audio / diegetic | Pillar: Diegetic dread / Workplace as trap
+  Lore: `lore/BIBLE.md` PA muffled / cut mid-sentence; Shipbreaker energy (`lore/2026-07-21/summary.md` #1)
+  Unity: **yes** — hear cut under raised AlarmLevel / HorrorClock; distinct from B2
+  Change: sparse Prep/Recovery PA bed from real PA/radio/industrial clips; **cuts mid-loop** when menace rises. Dedicated child of SectorRuntime. Distinct from `Sfx.RadioSilence` wave-clear mute.
+  done-when: Play — PA bed starts, then intentional mid-loop cut under menace; B2 still works; factory SFX remain; console clean
+
+- [ ] SND5. HVAC / door-motor breathe on infected sectors *(was L40)*
+  Tag: `[wait-until-sounds]`
+  Type: audio / diegetic | Pillar: Diegetic dread / Industrial biomass / hive
+  Lore: `lore/BIBLE.md` Door/HVAC scare experiment; ROUTINE machine-lung (`lore/2026-07-21/summary.md` #4)
+  Unity: **yes** — infected/stressed sector vs clean hub
+  Change: low air-handler / door-motor strain beds near ProcessInfection or high HorrorClock zones; eases in RecoveryBeat. Child objects only.
+  done-when: Play — stressed sector breathes/strains; hub quieter; recovers after clear; console clean
+
+- [ ] SND6. FP spatial threat audio (F11 sound half)
+  Tag: `[wait-until-sounds]`
+  Type: audio / systemic | Pillar: Industrial biomass / hive
+  Lore: F11; `lore/BIBLE.md` isolation dread > chase spam
+  Unity: **yes** — enemy behind player in FP
+  Change: world-positioned skitter/scrape/footfall cues for off-screen enemies in FP only; diegetic suit tone optional. F11 **light spill / non-audio** work may ship without this.
+  done-when: Play (FP) — approach from behind is audible before contact; iso unchanged; console clean
+
+- [ ] SND7. FP footstep bank (F13 sound half)
+  Tag: `[wait-until-sounds]`
+  Type: audio / mechanical | Pillar: Lonely worker fantasy
+  Lore: F13 embodiment; tired shift worker, not marine
+  Unity: **yes** — walk/stop in FP on deck
+  Change: real footstep clips tied to `PlayerFootDust` / walk cycle; horror-paced, under-driven. F13 scale audit + viewmodel may ship without this.
+  done-when: Play (FP) — footsteps match gait and stop cleanly; iso unaffected; console clean
+
+- [ ] SND8. Contamination / slurry audio stages
+  Tag: `[wait-until-sounds]`
+  Type: audio / diegetic | Pillar: Industrial biomass / hive
+  Lore: L35 staged contamination; wrong slurry before combat (`lore/BIBLE.md`)
+  Unity: **yes** — stage 1 vs stage 2 processor
+  Change: stage-1 “off” reclaim gurgle/hiss (no rate hit yet); stage-2 wetter stall purge; keep terminal copy. Hooks for L35 — do not block L35’s UI/rate ladder on this.
+  done-when: Play — stage audio differs before/after slowdown; repair silences bed; console clean
+
+- [ ] SND9. Occlusion / reverb for vents and lonely decks
+  Tag: `[wait-until-sounds]`
+  Type: audio | Pillar: Diegetic dread
+  Lore: `lore/BIBLE.md` reverb/occlusion; wishlist Janky Audio
+  Unity: **yes** — behind bulkhead vs open hub
+  Change: once a clip bank (and optional occlusion tool) exists, damp/muffle PA, HVAC, and distant threat through walls/vents. Built-in compatible path only.
+  done-when: Play — same source quieter/duller behind a wall than in open hub; console clean
+
+- [ ] SND10. Diegetic PA / false-crew VO *(Ice box promote)*
+  Tag: `[wait-until-sounds]`
+  Type: audio / diegetic | Pillar: Workplace as trap
+  Lore: `lore/BIBLE.md` open experiment PA VO; needs VO policy
+  Unity: **yes** — occluded speaker placement
+  Change: muffled non-copyright original lines (or owner-supplied VO) through deck speakers; cuts under hive pressure (pairs with SND4). Fairness: never soft-locks a wave.
+  done-when: Play — hear muffled false-crew/PA once per prep window max; cut under menace; console clean
+
+- [ ] SND11. Empathy-hazard vent lure *(Ice box promote)*
+  Tag: `[wait-until-sounds]`
+  Type: audio / diegetic | Pillar: Lonely worker fantasy
+  Lore: `lore/BIBLE.md` empathy hazard experiment
+  Unity: **yes** — mid-prep fairness check
+  Change: sealed-duct log / false voice pulls attention off the floor once; never blocks wave clear or soft-locks. Restrained tone.
+  done-when: Play — lure fires at most once per run (or per N waves); wave still clearable if ignored; console clean
 
 ## Needs human decision
 
@@ -320,7 +423,7 @@ Without it, mats may pink; runtime falls back to Standard albedo when Error.
   Also extended C5's `PLACEMENT` gate to police `SyntyFloorRoot` (lane distance + deck flushness), so
   the newest deck geometry is not a blind spot: `platesInLane=0/29 nearest=2.90 worstGap=0.02`.
 
-- [?] P6. Gate mouths — doors / airlocks — mechanics verified; **door "read" needs a human eye**
+- [x] P6. Gate mouths — doors / airlocks — DONE 2026-07-22 (owner decision + VoidHull fix)
   Tag: `[asset-pack: POLYGON Sci-Fi Horror]`
   Unity: yes — each lane spawn mouth
   Change: visual-only `SM_Bld_Door_*` / `SM_Bld_Airlock_01` at lane starts; colliders stripped;
@@ -346,6 +449,23 @@ Without it, mats may pink; runtime falls back to Standard albedo when Error.
   (Linear 6.0→18.6, so nothing at 4 m). **Needs a human eye** to say whether this reads as a door, or
   whether the mouth wants a brighter/opaque backing so the frame silhouettes against something.
   Third task running where light, not geometry, was the limiting factor (F7/F8 → P5 → P6).
+  **RESOLVED 2026-07-22 — owner answered "light + back the mouths", and the real cause was not light
+  at all.** Implementing the backing exposed it: an Unlit **pure white** test material with fog
+  disabled still sampled `(0.000, 0.004, 0.043)`. A white unlit surface cannot be dark, so nothing was
+  wrong with lighting, material, culling (`isVisible=true`, viewport 0.50/0.55) or fog — something was
+  drawing **over** it. Enumerating renderers along the sight line found **`VoidHull` at x −38.8..−37.2
+  — a collider-free shell sitting INSIDE the lane mouth**, in front of the frame (−40.2), the emissive
+  outline and the backdrop (−42.1). Every previous P6 measurement was of geometry hidden behind the
+  void; that is why an entire emissive outline moved the frame 0.00%. A raycast never saw it because
+  it has no collider.
+  Fix: `VoidClearInset` slides the whole gate assembly inward until it clears the shell (west lane
+  −40.0 → **−36.6**), so it sits in corridor the player can actually see, with the shell behind it as
+  the backing. Frame lamp kept (range 7.5, int 2.4) and the bulkhead brightened to albedo 0.34 so it
+  catches it.
+  **Result: A/B 0.11% → 61.93%.** Capture shows an unmistakable SYNCOMM airlock door — lock wheel,
+  hazard chevrons, "NO STEP / CAUTION" — inside a glowing amber frame, lit, with hazard stripes
+  leading to it. done-when met: 5/5 mouths read as doors, `colliders=0`, full suite **7/7 PASS** with
+  WAVE1 green (enemies still path through the relocated gates). Console clean.
 
 #### Phase B — lived-in clutter
 
@@ -464,9 +584,20 @@ straight out. The `_Dead` suffix names a skin variant, not a baked pose. Consequ
 
 **Held back deliberately:**
 - **P19** is `[!] blocked` on **P10** — it enriches a remap that does not exist yet. Do P10 first.
-- **P22** (vehicle landmark) is deferred: it parks a large mesh in the unlit perimeter void, which is
-  exactly the configuration P6 proved invisible. Revisit only once the open P6 question — whether the
-  map perimeter should stay pitch black — is answered by a human.
+- **P22** (vehicle landmark) stays deferred, and P6's fix gives the precise reason: **A2's `VoidHull`
+  is an opaque, collider-free shell that occludes everything beyond it.** P22 wants to park a ship
+  "in the void beyond the playfield edge" — that is exactly where the shell is, so the landmark would
+  be invisible for the same reason the gate frames were. Doing P22 means either placing it *inside*
+  the shell or opening a window in it (cf. the DeckWindow work), not just dropping a mesh out there.
+
+**⚠ VOIDHULL OCCLUSION — measured 2026-07-22 in P6, applies to ALL perimeter dressing (P7–P9, P22).**
+`VoidHull` renderers sit *inside* the lane mouths (west lane: x −38.8..−37.2 while the mouth is at
+−40) and draw over anything further out. They have **no collider**, so raycasts miss them entirely.
+Symptoms are maximally misleading: the object reports `isVisible=true`, sits at the centre of the
+viewport, has a valid material, and still renders black — an Unlit **white** test surface with fog off
+sampled `(0.000, 0.004, 0.043)`. If perimeter dressing looks invisible and lighting/material/culling/
+fog all check out, enumerate renderers along the sight line before touching anything else. The
+`SyntyGateDressing.VoidClearInset` helper does this and can be reused.
 
 - [x] P16. Dead crew + occupied cryopods (environmental storytelling — the shift that didn't make it)
   Tag: `[asset-pack: POLYGON Sci-Fi Horror]` | Unity: yes — iso + FP, non-lane
@@ -888,14 +1019,14 @@ straight out. The `_Dead` suffix names a skin variant, not a baked pose. Consequ
   Change: A8b solved "can I see the enemy in the dark" for a camera that sees the whole arena.
   In FP you see ~60° and everything behind you is invisible. The `ThreatGlow` red point light
   (range 2.6, int 1.5) and enlarged eye chip still work head-on but do nothing peripherally. Add
-  FP-only threat awareness that stays diegetic: directional audio cues that actually resolve
-  (skitter/scrape positioned in world), red light spill on walls and ceiling from off-screen
-  enemies (F6 gives the ceiling to catch it), and consider a **diegetic** proximity cue rather than
-  an off-screen arrow — a suit tone, or the existing `ThreatCompass` restyled to the terminal
-  register. Do not add arcade chrome. Do not make FP a cheap-jump-scare mode.
-  done-when: Play (FP) — an enemy approaching from behind is detectable before it hits you, via
-  light spill and/or audio, without a floating arcade indicator; Play (iso) — A8b unchanged;
-  console clean
+  FP-only threat awareness that stays diegetic: **light spill** on walls/ceiling from off-screen
+  enemies (F6 gives the ceiling to catch it), and/or a **diegetic** proximity cue (suit UI /
+  `ThreatCompass` restyled to terminal register — not arcade arrows). **Audio half is gated** as
+  **SND6** `[wait-until-sounds]` — do not invent new procedural skitter banks here.
+  Do not add arcade chrome. Do not make FP a cheap-jump-scare mode.
+  done-when: Play (FP) — an enemy approaching from behind is detectable before it hits you via
+  light spill and/or diegetic suit/compass cue (audio optional until SND6); Play (iso) — A8b
+  unchanged; console clean
 
 - [ ] F12. Factory legibility in FP — diegetic machine-face readouts
   Type: diegetic / systemic | Pillar: Factory pressure = identity / Diegetic dread
@@ -922,13 +1053,14 @@ straight out. The `_Dead` suffix names a skin variant, not a baked pose. Consequ
   sizes and F6's ceiling height were all authored to read from 14 m and have never been checked
   against a 1.65 m eye. Measure against player height and fix anything that reads as dollhouse or
   cathedral; corridors should feel industrial-cramped. (b) **Embodiment** — restrained head motion
-  on walk (small, horror-paced, not FPS bob), footstep audio tied to `PlayerFootDust`, and a simple
-  tool viewmodel so the repair tool / weapon / build ghost have a physical presence in frame. Keep
-  it under-driven: this is a tired shift worker, not a marine.
+  on walk (small, horror-paced, not FPS bob) and a simple tool viewmodel so the repair tool /
+  weapon / build ghost have a physical presence in frame. **Footstep audio is gated** as **SND7**
+  `[wait-until-sounds]` — do not expand procedural footstep synth here. Keep embodiment
+  under-driven: tired shift worker, not a marine.
   done-when: Play (FP) — the ship reads at human scale, walking feels grounded without nausea, the
-  held tool is visible and matches the active mode; Play (iso) — no scale changes visible from the
-  iso camera, or changes are deliberate improvements documented in `Sector_Layout_&_Teaching.txt`;
-  console clean
+  held tool is visible and matches the active mode (footsteps optional until SND7); Play (iso) —
+  no scale changes visible from the iso camera, or changes are deliberate improvements documented
+  in `Sector_Layout_&_Teaching.txt`; console clean
 
 ---
 
@@ -1041,28 +1173,21 @@ Code reality: L15–L26 shipped (L23 Play-verified; L25/L26 `[?]` Unity); L27–
 
 **Priority note:** Remaining **F11–F14** and open **P\*/C\*** conversion work stay ahead of lore tasks unless a human/groom pulls one up. Do **not** shrink the map (Decision 2026-07-21). Bible current through `lore/2026-07-21` absorb (Last absorbed 2026-07-22).
 
-Code reality: L15–L26 + B1/B2 shipped; `ProcessInfection` is still binary infect + slurry stall (no stages); B1/L26 cover HUD quota (no rising *world* board — L28 owns schedule text); `Sfx.RadioSilence` is shift-end mute only (no mid-sentence PA cut); no HVAC-infection breathe; sector plaques are HUB/WEST/VENT/EAST only (no organ literacy); employment copy is partial (RecoveryBeat / nest / P16). Visual/audio-only ≤30% of this block (L37 only).
+Code reality: L15–L26 + B1/B2 shipped; `ProcessInfection` is still binary infect + slurry stall (no stages); B1/L26 cover HUD quota (no rising *world* board — L28 owns schedule text); audio beds/PA/HVAC parked under **Audio / sounds status** (`[wait-until-sounds]`); sector plaques are HUB/WEST/VENT/EAST only (no organ literacy); employment copy is partial (RecoveryBeat / nest / P16). Visual/audio-only ≤30% of this block (none — L37 moved to SND4).
 
 - [ ] L35. Staged processor contamination (copy → slow → ecology)
   Type: systemic / diegetic | Pillar: Industrial biomass / hive
   Lore: `lore/BIBLE.md` hive soft rules (timed contamination stages) + open experiment Contamination stages; Barotrauma husk energy (`lore/2026-07-21/summary.md` #3)
   Unity: **yes** — stage ladder on an infected processor + early cure window.
-  Change: extend `ProcessInfection` (processors) from binary to **3 stages** before full ecology bite: (1) audio/UI copy only — cheerful-or-clinical reclaim line goes “off” (original wording; no copyrighted quotes), no rate hit yet; (2) existing rateMult + slurry stall; (3) seeds a small residue/vent ecology beat (reuse `InfectionResidue` / HorrorClock stress — no new shooter fantasy). Repair clears early stages fully; stage 3 still clearable but leaves a brief wrongness echo. Caps/timings in Progression_Spec. W1 teaching processors may cap at stage 2.
+  Change: extend `ProcessInfection` (processors) from binary to **3 stages** before full ecology bite: (1) **UI/terminal copy only** — cheerful-or-clinical reclaim line goes “off” (original wording; no copyrighted quotes), no rate hit yet (real stage audio = **SND8** `[wait-until-sounds]`); (2) existing rateMult + slurry stall; (3) seeds a small residue/vent ecology beat (reuse `InfectionResidue` / HorrorClock stress — no new shooter fantasy). Repair clears early stages fully; stage 3 still clearable but leaves a brief wrongness echo. Caps/timings in Progression_Spec. W1 teaching processors may cap at stage 2.
   done-when: Play — an infected processor visibly climbs ≥2 stages before stage-3 ecology; repairing at stage 1 restores clean copy with no throughput loss; W1 still teachable; console clean
 
 - [ ] L36. Infected processor cascades to a linked belt
   Type: systemic / mechanical | Pillar: Factory pressure = identity / Industrial biomass / hive
   Lore: `lore/BIBLE.md` factory×horror (layout consequences) + cascading vessel failure soft rule; `lore/2026-07-21/summary.md` #3
   Unity: **yes** — stall on processor measurably slows a feeding/exit belt.
-  Change: when a processor is infected and stalling (or ≥ stage 2 from L35 if present), find nearest powered conveyor feeding or leaving it and apply a capped speed tax / brief jam telegraph (reuse belt APIs; no scrap delete). Clears when infection clears. Doc one line in Progression_Spec. Primitives/SFX only.
+  Change: when a processor is infected and stalling (or ≥ stage 2 from L35 if present), find nearest powered conveyor feeding or leaving it and apply a capped speed tax / brief jam telegraph (reuse belt APIs; no scrap delete). Clears when infection clears. Doc one line in Progression_Spec. No new audio banks.
   done-when: Play — infect+stall a processor → linked belt throughput drops; clear infection → belt recovers; unrelated belts unchanged; console clean
-
-- [ ] L37. Company PA loop cuts under hive pressure
-  Type: audio / diegetic | Pillar: Diegetic dread / Workplace as trap
-  Lore: `lore/BIBLE.md` diegetic grammar (PA muffled / cut mid-sentence) + open experiment; Shipbreaker unauthorized-comms energy (`lore/2026-07-21/summary.md` #1)
-  Unity: **yes** — hear cut during rising AlarmLevel / HorrorClock; distinct from B2 shift-end silence.
-  Change: procedural **non-VO** PA bed (beeps / filtered tone phrases / existing `Sfx` pool — no voice library, no pack) that plays sparsely in Prep/Recovery and **cuts mid-loop** when `AlarmLevel` or zone HorrorClock crosses a threshold. Quiet after cut; soft director, not sting spam. Distinct from `Sfx.RadioSilence` wave-clear mute. Wire on a dedicated child of SectorRuntime (never mute the whole runtime).
-  done-when: Play — hear at least one PA bed start, then an intentional mid-loop cut under raised menace; B2 shift-end silence still works; factory SFX remain; console clean
 
 - [ ] L38. Organ-literacy tags on ship systems
   Type: diegetic | Pillar: Diegetic dread
@@ -1363,18 +1488,7 @@ Method: capture the Game view in Play mode, judge the frame, fix the single wors
 
 ## Next (groomed, not yet started)
 
-- [ ] L31. Ship-as-living call-and-response ambience
-  Type: audio / diegetic | Pillar: Diegetic dread / Lonely worker fantasy
-  Lore: `lore/BIBLE.md` diegetic grammar (metal structure as living organism); lore/2026-07-20/summary.md #2
-  Change: procedural metal “answer” creaks to machine pulses / footsteps via existing `Sfx` pool (Built-in only, no pack, no VO library). Quiet between answers — soft director, not sting spam.
-  done-when: Play — walking a running deck yields occasional answered creaks; idle dark deck stays quieter; console clean
-
-- [ ] L40. HVAC / door-motor breathe on infected sectors
-  Type: audio / diegetic | Pillar: Diegetic dread / Industrial biomass / hive
-  Lore: `lore/BIBLE.md` open experiment Door/HVAC as scare; ROUTINE machine-lung (`lore/2026-07-21/summary.md` #4)
-  Unity: **yes** — infected sector vs clean sector A/B.
-  Change: when a sector has ProcessInfection or HorrorClock stress above a threshold, play a low “air handler breathe” / door-motor strain bed from existing `Sfx` (or thin procedural tones) on a dedicated child object near that zone — never on SectorRuntime root. Soft director; backs off in RecoveryBeat. Cousin to L31/L37; do after those if audio budget is thin.
-  done-when: Play — infected/stressed sector has audible breathe/strain that eases after recovery; clean hub stays quieter; console clean
+- [x] L31 / L40 — **moved** to Audio track as **SND3** / **SND5** `[wait-until-sounds]` (gate CLOSED).
 
 - [x] PlaytestHarness named eye-level vantages (hub / west lamp / vent approach) so F11+ visual verifies are comparable — DONE 2026-07-22 via C5: `PlaytestHarness.Vantages` (hub / west / vent) with pos + lookAt.
 
@@ -1395,13 +1509,32 @@ Method: capture the Game view in Play mode, judge the frame, fix the single wors
 - [x] [asset-pack: Alien Biomass Planet] Superseded — owner bought POLYGON Sci-Fi Horror instead; P0 covers residue swap.
 - [x] [asset-pack: Bio Horror / Sci-fi Environment] Superseded — P1 uses Synty Alien Wall/Pillar for breach infestation.
 - [x] [asset-pack: Bionic structures] Superseded — not needed while POLYGON growth/wall kitbash is in tree.
-- [ ] Empathy hazard / false vent voice — audio lure / sealed-duct log that pulls player off the factory floor mid-prep (`lore/BIBLE.md` open experiment; lore/2026-07-19 empathy motif). Needs fairness pass so it never soft-locks a wave; groom before Now.
-- [ ] Diegetic radio / PA **VO** through occluded speakers — real muffled “crew” that isn’t there (`lore/BIBLE.md` open experiment). Procedural non-VO cut is Now as **L37**; this ice item stays VO-policy + occlusion path only.
+- [x] Empathy hazard / false vent voice — **moved** to **SND11** `[wait-until-sounds]`.
+- [x] Diegetic radio / PA **VO** — **moved** to **SND10** `[wait-until-sounds]` (pairs with SND4 cut).
 - [ ] Scanner ghost / solvent misread — brief false residue blip on scanner that may be stress/chemical, not combat spawn (lore/2026-07-20/stories.md Singular Infestation motif). Groom for uncertainty fairness.
 - [ ] Infection ecology stage 3 — late coordinated packs once L29 vent-carrier proves stage 2 (Flood ladder; keep Biofactory anti-comp).
 - [ ] Free lead: Abandoned Factory Lite (Asset Store) — safe mood greys for blockout; not gated, but not queued until visual Now is thin.
 
 ## Agent log (newest first — one line per session: date, task, result, commit)
+
+- 2026-07-22: **P6 CLOSED — owner chose "light + back the mouths", and backing it exposed the real
+  cause.** The blocker was never light: an Unlit **white** test material with fog off still sampled
+  (0.000,0.004,0.043), which is impossible for a lit-independent surface. Enumerating renderers along
+  the sight line found **`VoidHull` (collider-free, x −38.8..−37.2) sitting INSIDE the lane mouth**,
+  drawing over the frame at −40.2, the emissive outline and the backdrop at −42.1. Every earlier P6
+  measurement was of geometry hidden behind the void — which is why a full emissive outline moved the
+  frame 0.00%, and why raycasts saw nothing (no collider). Fix: `VoidClearInset` slides the gate
+  assembly inward past the shell (−40.0 → −36.6), keeps the frame lamp, brightens the bulkhead to
+  albedo 0.34. **A/B 0.11% → 61.93%**; the mouth now reads as a SYNCOMM airlock door with lock wheel
+  and hazard chevrons inside a lit amber frame. 5/5 mouths, colliders=0, full suite **7/7 PASS** with
+  WAVE1 green. Recorded the VoidHull occlusion as a standing gotcha for all perimeter dressing and
+  sharpened P22's deferral reason. Commit <hash>.
+
+- 2026-07-22: **Audio / sounds gate CLOSED** — added `## Audio / sounds status` mirroring the old
+  asset-pack gate. Tag `[wait-until-sounds]`; SND1–SND11 parked (Sfx replace, machine beds,
+  L31→SND3, L37→SND4, L40→SND5, F11/F13 sound halves, contamination audio, occlusion, PA VO,
+  empathy lure). Removed audio tasks from Now/Next; F11/F13/L35 non-audio halves may proceed.
+  No audio code. Commit pending.
 
 - 2026-07-22: **Asset pack gate → OPEN (docs fix).** BACKLOG status already purchased; agent
   instructions still read as "skip pack / prefer no paid pack." Rewrote gate in `BACKLOG.md`,
