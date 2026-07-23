@@ -23,17 +23,42 @@ public class UIHubHealthBar : MonoBehaviour
 
     void Start()
     {
-        if (hub == null)
+        // Deliberately does NOT disable itself when the hub is not resolvable yet.
+        //
+        // This bar used to do a one-shot GameObject.Find("CommandHub") in Start and
+        // set enabled = false on failure. Hand-authoring the sector renamed the hub
+        // to a Synty prop, so the lookup missed and the player lost the hub health
+        // bar for the whole run, with no error to explain it. Even after the name
+        // lookup was replaced by the layout reference, a Start-time resolve is
+        // fragile: whether it succeeds depends on script execution order against
+        // SectorLayout, and losing that race permanently killed the component.
+        // Resolve lazily in Update instead - the same fix UIWorkshopShop needed.
+        TryResolveHub();
+        if (hub != null) Build();
+    }
+
+    /// <summary>Layout reference first, legacy name second. Cheap once resolved.</summary>
+    void TryResolveHub()
+    {
+        if (hub != null) return;
+        if (SectorLayout.Instance != null)
+            hub = SectorLayout.Instance.commandHubDamageable;
+        if (hub == null && !string.IsNullOrEmpty(hubObjectName))
         {
             var go = GameObject.Find(hubObjectName);
             if (go != null) hub = go.GetComponent<Damageable>();
         }
-        if (hub == null) { enabled = false; return; }
-        Build();
     }
 
     void Update()
     {
+        if (hub == null)
+        {
+            TryResolveHub();
+            if (hub == null) return;
+            Build();            // first successful resolve builds the bar
+        }
+
         float frac = hub.maxHealth > 0f ? hub.CurrentHealth / hub.maxHealth : 0f;
         if (Mathf.Approximately(frac, _shownFraction)) return;
         _shownFraction = frac;

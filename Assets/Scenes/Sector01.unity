@@ -20437,12 +20437,12 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 394591262}
-  m_Enabled: 0
+  m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 565c051b2ee5bc44a86981cb8788ede1, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::UIHubHealthBar
-  hub: {fileID: 0}
+  hub: {fileID: 362845610}
   hubObjectName: CommandHub
   width: 320
   height: 18
