@@ -133,19 +133,22 @@ Parked until Gate: OPEN. Commit-sized; bible-aligned; no code until sounds exist
 
 ## Needs human decision
 
-- 2026-07-22: **P12 / P13 animation path.** Pack `SM_Chr_*` characters T-pose (one clip in pack,
-  null animator). Pick one before agents start either task: (A) keep current player/enemy meshes
-  and descope P12/P13, (B) retarget clips from another rig / author poses, (C) buy/import a
-  compatible animation source later. Until answered, both stay `[!]` blocked.
-
-- 2026-07-22: **Uncommitted `SectorLighting` WIP in the working tree.** New
-  `Assets/Scripts/Systems/SectorLighting.cs` + hooks in `CorridorLampFixture` /
-  `ShipInteriorUpgrade` (owner Alien Isolation “buy lights per room” experiment). Not a backlog
-  task yet; not wired to Workshop UI / bootstrap fully. Choose: (A) finish as a named Now task,
-  (B) stash/revert so agents have a clean tree, (C) leave parked and tell agents to ignore those
-  files. **Agents must not expand or “finish” this WIP until answered.**
+- (none open)
 
 ## Decisions (human-made, newest first)
+
+- 2026-07-22 (human): **Prep times locked at wave 1 = 40s, all later preps = 30s.** Supersedes the
+  2026-07-14 “240 seconds wins” ruling and any 240/300/4-minute prep language in docs or tooltips.
+  Scene `Sector01` already uses 40/30/30/30/30. Agents must not reintroduce multi-minute prep
+  windows without a new Decision.
+
+- 2026-07-22 (human): **P12 / P13 path = retarget clips / author poses (B).** Pack `SM_Chr_*`
+  T-pose is real — do not drop-in bind poses. When those tasks run, budget retargeting an existing
+  rig’s clips or authoring idle/locomotion poses before swap. Descope and “buy anim pack later”
+  rejected for now.
+
+- 2026-07-22 (human): **SectorLighting experiment reverted (B).** Commit `dd445f0` reverted
+  (`c73c748`). Do not re-add per-room light purchases unless a new Decision reopens it.
 
 - 2026-07-20 (human): **Full auto-approval granted.** The owner has authorized the agent to run
   any command, write/delete any file, and commit without asking for confirmation. Agents should
@@ -170,16 +173,15 @@ Parked until Gate: OPEN. Commit-sized; bible-aligned; no code until sounds exist
   existing orbit/iso path stays fully playable and is **not** deleted until FP passes the Wave 1
   gate in `/playtest`. Work tracked as the `F1`–`F14` block at the top of Now.
 
-- 2026-07-15 (playtest): prep times ruled DOWN — wave 1 = 40s, all later preps = 30s (240s+ made
-  the game trivially easy; doc updated). Middle-click demolish deemed unnecessary (X mode is the
-  way; middle-click path left in but low-value). Locked hotbar slots now read as EMPTY; unlocks
-  are PURCHASED at the new Workshop (structure near hub, F to open) instead of wave-gated.
-  Menu must boot first (build order fixed). More lanes wanted → EastFlank added (3rd gate, east).
+- 2026-07-15 (playtest): prep times ruled DOWN — wave 1 = 40s, all later preps = 30s (confirmed
+  again 2026-07-22). Middle-click demolish deemed unnecessary (X mode is the way; middle-click
+  path left in but low-value). Locked hotbar slots now read as EMPTY; unlocks are PURCHASED at
+  the new Workshop (structure near hub, F to open) instead of wave-gated. Menu must boot first
+  (build order fixed). More lanes wanted → EastFlank added (3rd gate, east).
 
-- 2026-07-14: Wave 1 setup time RESOLVED — **240 seconds wins**. Doc line 363 (Locked Economy
-  Pacing Package) corrected from 25s to 240s to match the pressure plan. Also ruled: player
-  gets enough materials to start → startingConstructionParts 0 → 20 (≈200 HP of manual repair)
-  so the repair tool works during Wave 1; starting scrap stays 140 per locked economy.
+- 2026-07-14: Wave 1 setup time — **SUPERSEDED 2026-07-22** (was “240 seconds wins”; live lock is
+  **40s / 30s**). Still in force from that day: startingConstructionParts 0 → 20 (≈200 HP of
+  manual repair); starting scrap stays 140 per locked economy.
 
 - 2026-07-14: Wave count / win condition RESOLVED — **no win state; the run is an infinite loop
   with lots of progression**. Doc updated (Sector_Layout_&_Teaching.txt "Run Structure And Fail
@@ -198,9 +200,9 @@ Parked until Gate: OPEN. Commit-sized; bible-aligned; no code until sounds exist
 | **Command** | `/auto-dev` (Unity MCP preferred; else mark `[?]` for `/unity-pass`) |
 | **Why** | Cleanup **C1–C7** done. Pack skin **P0–P6** + story **P16** done. Asset pack gate **OPEN**. Owner rule: conversion still **jumps F11–F14** until the ship reads Synty. Phase B clutter is the next open slice. |
 | **After P7** | **P8** → **P9** → then Phase E **P17** (extends P7/P9 dressers) → **P20** → **P21** → **P18**. Parallel Phase C when ready: **P10** (unblocks **P19**). |
-| **Skip** | `[wait-until-sounds]` (audio gate **CLOSED**). `[!] P12` / `[!] P13` (need human anim ruling). `[!] P19` until P10. **P22** deferred (VoidHull). Lore **L\*** only if a human/groom pulls one up. |
-| **Do not touch** | Uncommitted `SectorLighting` WIP — see Needs human decision. Do not expand, “finish,” or revert it without a ruling. |
-| **Gates** | Asset pack **OPEN** · Audio **CLOSED** · Deck size locked (Decision 2026-07-21) |
+| **Skip** | `[wait-until-sounds]` (audio gate **CLOSED**). `[!] P19` until P10. **P22** deferred (VoidHull). Lore **L\*** only if a human/groom pulls one up. |
+| **P12 / P13** | Unblocked for when Phase C is due — must **retarget/author poses** (Decision 2026-07-22); no T-pose drop-ins. |
+| **Gates** | Asset pack **OPEN** · Audio **CLOSED** · Deck size locked · Prep **40s / 30s** |
 
 ---
 
@@ -514,19 +516,19 @@ Without it, mats may pink; runtime falls back to Standard albedo when Error.
   pieces (`SM_Bld_Cockpit_01`, kiosks, consoles).
   done-when: landmarks read horror-industrial; nest still readable beside hub
 
-- [!] P12. Player character → Synty suit — **BLOCKED** (pack T-pose; Needs human decision)
+- [ ] P12. Player character → Synty suit (**retarget / author poses** — Decision 2026-07-22)
   Tag: `[asset-pack: POLYGON Sci-Fi Horror]`
   Unity: yes — iso body + FP no self-clip
   Change: `PlayerArtAttach` uses `SM_Chr_Space_Suit_*` or `SM_Chr_Mining_Suit_01`; keep FP hide.
-  **Blocked:** every `SM_Chr_*` bind-poses (T-pose); not a drop-in. See Phase E pack-limitation note.
-  done-when: iso shows Synty suit with a non-T-pose locomotion/idle story; FP clean; fitter heights ok
+  Pack ships T-pose bind poses — **retarget clips from an existing locomotion rig or author
+  idle/walk poses** before enabling the swap. No naked T-pose in Play.
+  done-when: iso shows Synty suit with non-T-pose idle/locomotion; FP clean; fitter heights ok
 
-- [!] P13. Enemy meshes → Synty alien / zub — **BLOCKED** (pack T-pose; Needs human decision)
+- [ ] P13. Enemy meshes → Synty alien / zub (**retarget / author poses** — Decision 2026-07-22)
   Tag: `[asset-pack: POLYGON Sci-Fi Horror]`
   Unity: yes — combat readability + EnemyArtPulse
   Change: `RuntimeArtBackfill.PickEnemyModel` → `SM_Chr_Alien_*` / `SM_Chr_Zub_*` (+ attach heads);
-  keep threat pulse/glow.
-  **Blocked:** same T-pose limitation as P12 — moving T-pose enemies would be worse than props.
+  keep threat pulse/glow. Same as P12: retarget or author motion — no T-pose crawlers.
   done-when: enemies are Synty silhouettes with usable motion/pose; pulse still reads in dark
 
 #### Phase D — polish + ship
@@ -586,10 +588,8 @@ ships **exactly one AnimationClip** (`SM_Env_Alien_Growth_Rigged_01`) and its ri
 Verified by spawning `SM_Chr_Space_Suit_01_M_Dead` in the lit hub and capturing it: standing, arms
 straight out. The `_Dead` suffix names a skin variant, not a baked pose. Consequences:
 - **P16** cannot use the `_Dead` characters — built from static story props instead (see its note).
-- **P12** (player → `SM_Chr_Space_Suit_*`) and **P13** (enemies → `SM_Chr_Alien_*` / `Zub`) will hit
-  this head-on, and those actors *move*, so a frozen T-pose would be far more visible than on a prop.
-  Neither is a drop-in swap: both need an animation source (retarget an existing rig's clips, author
-  poses, or keep the current meshes). Budget for that before starting either, or descope them.
+- **P12** / **P13** hit this head-on (actors *move*). Decision 2026-07-22: **retarget clips or author
+  poses** — not a drop-in, not descope. Budget animation work inside those tasks.
 
 **Held back deliberately:**
 - **P19** is `[!] blocked` on **P10** — it enriches a remap that does not exist yet. Do P10 first.
@@ -1489,9 +1489,12 @@ Method: capture the Game view in Play mode, judge the frame, fix the single wors
 - [x] Y-jitter spawn fix (5ffe0eb) — all spawns at y=0.50 (lane plane), zero float. VERIFIED live.
 - [x] Dead spawner deletion (0b4e4a1) — clean compile, zero console errors. VERIFIED.
 - [x] Wave spawn windows (83cf622) — waves release across windows in Play mode. VERIFIED.
-- [x] Per-wave prep windows (6cd2a78) — Wave 1 prep starts at exactly 240.0s. VERIFIED.
-- [x] Review-fix batch (7ecf516) — scene config exact (windows 60/75/90/90/90, preps 240/300/240/150/150, shares 0/0.15/0.35/0.35/0.4), starting scrap 140 + parts 20, HUD shows "Wave 3 — 8 left". Empty-wave edge case (0 spawns) advances without deadlock. VERIFIED.
-- [x] End-of-run restart flow (9ca5b95) — restart from end screen VERIFIED twice: wave reset to 0/Prep/240s, hub 500/500, panel hidden, timeScale reset to 1, singletons single, enemies cleared.
+- [x] Per-wave prep windows — live lock **W1 = 40s, later = 30s** (Decision 2026-07-22; scene
+  `Sector01` matches). Older 240s verification notes are historical only.
+- [x] Review-fix batch (7ecf516) — scene windows 60/75/90/90/90; shares 0/0.15/0.35/0.35/0.4;
+  starting scrap 140 + parts 20. Prep values later corrected to 40/30 (not the old 240/300 plan).
+- [x] End-of-run restart flow (9ca5b95) — restart from end screen VERIFIED: wave reset to 0/Prep,
+  hub 500/500, panel hidden, timeScale 1, singletons single, enemies cleared. (Prep duration now 40s.)
 
 ## Play-mode observations (2026-07-14 session — future tuning input)
 
@@ -1530,6 +1533,11 @@ Method: capture the Game view in Play mode, judge the frame, fix the single wors
 - [ ] Free lead: Abandoned Factory Lite (Asset Store) — safe mood greys for blockout; not gated, but not queued until visual Now is thin.
 
 ## Agent log (newest first — one line per session: date, task, result, commit)
+
+- 2026-07-22: **Human rulings applied.** (1) SectorLighting reverted (`c73c748`, was dd445f0).
+  (2) P12/P13 = retarget/author poses — unblocked with that requirement. (3) Prep lock **40s / 30s**
+  supersedes all 240s prep language; live docs + WaveController tooltip cleaned. Needs human empty.
+  Next remains **P7**. Commit pending.
 
 - 2026-07-22: **P6 CLOSED — owner chose "light + back the mouths", and backing it exposed the real
   cause.** The blocker was never light: an Unlit **white** test material with fog off still sampled
@@ -1912,7 +1920,7 @@ Method: capture the Game view in Play mode, judge the frame, fix the single wors
 
 - 2026-07-14: Groomed (verification items sectioned off, win-condition question → Needs human decision). Lane weighting — WaveDef.ventBreachShare + PickLane(); W1 West-only, W2 15% vent, W3 35% vent; scene updated; [?] pending compile check.
 
-- 2026-07-14: Recovery gap — WaveDef.prepSeconds added, prep before waves 1/2/3 = 240/300/240s (doc recovery+setup summed), scene updated; endless inherits; [?] pending compile check.
+- 2026-07-14: Recovery gap — WaveDef.prepSeconds added (scene later locked to W1=40s / later=30s per Decision 2026-07-22); endless inherits; [?] pending compile check.
 
 - 2026-07-14: Restart-verify task blocked (needs Play mode, MCP gated). Wave windows: WaveDef.spawnWindowSeconds added, waves 1-3 = 60/75/90s per locked doc, scene YAML updated; [?] pending compile check. Deviations found → 2 new Next tasks (lane weighting, wave-count/win-condition conflict).
 

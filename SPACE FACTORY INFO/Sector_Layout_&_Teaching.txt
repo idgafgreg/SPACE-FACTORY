@@ -152,16 +152,14 @@
 
 ## Wave Timings And Pressure Plan
 
-- Cycle 1 setup window: 4 minutes of low-pressure learning time to place the first extractor, first processor, and first lane defense.
+- Prep lock (Decision 2026-07-22 / playtest 2026-07-15): **Wave 1 setup = 40 seconds**; **all later preps = 30 seconds**. Do not use multi-minute prep windows.
+- Cycle 1 setup (40s): place the first extractor, first processor, and first lane defense under short pressure — teaching is tight, not leisurely.
 - Wave 1: 60 seconds from the West Corridor only. Composition should be light enough that a basic barrier line, one turret, and minor player support succeed.
-- Recovery 1: 2 minutes. Teach repair, reloading of defenses if relevant, and minor layout correction.
-- Cycle 2 setup window: 3 minutes. Player expands to the Power Nook and improves the first lane or adds a second line.
+- Between-wave prep (30s): repair, reload defenses if relevant, one meaningful layout correction — feel time pressure.
 - Wave 2: 75 seconds, mostly West Corridor with a small side-pressure hint from the Vent Breach approach or pre-wave warning signs there.
-- Recovery 2: 2 minutes. The player should feel time pressure but still have enough room to make one meaningful strategic adjustment.
-- Cycle 3 setup window: 2 minutes. Player must finalize a second defensive answer and stabilize throughput before the split-pressure test.
-- Wave 3: 90 seconds. West Corridor remains the main lane while Vent Breach becomes active enough to create likely leaks or repair interruptions.
+- Wave 3: 90 seconds. West Corridor remains the main lane while Vent Breach becomes active enough to create likely leaks or repair interruptions. Use the 30s prep before W3 to finalize a second defensive answer.
 - After Wave 3 the run continues: waves 1-3 are the teaching arc, not the end of the run.
-- Target length for the teaching arc (cycles 1-3): roughly 15 to 18 minutes on a first successful run.
+- Target length for the teaching arc (cycles 1-3): much shorter than the old multi-minute prep plan — expect a brisk first successful teaching pass.
 
 ## Run Structure And Fail Conditions
 
@@ -406,7 +404,7 @@
 ## Starting Economy
 
 - Starting scrap: 140
-- Pre-wave setup window before Wave 1: 40 seconds (playtest ruling 2026-07-15 — the earlier 240s/4-minute windows made the game trivially easy; all between-wave preps are now 30 seconds)
+- Pre-wave setup window before Wave 1: 40 seconds; all later preps: 30 seconds (Decision 2026-07-22; playtest 2026-07-15)
 - Mid-prep menace curve (ThreatTelegraph, lore Intensity Director / Isolation menace): during Prep above the final warning window, schedule 1 dread beat on ~30s preps (2 on longer), peak AlarmLevel ≈0.32 with skitter + soft flash, then a mandatory ~5s quiet valley, then the existing final ~10s warning telegraph. Prep stays plan-able — beats are texture, not combat.
 - Intended minimum opening package: 1 Barrier for 30 plus 1 Auto Turret for 80, leaving 30 scrap for either one low-cost utility piece or reserve flexibility.
 - Design intent: the player starts with a strong enough core to solve Wave 1, but not enough surplus to trivialize both lanes immediately.

@@ -40,9 +40,9 @@ public class WaveController : MonoBehaviour
         [Tooltip("If > 0, release the whole wave evenly across this many seconds " +
                  "(locked design: 60/75/90 for waves 1-3) and ignore spawnSpacing.")]
         public float spawnWindowSeconds = 0f;
-        [Tooltip("If > 0, build/recovery window before this wave, in seconds. Locked plan: " +
-                 "240 (W1 setup), 300 (W2 = 120 recovery + 180 setup), " +
-                 "240 (W3 = 120 recovery + 120 setup). 0 = use prepDuration.")]
+        [Tooltip("If > 0, build/recovery window before this wave, in seconds. Locked plan " +
+                 "(Decision 2026-07-22 / playtest 2026-07-15): Wave 1 = 40s, all later = 30s. " +
+                 "0 = use prepDuration.")]
         public float prepSeconds = 0f;
         [Tooltip("Fraction of this wave's spawns routed to the VentBreach lane; the rest " +
                  "use WestCorridor. Locked lane plan: W1 = 0 (West only), W2 = small hint, " +

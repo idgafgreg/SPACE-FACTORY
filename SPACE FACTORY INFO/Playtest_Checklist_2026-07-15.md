@@ -8,9 +8,8 @@ Every item lists its tuning knob so fixes are one-liners.
 - [ ] Main menu loads, PLAY starts the run cleanly.
 - [ ] HUD readable at a glance: hotbar, hub HP (top), your HP (bottom-left),
       resources, wave banner with "WEST GATE" telegraph.
-- [ ] 240s prep feels purposeful, not empty. If too long → wave 1
-      `prepSeconds` in the WaveController scene component.
-      (Doc conflict was ruled 240s, but a ruling isn't a feel-test.)
+- [ ] 40s Wave-1 prep feels purposeful, not empty. If wrong → wave 1
+      `prepSeconds` on WaveController (lock: W1 = 40s, later = 30s; Decision 2026-07-22).
 
 ## 2. Controls
 - [ ] WASD + mouse aim + shoot feels responsive.
@@ -47,7 +46,7 @@ Every item lists its tuning knob so fixes are one-liners.
       (trap unlocked after wave 1) discoverable?
 - [ ] Wave 3 split pressure (35% vent): does defending two lanes feel
       possible? (`ventBreachShare` per wave in scene.)
-- [ ] 300s/240s preps between waves: recovery + expansion time about right?
+- [ ] 30s preps between waves: recovery + expansion time about right?
 - [ ] Repair tool (hold E): cost feel (0.1 parts/HP), 20 starting parts
       enough for wave 1-2 mistakes?
 
@@ -62,7 +61,7 @@ Every item lists its tuning knob so fixes are one-liners.
 - [ ] Wave-clear bonus (10+5×N) visible and satisfying.
 
 ## 7. Waves 4-7 and endless
-- [ ] Wave 4-5: 150s prep after the long early preps — cliff or fine?
+- [ ] Wave 4-5: still 30s prep (same as other later waves) — fine or too tight?
 - [ ] First modifier wave (6+): banner telegraph noticed? Modifier felt in
       play (SWIFT should read instantly)? Multipliers in
       `WaveController.ApplyModifier` + `RollModifier` (30% none).
