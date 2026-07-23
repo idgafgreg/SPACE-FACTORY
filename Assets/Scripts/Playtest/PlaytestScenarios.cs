@@ -1,4 +1,5 @@
 using System.Collections;
+using System.Collections.Generic;
 using System.Text;
 using UnityEngine;
 using UnityEngine.SceneManagement;
@@ -798,6 +799,31 @@ public partial class PlaytestHarness
                 }
             }
         }
+
+        // Z-fighting gate. Two overlapping plates snapped to the SAME deck height share
+        // a depth plane and read in game as violently flashing floor panels — reported
+        // from play as "flashing floor panels under the main hub", measured as 8 pairs
+        // at dy=0.0000. Nothing else in the suite would have caught it: the plates were
+        // correctly placed, flat, grounded and lane-clear. Depth-plane collisions are
+        // their own defect class.
+        int coplanarPairs = 0;
+        if (floorRoot != null)
+        {
+            var pb = new List<Bounds>();
+            foreach (Transform t in floorRoot.transform)
+                if (TryWorldBounds(t, out var bb)) pb.Add(bb);
+
+            for (int i = 0; i < pb.Count; i++)
+                for (int j = i + 1; j < pb.Count; j++)
+                {
+                    float ox = (pb[i].extents.x + pb[j].extents.x) - Mathf.Abs(pb[i].center.x - pb[j].center.x);
+                    float oz = (pb[i].extents.z + pb[j].extents.z) - Mathf.Abs(pb[i].center.z - pb[j].center.z);
+                    if (ox > 0.02f && oz > 0.02f &&
+                        Mathf.Abs(pb[i].max.y - pb[j].max.y) < 0.0005f) coplanarPairs++;
+                }
+        }
+        Assert("no z-fighting deck plates", coplanarPairs == 0, sb, pass,
+            $"coplanarOverlappingPairs={coplanarPairs}");
 
         Assert("deck plates in a lane are walkable", platesObstructing == 0, sb, pass,
             $"obstructing={platesObstructing}/{plates} worstLipInLane={worstLip:F2} " +

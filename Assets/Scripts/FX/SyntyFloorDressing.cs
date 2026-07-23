@@ -41,6 +41,20 @@ public class SyntyFloorDressing : MonoBehaviour
     const float HubApronRadius = 5.2f;
     const int HubApronCount = 10;
     const float PlateLift = 0.02f;   // proud of the deck, no z-fighting
+
+    /// <summary>
+    /// Per-plate vertical stagger, so two plates can never share a plane.
+    ///
+    /// Patches are laid edge-to-edge and the deck-grounding snaps every plate to the
+    /// same Y, so neighbours that overlap even slightly end up EXACTLY coplanar with
+    /// the same material — which reads in game as violently flashing floor panels
+    /// (measured: 8 overlapping pairs at dy=0.0000 under the hub). Lifting the deck
+    /// gap alone does not help; the plates fight each other, not the deck. A sub-
+    /// millimetre ladder is invisible to the eye but gives the depth buffer a stable
+    /// winner. Kept tiny so the plates still read as flush flooring.
+    /// </summary>
+    const float PlateStagger = 0.0012f;
+    int _plateIndex;
     const int MaxPlates = 80;
     const int Seed = 20260722;
 
@@ -173,7 +187,8 @@ public class SyntyFloorDressing : MonoBehaviour
         float deckY = RuntimeVisualPrimitives.FindDeckY(inst.transform.position, 0f);
         b = rends[0].bounds;
         for (int i = 1; i < rends.Length; i++) b.Encapsulate(rends[i].bounds);
-        inst.transform.position += new Vector3(0f, deckY + PlateLift - b.min.y, 0f);
+        inst.transform.position += new Vector3(
+            0f, deckY + PlateLift + (_plateIndex++ % 16) * PlateStagger - b.min.y, 0f);
         return true;
     }
 

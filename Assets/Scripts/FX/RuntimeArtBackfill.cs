@@ -157,6 +157,25 @@ public class RuntimeArtBackfill : MonoBehaviour
     static void EnsureArt(GameObject host, string resourcesPath, string preferTag = null)
     {
         if (host == null || string.IsNullOrEmpty(resourcesPath)) return;
+
+        // Authored art wins over the placeholder backfill.
+        //
+        // This system exists to give bare gameplay objects SOMETHING to look at, so
+        // it hides the host's own renderers and shows a Resources placeholder
+        // instead. Once the sector was hand-authored that inverted: the hub and the
+        // workshop ARE real Synty props now, so entering play mode disabled
+        // SM_Prop_Supercomputer_01 / SM_Prop_Console_03 and drew the old Kenney
+        // machine-fortified / Prop_Computer blobs over them. Edit mode looked right,
+        // play mode looked like the old placeholder art, and nothing logged it.
+        //
+        // If the host already carries its own mesh, leave it alone — and clear any
+        // placeholder that a previous run (or a scene bake) left behind.
+        if (HasAuthoredArt(host))
+        {
+            RestoreAuthoredArt(host);
+            return;
+        }
+
         var existing = host.transform.Find("ArtPlaceholder");
         if (existing != null)
         {
@@ -204,6 +223,42 @@ public class RuntimeArtBackfill : MonoBehaviour
                 if (peak > 0.35f)
                     mat.SetColor("_EmissionColor", e * (0.35f / peak));
             }
+        }
+    }
+
+    /// <summary>
+    /// Does this host already have art of its own — i.e. a mesh that is not the
+    /// placeholder, not the blob shadow and not a readability decal? A hand-authored
+    /// Synty prop answers yes; a bare gameplay object answers no.
+    /// </summary>
+    static bool HasAuthoredArt(GameObject host)
+    {
+        var placeholder = host.transform.Find("ArtPlaceholder");
+        foreach (var r in host.GetComponentsInChildren<Renderer>(true))
+        {
+            if (r == null) continue;
+            if (placeholder != null && r.transform.IsChildOf(placeholder)) continue;
+            if (r.name.Contains("BlobShadow")) continue;
+            if (r.name.Contains("Readability") || r.name.Contains("Plinth")) continue;
+            if (r.GetComponent<MeshFilter>() == null) continue;   // decals/quads only
+            return true;
+        }
+        return false;
+    }
+
+    /// <summary>Re-show the host's own art and drop a placeholder left by an earlier
+    /// run or baked into the scene, so play mode matches what the scene shows.</summary>
+    static void RestoreAuthoredArt(GameObject host)
+    {
+        var placeholder = host.transform.Find("ArtPlaceholder");
+        if (placeholder != null) FxSafe.Destroy(placeholder.gameObject);
+
+        foreach (var r in host.GetComponentsInChildren<Renderer>(true))
+        {
+            if (r == null) continue;
+            if (placeholder != null && r.transform.IsChildOf(placeholder)) continue;
+            if (r.name.Contains("BlobShadow")) continue;
+            r.enabled = true;
         }
     }
 
