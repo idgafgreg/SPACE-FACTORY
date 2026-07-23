@@ -44,11 +44,11 @@ Use these when inventing features, VFX, audio, enemy behavior, or backlog tasks.
 
 | Pillar | Player-facing meaning | Design test |
 |--------|----------------------|-------------|
-| Workplace as trap | Isolation is the job, not a contrived lockdown | Would a lonely shift worker recognize this place? |
+| Workplace as trap | Isolation is *employment* — leased tools, shift clocks, empty berths — not a locked-door cutscene | Would a lonely shift worker recognize this place as a job? |
 | Industrial biomass / hive | Threat uses vents, heat, logistics; ship becomes habitat | Does the hive *use* our systems, or just spawn generic monsters? |
 | Factory pressure = identity | Threat intensity couples to production / heat / layout choices | Does a bigger factory feel more haunted, not just “more HP”? |
 | Diegetic dread | UI, wayfinding, failure live in the world | Can we cut floating chrome and still read the state? |
-| Lonely worker fantasy | Patched tools, schedule dread, tiny recovery beats | Is there a human labor texture between scare spikes? |
+| Lonely worker fantasy | Pride in a clean belt under debt/schedule dread; tiny recovery beats | Is there human labor texture between scare spikes? |
 
 ---
 
@@ -63,16 +63,19 @@ Use these when inventing features, VFX, audio, enemy behavior, or backlog tasks.
 **Soft rules:**
 
 - Cold / sealed / quiet decks stay relatively calm; processors, heat, and throughput raise wrongness (factory-tied pollution analog).
-- Prefer ecology beats over pure aggro spikes.
+- Prefer ecology beats and **timed contamination stages** (filters sticky → processors “wrong” → logistics-aware forms) over pure aggro spikes.
+- Cascading vessel failure is fair game: pumps, wiring, HVAC, and process lines can carry the scare — not only spawn waves.
 - Visual: industrial biomass, not cute aliens or cozy bugs.
-- Comp energy OK (Flood ladder, Dead Space ship-body); do **not** paste copyrighted fiction or copy unique IP silhouettes wholesale.
+- Comp energy OK (Flood ladder, Dead Space ship-body, Barotrauma husk staging); do **not** paste copyrighted fiction or copy unique IP silhouettes wholesale.
 
 ---
 
 ## Factory × horror grammar
 
-- Pressure should feel like **owed quota + failing habitat**, not random shooter arena.
+- Pressure should feel like **owed quota + failing habitat**, not random shooter arena. Meeting a target can raise the next one — greed/caution stays visible without co-op comedy.
 - Best scares are **layout consequences**: blocked belts, dark sectors, vents that used to be “yours.”
+- **Isolation dread > chase dread** when themes stick: empty corridors, wrong processors, and silent organ-logic land harder than perpetual pursuit.
+- Systems can feel sinister **before** combat forms — cheerful PA, food lines, and slurry that are already “off.”
 - **Soft director pacing:** raise tension with proximity, failing lights, vent audio, scanner lag — then let it *back off* so the next spike lands. Prep windows are earned quiet, not empty UI time.
 - **Recovery beats:** after combat, return the lonely workplace (routine labor texture, AlarmLevel easing) before the next cycle — dread needs air.
 - Authenticity before haunt: the ship must read as a real labor habitat first; biomass wrongness lands harder on true workplace bones.
@@ -85,8 +88,9 @@ Use these when inventing features, VFX, audio, enemy behavior, or backlog tasks.
 
 - Prefer interrogation lighting, hard spots, little bounce fill; when hive nears, lights *die*, rooms get blacker — not flashier.
 - Wayfinding in-world: sector tags, posters, failing lamps (Japanese-subway / industrial signage energy).
-- Ship anatomy can feel like a rib cage / body cavity — industrial, not cartoon organ belts.
-- Audio treats the metal structure as a living organism: call-and-response ambience, reverb/occlusion; PA/radio muffled wrong when systems are compromised.
+- Ship anatomy: industrial rib cage / body cavity with **silent organ logic** before biomass makes it literal — HVAC = lungs, processors = gut, power core = heart. Not cartoon organ belts.
+- Audio treats the metal structure as a living organism: machine-lung HVAC, call-and-response ambience, reverb/occlusion; PA/radio muffled or cut mid-sentence when systems are compromised.
+- Prefer tools and terminals that foreshadow in-world over floating chrome HUD.
 - HUD: diegetic where possible; avoid pure sci-fi arcade chrome.
 - In **first-person**, factory state must still be readable on machine faces and in the world — never require the iso overview to stay legible.
 
@@ -100,11 +104,16 @@ Use these when inventing features, VFX, audio, enemy behavior, or backlog tasks.
 |------|-------|-------|
 | Factorio | Pressure tied to factory growth | Turning horror into pure logistics puzzle |
 | Dead Space / remake | Industrial ship body-horror, diegetic UI, art direction | Becoming a shooter (3P or FP) |
+| Hardspace: Shipbreaker | Pride in labor inside company debt / leased tools | Salvage sandbox / jetpack identity |
+| Lethal Company | Solo quota that rises when met | Co-op voice comedy as the loop |
+| Barotrauma | Cascading vessel systems + staged infection | Mandatory co-op chaos |
+| ROUTINE | Machine-lung HVAC, diegetic tools/docs | Hide-and-seek FPS takeover |
 | Substructure | Factory + descent dread (adjacent) | Dig-only / vertical-crawl identity |
 | Alien: Isolation | Isolation + Director/menace pacing | Scripted cat-and-mouse as the whole loop |
 | Still Wakes the Deep | Workplace authenticity → terrible beauty | Pure narrative walking sim |
 | Halo Flood | Infection ecology ladder | One monster type forever / IP silhouette copy |
 | StarRupture / Drill Deep | Cycle / depth dread | Open-world planet or dig-only identity |
+| Site 17 / Haze | Facility-ops trap / derelict+corruption mood | Sit-n-survive or AI-gimmick identity |
 | Biofactory | — | **Anti-comp** — hive-as-factory drift |
 
 ---
@@ -114,10 +123,11 @@ Use these when inventing features, VFX, audio, enemy behavior, or backlog tasks.
 Short, original motifs agents may use in copy, props, systems (no copyrighted quotes):
 
 - Sector tags and crew notices that outlive the crew who wrote them  
-- “Wrong slurry” in recyclers / process lines before combat forms appear  
+- Leased tools, empty crew berths, and shift clocks that make loneliness read as employment  
+- “Wrong slurry” / cheerful food-line copy in recyclers before combat forms appear  
 - Dentist-arm / truss spots that fail one by one as hive pressure rises  
-- Vent lanes as habitat, not just spawn points  
-- Muffled PA that might be crew — or might be the ship answering itself  
+- Vent lanes as lungs/habitat, not just spawn points  
+- Muffled PA that cuts mid-sentence — crew, company ads, or the ship answering itself  
 - Schedule boards / shift timers that keep ticking through catastrophe  
 - Far deck that still looks like a ship waiting for a crew — empty until *you* industrialize it  
 
@@ -127,9 +137,13 @@ Short, original motifs agents may use in copy, props, systems (no copyrighted qu
 
 Promote to sections above only via `/lore-bible` when clearly good and north-star-aligned. Until then: optional.
 
-- Diegetic radio / PA VO through occluded speakers (muffled “crew” that isn’t there)  
+- Diegetic radio / PA that cuts mid-sentence when hive pressure rises (company ads / false crew)  
 - Empathy hazard: sealed-duct crew log that asks reopen “for someone still in there” (tone fork — keep restrained)  
 - Stronger scrap-per-minute coupling beyond heat/processor infection share already in code  
+- **Quota ticker (diegetic):** shift board raises required throughput after each success — meeting it never relaxes the next deadline  
+- **Contamination stages:** processor infection first changes audio/UI copy, then throughput, then spawn behavior — early cure window  
+- **Door/HVAC as scare:** motorized doors too loud + air handlers that “breathe” on infected sectors  
+- **Organ-map labels (diegetic only):** schematic tags LUNGS / GUT / HEART for HVAC / processors / reactor — wrong when hive rewrites them  
 
 **Absorbed / no longer experiments:** soft menace director + scanner lag, HorrorClock sector decay, heat-raised infection share, recovery-beat AlarmLevel ease — treat as canon grammar above.
 
@@ -162,6 +176,7 @@ Promote to sections above only via `/lore-bible` when clearly good and north-sta
 
 | Date | Change | Source |
 |------|--------|--------|
+| 2026-07-22 | Absorb 07-21: employment-as-trap + pride-under-debt; isolation>chase; systems-wrong-before-combat; silent organ logic + machine-lung audio; timed contamination / cascading vessel soft rules; comps Shipbreaker / Lethal Company quota / Barotrauma / ROUTINE / Site17·Haze; park quota ticker, contamination stages, HVAC-door scare, organ-map labels | `lore/2026-07-21/summary.md` |
 | 2026-07-21 | Canonize map footprint: empty deck = expansion headroom (north star Deck lock, factory×horror, FP test, motif, Do not shrink) | Human decision 2026-07-21 in `BACKLOG.md`; newest digest still 2026-07-20 |
 | 2026-07-20 | no canon changes — digest reviewed (newest still 2026-07-20; Decisions unchanged) | re-run `/lore-bible` |
 | 2026-07-20 | Absorb 07-19 pacing: soft director + recovery beats + authenticity-before-haunt; promote shipped menace/HorrorClock/heat-infection out of experiments; Substructure comp row; FP world-legibility diegetic rule; sync living-design scope docs | `lore/2026-07-19/summary.md` + code reality (`ThreatTelegraph`, `HorrorClock`, `RecoveryBeat`, L23) |
@@ -170,7 +185,7 @@ Promote to sections above only via `/lore-bible` when clearly good and north-sta
 
 ## Last absorbed research
 
-- Date: 2026-07-21 (Decision absorb; digests unchanged)  
-- Digests: `lore/2026-07-19/summary.md`, `lore/2026-07-20/summary.md` (newest)  
-- Focus absorbed: prior 19/20 research + FP dual-mode (2026-07-20) + **deck expansion headroom** (2026-07-21). Process-only Decision “full auto-approval” left out of canon (not lore).  
+- Date: 2026-07-22  
+- Digests: `lore/2026-07-19/summary.md`, `lore/2026-07-20/summary.md`, `lore/2026-07-21/summary.md` (newest)  
+- Focus absorbed: 07-21 freighter labor / quota-as-trap / ship-as-body organ logic / cascading vessel + husk staging energy; prior FP dual-mode + deck expansion headroom Decisions. Asset shopping left to wishlist; process-only “full auto-approval” left out of canon.  
 )
