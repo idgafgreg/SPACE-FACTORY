@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using UnityEngine;
 
 /// <summary>
@@ -11,7 +12,7 @@ using UnityEngine;
 public class PlaceholderPropDressing : MonoBehaviour
 {
     // v16 P9: wall-lip dressing pass grows with WavesCleared.
-    const int PropDressVersion = 16;
+    const int PropDressVersion = 17; // P9 review: wall-lip clusters snap to live lamp pools
 
     /// <summary>Keep walkway clear — props must stay outside this lane half-width.</summary>
     const float LaneClearance = 1.95f;
@@ -391,7 +392,10 @@ public class PlaceholderPropDressing : MonoBehaviour
         if (layout == null || layout.lanes == null || layout.lanes.Length == 0) return;
 
         // Base cluster count + a small extra per wave. Cap so it never overwhelms the lane.
-        int clusters = Mathf.Min(3 + waves, layout.lanes.Length * 2);
+        // Review 2026-07-22: the original 3 + waves put only TWO wall props on the whole ship
+        // at wave 0, which is not the "dense lived-in dressing" this task asks for. One per lane
+        // as the floor, growing per wave, still capped at 2 per lane so lanes never get a border.
+        int clusters = Mathf.Min(layout.lanes.Length + waves * 2, layout.lanes.Length * 2);
         int spawned = 0;
 
         string[] wallProps =
@@ -409,6 +413,15 @@ public class PlaceholderPropDressing : MonoBehaviour
             NestRole.DeskTopSmall, NestRole.DeskTopSmall, NestRole.DeskTopSmall, NestRole.DeskTopSmall
         };
 
+        // Phase E light rule — "dress into the light, or the dressing does not exist".
+        // A review capture found the first build's posters sitting in an unlit stretch:
+        // correctly wall-mounted at 1.7 m, flat to the wall, and completely unreadable.
+        // Collect the LIVE lamps once and pull each cluster to the lane point nearest one,
+        // so the dressing lands inside a pool instead of in the dark between them.
+        var litAnchors = new List<Vector3>();
+        foreach (var f in FindObjectsByType<CorridorLampFixture>(FindObjectsSortMode.None))
+            if (f != null && !f.isDead) litAnchors.Add(f.transform.position);
+
         for (int n = 0; n < clusters; n++)
         {
             var lane = layout.lanes[n % layout.lanes.Length];
@@ -416,6 +429,19 @@ public class PlaceholderPropDressing : MonoBehaviour
 
             // Pick points away from the gate mouth and the hub end.
             int i = Mathf.Clamp(1 + (n * 7) % Mathf.Max(1, lane.PointCount - 2), 1, lane.PointCount - 2);
+
+            if (litAnchors.Count > 0)
+            {
+                Vector3 lamp = litAnchors[n % litAnchors.Count];
+                int bestIdx = i; float bestD = float.MaxValue;
+                for (int k = 1; k <= lane.PointCount - 2; k++)
+                {
+                    float d = Vector3.Distance(lane.GetPoint(k), lamp);
+                    if (d < bestD) { bestD = d; bestIdx = k; }
+                }
+                if (bestD < 12f) i = bestIdx;   // only snap if that lamp is on this lane
+            }
+
             Vector3 p = lane.GetPoint(i);
             Vector3 ahead = lane.GetPoint(i + 1) - p;
             ahead.y = 0f;

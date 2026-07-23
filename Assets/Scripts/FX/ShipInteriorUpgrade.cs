@@ -14,7 +14,7 @@ public class ShipInteriorUpgrade : MonoBehaviour
     // 58: skip corridor lamp fixtures inside the hub footprint (clipping fix).
     // 59: F9 — wire the never-called BuildKickplates for eye-level deck-edge detail.
     // 62: P8 overhead pipes switch from Kenney `pipe_straight` to Synty `SM_Prop_Pipe_Straight_Full_01`.
-    const int UpgradeVersion = 62; // P8: Synty overhead pipe kit
+    const int UpgradeVersion = 63; // P8 review: recentre pack pipes (end pivot) + keep pack material
 
     // TransparentFX — built-in layer, ships with every project (same choice as
     // PostFXBootstrap.VolumeLayer). Wall caps live here so point lights can cull
@@ -1133,6 +1133,12 @@ public class ShipInteriorUpgrade : MonoBehaviour
             {
                 Vector3 a = lane.GetPoint(i);
                 Vector3 b = lane.GetPoint(Mathf.Min(i + 1, lane.PointCount - 1));
+                // Lane points are authored at y ~= 0.5 while the deck renders at y ~= 0 (the F9
+                // kickplate lesson). Inheriting that height pushed the run to a measured top of
+                // 3.39 against a 3.2 ceiling, so the pipes were buried in the lid instead of
+                // hanging under it — which is why they barely read on an FP look-up.
+                a.y = 0f;
+                b.y = 0f;
                 Vector3 dir = b - a;
                 dir.y = 0f;
                 if (dir.sqrMagnitude < 0.25f) continue;
@@ -1153,12 +1159,30 @@ public class ShipInteriorUpgrade : MonoBehaviour
                     var go = Instantiate(pipePrefab, (p0 + p1) * 0.5f,
                         Quaternion.LookRotation(dir, Vector3.up), parent);
                     go.name = "OverheadPipe";
-                    // Synty straight pipe is assumed aligned along its local Z; stretch
-                    // Z to span the segment while keeping XY radius unchanged.
+                    // Synty straight pipe runs along its local Z (measured 0.41 x 0.13 x 2.50);
+                    // stretch Z to span the segment while keeping the XY radius unchanged.
                     go.transform.localScale = new Vector3(1f, 1f, len / prefabLength);
                     SyntyHorrorLoader.PrepareInstance(go);
-                    foreach (var r in go.GetComponentsInChildren<Renderer>())
-                        if (r != null) r.sharedMaterial = _pipeMat;
+
+                    // The pack pipe PIVOTS AT ONE END (bounds centre z = +1.25 on a 2.50
+                    // prefab), so instantiating the pivot at the segment midpoint pushed
+                    // every pipe half its own length down the lane — measured 3.0 m of
+                    // drift on a 6 m run, leaving the first half of each segment bare and
+                    // overhanging the far end. Recentre on the real rendered bounds, the
+                    // same correction the ceiling lights, deck plates and gate frames needed.
+                    var prs = go.GetComponentsInChildren<Renderer>(true);
+                    if (prs.Length > 0)
+                    {
+                        Bounds pb = prs[0].bounds;
+                        for (int r2 = 1; r2 < prs.Length; r2++)
+                            if (prs[r2] != null) pb.Encapsulate(prs[r2].bounds);
+                        Vector3 want = (p0 + p1) * 0.5f;
+                        go.transform.position += want - pb.center;
+                    }
+
+                    // Keep the pack material. Overwriting it with the flat runtime tint threw
+                    // away the texture that makes the duct read as Synty at all — which is the
+                    // entire point of P8. PrepareInstance already repairs a broken/pink mat.
                 }
                 else
                 {

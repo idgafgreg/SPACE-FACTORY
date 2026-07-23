@@ -489,6 +489,12 @@ Without it, mats may pink; runtime falls back to Standard albedo when Error.
   (`Locker_01`, `Barrel_01`, `Crate_01`, `Greeble_08`, `Generator_PowerCell_01`), bay debris
   (`Crate_01`, `Barrel_01`); dead Kenney `Spawn`/`RecolorProp`/`FitProp` helpers removed.
   Syntax verified with ad-hoc Roslyn parser; in-editor Play-mode lane walk + VoidHull check still needed.
+  **REVIEWED 2026-07-22 (in-editor) — PASS.** 39 props under `PlaceholderProps`, **colliders=0**,
+  Synty-only, none sunk. The 11 apparent "floaters" are legitimate and were NOT touched: nine are
+  `Nest_*` desk items sitting on `Nest_SM_Prop_Desk_01` (gap 0.92 = desk height) and two are wall
+  posters at 1.7 m — checking the NAMES before "fixing" the gap is what stopped this becoming the F9
+  kickplate mistake in reverse. Lit-corridor capture reads well. Minor, left alone: two props sit
+  2.09 / 2.2 m from a lane against the 2.3 m advisory (they carry no collider, so pathing is safe).
 
 - [x] P8. Overhead pipes — Synty pipe kit
   Tag: `[asset-pack: POLYGON Sci-Fi Horror]`
@@ -501,6 +507,21 @@ Without it, mats may pink; runtime falls back to Standard albedo when Error.
   segment, calls `PrepareInstance` for collider-free + material fallback; primitive cylinder fallback
   kept if the pack prefab is unavailable. Syntax verified with ad-hoc Roslyn parser; in-editor FP
   look-up + wall-spear check still needed.
+  **REVIEWED 2026-07-22 — TWO REAL BUGS FOUND AND FIXED (ShipInteriorUpgrade v63).** The Synty swap
+  itself worked (mesh confirmed SYNTY), but:
+  1. **Half-length offset.** `SM_Prop_Pipe_Straight_Full_01` pivots at ONE END (bounds centre
+     z = +1.25 on a 2.50 prefab), so instantiating the pivot at the segment midpoint drifted every
+     pipe half its own length down the lane — measured **3.00 m on a 6 m run**, leaving the first
+     half of each segment bare and overhanging the far end. Now recentred on real rendered bounds,
+     the same correction the ceiling lights, deck plates and gate frames each needed.
+  2. **Pipes were buried in the ceiling.** The run inherited the authored lane Y (~0.5) on top of
+     `CeilingHeight - 0.38`, giving a measured top of **3.39 against a 3.2 lid** — the F9 kickplate
+     lesson again. Lane Y is now flattened; top is **2.89**, hanging under the lid. This is why the
+     first FP look-up showed almost nothing.
+  Also dropped the `_pipeMat` override that repainted every duct a flat runtime colour and threw away
+  the pack texture — the whole point of P8. Material is now `PolygonSciFiHorror_01_A`; the look-up
+  capture shows a textured duct with segment joints and a red marking band. Lateral offset from lane
+  verified at 1.35 m.
 
 - [x] P9. Dense lived-in dressing pass (posters, signs, lockers, food)
   Tag: `[asset-pack: POLYGON Sci-Fi Horror]`
@@ -515,6 +536,14 @@ Without it, mats may pink; runtime falls back to Standard albedo when Error.
   `WaveController.onWaveCleared` so dressing grows after each wave. `NestRole.Sign` added for
   wall-flat placement. Syntax verified with ad-hoc Roslyn parser; in-editor walk + lane clearance
   check still needed.
+  **REVIEWED 2026-07-22 — placement correct, but it violated the Phase E light rule (fixed, v17).**
+  Posters/signs were properly wall-mounted and flat, but a review capture found the sampled poster in
+  a near-black stretch of corridor: correct, and completely unreadable. `DressWallLips` now collects
+  the LIVE `CorridorLampFixture` positions and snaps each cluster to the lane point nearest one (12 m
+  guard so it only snaps within its own lane), so dressing lands in a pool instead of the dark between
+  them. Density was also too thin for a task called "dense": `3 + waves` put only **2** wall props on
+  the entire ship at wave 0. Now `lanes + waves*2`, still capped at 2 per lane so a lane never gets a
+  border — 3 at wave 0 and growing per clear.
 
 #### Phase C — gameplay actors
 
@@ -1550,6 +1579,19 @@ Method: capture the Game view in Play mode, judge the frame, fix the single wors
 
 ## Agent log (newest first — one line per session: date, task, result, commit)
 
+- 2026-07-22: **Reviewed P7/P8/P9 in-editor — found and fixed 2 real bugs + 2 quality issues.**
+  Process note first: all three shipped marked `[x]` while their own notes said "in-editor … still
+  needed" (verified only by an ad-hoc Roslyn syntax parse). Per AGENTS.md that is a `[?]`, not `[x]`.
+  **P7 PASS** — 39 props, colliders=0, Synty-only; the 11 apparent floaters are desk-top items on the
+  nest desk and wall posters, so checking names before "fixing" avoided an F9-style false repair.
+  **P8 two real bugs**: the pack pipe pivots at one END, so pipes drifted **3.00 m on a 6 m run**; and
+  the run inherited the authored lane Y, putting its top at **3.39 against a 3.2 ceiling** (buried in
+  the lid — why FP look-up showed nothing). Both fixed; also dropped the `_pipeMat` override that
+  discarded the pack texture. Ducts now read with joints and a marking band. **P9** placement was fine
+  but unlit — clusters now snap to live lamp pools (Phase E light rule), and density went from 2 props
+  ship-wide at wave 0 to one per lane growing per wave. Full suite **7/7 PASS**. Console clean.
+  Commit <hash>.
+
 - 2026-07-22: auto-dev P9 dense wall-lip dressing — `PlaceholderPropDressing.cs` v16:
   `DressWallLips` spawns Synty posters/signs/lockers/crates/barrels/rations/trays/clipboards/cups
   along lane wall lips; cluster count `min(3 + WavesCleared, lanes.Length * 2)`;
@@ -1566,6 +1608,12 @@ Method: capture the Game view in Play mode, judge the frame, fix the single wors
   workshop uses `Locker_01`, `Barrel_01`, `Crate_01`, `Greeble_08`, `Generator_PowerCell_01`; bay debris
   uses `Crate_01`, `Barrel_01`. Dead Kenney `Spawn`/`RecolorProp`/`FitProp` helpers removed.
   Syntax verified with ad-hoc Roslyn parser; in-editor Play-mode lane walk + VoidHull check still needed.
+  **REVIEWED 2026-07-22 (in-editor) — PASS.** 39 props under `PlaceholderProps`, **colliders=0**,
+  Synty-only, none sunk. The 11 apparent "floaters" are legitimate and were NOT touched: nine are
+  `Nest_*` desk items sitting on `Nest_SM_Prop_Desk_01` (gap 0.92 = desk height) and two are wall
+  posters at 1.7 m — checking the NAMES before "fixing" the gap is what stopped this becoming the F9
+  kickplate mistake in reverse. Lit-corridor capture reads well. Minor, left alone: two props sit
+  2.09 / 2.2 m from a lane against the 2.3 m advisory (they carry no collider, so pathing is safe).
   Commit: `b971b67`.
 
 - 2026-07-22: **Human rulings applied.** (1) SectorLighting reverted (`c73c748`, was dd445f0).
