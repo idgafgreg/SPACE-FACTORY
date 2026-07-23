@@ -1542,7 +1542,7 @@ Method: capture the Game view in Play mode, judge the frame, fix the single wors
   (buying WestCorridor left VentBreach dark); price escalates 90 → 130 → 189. Iso uses a gentler
   0.75x (vs FP 0.42x) so the factory stays readable per the 2026-07-20 decision, while the dead
   fixture set stays identical across modes. Docs: Progression_Spec.md. Full suite **7/7 PASS**.
-  Console clean. Commit <hash>.
+  Console clean. Commit dd445f0.
 
 - 2026-07-22: **P6 CLOSED — owner chose "light + back the mouths", and backing it exposed the real
   cause.** The blocker was never light: an Unlit **white** test material with fog off still sampled
