@@ -1037,6 +1037,47 @@ Code reality: L15–L26 shipped (L23 Play-verified; L25/L26 `[?]` Unity); L27–
   Change: lightweight “habitation” field — samples distance to nearest powered drill/processor/belt; far unused deck gets slight fog pull and/or ambient wrongness (reuse AtmosphereController / HorrorClock-style hooks), easing as industry approaches. Soft only; hub teaching area stays readable. Must not fight F8 FP fog profile (gate or blend per ViewMode if needed). Numbers in Progression_Spec.
   done-when: Play — standing on empty far deck feels slightly wronger than beside a running line; building out reduces that local wrongness; map bounds unchanged; console clean
 
+### Lore-gap refill — 2026-07-22 (bible absorb: employment trap / organ logic / contamination)
+
+**Priority note:** Remaining **F11–F14** and open **P\*/C\*** conversion work stay ahead of lore tasks unless a human/groom pulls one up. Do **not** shrink the map (Decision 2026-07-21). Bible current through `lore/2026-07-21` absorb (Last absorbed 2026-07-22).
+
+Code reality: L15–L26 + B1/B2 shipped; `ProcessInfection` is still binary infect + slurry stall (no stages); B1/L26 cover HUD quota (no rising *world* board — L28 owns schedule text); `Sfx.RadioSilence` is shift-end mute only (no mid-sentence PA cut); no HVAC-infection breathe; sector plaques are HUB/WEST/VENT/EAST only (no organ literacy); employment copy is partial (RecoveryBeat / nest / P16). Visual/audio-only ≤30% of this block (L37 only).
+
+- [ ] L35. Staged processor contamination (copy → slow → ecology)
+  Type: systemic / diegetic | Pillar: Industrial biomass / hive
+  Lore: `lore/BIBLE.md` hive soft rules (timed contamination stages) + open experiment Contamination stages; Barotrauma husk energy (`lore/2026-07-21/summary.md` #3)
+  Unity: **yes** — stage ladder on an infected processor + early cure window.
+  Change: extend `ProcessInfection` (processors) from binary to **3 stages** before full ecology bite: (1) audio/UI copy only — cheerful-or-clinical reclaim line goes “off” (original wording; no copyrighted quotes), no rate hit yet; (2) existing rateMult + slurry stall; (3) seeds a small residue/vent ecology beat (reuse `InfectionResidue` / HorrorClock stress — no new shooter fantasy). Repair clears early stages fully; stage 3 still clearable but leaves a brief wrongness echo. Caps/timings in Progression_Spec. W1 teaching processors may cap at stage 2.
+  done-when: Play — an infected processor visibly climbs ≥2 stages before stage-3 ecology; repairing at stage 1 restores clean copy with no throughput loss; W1 still teachable; console clean
+
+- [ ] L36. Infected processor cascades to a linked belt
+  Type: systemic / mechanical | Pillar: Factory pressure = identity / Industrial biomass / hive
+  Lore: `lore/BIBLE.md` factory×horror (layout consequences) + cascading vessel failure soft rule; `lore/2026-07-21/summary.md` #3
+  Unity: **yes** — stall on processor measurably slows a feeding/exit belt.
+  Change: when a processor is infected and stalling (or ≥ stage 2 from L35 if present), find nearest powered conveyor feeding or leaving it and apply a capped speed tax / brief jam telegraph (reuse belt APIs; no scrap delete). Clears when infection clears. Doc one line in Progression_Spec. Primitives/SFX only.
+  done-when: Play — infect+stall a processor → linked belt throughput drops; clear infection → belt recovers; unrelated belts unchanged; console clean
+
+- [ ] L37. Company PA loop cuts under hive pressure
+  Type: audio / diegetic | Pillar: Diegetic dread / Workplace as trap
+  Lore: `lore/BIBLE.md` diegetic grammar (PA muffled / cut mid-sentence) + open experiment; Shipbreaker unauthorized-comms energy (`lore/2026-07-21/summary.md` #1)
+  Unity: **yes** — hear cut during rising AlarmLevel / HorrorClock; distinct from B2 shift-end silence.
+  Change: procedural **non-VO** PA bed (beeps / filtered tone phrases / existing `Sfx` pool — no voice library, no pack) that plays sparsely in Prep/Recovery and **cuts mid-loop** when `AlarmLevel` or zone HorrorClock crosses a threshold. Quiet after cut; soft director, not sting spam. Distinct from `Sfx.RadioSilence` wave-clear mute. Wire on a dedicated child of SectorRuntime (never mute the whole runtime).
+  done-when: Play — hear at least one PA bed start, then an intentional mid-loop cut under raised menace; B2 shift-end silence still works; factory SFX remain; console clean
+
+- [ ] L38. Organ-literacy tags on ship systems
+  Type: diegetic | Pillar: Diegetic dread
+  Lore: `lore/BIBLE.md` diegetic grammar (silent organ logic) + open experiment Organ-map labels; `lore/2026-07-21/summary.md` #8
+  Unity: **yes** — readable in iso; still useful in FP (F12 cousin, do not block on F*).
+  Change: add 3 world tags (reuse `SectorPlaques` pattern or thin companion) near HVAC/duct cluster, a processor bay, and power/hub heart — terse industrial labels e.g. `[HVAC / LUNGS]`, `[PROCESS / GUT]`, `[POWER / HEART]`. Steel/amber; no screen chrome. Optional soft rewrite when local infection/HorrorClock high (letters wrong / OVERGROWN) — keep restrained. Not a second roadmap UI.
+  done-when: Play — all three tags readable near those systems; infection rewrite (if shipped) is subtle not meme-y; no extra canvas clutter; console clean
+
+- [ ] L39. Leased-asset / empty-berth employment copy
+  Type: diegetic | Pillar: Workplace as trap / Lonely worker fantasy
+  Lore: `lore/BIBLE.md` pillars + motifs (loneliness reads as employment; leased tools, empty berths, shift clocks); Shipbreaker pride-under-debt (`lore/2026-07-21/summary.md` #1)
+  Unity: **yes** — nest/tool tip readable in iso (and FP later).
+  Change: original diegetic copy only (no IP names): (a) one world plaque or TextMesh at the shift nest / berth cluster — leased tool / empty berth / company property energy; (b) repair-tool or scanner tip line that reminds the tool is issued/leased when first equipped each run. Prefer existing nest from P2/P16; primitives + TextMesh OK if pack mesh not needed. No new HUD chrome panels. Complements P17/P20 — do not rebuild the break-room.
+  done-when: Play — nest shows employment-trap copy; tool tip fires once per run; tone is sad/lonely not parody; console clean
+
 ### Done archive — 2026-07-19 lore-gap + map integrity (shipped)
 
 Code reality snapshot (kept for history): L15-L19 shipped; map seams/props sealed; A9/A10 verified. Asset pack: **not purchased**.
@@ -1328,6 +1369,13 @@ Method: capture the Game view in Play mode, judge the frame, fix the single wors
   Change: procedural metal “answer” creaks to machine pulses / footsteps via existing `Sfx` pool (Built-in only, no pack, no VO library). Quiet between answers — soft director, not sting spam.
   done-when: Play — walking a running deck yields occasional answered creaks; idle dark deck stays quieter; console clean
 
+- [ ] L40. HVAC / door-motor breathe on infected sectors
+  Type: audio / diegetic | Pillar: Diegetic dread / Industrial biomass / hive
+  Lore: `lore/BIBLE.md` open experiment Door/HVAC as scare; ROUTINE machine-lung (`lore/2026-07-21/summary.md` #4)
+  Unity: **yes** — infected sector vs clean sector A/B.
+  Change: when a sector has ProcessInfection or HorrorClock stress above a threshold, play a low “air handler breathe” / door-motor strain bed from existing `Sfx` (or thin procedural tones) on a dedicated child object near that zone — never on SectorRuntime root. Soft director; backs off in RecoveryBeat. Cousin to L31/L37; do after those if audio budget is thin.
+  done-when: Play — infected/stressed sector has audible breathe/strain that eases after recovery; clean hub stays quieter; console clean
+
 - [x] PlaytestHarness named eye-level vantages (hub / west lamp / vent approach) so F11+ visual verifies are comparable — DONE 2026-07-22 via C5: `PlaytestHarness.Vantages` (hub / west / vent) with pos + lookAt.
 
 - [x] First pass progression design — DONE: SPACE FACTORY INFO/Progression_Spec.md written AND v1 slice implemented (wave-gated unlocks: ShockTrap→1, RepairPost→2, RelayNode→3; wave-clear bonus 10+5×N; hotbar lock display; unlock popups). Play-verified.
@@ -1348,12 +1396,18 @@ Method: capture the Game view in Play mode, judge the frame, fix the single wors
 - [x] [asset-pack: Bio Horror / Sci-fi Environment] Superseded — P1 uses Synty Alien Wall/Pillar for breach infestation.
 - [x] [asset-pack: Bionic structures] Superseded — not needed while POLYGON growth/wall kitbash is in tree.
 - [ ] Empathy hazard / false vent voice — audio lure / sealed-duct log that pulls player off the factory floor mid-prep (`lore/BIBLE.md` open experiment; lore/2026-07-19 empathy motif). Needs fairness pass so it never soft-locks a wave; groom before Now.
-- [ ] Diegetic radio / PA VO through occluded speakers — muffled “crew” that isn’t there (`lore/BIBLE.md` open experiment). Needs VO policy + occlusion path; not queued while F* owns art budget.
+- [ ] Diegetic radio / PA **VO** through occluded speakers — real muffled “crew” that isn’t there (`lore/BIBLE.md` open experiment). Procedural non-VO cut is Now as **L37**; this ice item stays VO-policy + occlusion path only.
 - [ ] Scanner ghost / solvent misread — brief false residue blip on scanner that may be stress/chemical, not combat spawn (lore/2026-07-20/stories.md Singular Infestation motif). Groom for uncertainty fairness.
 - [ ] Infection ecology stage 3 — late coordinated packs once L29 vent-carrier proves stage 2 (Flood ladder; keep Biofactory anti-comp).
 - [ ] Free lead: Abandoned Factory Lite (Asset Store) — safe mood greys for blockout; not gated, but not queued until visual Now is thin.
 
 ## Agent log (newest first — one line per session: date, task, result, commit)
+
+- 2026-07-22: **lore-gap** — absorbed post-bible `lore/2026-07-21` into Now as **L35–L39**
+  (staged contamination, process→belt cascade, PA mid-loop cut, organ-literacy tags,
+  leased-asset/berth copy); **L40** HVAC breathe → Next beside L31; Ice box PA item narrowed
+  to real VO (L37 covers procedural). Skipped re-queue of B1/L26 quota HUD and L28 schedule
+  board. No Needs human. No code. Commit pending.
 
 - 2026-07-22: **Phase E planned + P16 shipped.** Plan: wrote the governing rule **"dress into the
   light, or bring light"** into the Phase E preamble with the three measurements behind it (P5
