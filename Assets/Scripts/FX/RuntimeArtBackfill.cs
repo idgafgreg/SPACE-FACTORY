@@ -85,7 +85,8 @@ public class RuntimeArtBackfill : MonoBehaviour
             EnsureBlobShadow(hub, 2.4f);
         }
 
-        var workshop = GameObject.Find("Workshop");
+        var workshopT = SectorLayout.Workshop;
+        var workshop = workshopT != null ? workshopT.gameObject : null;
         if (workshop != null)
         {
             EnsureArt(workshop, "ArtPlaceholders/Prop_Computer");

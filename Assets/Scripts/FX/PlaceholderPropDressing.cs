@@ -275,9 +275,9 @@ public class PlaceholderPropDressing : MonoBehaviour
 
     void DressWorkshop(Transform root)
     {
-        var workshop = GameObject.Find("Workshop");
+        var workshop = SectorLayout.Workshop;
         if (workshop == null) return;
-        Vector3 w = workshop.transform.position;
+        Vector3 w = workshop.position;
 
         // Workshop near hub — Synty only; skip hub-approach reject.
         TrySpawnCorridorSynty("SM_Prop_Locker_01", w, root, NestRole.Locker, 0.9f, 90f, ignoreHub: true,

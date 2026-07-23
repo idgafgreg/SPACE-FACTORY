@@ -11,8 +11,9 @@ public class WorkshopBeacon : MonoBehaviour
 
     void Start()
     {
-        var go = GameObject.Find("Workshop");
-        if (go == null) return;
+        var t = SectorLayout.Workshop;
+        if (t == null) return;
+        var go = t.gameObject;
 
         _light = go.GetComponent<Light>();
         if (_light == null) _light = go.AddComponent<Light>();
@@ -36,9 +37,9 @@ public class WorkshopBeacon : MonoBehaviour
         if (wc == null || wc.CurrentPhase != WaveController.Phase.Prep) return;
         if (wc.PhaseTimeLeft < 15f) return; // don't nag during breach clock
 
-        var go = GameObject.Find("Workshop");
+        var go = SectorLayout.Workshop;
         if (go == null) return;
-        FloatingText.Spawn(go.transform.position + Vector3.up * 2.5f,
+        FloatingText.Spawn(go.position + Vector3.up * 2.5f,
             "F — WORKSHOP UNLOCKS", new Color(1f, 0.85f, 0.4f), 1.3f);
     }
 }

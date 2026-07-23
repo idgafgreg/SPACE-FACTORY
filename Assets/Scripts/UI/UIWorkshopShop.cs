@@ -14,6 +14,9 @@ using UnityEngine.UI;
 public class UIWorkshopShop : MonoBehaviour
 {
     [Header("Interaction")]
+    [Tooltip("Legacy name lookup. Only used if SectorLayout.workshopTransform is unwired — " +
+             "the landmark is resolved through SectorLayout.Workshop so renaming or reskinning " +
+             "the prop cannot silently disable the shop.")]
     public string  workshopObjectName = "Workshop";
     public float   useRadius          = 4f;
     public KeyCode useKey             = KeyCode.F;
@@ -51,14 +54,18 @@ public class UIWorkshopShop : MonoBehaviour
 
     void Start()
     {
-        var go = GameObject.Find(workshopObjectName);
-        if (go != null) _workshop = go.transform;
         _font = ShipTerminalUI.Mono;
         BuildHint();
     }
 
     void Update()
     {
+        // Resolved per frame rather than cached at Start: the landmark may be
+        // spawned or reassigned after this component wakes, and a one-shot Start
+        // lookup that missed left the terminal permanently dead with no symptom
+        // beyond "F does nothing". SectorLayout.Workshop caches internally, so
+        // this is a field read once the reference is wired.
+        if (_workshop == null) _workshop = SectorLayout.Workshop;
         if (_workshop == null) return;
         var player = PlayerController.Instance;
         if (player == null) return;

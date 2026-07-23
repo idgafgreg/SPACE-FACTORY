@@ -37,6 +37,14 @@ public class EnvironmentalLore : MonoBehaviour
             && SectorLayout.Instance.commandHubTransform != null)
             return SectorLayout.Instance.commandHubTransform.position;
 
+        // Same treatment as the hub: resolve the workshop through the layout so a
+        // renamed or reskinned landmark does not silently drop these beats at 0,0,0.
+        if (name == "Workshop")
+        {
+            var ws = SectorLayout.Workshop;
+            if (ws != null) return ws.position;
+        }
+
         var go = GameObject.Find(name);
         return go != null ? go.transform.position : Vector3.zero;
     }
