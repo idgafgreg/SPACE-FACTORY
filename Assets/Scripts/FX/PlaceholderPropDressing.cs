@@ -10,8 +10,8 @@ using UnityEngine;
 /// </summary>
 public class PlaceholderPropDressing : MonoBehaviour
 {
-    // v15 C2/P7: dead Kenney Resources path removed; corridors/workshop/bay fully Synty.
-    const int PropDressVersion = 15;
+    // v16 P9: wall-lip dressing pass grows with WavesCleared.
+    const int PropDressVersion = 16;
 
     /// <summary>Keep walkway clear — props must stay outside this lane half-width.</summary>
     const float LaneClearance = 1.95f;
@@ -20,8 +20,16 @@ public class PlaceholderPropDressing : MonoBehaviour
     const float HubClearance = 2.4f;
 
     float _retryAt = 1.05f;
+    int _dressedWaves = -1;
 
-    void Start() => Dress();
+    void Start()
+    {
+        Dress();
+
+        var wc = WaveController.Instance;
+        if (wc != null)
+            wc.onWaveCleared.AddListener(_ => AddWaveDressing());
+    }
 
     void Update()
     {
@@ -30,6 +38,14 @@ public class PlaceholderPropDressing : MonoBehaviour
         if (_retryAt > 0f) return;
         _retryAt = -1f;
         Dress();
+    }
+
+    int WavesClearedNow()
+    {
+        var wc = WaveController.Instance;
+        if (wc != null) return wc.WavesCleared;
+        var rs = RunStatsTracker.Instance;
+        return rs != null ? rs.PeakWave : 0;
     }
 
     public void Dress()
@@ -55,8 +71,24 @@ public class PlaceholderPropDressing : MonoBehaviour
         DressWorkshop(root.transform);
         DressCorridors(root.transform);
         DressBayDebris(root.transform);
+        DressWallLips(root.transform);
 
         Debug.Log($"[PlaceholderPropDressing] v{PropDressVersion} dressed under {root.name} ({root.transform.childCount} children)");
+    }
+
+    /// <summary>
+    /// P9: after each wave clear, add a few more wall-lip props so the ship feels progressively
+    /// lived-in/abandoned without ever shrinking the walkway. Runs during the initial Dress too.
+    /// </summary>
+    public void AddWaveDressing()
+    {
+        int waves = WavesClearedNow();
+        if (waves <= _dressedWaves) return;
+        _dressedWaves = waves;
+
+        var root = transform.Find("PlaceholderProps");
+        if (root == null) return;
+        DressWallLips(root, waves);
     }
 
     /// <summary>
@@ -126,7 +158,8 @@ public class PlaceholderPropDressing : MonoBehaviour
         Crate,
         Barrel,
         Greeble,
-        Poster
+        Poster,
+        Sign
     }
 
     /// <summary>Instantiate a Synty nest prop. Pack path only — no Kenney Resources.</summary>
@@ -195,6 +228,7 @@ public class PlaceholderPropDressing : MonoBehaviour
             NestRole.Barrel => 0.95f,
             NestRole.Greeble => 0.55f,
             NestRole.Poster => 0.85f,
+            NestRole.Sign => 0.55f,
             _ => 0.8f
         };
         float targetWidth = role switch
@@ -208,6 +242,7 @@ public class PlaceholderPropDressing : MonoBehaviour
             NestRole.Barrel => 0.7f,
             NestRole.Greeble => 0.55f,
             NestRole.Poster => 0.7f,
+            NestRole.Sign => 0.9f,
             _ => 0.9f
         };
         targetHeight *= sizeMultiplier;
@@ -343,6 +378,114 @@ public class PlaceholderPropDressing : MonoBehaviour
             i++;
             if (i >= 6) break;
         }
+    }
+
+    /// <summary>
+    /// P9: progressively add posters, signs, lockers, rations, trays, cups, clipboards along
+    /// non-lane wall lips. Density rises gently with waves cleared, but props stay outside the
+    /// walkway and never use alien growth in the hub.
+    /// </summary>
+    void DressWallLips(Transform root, int waves = 0)
+    {
+        var layout = SectorLayout.Instance;
+        if (layout == null || layout.lanes == null || layout.lanes.Length == 0) return;
+
+        // Base cluster count + a small extra per wave. Cap so it never overwhelms the lane.
+        int clusters = Mathf.Min(3 + waves, layout.lanes.Length * 2);
+        int spawned = 0;
+
+        string[] wallProps =
+        {
+            "SM_Prop_Poster_01", "SM_Prop_Poster_02", "SM_Prop_Poster_03",
+            "SM_Prop_Sign_Lockers_01", "SM_Prop_Sign_Engineering_01", "SM_Prop_Sign_Airlock_01",
+            "SM_Prop_Locker_01", "SM_Prop_Crate_01", "SM_Prop_Barrel_01",
+            "SM_Prop_Food_Ration_01", "SM_Prop_Food_Tray_01", "SM_Prop_Clipboard_01", "SM_Prop_Cup_01"
+        };
+        NestRole[] roles =
+        {
+            NestRole.Poster, NestRole.Poster, NestRole.Poster,
+            NestRole.Sign, NestRole.Sign, NestRole.Sign,
+            NestRole.Locker, NestRole.Crate, NestRole.Barrel,
+            NestRole.DeskTopSmall, NestRole.DeskTopSmall, NestRole.DeskTopSmall, NestRole.DeskTopSmall
+        };
+
+        for (int n = 0; n < clusters; n++)
+        {
+            var lane = layout.lanes[n % layout.lanes.Length];
+            if (lane == null || lane.PointCount < 4) continue;
+
+            // Pick points away from the gate mouth and the hub end.
+            int i = Mathf.Clamp(1 + (n * 7) % Mathf.Max(1, lane.PointCount - 2), 1, lane.PointCount - 2);
+            Vector3 p = lane.GetPoint(i);
+            Vector3 ahead = lane.GetPoint(i + 1) - p;
+            ahead.y = 0f;
+            if (ahead.sqrMagnitude < 0.01f) ahead = Vector3.forward;
+            ahead.Normalize();
+            Vector3 side = Vector3.Cross(Vector3.up, ahead);
+            if (side.sqrMagnitude < 0.01f) side = Vector3.right;
+            side.Normalize();
+
+            int pi = n % wallProps.Length;
+            float prefer = (n % 2 == 0) ? 1f : -1f;
+            if (TrySpawnWallLipSynty(wallProps[pi], p, side * prefer, root, roles[pi], 0.75f, n * 53f))
+                spawned++;
+        }
+
+        if (spawned > 0)
+            Debug.Log($"[PlaceholderPropDressing] P9 added {spawned} wall-lip props (waves={waves}).");
+    }
+
+    /// <summary>Raycast from the lane point toward a wall and place a prop just inside the face.
+    /// Signs/posters hang flat; floor props settle on the deck.</summary>
+    static bool TrySpawnWallLipSynty(string prefabName, Vector3 lanePoint, Vector3 sideDir,
+        Transform parent, NestRole role, float scale, float yaw)
+    {
+        sideDir.y = 0f;
+        if (sideDir.sqrMagnitude < 0.01f) return false;
+        sideDir.Normalize();
+
+        Vector3 origin = lanePoint + Vector3.up * 0.9f;
+        if (!Physics.Raycast(origin, sideDir, out RaycastHit hit, 4.0f, ~0, QueryTriggerInteraction.Ignore))
+            return false;
+        if (!IsWallCollider(hit.collider)) return false;
+
+        // Stand slightly inside the wall face so the mesh doesn't spear the panel.
+        Vector3 pos = hit.point - sideDir * 0.45f;
+        pos.y = lanePoint.y;
+
+        // Posters/signs: hang on the wall at chest/eye height, facing outward.
+        if (role == NestRole.Poster || role == NestRole.Sign)
+        {
+            pos.y += 1.15f;
+            return SpawnWallFlatSynty(prefabName, pos, -sideDir, parent, role, scale, yaw);
+        }
+
+        return SpawnCorridorSynty(prefabName, pos, parent, role, scale, yaw, ignoreHub: false);
+    }
+
+    static bool SpawnWallFlatSynty(string prefabName, Vector3 pos, Vector3 outward,
+        Transform parent, NestRole role, float scale, float yaw)
+    {
+        if (TooCloseToLane(pos, LaneClearance)) return false;
+        if (TooCloseToHub(pos, HubClearance)) return false;
+        if (PointOverlapsWall(pos, 0.28f)) return false;
+
+        var prefab = SyntyHorrorLoader.LoadProp(prefabName);
+        if (prefab == null) return false;
+
+        Quaternion rotation = Quaternion.LookRotation(outward, Vector3.up) * Quaternion.Euler(0f, yaw, 0f);
+        var go = Object.Instantiate(prefab, pos, rotation * prefab.transform.rotation, parent);
+        go.name = "WallLip_" + prefabName;
+        go.transform.localScale = prefab.transform.localScale;
+        SyntyHorrorLoader.PrepareInstance(go);
+        FitSyntyNestProp(go, role, pos.y, scale);
+
+        if (BoundsOverlapWall(go))
+        {
+            Object.Destroy(go);
+            return false;
+        }
+        return true;
     }
 
     static void TrySpawnCorridorSynty(string prefabName, Vector3 origin, Transform parent,

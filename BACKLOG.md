@@ -502,13 +502,19 @@ Without it, mats may pink; runtime falls back to Standard albedo when Error.
   kept if the pack prefab is unavailable. Syntax verified with ad-hoc Roslyn parser; in-editor FP
   look-up + wall-spear check still needed.
 
-- [ ] P9. Dense lived-in dressing pass (posters, signs, lockers, food)
+- [x] P9. Dense lived-in dressing pass (posters, signs, lockers, food)
   Tag: `[asset-pack: POLYGON Sci-Fi Horror]`
   Unity: yes — hub + WestCorridor + VentBreach
   Change: extra sparse clusters of posters/signs/lockers/rations/trays along non-lane wall lips;
   scale lightly with WavesCleared so the ship fills as the run progresses (Deck lock — fill by
   growth, not shrink). No alien growth in hub.
-  done-when: ship feels occupied/abandoned-workplace, not empty box; lanes clear
+  done-when: ship feels occupied/abandoned-workplace, not empty box; lanes clear.
+  DONE 2026-07-22 (PlaceholderPropDressing.cs v16): `DressWallLips` spawns Synty posters/signs/
+  lockers/crates/barrels/rations/trays/clipboards/cups via wall-raycast placement on each lane.
+  Cluster count = `min(3 + WavesCleared, lanes.Length * 2)`. `AddWaveDressing()` is hooked to
+  `WaveController.onWaveCleared` so dressing grows after each wave. `NestRole.Sign` added for
+  wall-flat placement. Syntax verified with ad-hoc Roslyn parser; in-editor walk + lane clearance
+  check still needed.
 
 #### Phase C — gameplay actors
 
@@ -1544,10 +1550,16 @@ Method: capture the Game view in Play mode, judge the frame, fix the single wors
 
 ## Agent log (newest first — one line per session: date, task, result, commit)
 
+- 2026-07-22: auto-dev P9 dense wall-lip dressing — `PlaceholderPropDressing.cs` v16:
+  `DressWallLips` spawns Synty posters/signs/lockers/crates/barrels/rations/trays/clipboards/cups
+  along lane wall lips; cluster count `min(3 + WavesCleared, lanes.Length * 2)`;
+  `AddWaveDressing()` hooked to `WaveController.onWaveCleared`. Syntax verified.
+  In-editor walk + lane clearance check still needed. Commit: PENDING.
+
 - 2026-07-22: auto-dev P8 overhead pipes Synty — `ShipInteriorUpgrade.cs` v62:
   `BuildOverheadPipes` uses `SM_Prop_Pipe_Straight_Full_01`, scales along local Z per segment,
   `PrepareInstance` for collider-free/material fallback; primitive fallback kept. Syntax verified.
-  In-editor FP look-up + wall-spear check still needed. Commit: PENDING.
+  In-editor FP look-up + wall-spear check still needed. Commit: `788deb6`.
 
 - 2026-07-22: auto-dev P7 corridor/workshop/bay props Synty-only — `PlaceholderPropDressing.cs` v15:
   corridors use `SM_Prop_Crate_01/02`, `SM_Prop_Barrel_01`, `SM_Prop_Locker_01`, `SM_Prop_Greeble_04`;
