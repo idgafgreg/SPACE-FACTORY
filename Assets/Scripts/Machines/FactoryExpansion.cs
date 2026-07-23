@@ -261,7 +261,7 @@ public class FactoryExpansion : MonoBehaviour
         go.transform.position   = pos;
         go.transform.localScale = scale;
         // Visual only — no collider, so the cluster never traps the player or blocks enemies.
-        Destroy(go.GetComponent<Collider>());
+        FxSafe.Destroy(go.GetComponent<Collider>());
         var mat = new Material(Shader.Find("Standard")) { color = color };
         go.GetComponent<Renderer>().sharedMaterial = mat;
         return go;

@@ -97,10 +97,21 @@ public static class SectorPreviewInEditor
         var beforeComponents = new HashSet<Component>();
         SnapshotScene(scene, beforeObjects, beforeComponents);
 
+        if (SectorAuthoring.IsHandAuthored)
+        {
+            Debug.LogWarning("[SectorPreview] This scene is marked hand-authored, so the geometry " +
+                             "dressers are disabled and there is nothing to preview — the Scene view " +
+                             "already shows the real map. Untick SectorAuthoring.handAuthoredGeometry " +
+                             "if you want to see generated dressing again.");
+            return;
+        }
+
         GameObject container;
         try
         {
-            container = SectorRuntimeBootstrap.CreateRuntimeContainer();
+            // Dressing only: no gameplay spawners, no HUD. We are looking at the
+            // map, not running the game.
+            container = SectorRuntimeBootstrap.CreateRuntimeContainer(dressingOnly: true);
         }
         catch (Exception e)
         {
@@ -108,27 +119,8 @@ public static class SectorPreviewInEditor
             return;
         }
 
-        // AtmosphereController.ApplyGlobal writes QualitySettings. At runtime that
-        // is transient; in edit mode it is a permanent edit to
-        // ProjectSettings/QualitySettings.asset (it silently dropped
-        // shadowDistance from 150 to 60 the first time this ran). Snapshot and
-        // put them back.
-        float qShadowDistance = QualitySettings.shadowDistance;
-        var   qShadows        = QualitySettings.shadows;
-        int   qAntiAliasing   = QualitySettings.antiAliasing;
-
         var failures = new List<string>();
-        int driven;
-        try
-        {
-            driven = DriveLifecycle(container, beforeComponents, failures);
-        }
-        finally
-        {
-            QualitySettings.shadowDistance = qShadowDistance;
-            QualitySettings.shadows        = qShadows;
-            QualitySettings.antiAliasing   = qAntiAliasing;
-        }
+        int driven = DriveLifecycle(container, beforeComponents, failures);
 
         // Diff the scene to find everything the preview brought in, wherever the
         // dressers chose to parent it.
@@ -267,24 +259,43 @@ public static class SectorPreviewInEditor
     /// build on the interior upgrade, floor plates need the deck, story beats
     /// need the lamps). Returns how many components ran.
     /// </summary>
-    static int DriveLifecycle(GameObject container, HashSet<Component> before, List<string> failures)
+    internal static int DriveLifecycle(GameObject container, HashSet<Component> before, List<string> failures)
     {
+        // AtmosphereController.ApplyGlobal writes QualitySettings. At runtime that
+        // is transient; in edit mode it is a permanent edit to
+        // ProjectSettings/QualitySettings.asset (it silently dropped
+        // shadowDistance from 150 to 60). The guard lives here rather than in
+        // Preview so every caller gets it — the bake tool drives the same
+        // lifecycle and leaked the setting to disk when this sat one level up.
+        float qShadowDistance = QualitySettings.shadowDistance;
+        var   qShadows        = QualitySettings.shadows;
+        int   qAntiAliasing   = QualitySettings.antiAliasing;
+
         var seen = new HashSet<MonoBehaviour>();
         int driven = 0;
 
-        for (int pass = 0; pass < LifecyclePasses; pass++)
+        try
         {
-            var pending = CollectPending(container, before, seen);
-            if (pending.Count == 0) break;
+            for (int pass = 0; pass < LifecyclePasses; pass++)
+            {
+                var pending = CollectPending(container, before, seen);
+                if (pending.Count == 0) break;
 
-            foreach (var mb in pending) seen.Add(mb);
+                foreach (var mb in pending) seen.Add(mb);
 
-            // Two sweeps, like the engine: every Awake before any Start, so a
-            // dresser's Start can rely on another component's Awake having run.
-            foreach (var mb in pending) InvokeLifecycle(mb, "Awake", failures);
-            foreach (var mb in pending) InvokeLifecycle(mb, "Start", failures);
+                // Two sweeps, like the engine: every Awake before any Start, so a
+                // dresser's Start can rely on another component's Awake having run.
+                foreach (var mb in pending) InvokeLifecycle(mb, "Awake", failures);
+                foreach (var mb in pending) InvokeLifecycle(mb, "Start", failures);
 
-            driven += pending.Count;
+                driven += pending.Count;
+            }
+        }
+        finally
+        {
+            QualitySettings.shadowDistance = qShadowDistance;
+            QualitySettings.shadows        = qShadows;
+            QualitySettings.antiAliasing   = qAntiAliasing;
         }
 
         return driven;
@@ -362,7 +373,7 @@ public static class SectorPreviewInEditor
 
     // ───────────────────────────── snapshot ──────────────────────────────────
 
-    static void SnapshotScene(Scene scene, HashSet<GameObject> objects, HashSet<Component> components)
+    internal static void SnapshotScene(Scene scene, HashSet<GameObject> objects, HashSet<Component> components)
     {
         foreach (var root in scene.GetRootGameObjects())
         {

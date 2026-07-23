@@ -77,7 +77,7 @@ public class ProcessInfection : MonoBehaviour
         _stallLeft = 0f;
         if (_residue != null)
         {
-            Destroy(_residue.gameObject);
+            FxSafe.Destroy(_residue.gameObject);
             _residue = null;
         }
         FloatingText.Spawn(transform.position + Vector3.up * 1.6f,
@@ -124,7 +124,7 @@ public class ProcessInfection : MonoBehaviour
         var drip = GameObject.CreatePrimitive(PrimitiveType.Sphere);
         drip.name = "SlurryDrip";
         var col = drip.GetComponent<Collider>();
-        if (col != null) Destroy(col);
+        if (col != null) FxSafe.Destroy(col);
 
         var rend = drip.GetComponent<Renderer>();
         if (rend != null)
@@ -156,7 +156,7 @@ public class ProcessInfection : MonoBehaviour
             drip.transform.localScale = new Vector3(s, s * 1.5f, s);
             yield return null;
         }
-        if (drip != null) Destroy(drip);
+        if (drip != null) FxSafe.Destroy(drip);
     }
 
     void EnsureResidue()
@@ -170,7 +170,7 @@ public class ProcessInfection : MonoBehaviour
         go.transform.localScale = new Vector3(0.45f, 0.28f, 0.45f);
 
         var col = go.GetComponent<Collider>();
-        if (col != null) Destroy(col);
+        if (col != null) FxSafe.Destroy(col);
 
         var rend = go.GetComponent<Renderer>();
         if (rend != null)
@@ -190,6 +190,6 @@ public class ProcessInfection : MonoBehaviour
 
     void OnDestroy()
     {
-        if (_residue != null) Destroy(_residue.gameObject);
+        if (_residue != null) FxSafe.Destroy(_residue.gameObject);
     }
 }

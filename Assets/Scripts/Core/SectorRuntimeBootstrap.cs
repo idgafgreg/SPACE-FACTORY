@@ -53,31 +53,57 @@ public static class SectorRuntimeBootstrap
 
     /// <summary>
     /// Builds the SectorRuntime container and everything hung off it. Split out
-    /// of <see cref="HandleScene"/> so the editor preview tool
-    /// (Tools → Space Factory → Preview Sector Dressing) can raise the same
-    /// stack in edit mode instead of duplicating this list and drifting from it.
-    /// Callers are responsible for the duplicate check.
+    /// of <see cref="HandleScene"/> so the editor tools (Preview Sector Dressing,
+    /// Bake Dressing Into Scene) raise the same stack instead of duplicating this
+    /// list and drifting from it. Callers are responsible for the duplicate check.
+    ///
+    /// <paramref name="dressingOnly"/> builds core + geometry dressing and stops:
+    /// no gameplay spawners, no HUD, no playtest tools. That is what the edit-mode
+    /// preview and the bake tool want — they are looking at the map, not running
+    /// the game.
     /// </summary>
-    public static GameObject CreateRuntimeContainer()
+    public static GameObject CreateRuntimeContainer(bool dressingOnly = false)
     {
         var go = new GameObject("SectorRuntime");
+
+        AddCore(go);
+
+        // On a hand-authored sector the scene file owns the level geometry, so the
+        // generators that would build a second copy on top of it are skipped.
+        // See SectorAuthoring.
+        if (!SectorAuthoring.IsHandAuthored) AddGeometryDressing(go);
+
+        if (dressingOnly) return go;
+
+        AddReactiveFx(go);
+        AddHud(go);
+        AttachPerObjectSystems();
+
+        return go;
+    }
+
+    /// <summary>Always-on services and the global look. Generates no level geometry.</summary>
+    static void AddCore(GameObject go)
+    {
         go.AddComponent<SectorRuntimeMarker>();
         go.AddComponent<SceneScanCache>();
         go.AddComponent<FactoryHeatTracker>();
         go.AddComponent<ProcessInfectionController>();
 
-        // Curated release-facing runtime stack. This used to attach 71
-        // independent overlays, hints, pulses, labels and procedural dressers.
-        // They competed for the same screen/world space and made the sector
-        // look like a debug sandbox. Keep only systems with a clear job.
         go.AddComponent<AtmosphereController>();
         go.AddComponent<PostFXBootstrap>();
+        go.AddComponent<ScreenFlash>();
+    }
+
+    /// <summary>
+    /// Generators that author the level itself — hull, deck, ceiling, gates,
+    /// props, plaques, backdrop. Skipped entirely when the scene is hand-authored;
+    /// otherwise the ordering below is load-bearing and must not be reshuffled.
+    /// </summary>
+    static void AddGeometryDressing(GameObject go)
+    {
         go.AddComponent<SpaceBackdrop>();
         go.AddComponent<FloorZoning>();
-        go.AddComponent<ScreenFlash>();
-        go.AddComponent<FactoryExpansion>();
-        go.AddComponent<MachineWorkingFX>();
-        go.AddComponent<ConveyorFlowFX>();
         go.AddComponent<ShipInteriorUpgrade>();
         // P3: Synty wall skins after interior upgrade (caps build on cube renderers first).
         go.AddComponent<SyntyHullDressing>();
@@ -92,17 +118,35 @@ public static class SectorRuntimeBootstrap
         go.AddComponent<MapEdgeGuard>();
 
         go.AddComponent<PlaceholderPropDressing>();
-        go.AddComponent<BiomassEncroachment>();
-        go.AddComponent<BreachInfestationDressing>();
         go.AddComponent<EnvironmentalLore>();
-
         go.AddComponent<SectorPlaques>();
 
+        go.AddComponent<VisualCleanupPass>();
+    }
+
+    /// <summary>
+    /// Systems that react to play — wave escalation, machine feedback, art fitting
+    /// for player-built machines, camera and pacing beats. These run on a
+    /// hand-authored map too: they decorate what is there rather than authoring it,
+    /// and biomass growing with wave count is a design pillar, not dressing.
+    /// </summary>
+    static void AddReactiveFx(GameObject go)
+    {
+        go.AddComponent<FactoryExpansion>();
+        go.AddComponent<MachineWorkingFX>();
+        go.AddComponent<ConveyorFlowFX>();
+
+        go.AddComponent<BiomassEncroachment>();
+        go.AddComponent<BreachInfestationDressing>();
+
+        // Fit/backfill/tint act on machines the player builds at runtime, so they
+        // belong here rather than with the level generators.
         go.AddComponent<ArtPlaceholderFitter>();
-        go.AddComponent<CameraFramingTune>();
-        go.AddComponent<FactoryReadabilityPass>();
         go.AddComponent<RuntimeArtBackfill>();
         go.AddComponent<MachineIdentityTint>();
+
+        go.AddComponent<CameraFramingTune>();
+        go.AddComponent<FactoryReadabilityPass>();
         go.AddComponent<EnemyArtPulse>();
         go.AddComponent<DefenseReadyGlow>();
         go.AddComponent<DemolishHighlight>();
@@ -112,11 +156,15 @@ public static class SectorRuntimeBootstrap
         go.AddComponent<HorrorClock>();
         go.AddComponent<RecoveryBeat>();
 
-        go.AddComponent<VisualCleanupPass>();
         go.AddComponent<AmbientDustMotes>();
+    }
 
-        // Minimal gameplay HUD — enough to feel like a shippable loop, not a
-        // debug sandwich of 40 overlays.
+    /// <summary>
+    /// Minimal gameplay HUD — enough to feel like a shippable loop, not a debug
+    /// sandwich of 40 overlays — plus the agent/human playtest tools.
+    /// </summary>
+    static void AddHud(GameObject go)
+    {
         go.AddComponent<PowerHud>();
         go.AddComponent<HubHealthOnGui>();
         go.AddComponent<WorldHealthBars>();
@@ -127,11 +175,16 @@ public static class SectorRuntimeBootstrap
         go.AddComponent<BuildGhostCostHud>();
         go.AddComponent<FPCrosshair>();
 
-        // Agent + human playtest tools (F3 overlay; harness via MCP / menu).
         go.AddComponent<PlaytestOverlay>();
         go.AddComponent<PlaytestHarness>();
+    }
 
-        // Player-local systems must live on the player so attach/fit can't miss.
+    /// <summary>
+    /// Player- and camera-local systems. They must live on those objects rather
+    /// than the shared runtime container so attach/fit cannot miss.
+    /// </summary>
+    static void AttachPerObjectSystems()
+    {
         var player = Object.FindAnyObjectByType<PlayerController>();
         if (player != null)
         {
@@ -148,7 +201,5 @@ public static class SectorRuntimeBootstrap
         var cam = Camera.main;
         if (cam != null && cam.GetComponent<FirstPersonCamera>() == null)
             cam.gameObject.AddComponent<FirstPersonCamera>();
-
-        return go;
     }
 }

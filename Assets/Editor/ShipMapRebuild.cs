@@ -34,6 +34,22 @@ public static class ShipMapRebuild
             return;
         }
 
+        // A hand-built map must never be regenerated. This tool deletes Walls,
+        // Lanes and every ResourceNode, so on an authored scene it is a one-click
+        // way to lose the level.
+        if (SectorAuthoring.IsHandAuthored)
+        {
+            const string msg =
+                "This scene is marked hand-authored (SectorAuthoring.handAuthoredGeometry).\n\n" +
+                "Rebuild Ship Map deletes the Walls and Lanes hierarchies and every " +
+                "ResourceNode, then regenerates them procedurally. That would destroy " +
+                "the map you built by hand.\n\n" +
+                "Untick handAuthoredGeometry if you really want to regenerate.";
+            if (showDialogs) EditorUtility.DisplayDialog("Ship Map Rebuild — blocked", msg, "OK");
+            Debug.LogError("[ShipMapRebuild] Blocked: scene is hand-authored. " + msg);
+            return;
+        }
+
         var scene = SceneManager.GetActiveScene();
         if (!scene.path.EndsWith("Sector01.unity"))
         {
@@ -199,14 +215,19 @@ public static class ShipMapRebuild
             }
         }
 
+        // Dirty, never save. This used to write the regenerated map straight to
+        // disk, which left no way back if the tool ran by accident. Leaving it
+        // dirty keeps Ctrl+Z and "discard changes" available.
         EditorSceneManager.MarkSceneDirty(scene);
-        EditorSceneManager.SaveScene(scene);
         Undo.CollapseUndoOperations(undo);
 
-        Debug.Log($"[ShipMapRebuild] Clean ship 110×70 deck, hull inset, veins cleared (nudged {fixedVeins}).");
+        Debug.Log($"[ShipMapRebuild] Clean ship 110×70 deck, hull inset, veins cleared (nudged {fixedVeins}). " +
+                  "Scene is dirty and NOT saved — Ctrl+Z or discard to undo.");
         if (showDialogs)
             EditorUtility.DisplayDialog("Ship Map Rebuild",
-                "Ship map fixed.\n• Larger deck (110×70)\n• Hull inset from edges\n• Veins in open bays, wall-cleared", "OK");
+                "Ship map regenerated.\n• Larger deck (110×70)\n• Hull inset from edges\n" +
+                "• Veins in open bays, wall-cleared\n\n" +
+                "The scene has NOT been saved. Ctrl+Z or discard changes to undo.", "OK");
     }
 
     // ───────────────────────────── veins ─────────────────────────────────────

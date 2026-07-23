@@ -23,7 +23,7 @@ public class ProcessInfectionController : MonoBehaviour
 
     void Awake()
     {
-        if (Instance != null && Instance != this) { Destroy(this); return; }
+        if (Instance != null && Instance != this) { FxSafe.Destroy(this); return; }
         Instance = this;
     }
 
