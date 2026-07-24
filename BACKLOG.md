@@ -196,10 +196,10 @@ Parked until Gate: OPEN. Commit-sized; bible-aligned; no code until sounds exist
 
 | | |
 |--|--|
-| **Next task** | **P7** — Corridor + workshop + bay props (Kenney → Synty) |
+| **Next task** | **P17** — Human-story micro-prop density (extends the P7/P9 dressers) |
 | **Command** | `/auto-dev` (Unity MCP preferred; else mark `[?]` for `/unity-pass`) |
-| **Why** | Cleanup **C1–C7** done. Pack skin **P0–P6** + story **P16** done. Asset pack gate **OPEN**. Owner rule: conversion still **jumps F11–F14** until the ship reads Synty. Phase B clutter is the next open slice. |
-| **After P7** | **P8** → **P9** → then Phase E **P17** (extends P7/P9 dressers) → **P20** → **P21** → **P18**. Parallel Phase C when ready: **P10** (unblocks **P19**). |
+| **Why** | Cleanup **C1–C7** done. Pack skin **P0–P6**, Phase B clutter **P7–P9**, and story **P16** all shipped and in-editor reviewed (2026-07-22). Asset pack gate **OPEN**. Owner rule: conversion still **jumps F11–F14** until the ship reads Synty. Phase E is the next open slice. |
+| **After P17** | **P20** → **P21** → **P18**. Parallel Phase C when ready: **P10** (unblocks **P19**) → **P11** → **P14**. |
 | **Skip** | `[wait-until-sounds]` (audio gate **CLOSED**). `[!] P19` until P10. **P22** deferred (VoidHull). Lore **L\*** only if a human/groom pulls one up. |
 | **P12 / P13** | Unblocked for when Phase C is due — must **retarget/author poses** (Decision 2026-07-22); no T-pose drop-ins. |
 | **Gates** | Asset pack **OPEN** · Audio **CLOSED** · Deck size locked · Prep **40s / 30s** |
@@ -477,7 +477,7 @@ Without it, mats may pink; runtime falls back to Standard albedo when Error.
 
 #### Phase B — lived-in clutter
 
-- [x] P7. Corridor + workshop + bay props — Kenney to Synty  ← **NEXT**
+- [x] P7. Corridor + workshop + bay props — Kenney to Synty
   Tag: `[asset-pack: POLYGON Sci-Fi Horror]`
   Unity: yes — walk all lanes; A/B pixel check on a lit vantage (Phase E light rule)
   Change: `PlaceholderPropDressing` corridors/workshop/bay use `SM_Prop_Crate_/Barrel_/Locker_/
@@ -1236,10 +1236,10 @@ under `[wait-until-sounds]`; organ tags / leased-copy = L38/L39. No audio-only t
 
 - [ ] L35. Staged processor contamination (copy → slow → ecology)
   Type: systemic / diegetic | Pillar: Industrial biomass / hive
-  Lore: `lore/BIBLE.md` hive soft rules (timed contamination stages) + open experiment Contamination stages; Barotrauma husk energy (`lore/2026-07-21/summary.md` #3)
+  Lore: `lore/BIBLE.md` hive soft rules (timed contamination stages + **beautiful-wrong before hostile**) + open experiment Contamination stages; Barotrauma husk energy (`lore/2026-07-21/summary.md` #3); refraction (`lore/2026-07-23/summary.md` #4)
   Unity: **yes** — stage ladder on an infected processor + early cure window.
-  Change: extend `ProcessInfection` (processors) from binary to **3 stages** before full ecology bite: (1) **UI/terminal copy only** — cheerful-or-clinical reclaim line goes “off” (original wording; no copyrighted quotes), no rate hit yet (real stage audio = **SND8** `[wait-until-sounds]`); (2) existing rateMult + slurry stall; (3) seeds a small residue/vent ecology beat (reuse `InfectionResidue` / HorrorClock stress — no new shooter fantasy). Repair clears early stages fully; stage 3 still clearable but leaves a brief wrongness echo. Caps/timings in Progression_Spec. W1 teaching processors may cap at stage 2.
-  done-when: Play — an infected processor visibly climbs ≥2 stages before stage-3 ecology; repairing at stage 1 restores clean copy with no throughput loss; W1 still teachable; console clean
+  Change: extend `ProcessInfection` (processors) from binary to **3 stages** before full ecology bite: (1) **UI/terminal copy only** — cheerful-or-clinical reclaim line goes “off” (original wording; no copyrighted quotes), no rate hit yet (real stage audio = **SND8** `[wait-until-sounds]`), **and the machine's own emissive drifts to an unnaturally lovely hue before anything reads as damage** — refraction, restrained, no rainbow; (2) the pretty tint curdles, existing rateMult + slurry stall; (3) seeds a small residue/vent ecology beat (reuse `InfectionResidue` / HorrorClock stress — no new shooter fantasy). Repair clears early stages fully; stage 3 still clearable but leaves a brief wrongness echo. Caps/timings in Progression_Spec. W1 teaching processors may cap at stage 2. Refreshed 2026-07-23 with the refraction stage; do not also queue it as a standalone visual task.
+  done-when: Play — an infected processor visibly climbs ≥2 stages before stage-3 ecology; stage 1 reads *attractive-wrong* rather than damaged; repairing at stage 1 restores clean copy with no throughput loss; W1 still teachable; console clean
 
 - [ ] L36. Infected processor cascades to a linked belt
   Type: systemic / mechanical | Pillar: Factory pressure = identity / Industrial biomass / hive
@@ -1261,6 +1261,57 @@ under `[wait-until-sounds]`; organ tags / leased-copy = L38/L39. No audio-only t
   Unity: **yes** — nest/tool tip readable in iso (and FP later).
   Change: original diegetic copy only (no IP names): (a) one world plaque or TextMesh at the shift nest / berth cluster — leased tool / empty berth / company property energy; (b) repair-tool or scanner tip line that reminds the tool is issued/leased when first equipped each run. Prefer existing nest from P2/P16; primitives + TextMesh OK if pack mesh not needed. No new HUD chrome panels. Complements P17/P20 — do not rebuild the break-room.
   done-when: Play — nest shows employment-trap copy; tool tip fires once per run; tone is sad/lonely not parody; console clean
+
+### Lore-gap refill — 2026-07-23 (bible absorb: two clocks / intensity valleys / suggestion)
+
+**Priority note:** Same as the blocks above — **P17+ first**. L41–L44 wait unless a human or groom
+pulls one up. Map size locked; prep locked at 40s / 30s.
+Bible current through the `lore/2026-07-23` absorb (`990c529`).
+
+Code reality checked this session, and it is what makes this block worth queuing:
+
+- `FactoryHeatTracker.Heat01` samples scrap/min + powered producers over a 5s window, and
+  `WaveController` already spends it on vent share and residue share. That **is** the near-term,
+  spendable clock from the bible's "two clocks" rule, and because it is a rolling sample it already
+  falls when a deck goes cold — the containment half needs no work.
+- The only long-arc driver in the game is `WavesCleared` (endless growth, `HorrorClock`,
+  `BiomassEncroachment`, `BreachInfestationDressing`). **Nothing tracks lifetime production**, so a
+  huge factory and a minimal one meet the same forms at the same wave. That is the missing clock.
+- `RecoveryBeat` prints one sad shift line and eases ambience. It throttles nothing and gives the
+  player nothing to do — the valley is presentation, not a system.
+- `PlayerScanner` reveals instantly; L19's menace lag stretches the **cooldown** only, never the
+  result.
+
+No audio-only tasks in this block (gate CLOSED); no visual-only tasks (the one visual idea from this
+digest was folded into L35 instead of queued separately).
+
+- [ ] L41. Lifetime hive debt — the second pressure clock
+  Type: systemic | Pillar: Factory pressure = identity / Industrial biomass / hive
+  Lore: `lore/BIBLE.md` hive soft rules (**Two clocks, not one**); Factorio pollution-vs-evolution split (`lore/2026-07-23/summary.md` #2); keep Biofactory anti-comp
+  Unity: **yes** — compare a high-production run against a minimal one at the same wave.
+  Change: add a lifetime, monotonic **HiveDebt** derived from cumulative production (`ResourceInventory.TotalEarned` across types is the existing hook — see `ShiftQuotaHud`) and expose a normalised `HiveDebt01` next to `Heat01`. Split the two jobs cleanly: **Heat01 keeps driving frequency and placement** (vent share, residue share — already wired, do not re-tune here), **HiveDebt drives which forms exist** — an earlier Bruiser/Sapper appearance and a modest tier bump in endless waves. It must never fall, so cooling or sealing a deck quiets the near-term raids without rewinding the arc. W1–W2 composition unchanged (teaching arc). Bands and caps documented in `Progression_Spec.md` in the same commit. Coordinate with **L30**, which taxes the *near-term* clock — these must not double-count.
+  done-when: Play — a run that produced heavily then went idle keeps the harder composition while vent/residue share falls back toward baseline; a low-production run at the same wave number sees the easier composition; W1–W2 identical to today; console clean
+
+- [ ] L42. Force the intensity valley after a breach peak
+  Type: systemic | Pillar: Diegetic dread / Lonely worker fantasy
+  Lore: `lore/BIBLE.md` factory×horror (**soft director pacing — pace frequency, not amplitude**; the valley is a system, not an optional screen); L4D Director relax valleys (`lore/2026-07-23/summary.md` #1)
+  Unity: **yes** — measurable window after a clear where menace cannot climb.
+  Change: `RecoveryBeat` currently only prints a line. Make the valley systemic: for a bounded window after a wave clears, clamp `AtmosphereController.AlarmLevel` escalation and hold `HorrorClock` stress from rising, then release so heat and production rebuild the next spike on their own. **Peak amplitude is untouched** — a wave is still as hard as its `WaveDef` says; only how soon the next pressure ramp starts is throttled. Must not lengthen prep (Decision 2026-07-22 locks 40s / 30s) — this rides inside the existing window rather than extending it. Distinct from shipped **L15**, which shapes tension *within* prep. Window length in `Progression_Spec.md`.
+  done-when: Play — clear a wave → AlarmLevel/menace demonstrably cannot climb for the window, then resumes; prep duration still 40s wave 1 / 30s after; L15's mid-prep rollercoaster still fires once the window ends; console clean
+
+- [ ] L43. Recovery beats give the player something to do with their hands
+  Type: mechanical / diegetic | Pillar: Lonely worker fantasy
+  Lore: `lore/BIBLE.md` factory×horror (**recovery beats are labor, not idle**); aftermath-labor mood (`lore/2026-07-22/summary.md` #4 — steal the lonely cleanup, refuse the comedy register)
+  Unity: **yes** — post-wave deck has clearable mess with a small payout.
+  Change: pair with **L42**. When a wave clears, leave a small amount of clearable debris near the lane that actually broke — reuse `InfectionResidue` and/or a couple of knocked-over `SalvageCrate`s rather than inventing props — and let the existing interact/repair path clear or restack them for a modest scrap or construction-part trickle. No new tool, no minigame, no timer, no failure state: ignoring it costs nothing but the deck stays visibly messy into the next wave. Optional single terse ack through the existing terminal line (no cheer). Payout values in `Progression_Spec.md`; must not out-earn a working belt.
+  done-when: Play — after a clear, debris exists near the used lane and can be cleared for a small payout; skipping it carries no penalty and the mess persists into the next wave; cleanup never beats running the factory for income; console clean
+
+- [ ] L44. The scan is a lagged reading, not instant truth
+  Type: mechanical / diegetic | Pillar: Diegetic dread
+  Lore: `lore/BIBLE.md` diegetic grammar (**in first person, withheld information is the horror tool**); Iron Lung suggestion (`lore/2026-07-23/summary.md` #3)
+  Unity: **yes** — high-alarm scan result lands visibly after the keypress.
+  Change: `PlayerScanner` reveals the moment Q is pressed; L19 only stretched the cooldown. Add a short **reveal delay** that scales with `AlarmLevel` (and local infection if cheap) — the ping is sent now, the reading arrives a beat later — plus, in first person only, a coarser far-half reveal (label without highlight ring, or a wider quality band) while iso keeps exactly today's legibility. Guard rails from the bible: never withhold a node the player has already walked to, and this may not touch factory-state readability, which is **F12**'s job — nodes and salvage only. Delay bands in `Progression_Spec.md`.
+  done-when: Play — at high alarm the reading appears measurably later than the keypress and the HUD reads as waiting rather than broken; at low alarm in iso, reveal is unchanged from today; machine/factory readouts unaffected; console clean
 
 ### Done archive — 2026-07-19 lore-gap + map integrity (shipped)
 
