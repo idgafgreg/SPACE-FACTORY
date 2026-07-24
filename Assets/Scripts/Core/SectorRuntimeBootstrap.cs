@@ -118,7 +118,9 @@ public static class SectorRuntimeBootstrap
         go.AddComponent<MapEdgeGuard>();
 
         go.AddComponent<PlaceholderPropDressing>();
-        // P17: personal effects sit ON the props the line above places, so it runs after.
+        // P20: authored break-room set piece; independent of the scattered passes.
+        go.AddComponent<SyntyBreakRoom>();
+        // P17: personal effects sit ON the props the lines above place, so it runs after.
         go.AddComponent<SyntyPersonalEffects>();
         go.AddComponent<EnvironmentalLore>();
         go.AddComponent<SectorPlaques>();

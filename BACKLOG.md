@@ -196,11 +196,11 @@ Parked until Gate: OPEN. Commit-sized; bible-aligned; no code until sounds exist
 
 | | |
 |--|--|
-| **Next task** | **P20** — Break-room / med-bay set piece (workplace as trap) |
+| **Next task** | **P21** — Specific diegetic FX accents (pack FX only) |
 | **Command** | `/auto-dev` (Unity MCP preferred; else mark `[?]` for `/unity-pass`) |
 | **Why** | Cleanup **C1–C7** done. Pack skin **P0–P6**, Phase B clutter **P7–P9**, and story **P16** all shipped and in-editor reviewed (2026-07-22). Asset pack gate **OPEN**. Owner rule: conversion still **jumps F11–F14** until the ship reads Synty. Phase E is the next open slice. |
-| **After P20** | **P21** → **P18**. Parallel Phase C when ready: **P10** (unblocks **P19**) → **P11** → **P14**. |
-| **Dressing a hand-authored scene** | Runtime dressers do **not** run here (`SectorAuthoring` skips `AddGeometryDressing`). New dressing needs an editor bake that leaves output under `SectorArt` — see `PersonalEffectsBake.cs`. Register the component in `AddGeometryDressing` too, for generated sectors. |
+| **After P21** | **P18**. Parallel Phase C when ready: **P10** (unblocks **P19**) → **P11** → **P14**. |
+| **Dressing a hand-authored scene** | Runtime dressers do **not** run here (`SectorAuthoring` skips `AddGeometryDressing`). Implement `ISceneDresser`, then add a thin menu item calling `SceneDressingBake.Run<T>` — see `PersonalEffectsBake.cs` / `BreakRoomBake`. Register the component in `AddGeometryDressing` too, for generated sectors. |
 | **Skip** | `[wait-until-sounds]` (audio gate **CLOSED**). `[!] P19` until P10. **P22** deferred (VoidHull). Lore **L\*** only if a human/groom pulls one up. |
 | **P12 / P13** | Unblocked for when Phase C is due — must **retarget/author poses** (Decision 2026-07-22); no T-pose drop-ins. |
 | **Gates** | Asset pack **OPEN** · Audio **CLOSED** · Deck size locked · Prep **40s / 30s** |
@@ -740,7 +740,7 @@ fog all check out, enumerate renderers along the sight line before touching anyt
   done-when: Play — each machine/defense reads as its Synty actor AND keeps its A6/F10 identity in
   greyscale; placement unchanged; console clean
 
-- [ ] P20. Break-room / med-bay set piece (the quarters you can't leave — workplace as trap)
+- [x] P20. Break-room / med-bay set piece (the quarters you can't leave — workplace as trap)
   Tag: `[asset-pack: POLYGON Sci-Fi Horror]` | Unity: yes — hub-adjacent iso + FP
   Change: one authored themed cluster near hub/workshop from the domestic + medical families:
   `SM_Prop_Mattress_*` (4), `SM_Prop_Chair_*` / `SM_Prop_Bench_*` (8), `SM_Prop_Vending_*` (4),
@@ -749,6 +749,21 @@ fog all check out, enumerate renderers along the sight line before touching anyt
   Collider-free dressing; off lanes.
   done-when: Play — a recognizable abandoned break-room/med corner reads at hub edge in both modes;
   lanes clear; console clean
+  **DONE 2026-07-23 (`SyntyBreakRoom.cs` + `SceneDressingBake.cs`) — verified in-editor.**
+  13 pieces in an alcove at `(-8.5, 9.5)`: two vending machines and a kiosk along the back wall, a
+  mess table with the chairs left pushed out, a bench and med kit in the east corner, a wall med
+  cabinet, a mattress on the deck, a `[BREAK 02] / ROTA CONTINUOUS` sign, and the room's own lamp.
+  **The alcove was probed, not guessed** — a sweep for a pocket with a wall behind, ≥4 m open in
+  front and no lane nearby; the first choice `(-7, 8)` turned out to be 0.5 m off a ring wall.
+  Nearest lane **5.2 m**, colliders **0**, self-overlaps **0**, nothing sunk.
+  Three defects the checks caught: the sign was **inside** the taller vending machine (raised to
+  2.85 m, clearing its 2.57 top), the med kit **clipped the bench's far end** once the bench yawed
+  90° and its 2.21 m length ran along Z, and the sign rendered **mirrored** because TextMesh reads
+  down its −Z. An `inWall=8` metric that flagged the table in the middle of the room was an AABB
+  false positive from a curved wall — the frame, not the number, settled it.
+  Bake body extracted to `SceneDressingBake.Run<T>` and shared with P17's `PersonalEffectsBake`,
+  via a small `ISceneDresser` interface; both dressers are also registered in `AddGeometryDressing`
+  so a generated sector still builds them.
 
 - [ ] P21. Specific diegetic FX accents (concretises P15's "pack FX only")
   Tag: `[asset-pack: POLYGON Sci-Fi Horror]` | Unity: yes — sparse, director-gated
@@ -1652,6 +1667,14 @@ Method: capture the Game view in Play mode, judge the frame, fix the single wors
 - [ ] Free lead: Abandoned Factory Lite (Asset Store) — safe mood greys for blockout; not gated, but not queued until visual Now is thin.
 
 ## Agent log (newest first — one line per session: date, task, result, commit)
+
+- 2026-07-23: **P20 break room — DONE, verified in-editor.** 13-piece authored set piece in a probed
+  alcove at the hub edge (`-8.5, 9.5`), with its own lamp because the nearest existing one is 8.5 m
+  away and Phase E has twice paid for dressing outside a light pool. Nearest lane 5.2 m, colliders 0,
+  overlaps 0. Caught and fixed: sign inside a vending machine, med kit clipping the yawed bench, and
+  a mirrored TextMesh. An `inWall=8` reading that flagged the table in the middle of the room was a
+  curved-wall AABB false positive — the render settled it, not the metric. Bake body extracted to
+  `SceneDressingBake.Run<T>` and shared with P17.
 
 - 2026-07-23: **P17 personal effects — DONE, Play-verified.** New `SyntyPersonalEffects` dresser plus
   `PersonalEffectsBake` editor entry, because a hand-authored sector skips the runtime dressing block

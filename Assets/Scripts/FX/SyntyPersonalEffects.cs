@@ -27,7 +27,7 @@ using UnityEngine;
 ///
 /// Collider-free (pathing), native scale (C1), rejected near a lane (C4).
 /// </summary>
-public class SyntyPersonalEffects : MonoBehaviour
+public class SyntyPersonalEffects : MonoBehaviour, ISceneDresser
 {
     const int DressVersion = 1;
     const string RootName = "PersonalEffectsRoot";
