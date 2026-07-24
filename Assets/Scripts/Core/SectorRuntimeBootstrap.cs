@@ -118,6 +118,8 @@ public static class SectorRuntimeBootstrap
         go.AddComponent<MapEdgeGuard>();
 
         go.AddComponent<PlaceholderPropDressing>();
+        // P17: personal effects sit ON the props the line above places, so it runs after.
+        go.AddComponent<SyntyPersonalEffects>();
         go.AddComponent<EnvironmentalLore>();
         go.AddComponent<SectorPlaques>();
 

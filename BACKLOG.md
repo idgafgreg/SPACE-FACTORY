@@ -196,10 +196,11 @@ Parked until Gate: OPEN. Commit-sized; bible-aligned; no code until sounds exist
 
 | | |
 |--|--|
-| **Next task** | **P17** — Human-story micro-prop density (extends the P7/P9 dressers) |
+| **Next task** | **P20** — Break-room / med-bay set piece (workplace as trap) |
 | **Command** | `/auto-dev` (Unity MCP preferred; else mark `[?]` for `/unity-pass`) |
 | **Why** | Cleanup **C1–C7** done. Pack skin **P0–P6**, Phase B clutter **P7–P9**, and story **P16** all shipped and in-editor reviewed (2026-07-22). Asset pack gate **OPEN**. Owner rule: conversion still **jumps F11–F14** until the ship reads Synty. Phase E is the next open slice. |
-| **After P17** | **P20** → **P21** → **P18**. Parallel Phase C when ready: **P10** (unblocks **P19**) → **P11** → **P14**. |
+| **After P20** | **P21** → **P18**. Parallel Phase C when ready: **P10** (unblocks **P19**) → **P11** → **P14**. |
+| **Dressing a hand-authored scene** | Runtime dressers do **not** run here (`SectorAuthoring` skips `AddGeometryDressing`). New dressing needs an editor bake that leaves output under `SectorArt` — see `PersonalEffectsBake.cs`. Register the component in `AddGeometryDressing` too, for generated sectors. |
 | **Skip** | `[wait-until-sounds]` (audio gate **CLOSED**). `[!] P19` until P10. **P22** deferred (VoidHull). Lore **L\*** only if a human/groom pulls one up. |
 | **P12 / P13** | Unblocked for when Phase C is due — must **retarget/author poses** (Decision 2026-07-22); no T-pose drop-ins. |
 | **Gates** | Asset pack **OPEN** · Audio **CLOSED** · Deck size locked · Prep **40s / 30s** |
@@ -686,7 +687,7 @@ fog all check out, enumerate renderers along the sight line before touching anyt
   containment beat, one is forced at a lit anchor. Also extended C5's `PLACEMENT` gate to police the
   story root. Full suite **7/7 PASS** (`beatsInLane=0/4 nearest=2.67`). Console clean.
 
-- [ ] P17. Human-story micro-prop density (sticky notes, name plates, photos, boards, rations)
+- [x] P17. Human-story micro-prop density (sticky notes, name plates, photos, boards, rations)
   Tag: `[asset-pack: POLYGON Sci-Fi Horror]` | Unity: yes — hub/workshop close FP
   Change: extend the P7/P9 prop dresser with the *personal-effects* families the pack is rich in but
   the current lists skip: `SM_Prop_StickyNote_*` (36), `SM_Prop_Name_*` (16), `SM_Prop_Photo_*` (7),
@@ -694,6 +695,28 @@ fog all check out, enumerate renderers along the sight line before touching anyt
   console faces and wall lips around the nest + workshop; tiny, dense, collider-free, never in a lane.
   done-when: FP near hub/workshop — desks and walls carry believable lived-in clutter; readable, not
   soup; pathing clear; console clean
+  **DONE 2026-07-23 (`SyntyPersonalEffects.cs` + `PersonalEffectsBake.cs`) — Play-verified.**
+  Not written as an extension of `PlaceholderPropDressing`: the sector is hand-authored, so
+  `SectorRuntimeBootstrap` skips the whole geometry-dressing block and a dresser added to that list
+  would never run here. New dresser + its own narrow editor bake, output parented under `SectorArt`
+  like the rest of the frozen dressing. The component is still registered in `AddGeometryDressing`
+  so a generated sector gets it too.
+  **Anchored to real surfaces, placed by measured bounds.** Hosts are found by name (desks, crate
+  lids, posters, signs) within 18 m of hub/workshop; every instance is created, its rendered bounds
+  read, then shifted onto the surface. Three real bugs the measurement caught, all the pack's doing:
+  (1) `Cartridge_Dock_01/02`, `Photo_03/05/07` and `Food_Ration_04` are WALL props — thin in Z, tall
+  in Y — so the first pass stood a 0.72 m dock on a desk like a filing cabinet in the paperwork;
+  they moved to the wall set and a `StandsOnEdge` guard now rejects thin cards balanced upright
+  (tuned so a legitimately 0.53 m open ration box still passes). (2) Point-distance spacing cannot
+  separate a 0.60 m board game from a 0.66 m tray — 8 items overlapped until the test became a real
+  bounds intersection. (3) **The desks are rotated**, so sampling their world AABB put items out
+  over the floor past the corners, one clipping the desk lamp between the two desks; sampling now
+  happens in the host's local space.
+  Final: **26 items, colliders 0, self-intersections 0**, and the only prop overlaps left are notes
+  sharing an AABB with the poster they are pinned beside — intended. Verified by rendering
+  `Camera.main` from a raycast-verified clear vantage (the first three angles were inside a wall,
+  and a fourth read pure black because it was a downward view of unlit deck — the desks are in fact
+  lit by the nest lamp at 3.0 m plus hub flood and corridor sources). Console clean.
 
 - [ ] P18. Player tool viewmodels from Synty weapons (fulfils F13's "held tool" half with pack art)
   Tag: `[asset-pack: POLYGON Sci-Fi Horror]` | Unity: yes — FP each mode; iso unaffected
@@ -1629,6 +1652,14 @@ Method: capture the Game view in Play mode, judge the frame, fix the single wors
 - [ ] Free lead: Abandoned Factory Lite (Asset Store) — safe mood greys for blockout; not gated, but not queued until visual Now is thin.
 
 ## Agent log (newest first — one line per session: date, task, result, commit)
+
+- 2026-07-23: **P17 personal effects — DONE, Play-verified.** New `SyntyPersonalEffects` dresser plus
+  `PersonalEffectsBake` editor entry, because a hand-authored sector skips the runtime dressing block
+  entirely — extending `PlaceholderPropDressing` as the task text said would have shipped props that
+  never appear. Measuring the pack prefabs before placing caught three real bugs: wall props
+  (cartridge docks, flat photo prints, `Ration_04`) standing on desks, point-distance spacing letting
+  8 large items overlap, and the desks being **rotated** so world-AABB sampling put items off the
+  surface and into the desk lamp. 26 items, 0 colliders, 0 self-intersections, console clean.
 
 - 2026-07-22: **Reviewed P7/P8/P9 in-editor — found and fixed 2 real bugs + 2 quality issues.**
   Process note first: all three shipped marked `[x]` while their own notes said "in-editor … still
