@@ -196,6 +196,8 @@ public static class SectorRuntimeBootstrap
                 player.gameObject.AddComponent<PlayerArtAttach>();
             if (player.GetComponent<PlayerBodyVisibility>() == null)
                 player.gameObject.AddComponent<PlayerBodyVisibility>();
+            if (player.GetComponent<PlayerBodyAim>() == null)
+                player.gameObject.AddComponent<PlayerBodyAim>();
         }
 
         var cam = Camera.main;

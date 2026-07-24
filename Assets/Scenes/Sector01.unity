@@ -77841,6 +77841,7 @@ GameObject:
   - component: {fileID: 1445036921}
   - component: {fileID: 1445036920}
   - component: {fileID: 1445036919}
+  - component: {fileID: 1445036926}
   m_Layer: 0
   m_Name: Player
   m_TagString: Untagged
@@ -78024,6 +78025,20 @@ Transform:
   - {fileID: 37170795}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1445036926
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1445036918}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: aaaba250d29a2cf4cac41501cdde3e51, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::PlayerBodyAim
+  body: {fileID: 2039677823}
+  turnSpeed: 900
 --- !u!1 &1445443415
 GameObject:
   m_ObjectHideFlags: 0
