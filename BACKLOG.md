@@ -215,7 +215,7 @@ Parked until Gate: OPEN. Commit-sized; bible-aligned; no code until sounds exist
 | **Pack conversion** | Done: **P0–P11, P16–P21** (+P19). Env, machines, defenses, hub, workshop, dressing, FX, FP viewmodel all Synty. Remaining P: **P14** (build), **P12/P13** (actors, pose-gated). |
 | **Dressing a hand-authored scene** | Runtime dressers do **not** run here (`SectorAuthoring` skips `AddGeometryDressing`). Implement `ISceneDresser`, then add a thin menu item calling `SceneDressingBake.Run<T>` — see `PersonalEffectsBake.cs` / `BreakRoomBake`. Register the component in `AddGeometryDressing` too, for generated sectors. |
 | **Skip** | `[wait-until-sounds]` (audio gate **CLOSED**). **P22** deferred (VoidHull). Lore **L\*** eligible now if a human/groom pulls one up (see decision above). |
-| **Lore** | Bible absorbed through **2026-07-23**; digest **2026-07-24** landed unabsorbed → run `/lore-bible` before deriving new lore tasks. L27–L44 already queued from prior digests. |
+| **Lore** | Bible absorbed through **2026-07-24**. Open lore: **L27–L39**, **L41–L49** (below pack / after P14 unless groomed up). Audio beds stay `[wait-until-sounds]`. |
 | **Gates** | Asset pack **OPEN** · Audio **CLOSED** · Deck size locked · Prep **40s / 30s** |
 
 ---
@@ -1406,9 +1406,9 @@ under `[wait-until-sounds]`; organ tags / leased-copy = L38/L39. No audio-only t
 
 ### Lore-gap refill — 2026-07-23 (bible absorb: two clocks / intensity valleys / suggestion)
 
-**Priority note:** Same as the blocks above — **P17+ first**. L41–L44 wait unless a human or groom
-pulls one up. Map size locked; prep locked at 40s / 30s.
-Bible current through the `lore/2026-07-23` absorb (`990c529`).
+**Priority note:** **P14** first (build-critical). L41–L44 wait unless a human or groom pulls one
+up. Map size locked; prep locked at 40s / 30s.
+Bible later absorbed through **2026-07-24** (see L45–L49 block).
 
 Code reality checked this session, and it is what makes this block worth queuing:
 
@@ -1454,6 +1454,55 @@ digest was folded into L35 instead of queued separately).
   Unity: **yes** — high-alarm scan result lands visibly after the keypress.
   Change: `PlayerScanner` reveals the moment Q is pressed; L19 only stretched the cooldown. Add a short **reveal delay** that scales with `AlarmLevel` (and local infection if cheap) — the ping is sent now, the reading arrives a beat later — plus, in first person only, a coarser far-half reveal (label without highlight ring, or a wider quality band) while iso keeps exactly today's legibility. Guard rails from the bible: never withhold a node the player has already walked to, and this may not touch factory-state readability, which is **F12**'s job — nodes and salvage only. Delay bands in `Progression_Spec.md`.
   done-when: Play — at high alarm the reading appears measurably later than the keypress and the HUD reads as waiting rather than broken; at low alarm in iso, reveal is unchanged from today; machine/factory readouts unaffected; console clean
+
+### Lore-gap refill — 2026-07-24 (bible absorb: heat-path raids / resident hive / atmosphere bricks)
+
+**Priority note:** **P14** stays build-critical first. After that, track order still waits on the open
+human decision (P12/P13 vs F11–F14 vs systemic lore). Lore tasks here are ready when groomed up —
+do **not** jump the pack/FP preference call. Map size locked; prep 40s / 30s; audio gate CLOSED.
+Bible current through `lore/2026-07-24` absorb (already in `lore/BIBLE.md`).
+
+Code reality: enemies still lane→hub/player (`EnemyBase`) despite Heat01 driving vent/residue share;
+no hottest-machine pathing; no per-foothold fuel bank; `ThreatTelegraph` + `HorrorClock` +
+`SyntyAmbientFx` cover mid-prep dread / lamp death / steam but not a spawn-free brick table with
+false-quiet revisit weighting; no duct-idle AI; no offscreen residue drift. Visual/audio-only ≤30%
+of this block (**L49** only; audio experiments stay under SND*).
+
+- [ ] L45. Raids path to the loudest machine
+  Type: systemic / mechanical | Pillar: Factory pressure = identity / Industrial biomass / hive
+  Lore: `lore/BIBLE.md` hive soft rules (**Raids path to the loudest machine**); Factorio biters→pollution source (`lore/2026-07-24/summary.md` #1); keep Biofactory anti-comp
+  Unity: **yes** — hot processor run vs idle hub; enemies prefer heat source over player chase.
+  Change: when combat forms spawn (W2+), assign a **raid destination** = highest local heat/throughput chunk (powered processor / drill / busy belt sample — reuse `FactoryHeatTracker` / machine power hooks). Path preference: approach via lane that reaches that machine’s sector, then sap/attack the machine (or nearby barrier) before defaulting to hub/player. Player proximity still interrupts (existing engage rules). W1 teaching arc unchanged (West→hub). Cap: if one foothold’s local pressure is already high, spill destination pick to the next-loudest sector (anti-hoarding cousin of FFF #283 — light version; full WaveFuel bank can wait). Doc one paragraph in `Progression_Spec.md`.
+  done-when: Play — with a hot far processor and a quiet hub approach, W2+ forms measurably prefer the hot machine’s lane/sector over beelining the player; idle factory keeps today’s lane→hub behaviour; W1 unchanged; console clean
+
+- [ ] L46. Atmosphere brick table (false scares without spawns)
+  Type: systemic / diegetic | Pillar: Diegetic dread
+  Lore: `lore/BIBLE.md` factory×horror (**Atmosphere events are not spawn events**); DS remake Intensity Director palette (`lore/2026-07-24/summary.md` #3)
+  Unity: **yes** — revisit an empty expansion deck; hear/see bricks with zero enemies.
+  Change: extend `ThreatTelegraph` (or thin companion on a **dedicated child**, never SectorRuntime root) with a weighted **atmosphere brick** table: lamp death / steam burst / distant scrape / false quiet — fireable with **zero** combat spawns. Bias weight up on revisited sectors and far empty deck (Deck lock / expansion headroom). Soft director: max N bricks per prep, mandatory quiet between bricks, never during RecoveryBeat labour window if L42/L43 exist. Reuse `LampFlicker`, `HorrorClock`, `SyntyAmbientFx`, existing `Sfx` one-liners — **no new audio banks** (gate CLOSED). Distinct from L15 (mid-prep rollercoaster tied to wave warning) — this is revisit/empty-deck texture.
+  done-when: Play — standing on empty far deck or revisiting a cleared approach yields ≥1 spawn-free atmosphere brick; combat spawn math unchanged; L15 still fires its prep beats; console clean
+
+- [ ] L47. Vent-resident early forms (duct idle before deck combat)
+  Type: systemic | Pillar: Industrial biomass / hive
+  Lore: `lore/BIBLE.md` hive soft rules (**The hive is a resident**); Carrion habitat grammar (`lore/2026-07-24/summary.md` #2) — player stays worker
+  Unity: **yes** — W2+ vent approach shows duct-idling forms before open-deck chase.
+  Change: stage-1 / residue / early crawlers on VentBreach (and EastFlank if cheap) **spawn and idle** in duct/grate volumes (near existing breach infestation / ceiling vent props) for a short window, then drop onto the lane. Prefer `InfectionResidue` / crawler mods over new shooter fantasy. W1 unchanged. Caps in `Progression_Spec.md`. Coordinate with **L29** vent-carrier (specialize rung) — L47 is habitat staging, L29 is the tougher death→ecology form.
+  done-when: Play — W2+ vent lane shows ≥1 form lingering in/at a vent volume before joining the lane; W1 has none of this staging; pathing to hub still works after drop; console clean
+
+- [ ] L48. Offscreen residue drift between warm machines
+  Type: systemic | Pillar: Industrial biomass / hive
+  Lore: `lore/BIBLE.md` hive soft rules (forms alive elsewhere); Rain World offscreen ecology (`lore/2026-07-24/summary.md` #5)
+  Unity: **yes** — leave a sector, return; sticky forms have moved toward warmer machines.
+  Change: cheap tick (not full AI sim): while a sector is unloaded / player far, drift existing `ProcessInfection` / `InfectionResidue` / small biomass blobs toward the nearest powered warm machine within a cap distance. No new spawns from this tick alone; no chase of the player. Soft only — readable when the player returns. Must not tank performance (time-slice / low rate). Doc in `Progression_Spec.md`.
+  done-when: Play — seed infection near a cold machine, power a warmer neighbor, leave and return → residue/infection has measurably shifted toward the warm machine; no new combat forms created by the tick; console clean
+
+- [ ] L49. Lit security booth at a sector checkpoint
+  Type: diegetic / visual | Pillar: Workplace as trap / Diegetic dread
+  Lore: `lore/BIBLE.md` factory×horror (**company built the hostile workplace first**) + motif lit security booth; Prey/Talos light (`lore/2026-07-24/summary.md` #6)
+  Unity: **yes** — iso + FP at one lane approach; A/B ≥2% pixels (Phase E light rule).
+  Tag: `[asset-pack: POLYGON Sci-Fi Horror]`
+  Change: one authored checkpoint cluster at a lane approach (prefer West or Vent) — desk/booth + still-lit map/terminal (Synty console/monitor/kiosk), company habitat first. Collider-free dressing; off lane; light its own small pool or sit in an existing lamp. Optional soft wrongness when local HorrorClock/infection high (screen copy glitches) — restrained, no arcade. Complements L25 plaques / L38 organ tags — do not duplicate them.
+  done-when: Play — booth reads as company security workplace in iso+FP; lit terminal visible; lanes clear; console clean
 
 ### Done archive — 2026-07-19 lore-gap + map integrity (shipped)
 
@@ -1770,6 +1819,12 @@ Method: capture the Game view in Play mode, judge the frame, fix the single wors
 - [ ] Free lead: Abandoned Factory Lite (Asset Store) — safe mood greys for blockout; not gated, but not queued until visual Now is thin.
 
 ## Agent log (newest first — one line per session: date, task, result, commit)
+
+- 2026-07-24: **lore-gap** — bible already absorbed through `lore/2026-07-24`. Queued **L45–L49**
+  (heat-path raids, atmosphere brick table, vent-resident idle, offscreen residue drift, lit
+  security booth). Skipped audio (gate CLOSED), worn-surface shopping, reverse-horror. Refreshed
+  Work next lore line. Needs human unchanged (priority-after-Synty still open). No game code.
+  Commit pending.
 
 - 2026-07-23: **P11 hub/workshop landmarks — DONE, verify-and-close.** Owner said don't change the
   hub/workshop assets; they were already the target Synty pieces from scene authoring (hub =
