@@ -1824,7 +1824,7 @@ Method: capture the Game view in Play mode, judge the frame, fix the single wors
   (heat-path raids, atmosphere brick table, vent-resident idle, offscreen residue drift, lit
   security booth). Skipped audio (gate CLOSED), worn-surface shopping, reverse-horror. Refreshed
   Work next lore line. Needs human unchanged (priority-after-Synty still open). No game code.
-  Commit pending.
+  Commit 3b7f27b.
 
 - 2026-07-23: **P11 hub/workshop landmarks — DONE, verify-and-close.** Owner said don't change the
   hub/workshop assets; they were already the target Synty pieces from scene authoring (hub =
