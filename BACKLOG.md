@@ -133,7 +133,20 @@ Parked until Gate: OPEN. Commit-sized; bible-aligned; no code until sounds exist
 
 ## Needs human decision
 
-- (none open)
+- **Priority after the ship reads Synty (groom 2026-07-23).** Pack conversion is substantially done:
+  environment, machines, defenses, hub, workshop, dressing, FX and the FP viewmodel are all Synty
+  (P0–P11, P16–P21). What remains splits three ways and it is a preference call, not a clear win:
+  1. **Finish actor conversion** — P12 (player suit) + P13 (enemies). Both are pose-gated by your
+     2026-07-22 Decision (retarget/author poses, no T-pose), so they are the heaviest remaining P
+     work. The player currently shows the Synty suit but in a static bind pose; enemies are still
+     Kenney.
+  2. **Unblock FP polish** — F11–F14 were parked "until the ship reads Synty." It mostly does now.
+     F13 (embodiment + scale audit) overlaps with P12. These make first person shippable.
+  3. **Systemic lore** — L41 (second hive-debt clock), L42 (intensity valley), L43 (recovery labour),
+     L44 (lagged scan). Highest north-star value, no pack dependency, changes how the game *plays*.
+  **P14 (build mirrors) is build-critical and comes before any of these regardless** — nothing in a
+  build shows Synty until it lands. After P14, which track? Left in current file order (P12→P13, then
+  F, then L) until you rule.
 
 ## Decisions (human-made, newest first)
 
@@ -196,22 +209,24 @@ Parked until Gate: OPEN. Commit-sized; bible-aligned; no code until sounds exist
 
 | | |
 |--|--|
-| **Next task** | **P14** — Build Resources mirrors + Shader Graph verify (Phase C) |
+| **Next task** | **P14** — Build Resources mirrors + Shader Graph verify. **Build-critical: a build ships zero Synty art until this lands** (no `Resources/SyntyHorror/` mirror exists). |
 | **Command** | `/auto-dev` (Unity MCP preferred; else mark `[?]` for `/unity-pass`) |
-| **Why** | Cleanup **C1–C7** done. Pack skin **P0–P6**, Phase B clutter **P7–P9**, and story **P16** all shipped and in-editor reviewed (2026-07-22). Asset pack gate **OPEN**. Owner rule: conversion still **jumps F11–F14** until the ship reads Synty. Phase E is the next open slice. |
-| **Phase E done** | P7–P9, P16–P18, P20, P21 shipped. Phase C: **P10 + P19 + P11** done. Remaining: **P14**, then **P12**/**P13** (retarget/author poses — Decision 2026-07-22). |
+| **After P14** | **Human decision open** — see `## Needs human decision` "Priority after the ship reads Synty". Three tracks: actor conversion **P12→P13** (pose-gated), FP polish **F11–F14** (now mostly unblocked), or systemic lore **L41–L44**. Default order until ruled: P12 → P13. |
+| **Pack conversion** | Done: **P0–P11, P16–P21** (+P19). Env, machines, defenses, hub, workshop, dressing, FX, FP viewmodel all Synty. Remaining P: **P14** (build), **P12/P13** (actors, pose-gated). |
 | **Dressing a hand-authored scene** | Runtime dressers do **not** run here (`SectorAuthoring` skips `AddGeometryDressing`). Implement `ISceneDresser`, then add a thin menu item calling `SceneDressingBake.Run<T>` — see `PersonalEffectsBake.cs` / `BreakRoomBake`. Register the component in `AddGeometryDressing` too, for generated sectors. |
-| **Skip** | `[wait-until-sounds]` (audio gate **CLOSED**). **P22** deferred (VoidHull). Lore **L\*** only if a human/groom pulls one up. |
-| **P12 / P13** | Unblocked for when Phase C is due — must **retarget/author poses** (Decision 2026-07-22); no T-pose drop-ins. |
+| **Skip** | `[wait-until-sounds]` (audio gate **CLOSED**). **P22** deferred (VoidHull). Lore **L\*** eligible now if a human/groom pulls one up (see decision above). |
+| **Lore** | Bible absorbed through **2026-07-23**; digest **2026-07-24** landed unabsorbed → run `/lore-bible` before deriving new lore tasks. L27–L44 already queued from prior digests. |
 | **Gates** | Asset pack **OPEN** · Audio **CLOSED** · Deck size locked · Prep **40s / 30s** |
 
 ---
 
 ### F1–F14. First-person view mode (human decision 2026-07-20)
 
-**Status:** F1–F10 shipped. **F11–F14 deferred** until pack conversion makes the ship read Synty
-(owner 2026-07-21 — P-track jumps this block). Do **not** take F11 while open P7–P11 / P14–P18
-work remains, unless a human reorders.
+**Status:** F1–F10 shipped. F11–F14 were parked until pack conversion made the ship read Synty
+(owner 2026-07-21). **That condition is now substantially met** — env/machines/defenses/landmarks/
+dressing/FX/viewmodel are all Synty (P0–P11, P16–P21). Whether to take F11–F14 next, finish the
+actor conversion (P12/P13), or pull the systemic lore track is an **open human decision** (see
+`## Needs human decision`). P14 (build mirrors) comes first regardless.
 
 Goal: toggleable FP that looks/reads at least as well as iso. Iso stays until F14 passes.
 
@@ -613,12 +628,21 @@ Without it, mats may pink; runtime falls back to Standard albedo when Error.
 
 #### Phase D — polish + ship
 
-- [ ] P14. Build Resources mirrors + Shader Graph verify
+- [ ] P14. Build Resources mirrors + Shader Graph verify  ← **build-critical, do first**
   Tag: `[asset-pack: POLYGON Sci-Fi Horror]`
   Unity: yes — Editor Play AND a player build smoke
-  Change: editor tool copies used prefabs into `Resources/SyntyHorror/{Environment,Props,Buildings}/`
-  so builds match Editor; confirm Package Helper Shader Graph; document in Asset pack status.
-  done-when: standalone build loads same Synty dress; no pink Error mats; console clean
+  **Why urgent (groom 2026-07-23):** there is NO `Assets/Resources/SyntyHorror/` folder. Every pack
+  loader (`SyntyHorrorLoader.Load*`, `RuntimeArtBackfill`) resolves via `AssetDatabase` in the editor
+  and falls back to `Resources.Load("SyntyHorror/…")` in a build — which returns null today. **So a
+  standalone build currently ships ZERO Synty art** (machines, walls, dressing, FX, viewmodel all
+  vanish). Everything P0–P21 shipped is editor-only until this lands.
+  Change: editor tool copies every used pack prefab into the mirror, preserving the folder the loader
+  maps to — now **`Resources/SyntyHorror/{Environment,Props,Buildings,FX,Weapons}/`** (FX added by
+  P21, Weapons by P10/P18; add `Characters/` when P12/P13 land). Drive the mirror list off the loader
+  path arrays so it cannot drift. Confirm Synty Package Helper Shader Graph is installed; document the
+  mirror + refresh step in `## Asset pack status`.
+  done-when: standalone build loads the same Synty dress as the editor (spot-check a machine, a wall,
+  the break room, an FX accent, the FP viewmodel); no pink Error mats; console clean
 
 - [x] P15. Optional FX — steam/sparks/fog accents (pack FX only)
   Tag: `[asset-pack: POLYGON Sci-Fi Horror]`
@@ -1727,8 +1751,7 @@ Method: capture the Game view in Play mode, judge the frame, fix the single wors
 - [x] Progression v2 tier-2 structures — DONE: HeavyTurret (w5, 150 scrap, range 6.5/dmg 22/rate 1.5, 1.5×HP, 1.2× scale, red), Bulwark (w6, 70, 3×HP barrier, taller, steel-blue), TurboDrill (w7, 120, 2× extraction, 4 power, orange). Prefab variants + def assets + catalogue + hotbar registered. Play-verified unlock chain + placement + stats.
 - [x] Progression v3 upgrade offers — DONE: RunUpgrades container (5 modifiers, null-safe statics), UIUpgradeOffer modal (1-of-3 random distinct after every cleared wave, timeScale 0 while open, skippable, Esc-guarded vs pause menu). Pool: turret dmg +15%, drill +20%, repair cost −25%, salvage +50%, sidearm +4 shots. Consumers patched: AutoTurret, MiningDrill, PlayerRepairTool, SalvageCrate, PlayerWeapon (+hotbar heat display). Play-verified full loop.
 - [x] Progression v4 endless modifiers — DONE: WaveModifier enum (Swift ×1.4 spd / Armored ×1.6 HP / Horde ×1.5 count ×0.8 HP / Volatile ×1.5 dmg), rolled once per endless wave (30% none), applied per spawn, banner labels prep + combat. Health.ScaleMaxHealth added. Play-verified: wave 6 rolled SWIFT, spd 1.60→2.24 exact, banner labeled, defined waves never roll.
-- [ ] Balance pass across all progression numbers (tier-2 stats/costs, upgrade pool percents, modifier multipliers, clear-bonus curve) — needs human playtest.
-- [ ] Balance pass on tier-2 numbers (150/70/120 costs, stat multipliers are first-guess) once waves 4+ get real playtesting.
+- [ ] Balance pass across all progression numbers — tier-2 stats/costs (HeavyTurret 150 / Bulwark 70 / TurboDrill 120 are first-guess), upgrade-pool percents, endless modifier multipliers, clear-bonus curve. Needs a human playtest of waves 4+; not an agent task until then.
 
 ## Ice box (ideas, ungroomed)
 
