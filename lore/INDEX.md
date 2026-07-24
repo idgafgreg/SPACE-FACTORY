@@ -8,21 +8,24 @@ Rolling map of useful themes. Updated by daily research runs.
 
 | Pillar | What to mine | Status |
 |--------|----------------|--------|
-| Workplace as trap | Isolation baked into the job, not contrived lockdown | Strong — authenticity 07-19; protocol/rules-as-threat 07-22; **oversized empty plant / adventure-poster trap** 2026-07-23 |
-| Industrial biomass / hive | Threat uses vents, heat, logistics; ship becomes habitat | Upgraded 2026-07-20 — Flood staging + recycler fiction; **pollution fuel vs evolution debt split** 2026-07-23 |
-| Factory pressure = identity | Enemies tied to production loop (Factorio pollution lesson) | Strong; StarRupture/Lethal Company quota cousins; empty deck = expand (Decision 2026-07-21); **WaveFuel vs HiveDebt numbers** 2026-07-23 |
-| Diegetic dread | Diegetic UI, failing systems, environmental storytelling | Upgraded 2026-07-20; Mixer infection EQ 07-22; **delayed scanner / suggestion vision + shift-board friction** 2026-07-23 |
-| Lonely worker fantasy | Rustic space labor, patched ship, schedule vs survival | Strong — recovery beats; dual view; distant-signal 07-22; **absent-crew archaeology (Obra Dinn light) + L4D intensity valleys** 2026-07-23 |
+| Workplace as trap | Isolation baked into the job, not contrived lockdown | Strong — authenticity 07-19; protocol/rules-as-threat 07-22; oversized empty plant 07-23; **grim overtime without comedy (Frostpunk tone)** 2026-07-24 |
+| Industrial biomass / hive | Threat uses vents, heat, logistics; ship becomes habitat | Upgraded 07-20 Flood staging; **Carrion vent/fissure habitat grammar (player stays worker)** + **biters-path-to-source logistics vectors** 2026-07-24 |
+| Factory pressure = identity | Enemies tied to production loop (Factorio pollution lesson) | Strong; WaveFuel vs HiveDebt 07-23; **path-to-hottest-machine + foothold absorption caps (FFF #283)** 2026-07-24 |
+| Diegetic dread | Diegetic UI, failing systems, environmental storytelling | Upgraded 07-20; Mixer EQ 07-22; delayed scanner 07-23; **DS remake atmosphere bricks / false scares (spawn-optional)** 2026-07-24 |
+| Lonely worker fantasy | Rustic space labor, patched ship, schedule vs survival | Strong — recovery beats; dual view; distant-signal 07-22; absent-crew 07-23; **purposeless still-running factory + closed-deck power notes** 2026-07-24 |
 
 ## Comp watchlist
 
-- Factorio (pressure tied to factory growth; **pollution absorption ≠ evolution**)
-- Dead Space / Dead Space remake (industrial ship body-horror + Intensity Director + Milham art direction)
+- Factorio (pressure tied to factory growth; **pollution absorption ≠ evolution**; **biters path to pollution source**; foothold fuel caps)
+- Dead Space / Dead Space remake (industrial ship body-horror + **Intensity Director atmosphere bricks / false scares** + Milham art direction)
 - Alien: Isolation (isolation + Director/menace pacing + Working Joe protocol threat)
 - Still Wakes the Deep / Self-Contained (workplace horror + art pillars + metal-sculpture audio)
 - Halo Flood (infection ecology ladder — design energy)
 - System Shock / Citadel (corporate bureaucracy station — apparatus dread)
 - Left 4 Dead AI Director (**soft intensity valleys** — pace frequency, not HP)
+- Carrion (**hive uses plant infrastructure** — steal habitat; refuse reverse-horror loop)
+- Rain World (offscreen ecology / geometry-as-AI — light)
+- Frostpunk (grim labor sacrifice tone — adjacent; not city-builder)
 - Iron Lung (suggestion / sealed workplace / delayed vision — adjacent FP mood)
 - Return of the Obra Dinn (empty ship archaeology — light)
 - Annihilation / Shimmer score (beauty/fear refraction — light audio-organism)
@@ -35,6 +38,7 @@ Rolling map of useful themes. Updated by daily research runs.
 - Control / Oldest House (bureaucratic Brutalism — adjacent)
 - Viscera Cleanup Detail (aftermath labor — mood only; refuse comedy)
 - Outer Wilds (lonely melancholy — light touch only)
+- Prey / Talos I (security booths as workplace bones — light)
 
 ## Branch policy
 
@@ -55,8 +59,8 @@ Paid + free lore asset leads export to [`assets-wishlist.csv`](assets-wishlist.c
 
 ## Last run
 
-- Date: 2026-07-23
+- Date: 2026-07-24
 - Landed on: `main`
-- Focus weight: L4D intensity valleys + Factorio wave-fuel/evolution split + Iron Lung suggestion + Annihilation beauty/fear refraction + Obra Dinn empty-ship (light) + free terminals/GPU fog; wishlist Heavy Station control units
-- Prior run: 2026-07-22 (Citadel / Working Joe / Outer Wilds / Mixer / pipes+crates)
+- Focus weight: Factorio path-to-pollution-source + foothold absorption caps; Carrion vent habitat grammar (refuse reverse-horror); DS remake Intensity Director atmosphere bricks / false scares (distinct from L4D valleys); Frostpunk grim tone; Rain World offscreen ecology (light); free Yughues concrete + Real Materials samples; wishlist Worn Industrial Surfaces (~$9 Built-in); skip HDRP-only rust decals
+- Prior run: 2026-07-23 (L4D valleys / Factorio fuel-vs-evolution / Iron Lung / Annihilation / Obra Dinn)
 - Render pipeline note: project currently **Built-in** (prefer Built-in-compatible kits)
