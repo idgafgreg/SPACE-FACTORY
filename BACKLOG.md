@@ -196,10 +196,10 @@ Parked until Gate: OPEN. Commit-sized; bible-aligned; no code until sounds exist
 
 | | |
 |--|--|
-| **Next task** | **P21** — Specific diegetic FX accents (pack FX only) |
+| **Next task** | **P18** — Player tool viewmodels from Synty weapons (FP held tool) |
 | **Command** | `/auto-dev` (Unity MCP preferred; else mark `[?]` for `/unity-pass`) |
 | **Why** | Cleanup **C1–C7** done. Pack skin **P0–P6**, Phase B clutter **P7–P9**, and story **P16** all shipped and in-editor reviewed (2026-07-22). Asset pack gate **OPEN**. Owner rule: conversion still **jumps F11–F14** until the ship reads Synty. Phase E is the next open slice. |
-| **After P21** | **P18**. Parallel Phase C when ready: **P10** (unblocks **P19**) → **P11** → **P14**. |
+| **After P18** | Phase E is then clear. Phase C: **P10** (unblocks **P19**) → **P11** → **P14**, then **P12**/**P13** (retarget/author poses). |
 | **Dressing a hand-authored scene** | Runtime dressers do **not** run here (`SectorAuthoring` skips `AddGeometryDressing`). Implement `ISceneDresser`, then add a thin menu item calling `SceneDressingBake.Run<T>` — see `PersonalEffectsBake.cs` / `BreakRoomBake`. Register the component in `AddGeometryDressing` too, for generated sectors. |
 | **Skip** | `[wait-until-sounds]` (audio gate **CLOSED**). `[!] P19` until P10. **P22** deferred (VoidHull). Lore **L\*** only if a human/groom pulls one up. |
 | **P12 / P13** | Unblocked for when Phase C is due — must **retarget/author poses** (Decision 2026-07-22); no T-pose drop-ins. |
@@ -586,11 +586,13 @@ Without it, mats may pink; runtime falls back to Standard albedo when Error.
   so builds match Editor; confirm Package Helper Shader Graph; document in Asset pack status.
   done-when: standalone build loads same Synty dress; no pink Error mats; console clean
 
-- [ ] P15. Optional FX — steam/sparks/fog accents (pack FX only)
+- [x] P15. Optional FX — steam/sparks/fog accents (pack FX only)
   Tag: `[asset-pack: POLYGON Sci-Fi Horror]`
   Unity: yes — sparse diegetic, not spam
   Change: place `Prefabs/FX` steam/sparks near generators/breach; gate on heat/menace; soft director.
   done-when: occasional FX sells life without arcade clutter; console clean
+  **DELIVERED BY P21 2026-07-23** — P21 was the concrete version of this ("Extends P15 — fold in"),
+  so implementing it satisfied both. Closed here rather than left open to imply work remains.
 
 #### Phase E — full-pack utilization (use the ENTIRE pack)
 
@@ -765,7 +767,7 @@ fog all check out, enumerate renderers along the sight line before touching anyt
   via a small `ISceneDresser` interface; both dressers are also registered in `AddGeometryDressing`
   so a generated sector still builds them.
 
-- [ ] P21. Specific diegetic FX accents (concretises P15's "pack FX only")
+- [x] P21. Specific diegetic FX accents (concretises P15's "pack FX only")
   Tag: `[asset-pack: POLYGON Sci-Fi Horror]` | Unity: yes — sparse, director-gated
   Change: place named `Prefabs/FX` accents on the right anchors instead of generic spam:
   `FX_Dust_Spots_Small_Soft_01` in lamp pools, `FX_Cigarette_Smoke_01` at the nest, `FX_Electricity_
@@ -774,6 +776,26 @@ fog all check out, enumerate renderers along the sight line before touching anyt
   cleared breaches. Gate on heat / `AlarmLevel` / menace via a soft director; keep it occasional.
   Extends P15 — fold in.
   done-when: Play — FX read as ambient life/aftermath tied to state, never arcade clutter; console clean
+  **DONE 2026-07-23 (`SyntyAmbientFx.cs`) — Play-verified.** Runtime, not baked: unlike P17/P20 these
+  are state-gated, and `AddReactiveFx` does run on a hand-authored scene. Everything lives on a
+  `SyntyFxRoot` child, never on the shared runtime object (AGENTS.md pitfall 1).
+  Steady ambience: dust in the four lamp pools nearest the hub, cigarette smoke at the shift nest.
+  Gated: power-tap arcs and machine steam (heat ≥ 0.35), ground fog (menace ≥ 0.45), one blood splat
+  at a used lane mouth per wave cleared. **The clutter guarantee is structural** — every reactive
+  emitter is stopped by default and the director grants at most ONE short burst per tick, so no
+  combination of heat, alarm and machine count can produce a light show.
+  Three bugs Play-testing caught: `_lastCleared = -1` fired a "breach aftermath" splat at wave 0
+  before anything had come down a lane; emitters were built once, so the sector's zero starting power
+  taps meant the arc family never existed and every machine built later got nothing (now rescanned to
+  cap); and sorting lamps by X spent all four dust emitters on the westmost lamps **40 m out at the
+  map edge** where nobody stands (now nearest-hub order, 6.8–12.2 m).
+  Verified: correct anchors/counts, ≤1 gated burst (checked twice), fog on at alarm 0.85 and off at
+  0.00, no splat at t=0, console clean, and a rendered frame of a vent plume reading as industrial
+  life. Note `ThreatTelegraph` rewrites `AlarmLevel` every frame, so testing the fog gate meant
+  disabling it first — a manual `SetAlarmLevel` decays before the next command runs.
+  Unused on purpose: `FX_Spark_Shower_01` (MachineWorkingFX already pops working sparks — a second
+  spark source on the same machines would double up) and `FX_Electricity_Reactor_01` (10-unit
+  particles, built for a reactor-sized anchor we do not have).
 
 - [!] P22. **DEFERRED** — VoidHull occludes perimeter void (P6 measured). Not blocked on a human
   question anymore (P6 door-read resolved). Revisit only with an explicit VoidHull window / inside-shell
@@ -1667,6 +1689,13 @@ Method: capture the Game view in Play mode, judge the frame, fix the single wors
 - [ ] Free lead: Abandoned Factory Lite (Asset Store) — safe mood greys for blockout; not gated, but not queued until visual Now is thin.
 
 ## Agent log (newest first — one line per session: date, task, result, commit)
+
+- 2026-07-23: **P21 pack FX accents — DONE, Play-verified; closes P15 too.** `SyntyAmbientFx` on a
+  dedicated `SyntyFxRoot` child: steady dust + nest smoke, gated tap arcs / machine steam / ground
+  fog / breach blood, with at most one reactive burst alive at a time by construction. Play-testing
+  caught three: a breach splat firing at wave 0, emitters built once so later machines and the (zero
+  at start) power taps never got one, and all four dust emitters spent on lamps 40 m out at the map
+  edge. Fog gate needed `ThreatTelegraph` disabled to test — it rewrites AlarmLevel every frame.
 
 - 2026-07-23: **P20 break room — DONE, verified in-editor.** 13-piece authored set piece in a probed
   alcove at the hub edge (`-8.5, 9.5`), with its own lamp because the nearest existing one is 8.5 m

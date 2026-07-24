@@ -15,6 +15,7 @@ public static class SyntyHorrorLoader
     const string EnvRoot = PackRoot + "Prefabs/Environment/";
     const string BldRoot = PackRoot + "Prefabs/Buildings/";
     public const string PropRoot = PackRoot + "Prefabs/Props/";
+    public const string FxRoot = PackRoot + "Prefabs/FX/";
     const string ResourcesRoot = "SyntyHorror/";
 
     /// <summary>Static wall-hugging growth clusters (A10 encroachment).</summary>
@@ -195,6 +196,22 @@ public static class SyntyHorrorLoader
         return Load(PropRoot + prefabFileName);
     }
 
+    /// <summary>
+    /// P21 — a particle accent from the pack's FX folder.
+    ///
+    /// Deliberately NOT run through <see cref="PrepareInstance"/>: that helper
+    /// rebuilds any material it thinks is broken as a Standard opaque one, which
+    /// would turn a particle sheet into a solid grey quad. These prefabs ship with
+    /// <c>Synty/Generic_Particles*</c> shaders and no colliders, so they need
+    /// nothing done to them.
+    /// </summary>
+    public static GameObject LoadFx(string prefabFileName)
+    {
+        if (string.IsNullOrEmpty(prefabFileName)) return null;
+        if (!prefabFileName.EndsWith(".prefab")) prefabFileName += ".prefab";
+        return Load(FxRoot + prefabFileName);
+    }
+
     public static GameObject Load(string assetPath)
     {
         if (string.IsNullOrEmpty(assetPath)) return null;
@@ -210,6 +227,7 @@ public static class SyntyHorrorLoader
         string folder = assetPath.Contains("/Environment/") ? "Environment/"
             : assetPath.Contains("/Props/") ? "Props/"
             : assetPath.Contains("/Buildings/") ? "Buildings/"
+            : assetPath.Contains("/FX/") ? "FX/"
             : "";
         return Resources.Load<GameObject>(ResourcesRoot + folder + file);
     }

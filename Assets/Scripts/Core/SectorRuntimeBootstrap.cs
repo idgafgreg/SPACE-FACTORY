@@ -161,6 +161,8 @@ public static class SectorRuntimeBootstrap
         go.AddComponent<RecoveryBeat>();
 
         go.AddComponent<AmbientDustMotes>();
+        // P21: pack particle accents, gated on heat/menace/wave state.
+        go.AddComponent<SyntyAmbientFx>();
     }
 
     /// <summary>
