@@ -17,7 +17,7 @@ Follow `.claude/commands/lore-bible.md` (same procedure as `.cursor/commands/lor
 2. Promote north-star motifs into canon; park weak ones under Open experiments; reject drift.
 3. Update Changelog + Last absorbed research.
 4. Light-touch `lore/INDEX.md` if pillar status changed.
-5. Commit locally: `lore-bible: absorb YYYY-MM-DD — <theme>` (never push).
+5. Commit `lore-bible: absorb YYYY-MM-DD — <theme>`, then push: `git fetch origin && git rebase origin/main && git push origin main`. The cloud lore agent pushes to the same branch, so rebase first and expect the remote to have moved. Never force-push; on a rebase conflict, abort and hand it to the human.
 
 ## Canon file
 

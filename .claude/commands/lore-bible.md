@@ -46,17 +46,28 @@ Horror-infused **factory management** on a broken far-future ship under hive-ali
 
 5. **Light index sync.** If a pillar’s strength clearly changed, update the matching row in `lore/INDEX.md` (one line). Do not rewrite digests.
 
-6. **Commit** (local only) with message shaped like:
+6. **Commit** with message shaped like:
    `lore-bible: absorb YYYY-MM-DD — <short theme>`
    or, for idea promotion:
    `lore-bible: canonize <motif>`
+
+7. **Push to `origin/main`** (owner instruction 2026-07-23 — lore commits go up every run, no need to ask):
+
+   ```bash
+   git fetch origin && git rebase origin/main && git push origin main
+   ```
+
+   The daily cloud lore agent pushes to the same branch, so **expect the remote to have moved** and rebase before pushing. Rules:
+   - Rebase, never merge, and **never force-push**. These commits are yours and unpushed, so rewriting them is safe; overwriting someone else's is not.
+   - If the rebase hits a conflict — most likely in `lore/INDEX.md` or `lore/BIBLE.md`, which the cloud agent also edits — stop, run `git rebase --abort`, leave the commit local, and tell the human what conflicted. Do not guess a resolution.
+   - Push only this branch, and only what step 6 committed. Do not sweep up unrelated working-tree changes.
 
 ## Hard limits
 
 - No game code (`Assets/` scripts/scenes/prefabs).  
 - Do not buy or download paywalled assets.  
 - Do not invent a second roadmap — implementation tasks belong to `/lore-gap` → `BACKLOG.md`.  
-- Never push.  
+- Push the lore commit (step 7); never force-push, and never push anything this command did not commit.  
 - Commit lore bible updates on `main` (no `lore/daily-*` branches).  
 - If nothing new is worth promoting, still update **Last absorbed research** and add a Changelog line: `no canon changes — digest reviewed`.
 

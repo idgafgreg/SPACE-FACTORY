@@ -60,13 +60,24 @@ Horror-infused **factory management** on a broken far-future ship under hive-ali
 
 7. **Deduplicate.** Drop or rewrite tasks that duplicate done work, duplicate Now/Next, or contradict a human Decision without explicitly revising that Decision in the task text.
 
-8. **Commit.** Commit `BACKLOG.md` (and any doc-only updates you made under `SPACE FACTORY INFO/` if you chose to sync a decision into docs this session) with message `lore-gap: refill backlog from research`.
+8. **Commit and push.** Commit `BACKLOG.md` (and any doc-only updates you made under `SPACE FACTORY INFO/` if you chose to sync a decision into docs this session) with message `lore-gap: refill backlog from research`, then push it — see below.
+
+9. **Push to `origin/main`** (owner instruction 2026-07-23 — lore commits go up every run, no need to ask):
+
+   ```bash
+   git fetch origin && git rebase origin/main && git push origin main
+   ```
+
+   The daily cloud lore agent pushes to the same branch, so **expect the remote to have moved** and rebase before pushing. Rules:
+   - Rebase, never merge, and **never force-push**. These commits are yours and unpushed, so rewriting them is safe; overwriting someone else's is not.
+   - If the rebase hits a conflict — likely in `lore/INDEX.md` or `lore/BIBLE.md`, which the cloud agent also edits — stop, run `git rebase --abort`, leave the commit local, and tell the human what conflicted. Do not guess a resolution.
+   - Push only this branch. Nothing else in the working tree gets swept in: commit only the files listed in step 8.
 
 ## Hard limits
 
 - No game code (`Assets/` scripts/scenes/prefabs). Producer only.
 - Do not buy or download paywalled assets; list on `lore/wishlist-paywalled.md` if you discover a new lead, then run `lore/sync-assets-sheet.ps1`.
 - Do not paste copyrighted fiction into tasks or docs — motifs/summaries only.
-- Never push. Local commits only.
+- Push the lore commit (step 9); never force-push, and never push anything this command did not commit.
 - Never invent a second roadmap file — `BACKLOG.md` is the only queue.
 - If the same gap was already attempted and `[!] blocked` twice in the Agent log, leave it in Ice box with the reason; do not re-queue.

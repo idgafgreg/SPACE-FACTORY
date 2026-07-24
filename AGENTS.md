@@ -159,7 +159,7 @@ See `## Audio / sounds status` in `BACKLOG.md`. **Current state: CLOSED** — wa
 ### Hard rules that stay
 
 - One queue only: `BACKLOG.md` (no parallel roadmap files)
-- Local commits only — never push unless a human asks
+- Local commits only — never push unless a human asks. **Exception (owner, 2026-07-23): `/lore-bible` and `/lore-gap` push their own commit every run**, because the daily cloud lore agent works from `origin/main` and stale canon there sends it re-researching absorbed ground. Rebase onto `origin/main` first (that agent pushes to the same branch), never force-push, and abort to the human on a conflict. Every other command still stops at a local commit.
 - No paywalled asset purchases by agents; wishlist + `lore/sync-assets-sheet.ps1`
 - Do not paste copyrighted fiction into the game
 - `/auto-dev` = one task per invocation; `/bug-pass` = no new features; `/playtest` = no features (report + backlog only)

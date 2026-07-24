@@ -30,8 +30,8 @@ Also see `AGENTS.md` and `.cursor/rules/space-factory-lore.mdc` for the same pol
 
 Shared queue: `BACKLOG.md`. Commands live in `.claude/commands/` (Cursor mirrors under `.cursor/commands/` where present):
 
-0. `/lore-bible` — distill research + strong ideas → `lore/BIBLE.md`
-1. `/lore-gap` — bible + lore + living design → backlog tasks (no game code)
+0. `/lore-bible` — distill research + strong ideas → `lore/BIBLE.md` (commits **and pushes**)
+1. `/lore-gap` — bible + lore + living design → backlog tasks, no game code (commits **and pushes**)
 2. `/auto-dev` — one Now task → implement → verify → commit
 3. `/bug-pass` — regressions / `[?]` items only → commit
 4. `/playtest` — `PlaytestHarness` smoke + Wave 1 gate → report + backlog bugs
@@ -39,6 +39,8 @@ Shared queue: `BACKLOG.md`. Commands live in `.claude/commands/` (Cursor mirrors
 6. `/backlog-groom` — optional reprioritize
 
 Agents **without** Unity MCP: implement, self-review the diff, then mark the task `[?] needs Unity pass — <what>` rather than `[x]`. Never claim verification you could not perform. `/unity-pass` sweeps those.
+
+Only the two lore commands push (owner, 2026-07-23) — the daily cloud lore agent reads `origin/main`, so canon that stays local sends it re-researching ground already absorbed. Rebase onto `origin/main` first, never force-push. Every other command stops at a local commit for the human to review and push.
 
 ### Verified pitfalls (full text in `AGENTS.md` — read before touching FX/visuals/view modes)
 
