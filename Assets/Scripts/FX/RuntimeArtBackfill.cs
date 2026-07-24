@@ -118,33 +118,42 @@ public class RuntimeArtBackfill : MonoBehaviour
         }
     }
 
+    // P10/P19: machines and defenses read as Synty actors — generators and consoles
+    // for the factory line, the pack's tools and weapons for the things that dig and
+    // shoot. Names resolve through SyntyHorrorLoader.LoadActor (Weapons + Props); the
+    // "SM_" prefix is what routes EnsureArt to the pack instead of Kenney Resources.
+    // Silhouettes stay unique per role, and the ArtPlaceholderFitter normalises every
+    // one to the host footprint, so size differences between a drill and a rifle do
+    // not matter. MachineIdentityTint's roof silhouette + F10 lamp still ride on top.
     static string PickMachineModel(MachineBase m)
     {
-        // Keep silhouettes unique per role (matches PlaceholderArtApplier).
         if (m is MiningDrill)
+            // The energy/turbo drill reads as the beam tool; the plain one as the drill.
             return m.name.Contains("Turbo") || m.name.Contains("Energy")
-                ? "ArtPlaceholders/crane-magnet"
-                : "ArtPlaceholders/hopper-high-round";
+                ? "SM_Wep_Mining_Laser_01"
+                : "SM_Wep_Drill_01";
         if (m is Processor)
-        {
-            if (m.name.Contains("Reactor")) return "ArtPlaceholders/pipe-large-valve";
-            return "ArtPlaceholders/robot-arm-a";
-        }
-        if (m is PowerTap) return "ArtPlaceholders/pipe-large-valve";
-        return "ArtPlaceholders/hopper-high-round";
+            return m.name.Contains("Reactor")
+                ? "SM_Prop_Generator_02"
+                : "SM_Prop_Generator_01";
+        if (m is PowerTap) return "SM_Prop_Generator_PowerCell_01";
+        return "SM_Prop_Generator_01";
     }
 
     static string PickDefenseModel(DefenseBase d)
     {
         if (d is AutoTurret)
-            return d.name.Contains("Heavy") ? "ArtPlaceholders/turret_double" : "ArtPlaceholders/turret_single";
+            return d.name.Contains("Heavy") ? "SM_Wep_Mining_Laser_01" : "SM_Wep_Rifle_01";
         if (d is Barrier)
+            // No barrier prop in the pack; a console reads as a chest-high barricade,
+            // the strut as the lighter picket. Both stay a low wall, per the
+            // MachineIdentityTint "Barrier stays a wall" rule (no roof lamp on them).
             return d.name.Contains("Bulwark")
-                ? "ArtPlaceholders/structure-yellow-tall"
-                : "ArtPlaceholders/structure-yellow-short";
-        if (d is ShockTrap) return "ArtPlaceholders/Prop_Mine";
-        if (d is RepairPost) return "ArtPlaceholders/machine-window";
-        return "ArtPlaceholders/structure-yellow-short";
+                ? "SM_Prop_Console_02"
+                : "SM_Prop_Generator_Strut_01";
+        if (d is ShockTrap) return "SM_Wep_Shock_Stick_01";
+        if (d is RepairPost) return "SM_Wep_Welder_01";
+        return "SM_Prop_Generator_Strut_01";
     }
 
     static string PickEnemyModel(EnemyBase e)
@@ -189,17 +198,35 @@ public class RuntimeArtBackfill : MonoBehaviour
         if (existing != null)
         {
             var marker = existing.GetComponent<ArtPlaceholderMarker>();
-            if (marker != null && marker.fitted)
+
+            // Rebuild once when the intended art has changed out from under a baked
+            // placeholder — the P10 machine/defense remap left every starter machine
+            // wearing its old Kenney mesh (empty sourceModel reads as stale). A
+            // placeholder already on the right model is kept, fit-locked as before,
+            // so runtime-built machines never thrash.
+            bool stale = marker == null || marker.sourceModel != resourcesPath;
+            if (!stale)
             {
+                if (marker.fitted)
+                {
+                    HideHostRenderers(host, existing);
+                    return; // LOCKED — never re-fit
+                }
+                ArtPlaceholderFitter.Fit(existing);
                 HideHostRenderers(host, existing);
-                return; // LOCKED — never re-fit
+                return;
             }
-            ArtPlaceholderFitter.Fit(existing);
-            HideHostRenderers(host, existing);
-            return;
+
+            FxSafe.Destroy(existing.gameObject);
+            // fall through and build the correct model
         }
 
-        var prefab = Resources.Load<GameObject>(resourcesPath);
+        // "SM_" names are POLYGON Sci-Fi Horror pack prefabs (P10 machine/defense
+        // remap); everything else is a Kenney/Quaternius mesh in a Resources folder.
+        bool synty = resourcesPath.StartsWith("SM_");
+        var prefab = synty
+            ? SyntyHorrorLoader.LoadActor(resourcesPath)
+            : Resources.Load<GameObject>(resourcesPath);
         if (prefab == null) return;
 
         var art = Instantiate(prefab, host.transform);
@@ -209,7 +236,12 @@ public class RuntimeArtBackfill : MonoBehaviour
         art.transform.localScale = Vector3.one;
         var artMarker = art.GetComponent<ArtPlaceholderMarker>();
         if (artMarker == null) artMarker = art.AddComponent<ArtPlaceholderMarker>();
+        artMarker.sourceModel = resourcesPath;   // so a later remap knows what this is
         if (!string.IsNullOrEmpty(preferTag)) artMarker.artTag = preferTag;
+        // Pack prefabs: strip colliders, disable animators, and swap any broken
+        // Shader Graph material for a Standard stand-in. Kenney art keeps the
+        // existing collider strip only.
+        if (synty) SyntyHorrorLoader.PrepareInstance(art);
         foreach (var c in art.GetComponentsInChildren<Collider>())
             FxSafe.Destroy(c);
 

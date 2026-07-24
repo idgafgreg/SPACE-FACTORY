@@ -196,12 +196,12 @@ Parked until Gate: OPEN. Commit-sized; bible-aligned; no code until sounds exist
 
 | | |
 |--|--|
-| **Next task** | **P10** — Machine + defense ArtPlaceholder → Synty (Phase C; unblocks P19) |
+| **Next task** | **P11** — Hub + Workshop landmark meshes (Phase C) |
 | **Command** | `/auto-dev` (Unity MCP preferred; else mark `[?]` for `/unity-pass`) |
 | **Why** | Cleanup **C1–C7** done. Pack skin **P0–P6**, Phase B clutter **P7–P9**, and story **P16** all shipped and in-editor reviewed (2026-07-22). Asset pack gate **OPEN**. Owner rule: conversion still **jumps F11–F14** until the ship reads Synty. Phase E is the next open slice. |
-| **Phase E done** | P7–P9, P16–P18, P20, P21 all shipped. Remaining is Phase C: **P10** (unblocks **P19**) → **P11** → **P14**, then **P12**/**P13** (retarget/author poses — Decision 2026-07-22). |
+| **Phase E done** | P7–P9, P16–P18, P20, P21 shipped. Phase C started: **P10 + P19** done. Remaining: **P11** → **P14**, then **P12**/**P13** (retarget/author poses — Decision 2026-07-22). |
 | **Dressing a hand-authored scene** | Runtime dressers do **not** run here (`SectorAuthoring` skips `AddGeometryDressing`). Implement `ISceneDresser`, then add a thin menu item calling `SceneDressingBake.Run<T>` — see `PersonalEffectsBake.cs` / `BreakRoomBake`. Register the component in `AddGeometryDressing` too, for generated sectors. |
-| **Skip** | `[wait-until-sounds]` (audio gate **CLOSED**). `[!] P19` until P10. **P22** deferred (VoidHull). Lore **L\*** only if a human/groom pulls one up. |
+| **Skip** | `[wait-until-sounds]` (audio gate **CLOSED**). **P22** deferred (VoidHull). Lore **L\*** only if a human/groom pulls one up. |
 | **P12 / P13** | Unblocked for when Phase C is due — must **retarget/author poses** (Decision 2026-07-22); no T-pose drop-ins. |
 | **Gates** | Asset pack **OPEN** · Audio **CLOSED** · Deck size locked · Prep **40s / 30s** |
 
@@ -548,12 +548,36 @@ Without it, mats may pink; runtime falls back to Standard albedo when Error.
 
 #### Phase C — gameplay actors
 
-- [ ] P10. Machine + defense ArtPlaceholder → Synty
+- [x] P10. Machine + defense ArtPlaceholder → Synty
   Tag: `[asset-pack: POLYGON Sci-Fi Horror]`
   Unity: yes — each machine/defense type iso+FP
   Change: `RuntimeArtBackfill` remaps drills/processors/belts/turrets/barriers to Synty
   generators/consoles/kiosks/weapon racks; keep MachineIdentityTint / silhouette rules.
   done-when: no Kenney machine blobs; identity still readable; placement ok
+  **DONE 2026-07-23 (`RuntimeArtBackfill.cs` + `SyntyHorrorLoader.LoadActor`) — Play-verified,
+  folds in P19.** Mapping (P19's exact intent, so both close together): MiningDrill → `SM_Wep_Drill_01`
+  (energy/turbo → `SM_Wep_Mining_Laser_01`); Processor → `SM_Prop_Generator_01` (Reactor →
+  `_02`); PowerTap → `SM_Prop_Generator_PowerCell_01`; AutoTurret → `SM_Wep_Rifle_01` (Heavy →
+  mining laser); ShockTrap → `SM_Wep_Shock_Stick_01`; RepairPost → `SM_Wep_Welder_01`; Barrier →
+  console/strut (stays a low wall, no roof lamp — MachineIdentityTint rule). Belts unchanged: the
+  pack has no conveyor prop and the Kenney conveyor is a clean mesh, not a blob.
+  Load path: names starting `SM_` route through the new `SyntyHorrorLoader.LoadActor` (searches
+  Weapons then Props, AssetDatabase in editor / Resources mirror in build); everything else stays
+  Kenney `Resources.Load`. Pack art gets `PrepareInstance` (collider strip, animator off, broken-mat
+  fallback). `ArtPlaceholderFitter` normalises every mesh to the host footprint, so a rifle and a
+  generator both sit right. **MachineIdentityTint silhouette + F10 lamp + plinth verified intact on
+  all 7 machines** — they ride the ArtPlaceholder and are rebuilt on top regardless of mesh.
+  The catch that needed real work: the two **starter** machines had unfitted Kenney placeholders
+  baked into Sector01, and `EnsureArt` keeps any existing placeholder — so the remap never reached
+  them. Added `ArtPlaceholderMarker.sourceModel`; `EnsureArt` now rebuilds a placeholder whose stored
+  model no longer matches the requested one (empty = baked-before-this = stale → rebuild once), and
+  stamps the model on fresh art so runtime-built machines never thrash. Re-baked via GameplayArtBake
+  so the scene stores Synty (starter Processor → `SM_Prop_Generator_01`, drill → `SM_Wep_Drill_01`);
+  play then keeps the baked art (sourceModel matches). Verified the generator's bright core is a real
+  pack `SciFiHorror_BlinkingLights` emissive, not a broken-material fallback. Rendered close: reads as
+  a glowing industrial core on a ringed generator base with plinth + lamp. Console clean.
+  Note: the re-bake also re-serialised `SectorPostFX.asset` (identical values, new sub-asset ids) —
+  harmless churn from reusing GameplayArtBake. P19 (below) is delivered by this same change.
 
 - [ ] P11. Hub + Workshop landmark meshes
   Tag: `[asset-pack: POLYGON Sci-Fi Horror]`
@@ -640,7 +664,7 @@ straight out. The `_Dead` suffix names a skin variant, not a baked pose. Consequ
   poses** — not a drop-in, not descope. Budget animation work inside those tasks.
 
 **Held back deliberately:**
-- **P19** is `[!] blocked` on **P10** — it enriches a remap that does not exist yet. Do P10 first.
+- **P19** was blocked on **P10**; both done 2026-07-23 (P10's remap is P19's table — folded in).
 - **P22** (vehicle landmark) stays deferred, and P6's fix gives the precise reason: **A2's `VoidHull`
   is an opaque, collider-free shell that occludes everything beyond it.** P22 wants to park a ship
   "in the void beyond the playfield edge" — that is exactly where the shell is, so the landmark would
@@ -749,8 +773,7 @@ fog all check out, enumerate renderers along the sight line before touching anyt
   build selection → blow torch), near dist 0.53–0.56 m vs 0.30 near clip, survives a lethal
   `TakeDamage`+respawn still visible, hidden in iso, console clean.
 
-- [!] P19. **BLOCKED on P10** — enriches a `RuntimeArtBackfill` remap that does not exist yet. Do P10 first.
-  Enrich P10 actor meshes with Synty weapons + generators (defense/machine identity)
+- [x] P19. Enrich P10 actor meshes with Synty weapons + generators (defense/machine identity)
   Tag: `[asset-pack: POLYGON Sci-Fi Horror]` | Unity: yes — each type iso + FP, greyscale
   Change: when P10 remaps `RuntimeArtBackfill`, pull defense/machine art from the weapon + generator
   families for instant read: AutoTurret → `SM_Wep_Mining_Laser_01` / `SM_Wep_Rifle_01`, ShockTrap →
@@ -760,6 +783,12 @@ fog all check out, enumerate renderers along the sight line before touching anyt
   same ArtPlaceholder). Extends P10 — fold in, don't duplicate.
   done-when: Play — each machine/defense reads as its Synty actor AND keeps its A6/F10 identity in
   greyscale; placement unchanged; console clean
+  **DELIVERED BY P10 2026-07-23** — the "fold in, don't duplicate" instruction taken literally: P10's
+  remap table IS this table (turret→rifle, heavy→mining laser, trap→shock stick, repair→welder,
+  drill→drill, processor→generator). MachineIdentityTint silhouette + F10 lamp verified intact on all
+  7 machines. Only deviation: RepairPost uses the welder alone, no `SM_Prop_Med_*` add-on — a single
+  clean actor mesh fit the ArtPlaceholder/fitter model better than compositing two; revisit if the
+  repair post needs more read.
 
 - [x] P20. Break-room / med-bay set piece (the quarters you can't leave — workplace as trap)
   Tag: `[asset-pack: POLYGON Sci-Fi Horror]` | Unity: yes — hub-adjacent iso + FP
@@ -1708,6 +1737,15 @@ Method: capture the Game view in Play mode, judge the frame, fix the single wors
 - [ ] Free lead: Abandoned Factory Lite (Asset Store) — safe mood greys for blockout; not gated, but not queued until visual Now is thin.
 
 ## Agent log (newest first — one line per session: date, task, result, commit)
+
+- 2026-07-23: **P10 (+P19) machine/defense → Synty — DONE, Play-verified.** `RuntimeArtBackfill` remaps
+  drills/processors/power/turrets/traps/repair to Synty weapons+generators via new
+  `SyntyHorrorLoader.LoadActor`; fitter normalises size, MachineIdentityTint silhouette+lamp+plinth
+  intact on all 7. The catch: starter machines had unfitted Kenney placeholders baked in the scene
+  and EnsureArt keeps existing art — added `ArtPlaceholderMarker.sourceModel` so a changed model
+  rebuilds once, then re-baked so the scene stores Synty. Verified the generator core is a real pack
+  emissive, not a broken mat. P19 folded in (its table = P10's). Belts unchanged (no pack conveyor).
+  Re-bake also re-serialised SectorPostFX (harmless churn).
 
 - 2026-07-23: **P18 FP tool viewmodel — DONE, Play-verified.** `PlayerToolViewmodel` parents welder/
   torch/laser models to Camera.main, swaps by tool mode, hides in iso, survives death+respawn. The

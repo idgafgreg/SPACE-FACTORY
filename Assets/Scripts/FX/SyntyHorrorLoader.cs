@@ -16,6 +16,7 @@ public static class SyntyHorrorLoader
     const string BldRoot = PackRoot + "Prefabs/Buildings/";
     public const string PropRoot = PackRoot + "Prefabs/Props/";
     public const string FxRoot = PackRoot + "Prefabs/FX/";
+    public const string WeaponRoot = PackRoot + "Prefabs/Weapons/";
     const string ResourcesRoot = "SyntyHorror/";
 
     /// <summary>Static wall-hugging growth clusters (A10 encroachment).</summary>
@@ -212,6 +213,20 @@ public static class SyntyHorrorLoader
         return Load(FxRoot + prefabFileName);
     }
 
+    /// <summary>
+    /// P10 — a machine/defense "actor" mesh, which the pack scatters across two
+    /// folders: the generators and consoles live under Props, the drill, welder,
+    /// mining laser, rifle and shock stick under Weapons. Callers name a prefab and
+    /// this finds it in either, so the <see cref="RuntimeArtBackfill"/> remap table
+    /// does not have to track which folder each one came from.
+    /// </summary>
+    public static GameObject LoadActor(string prefabFileName)
+    {
+        if (string.IsNullOrEmpty(prefabFileName)) return null;
+        if (!prefabFileName.EndsWith(".prefab")) prefabFileName += ".prefab";
+        return Load(WeaponRoot + prefabFileName) ?? Load(PropRoot + prefabFileName);
+    }
+
     public static GameObject Load(string assetPath)
     {
         if (string.IsNullOrEmpty(assetPath)) return null;
@@ -228,6 +243,7 @@ public static class SyntyHorrorLoader
             : assetPath.Contains("/Props/") ? "Props/"
             : assetPath.Contains("/Buildings/") ? "Buildings/"
             : assetPath.Contains("/FX/") ? "FX/"
+            : assetPath.Contains("/Weapons/") ? "Weapons/"
             : "";
         return Resources.Load<GameObject>(ResourcesRoot + folder + file);
     }
