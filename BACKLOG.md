@@ -196,10 +196,10 @@ Parked until Gate: OPEN. Commit-sized; bible-aligned; no code until sounds exist
 
 | | |
 |--|--|
-| **Next task** | **P18** — Player tool viewmodels from Synty weapons (FP held tool) |
+| **Next task** | **P10** — Machine + defense ArtPlaceholder → Synty (Phase C; unblocks P19) |
 | **Command** | `/auto-dev` (Unity MCP preferred; else mark `[?]` for `/unity-pass`) |
 | **Why** | Cleanup **C1–C7** done. Pack skin **P0–P6**, Phase B clutter **P7–P9**, and story **P16** all shipped and in-editor reviewed (2026-07-22). Asset pack gate **OPEN**. Owner rule: conversion still **jumps F11–F14** until the ship reads Synty. Phase E is the next open slice. |
-| **After P18** | Phase E is then clear. Phase C: **P10** (unblocks **P19**) → **P11** → **P14**, then **P12**/**P13** (retarget/author poses). |
+| **Phase E done** | P7–P9, P16–P18, P20, P21 all shipped. Remaining is Phase C: **P10** (unblocks **P19**) → **P11** → **P14**, then **P12**/**P13** (retarget/author poses — Decision 2026-07-22). |
 | **Dressing a hand-authored scene** | Runtime dressers do **not** run here (`SectorAuthoring` skips `AddGeometryDressing`). Implement `ISceneDresser`, then add a thin menu item calling `SceneDressingBake.Run<T>` — see `PersonalEffectsBake.cs` / `BreakRoomBake`. Register the component in `AddGeometryDressing` too, for generated sectors. |
 | **Skip** | `[wait-until-sounds]` (audio gate **CLOSED**). `[!] P19` until P10. **P22** deferred (VoidHull). Lore **L\*** only if a human/groom pulls one up. |
 | **P12 / P13** | Unblocked for when Phase C is due — must **retarget/author poses** (Decision 2026-07-22); no T-pose drop-ins. |
@@ -720,7 +720,7 @@ fog all check out, enumerate renderers along the sight line before touching anyt
   and a fourth read pure black because it was a downward view of unlit deck — the desks are in fact
   lit by the nest lamp at 3.0 m plus hub flood and corridor sources). Console clean.
 
-- [ ] P18. Player tool viewmodels from Synty weapons (fulfils F13's "held tool" half with pack art)
+- [x] P18. Player tool viewmodels from Synty weapons (fulfils F13's "held tool" half with pack art)
   Tag: `[asset-pack: POLYGON Sci-Fi Horror]` | Unity: yes — FP each mode; iso unaffected
   Change: FP-only held viewmodel that swaps with `FPCrosshair` mode — repair → `SM_Wep_Welder_01` /
   `SM_Wep_Wrench_01`, build → `SM_Wep_Blow_Torch_01` / `SM_Wep_Drill_01`, weapon →
@@ -729,6 +729,25 @@ fog all check out, enumerate renderers along the sight line before touching anyt
   a marine). Coordinate with F13 so they don't both add a viewmodel.
   done-when: FP — the held tool matches the active mode and does not clip the near plane through a
   death+respawn; Play (iso) — nothing added to the body; console clean
+  **DONE 2026-07-23 (`PlayerToolViewmodel.cs`) — Play-verified.** Pure runtime, no scene change:
+  the component sits on the player (reads tool state) but parents its models to `Camera.main` so
+  they track yaw+pitch, and hides the root entirely in iso (rootActive=False verified). One model
+  per mode — welder (repair), blow torch (build), mining laser (weapon) — picked from
+  `HasSelection||DemolishMode → build`, `RepairHeld → repair`, else weapon. F13 is deferred, so this
+  owns the viewmodel; `IsViewmodel()` is the shared guard F13 must respect if it ever adds one.
+  Chose the industrial trio over rifle/shock-stick for "tired worker, not marine"; added a public
+  `RepairHeld` to `PlayerRepairTool` since repair mode had no readable signal.
+  Each model is centred on the hand by measured bounds then per-tool oriented/scaled — the pack's
+  weapons split long-Z (welder/laser) vs long-Y (torch) and span 0.49–1.62 m, so a shared transform
+  would not work; longest dim normalised into the hand, nothing fills the screen.
+  **The real bug: the FP camera is a child of the player, so all three "hide every renderer under
+  the player" loops — `PlayerBodyVisibility`, `PlayerArtAttach.HideCapsule`, and the
+  `PlayerController` death AND respawn loops — swept the camera-parented viewmodel in and blanked
+  it** (first render showed nothing despite the model being in-frustum). All four sites now skip
+  `PlayerToolViewmodel.IsViewmodel`; `FindAuthoredBody` also skips `FPHeadAnchor` so a tool mesh is
+  never mistaken for the player body. Verified: correct model per mode (live-switched via a held
+  build selection → blow torch), near dist 0.53–0.56 m vs 0.30 near clip, survives a lethal
+  `TakeDamage`+respawn still visible, hidden in iso, console clean.
 
 - [!] P19. **BLOCKED on P10** — enriches a `RuntimeArtBackfill` remap that does not exist yet. Do P10 first.
   Enrich P10 actor meshes with Synty weapons + generators (defense/machine identity)
@@ -1689,6 +1708,14 @@ Method: capture the Game view in Play mode, judge the frame, fix the single wors
 - [ ] Free lead: Abandoned Factory Lite (Asset Store) — safe mood greys for blockout; not gated, but not queued until visual Now is thin.
 
 ## Agent log (newest first — one line per session: date, task, result, commit)
+
+- 2026-07-23: **P18 FP tool viewmodel — DONE, Play-verified.** `PlayerToolViewmodel` parents welder/
+  torch/laser models to Camera.main, swaps by tool mode, hides in iso, survives death+respawn. The
+  fight was visibility: the FP camera is a child of the player, so four "hide renderers under player"
+  loops (PlayerBodyVisibility, PlayerArtAttach.HideCapsule, PlayerController death + respawn) blanked
+  the camera-parented viewmodel — all now skip a shared `IsViewmodel` guard, and FindAuthoredBody
+  skips FPHeadAnchor. Models centred on the hand by measured bounds (pack weapons split long-Z/long-Y,
+  0.49–1.62 m). Added public RepairHeld to PlayerRepairTool. No scene change (pure runtime).
 
 - 2026-07-23: **P21 pack FX accents — DONE, Play-verified; closes P15 too.** `SyntyAmbientFx` on a
   dedicated `SyntyFxRoot` child: steady dust + nest smoke, gated tap arcs / machine steam / ground

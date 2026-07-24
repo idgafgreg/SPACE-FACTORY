@@ -43,6 +43,11 @@ public class PlayerBodyVisibility : MonoBehaviour
             foreach (var r in root.GetComponentsInChildren<Renderer>(true))
             {
                 if (r == null || !r.enabled) continue;
+                // The FP camera is parented under the player's head anchor in first
+                // person, so its children — the P18 held-tool viewmodel — are swept
+                // in by GetComponentsInChildren even though they are not body art.
+                // Hiding them would blank the very thing FP is meant to show.
+                if (PlayerToolViewmodel.IsViewmodel(r.transform)) continue;
                 if (!_hidden.Contains(r)) _hidden.Add(r);
                 r.enabled = false;
             }

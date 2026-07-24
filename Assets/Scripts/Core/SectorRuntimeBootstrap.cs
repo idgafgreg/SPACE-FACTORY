@@ -204,6 +204,10 @@ public static class SectorRuntimeBootstrap
                 player.gameObject.AddComponent<PlayerBodyVisibility>();
             if (player.GetComponent<PlayerBodyAim>() == null)
                 player.gameObject.AddComponent<PlayerBodyAim>();
+            // P18: FP held-tool viewmodel. On the player (reads the tool state), but
+            // it parents its models to Camera.main itself.
+            if (player.GetComponent<PlayerToolViewmodel>() == null)
+                player.gameObject.AddComponent<PlayerToolViewmodel>();
         }
 
         var cam = Camera.main;

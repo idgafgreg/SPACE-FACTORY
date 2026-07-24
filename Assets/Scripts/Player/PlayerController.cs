@@ -118,9 +118,12 @@ public class PlayerController : MonoBehaviour
         FloatingText.Spawn(transform.position + Vector3.up * 2f, "DOWN",
             new Color(0.7f, 0.45f, 1f), 1.4f);
 
-        // Hide all renderers on the player
+        // Hide all renderers on the player. The FP held-tool viewmodel is skipped:
+        // it lives under the camera (a child of the player in FP) and owns its own
+        // visibility, so toggling renderer.enabled here would leave it dark after
+        // respawn — the respawn re-show loop below deliberately skips it too.
         foreach (var r in GetComponentsInChildren<Renderer>())
-            r.enabled = false;
+            if (!PlayerToolViewmodel.IsViewmodel(r.transform)) r.enabled = false;
 
         yield return new WaitForSeconds(respawnDelay);
 
@@ -137,6 +140,9 @@ public class PlayerController : MonoBehaviour
         foreach (var r in GetComponentsInChildren<Renderer>(true))
         {
             if (r == null) continue;
+            // The FP held-tool viewmodel lives under the camera, a child of the
+            // player in first person; respawn must not blank it.
+            if (PlayerToolViewmodel.IsViewmodel(r.transform)) continue;
             bool underArt = art != null && (r.transform == art || r.transform.IsChildOf(art));
             bool blob = r.name.Contains("BlobShadow");
             r.enabled = underArt || blob;

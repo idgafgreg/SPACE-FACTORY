@@ -98,9 +98,13 @@ public class PlayerArtAttach : MonoBehaviour
             if (child == null) continue;
             if (child.name == "ArtPlaceholder") continue;
             if (child.name.Contains("BlobShadow") || child.name.Contains("Light")) continue;
+            // The FP head anchor holds the camera and the held-tool viewmodel in
+            // first person; a tool mesh there is not the player's body.
+            if (child.name == "FPHeadAnchor") continue;
 
             foreach (var r in child.GetComponentsInChildren<Renderer>(true))
-                if (!RuntimeArtBackfill.IsProxyRenderer(r)) return child;
+                if (!RuntimeArtBackfill.IsProxyRenderer(r) && !PlayerToolViewmodel.IsViewmodel(r.transform))
+                    return child;
         }
         return null;
     }
@@ -115,6 +119,9 @@ public class PlayerArtAttach : MonoBehaviour
         foreach (var r in GetComponentsInChildren<Renderer>(true))
         {
             if (r == null) continue;
+            // Never touch the FP held-tool viewmodel — it lives under the camera,
+            // which is a child of the player in first person.
+            if (PlayerToolViewmodel.IsViewmodel(r.transform)) continue;
             if (r.transform == art || r.transform.IsChildOf(art))
             {
                 // FP: hide the astronaut body too (near-plane clipping).

@@ -34,11 +34,18 @@ public class PlayerRepairTool : MonoBehaviour
         if (!resourceInventory) resourceInventory = ResourceInventory.Instance;
     }
 
+    /// <summary>
+    /// True while the repair input is held this frame. Read by the FP viewmodel
+    /// (P18) so the held tool shows the welder while repairing; nothing else needs
+    /// to know, so it is a plain per-frame flag rather than an event.
+    /// </summary>
+    public bool RepairHeld { get; private set; }
+
     void Update()
     {
-        bool held = Input.GetKey(repairKey)
+        RepairHeld = Input.GetKey(repairKey)
                  || (repairOnRightMouse && Input.GetMouseButton(1));
-        if (held) TryRepair();
+        if (RepairHeld) TryRepair();
     }
 
     void TryRepair()
