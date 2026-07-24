@@ -196,10 +196,10 @@ Parked until Gate: OPEN. Commit-sized; bible-aligned; no code until sounds exist
 
 | | |
 |--|--|
-| **Next task** | **P11** — Hub + Workshop landmark meshes (Phase C) |
+| **Next task** | **P14** — Build Resources mirrors + Shader Graph verify (Phase C) |
 | **Command** | `/auto-dev` (Unity MCP preferred; else mark `[?]` for `/unity-pass`) |
 | **Why** | Cleanup **C1–C7** done. Pack skin **P0–P6**, Phase B clutter **P7–P9**, and story **P16** all shipped and in-editor reviewed (2026-07-22). Asset pack gate **OPEN**. Owner rule: conversion still **jumps F11–F14** until the ship reads Synty. Phase E is the next open slice. |
-| **Phase E done** | P7–P9, P16–P18, P20, P21 shipped. Phase C started: **P10 + P19** done. Remaining: **P11** → **P14**, then **P12**/**P13** (retarget/author poses — Decision 2026-07-22). |
+| **Phase E done** | P7–P9, P16–P18, P20, P21 shipped. Phase C: **P10 + P19 + P11** done. Remaining: **P14**, then **P12**/**P13** (retarget/author poses — Decision 2026-07-22). |
 | **Dressing a hand-authored scene** | Runtime dressers do **not** run here (`SectorAuthoring` skips `AddGeometryDressing`). Implement `ISceneDresser`, then add a thin menu item calling `SceneDressingBake.Run<T>` — see `PersonalEffectsBake.cs` / `BreakRoomBake`. Register the component in `AddGeometryDressing` too, for generated sectors. |
 | **Skip** | `[wait-until-sounds]` (audio gate **CLOSED**). **P22** deferred (VoidHull). Lore **L\*** only if a human/groom pulls one up. |
 | **P12 / P13** | Unblocked for when Phase C is due — must **retarget/author poses** (Decision 2026-07-22); no T-pose drop-ins. |
@@ -579,12 +579,22 @@ Without it, mats may pink; runtime falls back to Standard albedo when Error.
   Note: the re-bake also re-serialised `SectorPostFX.asset` (identical values, new sub-asset ids) —
   harmless churn from reusing GameplayArtBake. P19 (below) is delivered by this same change.
 
-- [ ] P11. Hub + Workshop landmark meshes
+- [x] P11. Hub + Workshop landmark meshes
   Tag: `[asset-pack: POLYGON Sci-Fi Horror]`
   Unity: yes — CommandHub + Workshop
   Change: replace hub fortified blob / workshop computer with Synty console/kiosk/cockpit-scale
   pieces (`SM_Bld_Cockpit_01`, kiosks, consoles).
   done-when: landmarks read horror-industrial; nest still readable beside hub
+  **DONE 2026-07-23 — verify-and-close, no asset change (owner instruction: "don't change the assets
+  for hub and workshop").** The mesh swap this task asks for was already completed during scene
+  authoring: the CommandHub is `SM_Prop_Supercomputer_01` (tower + red **Eye** + Orb) and the Workshop
+  is `SM_Prop_Console_03` (terminal + green SYNCOMM radar screen), both wired through
+  `SectorLayout.commandHubTransform` / `workshopTransform` and correctly detected as authored art by
+  `RuntimeArtBackfill.HasAuthoredArt` (so no Kenney blob is drawn over them). Verified both done-when
+  clauses in play: hub reads as a looming horror-industrial monolith with a watching eye, workshop as
+  a lit console; the shift nest (desk, chairs, lit doorway) is clearly readable beside the hub.
+  Rendered both from the hub and workshop vantages — captures confirm it. No mesh, code, or scene
+  change made; the landmarks were already the target Synty pieces and the owner asked to leave them.
 
 - [ ] P12. Player character → Synty suit (**retarget / author poses** — Decision 2026-07-22)
   Tag: `[asset-pack: POLYGON Sci-Fi Horror]`
@@ -1737,6 +1747,12 @@ Method: capture the Game view in Play mode, judge the frame, fix the single wors
 - [ ] Free lead: Abandoned Factory Lite (Asset Store) — safe mood greys for blockout; not gated, but not queued until visual Now is thin.
 
 ## Agent log (newest first — one line per session: date, task, result, commit)
+
+- 2026-07-23: **P11 hub/workshop landmarks — DONE, verify-and-close.** Owner said don't change the
+  hub/workshop assets; they were already the target Synty pieces from scene authoring (hub =
+  SM_Prop_Supercomputer_01 with red eye, workshop = SM_Prop_Console_03 with green radar). Verified
+  both done-when clauses in play (landmarks read horror-industrial, nest readable beside hub) via
+  rendered captures. No mesh/code/scene change. BACKLOG-only commit.
 
 - 2026-07-23: **P10 (+P19) machine/defense → Synty — DONE, Play-verified.** `RuntimeArtBackfill` remaps
   drills/processors/power/turrets/traps/repair to Synty weapons+generators via new
