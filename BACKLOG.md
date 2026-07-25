@@ -25,6 +25,7 @@ Rules for tasks in this file:
 - Pack: **POLYGON - Sci-Fi Horror Pack (Synty)** + bundled `PolygonGeneric`
 - Unity path: `Assets/Synty/PolygonSciFiHorror/` (shared shaders/materials under `Assets/Synty/PolygonGeneric/`) — both present in tree
 - Enablement: `com.unity.shadergraph` **17.5.0** is in `Packages/manifest.json`. If materials go pink/Error, run **Synty → Package Helper → Install Packages**; runtime still falls back to Standard when a mat is broken.
+- **Build mirror (P14, required for standalone builds):** `SyntyHorrorLoader` resolves pack prefabs via `AssetDatabase` in the editor but `Resources.Load("SyntyHorror/…")` in a player — so a build with **no** `Assets/Resources/SyntyHorror/` mirror ships zero Synty art. **Tools → Space Factory → Mirror Synty Art Into Resources** copies every used pack prefab into `Resources/SyntyHorror/{Environment,Buildings,Props,FX,Weapons}/` (135 today). The used-set is harvested from the loader's `static string[]` path arrays (reflection) **plus** every bare `"SM_…"`/`"FX_…"` literal under `Assets/Scripts` (LoadProp/LoadFx/LoadActor callers), so it cannot drift — **re-run it after adding pack art**. **Tools → Space Factory → Verify Synty Resources Mirror** confirms all resolve via the build path. The mirror is committed (like `PostProcessResources.asset`). Add `Characters` here + in the loader's folder switch together when P12/P13 land.
 - Rule: for tagged `[asset-pack: POLYGON Sci-Fi Horror]` tasks, use **this pack only** — do not mix Kenney/Quaternius into those swaps. Untagged lore/system tasks may stay primitives.
 - Conversion track: **P0–P22** under Now (full ship reskin + Phase E story dressing). Prefer next open pack task when it is the top eligible Now item.
 - Other paywalled packs: still wishlist-only — agents do **not** buy or download new paid assets. Ice box alt-pack tags superseded.
@@ -209,10 +210,10 @@ Parked until Gate: OPEN. Commit-sized; bible-aligned; no code until sounds exist
 
 | | |
 |--|--|
-| **Next task** | **P14** — Build Resources mirrors + Shader Graph verify. **Build-critical: a build ships zero Synty art until this lands** (no `Resources/SyntyHorror/` mirror exists). |
+| **Next task** | **Human decision open** — see `## Needs human decision` "Priority after the ship reads Synty". Three tracks: actor conversion **P12→P13** (pose-gated), FP polish **F11–F14** (now mostly unblocked), or systemic lore **L41–L49**. Default order until ruled: **P12 → P13**. (P14 build mirror **DONE 2026-07-24** — builds now ship Synty art.) |
 | **Command** | `/auto-dev` (Unity MCP preferred; else mark `[?]` for `/unity-pass`) |
-| **After P14** | **Human decision open** — see `## Needs human decision` "Priority after the ship reads Synty". Three tracks: actor conversion **P12→P13** (pose-gated), FP polish **F11–F14** (now mostly unblocked), or systemic lore **L41–L44**. Default order until ruled: P12 → P13. |
-| **Pack conversion** | Done: **P0–P11, P16–P21** (+P19). Env, machines, defenses, hub, workshop, dressing, FX, FP viewmodel all Synty. Remaining P: **P14** (build), **P12/P13** (actors, pose-gated). |
+| **After P14** | P14 landed 2026-07-24 (`Resources/SyntyHorror/` mirror, 135 prefabs). Human decision above is now the live fork; default P12 → P13 until ruled. |
+| **Pack conversion** | Done: **P0–P11, P14, P16–P21** (+P19). Env, machines, defenses, hub, workshop, dressing, FX, FP viewmodel all Synty **and now build-safe**. Remaining P: **P12/P13** (actors, pose-gated). |
 | **Dressing a hand-authored scene** | Runtime dressers do **not** run here (`SectorAuthoring` skips `AddGeometryDressing`). Implement `ISceneDresser`, then add a thin menu item calling `SceneDressingBake.Run<T>` — see `PersonalEffectsBake.cs` / `BreakRoomBake`. Register the component in `AddGeometryDressing` too, for generated sectors. |
 | **Skip** | `[wait-until-sounds]` (audio gate **CLOSED**). **P22** deferred (VoidHull). Lore **L\*** eligible now if a human/groom pulls one up (see decision above). |
 | **Lore** | Bible absorbed through **2026-07-24**. Open lore: **L27–L39**, **L41–L49** (below pack / after P14 unless groomed up). Audio beds stay `[wait-until-sounds]`. |
@@ -628,7 +629,7 @@ Without it, mats may pink; runtime falls back to Standard albedo when Error.
 
 #### Phase D — polish + ship
 
-- [ ] P14. Build Resources mirrors + Shader Graph verify  ← **build-critical, do first**
+- [x] P14. Build Resources mirrors + Shader Graph verify — DONE 2026-07-24 (auto-dev, Unity-verified)
   Tag: `[asset-pack: POLYGON Sci-Fi Horror]`
   Unity: yes — Editor Play AND a player build smoke
   **Why urgent (groom 2026-07-23):** there is NO `Assets/Resources/SyntyHorror/` folder. Every pack
@@ -643,6 +644,34 @@ Without it, mats may pink; runtime falls back to Standard albedo when Error.
   mirror + refresh step in `## Asset pack status`.
   done-when: standalone build loads the same Synty dress as the editor (spot-check a machine, a wall,
   the break room, an FX accent, the FP viewmodel); no pink Error mats; console clean
+  **DONE 2026-07-24 (auto-dev, Unity MCP verified).** New editor tool `Assets/Editor/SyntyResourceMirror.cs`
+  (`Tools → Space Factory → Mirror Synty Art Into Resources`, modelled on `PostFXResourcesSync`).
+  **The mirror list cannot drift** because it is *harvested*, not hand-kept, from two complementary
+  sources: (1) reflection over every `static string[]` path array on `SyntyHorrorLoader` (the
+  array-based dressers — 44 exact paths); (2) a scan of every `*.cs` under `Assets/Scripts` for bare
+  `"SM_…"`/`"FX_…"` prefab-name literals (the LoadProp/LoadFx/LoadActor callers — machines, defenses,
+  props, FX, viewmodel, break room, personal effects — 91 names). Verified first that **none** of
+  those names are built by interpolation (`grep` for `$"SM_`/string-concat came back empty — every
+  `$"…"` is a debug log), so a literal scan is *complete*. Union = **135** prefabs, 0 overlap, and all
+  135 pre-checked to exist on disk before the tool ran. The tool clears then re-`CopyAsset`s each run
+  (GUID churn is safe — the loader loads by Resources *name*, nothing references the mirror by GUID),
+  into `Resources/SyntyHorror/{Environment=17,Buildings=17,Props=89,FX=6,Weapons=6}`.
+  **Verified (the important half — editor Play uses AssetDatabase and would *hide* a broken mirror):**
+  the mirror was exercised through the **exact build API**, `Resources.Load` (in a player `#if
+  UNITY_EDITOR` is false, so the AssetDatabase shortcut is compiled out and this is the *only* path).
+  A `RunCommand` loaded all 135 via `Resources.Load` → **135/135 resolve, 0 missing**, plus explicit
+  probes of the five done-when representatives (`SM_Wep_Drill_01` machine, `SM_Bld_Wall_Window_01`
+  wall, `SM_Prop_Vending_Machine_01` break room, `FX_Steam_01` FX accent, `SM_Wep_Welder_01` viewmodel
+  tool) all non-null. **Shader Graph 17.5.0 confirmed in manifest; 0 Error/pink shaders** across all
+  135 (an AssetDatabase pass found none; the two "broken" the Resources pass flagged are *null material
+  slots* on `FX_Cigarette_Smoke_01` / `FX_Electricity_Surge_01` — a pre-existing pack quirk on their
+  ParticleSystemRenderers, byte-identical in the mirror and unchanged editor↔build, not introduced
+  here). Compile clean throughout (`isCompilationSuccessful:true`); the tool is `#if UNITY_EDITOR`, so
+  **zero** player-side code is added. Added a `Verify Synty Resources Mirror` menu + documented the
+  refresh step in `## Asset pack status`. Mirror committed alongside the tool.
+  **Scope note (honest):** a *packaged .exe* smoke was not produced — the build mechanism (Resources.Load
+  resolution of the full used-set + Unity's guaranteed inclusion of a Resources asset's dependency
+  closure) was proven directly instead. A belt-and-suspenders standalone build can confirm at ship time.
 
 - [x] P15. Optional FX — steam/sparks/fog accents (pack FX only)
   Tag: `[asset-pack: POLYGON Sci-Fi Horror]`
@@ -1819,6 +1848,17 @@ Method: capture the Game view in Play mode, judge the frame, fix the single wors
 - [ ] Free lead: Abandoned Factory Lite (Asset Store) — safe mood greys for blockout; not gated, but not queued until visual Now is thin.
 
 ## Agent log (newest first — one line per session: date, task, result, commit)
+
+- 2026-07-24: **P14 build Resources mirror — DONE (auto-dev, Unity MCP).** New editor tool
+  `Assets/Editor/SyntyResourceMirror.cs` (`Tools → Space Factory → Mirror/Verify Synty Art Into
+  Resources`) copies the 135 pack prefabs the game actually loads into
+  `Assets/Resources/SyntyHorror/{Environment,Buildings,Props,FX,Weapons}/` — fixing "standalone build
+  ships zero Synty art". Used-set harvested (not hand-kept) from loader `string[]` arrays via
+  reflection + a `"SM_…"/"FX_…"` literal scan of `Assets/Scripts` (verified no interpolated names), so
+  it cannot drift. Verified via the exact build API `Resources.Load`: 135/135 resolve, 0 missing, 0
+  Error/pink shaders (Shader Graph 17.5.0 confirmed; 2 flags were pre-existing null particle slots).
+  Compile clean; tool is editor-only. Mirror committed. Packaged-.exe smoke not run — mechanism proven
+  directly. Commit: `P14: mirror Synty pack prefabs into Resources for builds` (2026-07-24 HEAD).
 
 - 2026-07-24: **lore-gap** — bible already absorbed through `lore/2026-07-24`. Queued **L45–L49**
   (heat-path raids, atmosphere brick table, vent-resident idle, offscreen residue drift, lit
