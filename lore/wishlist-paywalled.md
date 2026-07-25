@@ -2,7 +2,7 @@
 
 Assets and tools found during lore research that require purchase. **Do not buy until funded.** Prices are approximate store listing prices at discovery time and may change.
 
-Last updated: 2026-07-24
+Last updated: 2026-07-25
 
 | Priority | Item | Est. price | Link | Why it fits SPACE FACTORY | Notes |
 |----------|------|------------|------|---------------------------|-------|
@@ -10,6 +10,8 @@ Last updated: 2026-07-24
 | High | Modular Horror Kit: Industrial Edition | ~$23 | https://assetstore.unity.com/packages/3d/environments/industrial/modular-horror-kit-industrial-edition-342062 | Cheap industrial horror corridors, traps, creatures, URP | Good prototype kit; Dec 2025 release; URP — convert if still on Built-in |
 | High | Bionic structures | ~$9.90 | https://assetstore.unity.com/packages/3d/environments/bionic-structures-163649 | Low-cost organic outgrowths/cocoons for hive-on-metal kitbash | Added 2026-07-19; URP/HDRP shaders noted on store page |
 | High | Janky Audio | ~$20 | https://assetstore.unity.com/packages/tools/audio/janky-audio-288290 | Occlusion + non-spherical reverb for diegetic PA / vents / lonely decks | Added 2026-07-20; **Built-in compatible** (matches current project RP) |
+| Medium | Wet Stuff | ~$25 | https://assetstore.unity.com/packages/tools/particles-effects/wet-stuff-118969 | Animated wet/puddle/leak-pipe decals without rewriting materials — sticky decks + broken coolant | Added 2026-07-25; **Built-in Deferred cameras only** (not URP/HDRP); try free Yughues Nature oil/stagnant water + Projector first; confirm camera rendering path |
+| Medium | Spillage Decals And Caution Signs | ~$8 | https://assetstore.unity.com/packages/3d/props/spillage-decals-and-caution-signs-161438 | Spill puddle decals + wet-floor/spillage caution boards for workplace authenticity | Added 2026-07-25; earthbound janitorial look — retint; try Warwolf InfoDecals (free itch) + Yughues oil first |
 | Medium | Worn Industrial Surfaces Superpack | ~$9 | https://assetstore.unity.com/packages/2d/textures-materials/worn-industrial-surfaces-superpack-295514 | Oil-stained / greasy / mouldy concrete + corroded pipes + peeling metal for utility-deck wear | Added 2026-07-24; **Built-in Compatible** (Standard PBR); try free Yughues concrete + Real Materials Vol.0 first; publisher notes AI-assisted albedo with manual review |
 | Medium | Sci-Fi Heavy Station Kit control units | ~€9.20 | https://assetstore.unity.com/packages/3d/props/sci-fi-heavy-station-kit-control-units-274253 | Interactive knobs/sliders/panels + wall console for diegetic FP controls | Added 2026-07-23; **Built-in-first** kit; try free Cosmic Retro computer demos first |
 | Medium | Futuristic Industrial Soundscapes | ~$7 | https://assetstore.unity.com/packages/audio/ambient/noise/futuristic-industrial-soundscapes-213106 | Dark factory loops (Haunted_Factory, Machines, The_Hum); machine-lung bed | Added 2026-07-21 noon; try free Industrial Sci-fi Vol. II first |
@@ -33,7 +35,7 @@ Last updated: 2026-07-24
 
 - Prefer **one** environment kit that matches art direction over stacking three similar packs.
 - Project is **Built-in RP** as of 2026-07-20 — prefer Built-in-compatible tools (e.g. Janky Audio) before URP-only packs.
-- Try free modular kits (3D Free Modular Kit, EmaceArt corridors, free catwalks, free pipelines, Pipes FREE Collection), free crates/barrels, free Cosmic Retro computer demos (4-prop + GoldenFrame), MirzaBeig GPU Fog Particles / particle fog DIY, free Industrial Sci-fi Vol. II drones, Unity Audio Mixer snapshots, Unity Particle Pack retints, **Yughues Free Concrete Materials**, and **Real Materials Vol.0** samples before buying corridor, facility, catwalk, fog, industrial SFX, sci-fi crate, console, slime VFX, or worn-surface packs.
+- Try free modular kits (3D Free Modular Kit, EmaceArt corridors, free catwalks, free pipelines, Pipes FREE Collection), free crates/barrels, free Cosmic Retro computer demos (4-prop + GoldenFrame), MirzaBeig GPU Fog Particles / particle fog DIY, free Industrial Sci-fi Vol. II drones, Unity Audio Mixer snapshots, Unity Particle Pack retints, **Yughues Free Concrete Materials**, **Yughues Free Nature Materials** (crude oil / stagnant water), **Warwolf InfoDecals** (itch PWYW), and **Real Materials Vol.0** samples before buying corridor, facility, catwalk, fog, industrial SFX, sci-fi crate, console, slime VFX, worn-surface, wet-decal, or caution-sign packs.
 - Skip URP-only hollow/walkable pipe kits (e.g. LowPoly Modular Pipes Standard Pack) while the project stays on Built-in.
 - Skip HDRP-only rust/stain decal packs (e.g. Rust Stain Decal Pack Vol. 11) while the project stays on Built-in; prefer free materials + Built-in Projector workflow.
 - Prefer cheap biomass kitbash (**Bionic structures**) before $50+ infestation packs if only prototyping growth props.

@@ -8,11 +8,11 @@ Rolling map of useful themes. Updated by daily research runs.
 
 | Pillar | What to mine | Status |
 |--------|----------------|--------|
-| Workplace as trap | Isolation baked into the job, not contrived lockdown | Strong — authenticity 07-19; protocol/rules-as-threat 07-22; oversized empty plant 07-23; **grim overtime without comedy (Frostpunk tone)** 2026-07-24 |
-| Industrial biomass / hive | Threat uses vents, heat, logistics; ship becomes habitat | Upgraded 07-20 Flood staging; **Carrion vent/fissure habitat grammar (player stays worker)** + **biters-path-to-source logistics vectors** 2026-07-24 |
-| Factory pressure = identity | Enemies tied to production loop (Factorio pollution lesson) | Strong; WaveFuel vs HiveDebt 07-23; **path-to-hottest-machine + foothold absorption caps (FFF #283)** 2026-07-24 |
-| Diegetic dread | Diegetic UI, failing systems, environmental storytelling | Upgraded 07-20; Mixer EQ 07-22; delayed scanner 07-23; **DS remake atmosphere bricks / false scares (spawn-optional)** 2026-07-24 |
-| Lonely worker fantasy | Rustic space labor, patched ship, schedule vs survival | Strong — recovery beats; dual view; distant-signal 07-22; absent-crew 07-23; **purposeless still-running factory + closed-deck power notes** 2026-07-24 |
+| Workplace as trap | Isolation baked into the job, not contrived lockdown | Strong — authenticity 07-19; protocol/rules-as-threat 07-22; oversized empty plant 07-23; grim overtime 07-24; **cheerful debt-PA / asset write-off texture** 2026-07-25 |
+| Industrial biomass / hive | Threat uses vents, heat, logistics; ship becomes habitat | Upgraded 07-20 Flood staging; Carrion habitat + path-to-source 07-24; **noise/interest pull + light-averse wall-forms (Bunker)** 2026-07-25 |
+| Factory pressure = identity | Enemies tied to production loop (Factorio pollution lesson) | Strong; WaveFuel/HiveDebt 07-23; path-to-hottest + foothold caps 07-24; **layered closed-loop ripples (ONI) + expansion/breach cascade (TAB careful)** 2026-07-25 |
+| Diegetic dread | Diegetic UI, failing systems, environmental storytelling | Upgraded 07-20; Mixer EQ 07-22; delayed scanner 07-23; atmosphere bricks 07-24; **tangible power/fuel clock + empty HUD / Signalis dual-view** 2026-07-25 |
+| Lonely worker fantasy | Rustic space labor, patched ship, schedule vs survival | Strong — recovery beats; dual view; distant-signal 07-22; absent-crew 07-23; purposeless factory 07-24; **refuel/repair as calm-labor valley** 2026-07-25 |
 
 ## Comp watchlist
 
@@ -24,6 +24,11 @@ Rolling map of useful themes. Updated by daily research runs.
 - System Shock / Citadel (corporate bureaucracy station — apparatus dread)
 - Left 4 Dead AI Director (**soft intensity valleys** — pace frequency, not HP)
 - Carrion (**hive uses plant infrastructure** — steal habitat; refuse reverse-horror loop)
+- Amnesia: The Bunker (**tangible generator/light clock + noise interest** — adjacent FP habitat dread)
+- Oxygen Not Included (**layered closed-loop failure** — adjacent; not colony-sim)
+- They Are Billions (**expansion risk / breach cascade** — careful; anti tower-defense)
+- Against the Storm (**growth Hostility** — light only; no Queen meters)
+- SIGNALIS (**empty HUD / diegetic systems UI** — dual iso↔FP lesson)
 - Rain World (offscreen ecology / geometry-as-AI — light)
 - Frostpunk (grim labor sacrifice tone — adjacent; not city-builder)
 - Iron Lung (suggestion / sealed workplace / delayed vision — adjacent FP mood)
@@ -59,8 +64,8 @@ Paid + free lore asset leads export to [`assets-wishlist.csv`](assets-wishlist.c
 
 ## Last run
 
-- Date: 2026-07-24
+- Date: 2026-07-25
 - Landed on: `main`
-- Focus weight: Factorio path-to-pollution-source + foothold absorption caps; Carrion vent habitat grammar (refuse reverse-horror); DS remake Intensity Director atmosphere bricks / false scares (distinct from L4D valleys); Frostpunk grim tone; Rain World offscreen ecology (light); free Yughues concrete + Real Materials samples; wishlist Worn Industrial Surfaces (~$9 Built-in); skip HDRP-only rust decals
-- Prior run: 2026-07-23 (L4D valleys / Factorio fuel-vs-evolution / Iron Lung / Annihilation / Obra Dinn)
-- Render pipeline note: project currently **Built-in** (prefer Built-in-compatible kits)
+- Focus weight: Amnesia Bunker tangible light/fuel clock + noise interest; ONI layered closed-loop ripples; They Are Billions expansion/breach cascade (anti-TD); Against the Storm Hostility (light); Signalis empty HUD / dual-view diegesis; free Yughues Nature oils + Warwolf InfoDecals; wishlist Wet Stuff (~$25 Deferred) + Spillage Decals (~$8)
+- Prior run: 2026-07-24 (Factorio path-to-source / Carrion habitat / DS Intensity bricks / Frostpunk tone)
+- Render pipeline note: project currently **Built-in** (prefer Built-in-compatible kits; Wet Stuff needs Deferred cameras)
