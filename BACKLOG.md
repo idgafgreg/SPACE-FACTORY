@@ -210,10 +210,10 @@ Parked until Gate: OPEN. Commit-sized; bible-aligned; no code until sounds exist
 
 | | |
 |--|--|
-| **Next task** | **Human decision open** — see `## Needs human decision` "Priority after the ship reads Synty". Three tracks: actor conversion **P12→P13** (pose-gated), FP polish **F11–F14** (now mostly unblocked), or systemic lore **L41–L49**. Default order until ruled: **P12 → P13**. (P14 build mirror **DONE 2026-07-24** — builds now ship Synty art.) |
+| **Next task** | **P13** — enemy meshes → Synty alien/zub, same pose problem as P12. **Reuse P12's solution:** pose in code via a runtime hook (see `PlayerArtAttach.EnsureIdlePose`), do **not** bake bone-overrides into `Sector01` (it rewrites the hand-authored sector's runtime dressing). Then the **human decision** below is the live fork (FP polish **F11–F14** or systemic lore **L41–L49**). |
 | **Command** | `/auto-dev` (Unity MCP preferred; else mark `[?]` for `/unity-pass`) |
-| **After P14** | P14 landed 2026-07-24 (`Resources/SyntyHorror/` mirror, 135 prefabs). Human decision above is now the live fork; default P12 → P13 until ruled. |
-| **Pack conversion** | Done: **P0–P11, P14, P16–P21** (+P19). Env, machines, defenses, hub, workshop, dressing, FX, FP viewmodel all Synty **and now build-safe**. Remaining P: **P12/P13** (actors, pose-gated). |
+| **P12/P14 done** | P14 build mirror (2026-07-24, 135 prefabs) + P12 player idle-pose (2026-07-24, runtime `FromToRotation`) both landed. Builds ship Synty art; the player no longer stands in a T-pose. |
+| **Pack conversion** | Done: **P0–P12, P14, P16–P21** (+P19). Env, machines, defenses, hub, workshop, dressing, FX, FP viewmodel, **player actor** all Synty **and build-safe**. Remaining P: **P13** (enemies, pose-gated — reuse P12's runtime-pose approach). |
 | **Dressing a hand-authored scene** | Runtime dressers do **not** run here (`SectorAuthoring` skips `AddGeometryDressing`). Implement `ISceneDresser`, then add a thin menu item calling `SceneDressingBake.Run<T>` — see `PersonalEffectsBake.cs` / `BreakRoomBake`. Register the component in `AddGeometryDressing` too, for generated sectors. |
 | **Skip** | `[wait-until-sounds]` (audio gate **CLOSED**). **P22** deferred (VoidHull). Lore **L\*** eligible now if a human/groom pulls one up (see decision above). |
 | **Lore** | Bible absorbed through **2026-07-24**. Open lore: **L27–L39**, **L41–L49** (below pack / after P14 unless groomed up). Audio beds stay `[wait-until-sounds]`. |
@@ -612,13 +612,36 @@ Without it, mats may pink; runtime falls back to Standard albedo when Error.
   Rendered both from the hub and workshop vantages — captures confirm it. No mesh, code, or scene
   change made; the landmarks were already the target Synty pieces and the owner asked to leave them.
 
-- [ ] P12. Player character → Synty suit (**retarget / author poses** — Decision 2026-07-22)
+- [x] P12. Player character → Synty suit — DONE 2026-07-24 (auto-dev, Unity-verified in play)
   Tag: `[asset-pack: POLYGON Sci-Fi Horror]`
   Unity: yes — iso body + FP no self-clip
   Change: `PlayerArtAttach` uses `SM_Chr_Space_Suit_*` or `SM_Chr_Mining_Suit_01`; keep FP hide.
   Pack ships T-pose bind poses — **retarget clips from an existing locomotion rig or author
   idle/walk poses** before enabling the swap. No naked T-pose in Play.
   done-when: iso shows Synty suit with non-T-pose idle/locomotion; FP clean; fitter heights ok
+  **DONE 2026-07-24 (auto-dev, Unity MCP verified in play).** The model swap was already authored —
+  the scene parents `SM_Chr_Space_Suit_01_M` on the Player — but the pack ships that rig in a bind
+  **T-pose**, which is the "static bind pose" the groom flagged. The game has **no animation system**
+  (0 `.anim` clips project-wide; the only `Animator` reference in code is the one that *disables*
+  animators), so "retarget clips" was moot; per the 2026-07-22 Decision's permitted alternative I
+  **authored a resting idle pose**. Because the rig is skinned, no clip is needed — posing the shoulder
+  bones once holds.
+  Implemented in **code**, not baked into the scene: `PlayerArtAttach.EnsureIdlePose` (PlayerArtAttach
+  is runtime-added by `SectorRuntimeBootstrap` and owns the body art) aims each upper arm "down and
+  slightly out" in the body's own frame with a single `Quaternion.FromToRotation` — **rig-agnostic**
+  (the pack's `Shoulder_L/R` local axes are twisted, so a naive world-Z rotation raised/twisted the
+  arm instead of lowering it; `FromToRotation` sidesteps axis-guessing) and orientation-independent.
+  Guarded to run **once per body** (no compounding across the 0.5s tick or after a respawn); a no-op on
+  the Kenney astronaut fallback (no arm bones).
+  **Why code, not a scene/prefab edit (important for the next agent):** the source prefab is a shared
+  *pack* asset, and baking bone-overrides into `Sector01` and saving re-serialises the hand-authored
+  sector and **rewrites its runtime-baked dressing** (`SectorPlaques` objects, a moved transform, a
+  dropped material keyword — observed and reverted). Posing in code touches **no** scene or pack file.
+  Verified in play: `PlayerArtAttach` runtime-added, `Shoulder_L` Z 4.1→72.1 (single, not compounded),
+  iso game-camera capture shows the suit standing **arms-down** on the deck (front + back). FP hide and
+  fitter/height paths untouched (feet grounded). Console clean (0 errors); **only `PlayerArtAttach.cs`
+  changed** (+53). Edit-mode preview needed `forceMatrixRecalculationPerRender` to show the pose (a
+  known editor-only SkinnedMeshRenderer quirk); runtime skinning reflects it without any flag.
 
 - [ ] P13. Enemy meshes → Synty alien / zub (**retarget / author poses** — Decision 2026-07-22)
   Tag: `[asset-pack: POLYGON Sci-Fi Horror]`
@@ -1848,6 +1871,17 @@ Method: capture the Game view in Play mode, judge the frame, fix the single wors
 - [ ] Free lead: Abandoned Factory Lite (Asset Store) — safe mood greys for blockout; not gated, but not queued until visual Now is thin.
 
 ## Agent log (newest first — one line per session: date, task, result, commit)
+
+- 2026-07-24: **P12 player Synty suit idle-pose — DONE (auto-dev, Unity MCP, verified in play).**
+  Model swap was already authored (`SM_Chr_Space_Suit_01_M` on Player) but shipped in a bind T-pose;
+  game has no animation system (0 `.anim` clips), so per the 2026-07-22 Decision I authored a static
+  idle instead of retargeting. Posed in **code** — `PlayerArtAttach.EnsureIdlePose` (runtime-added by
+  `SectorRuntimeBootstrap`) drops each arm via a rig-agnostic `Quaternion.FromToRotation`, once per
+  body (guarded, no compounding), no-op on the astronaut fallback. Chose code over scene/prefab edit
+  because baking bone-overrides into `Sector01` and saving rewrites the sector's runtime-baked dressing
+  (plaques/material) — reverted that contamination. Verified in play: arms-down in the iso game camera
+  (front+back), FP hide/fitter untouched, console clean, **only `PlayerArtAttach.cs` changed** (+53).
+  Commit: `P12: pose the player Synty suit out of its T-pose at runtime` (2026-07-24 HEAD).
 
 - 2026-07-24: **P14 build Resources mirror — DONE (auto-dev, Unity MCP).** New editor tool
   `Assets/Editor/SyntyResourceMirror.cs` (`Tools → Space Factory → Mirror/Verify Synty Art Into

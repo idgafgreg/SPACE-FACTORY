@@ -19,6 +19,9 @@ public class PlayerArtAttach : MonoBehaviour
 
     float _nextCheck;
 
+    /// <summary>The body whose arms have already been dropped out of the T-pose.</summary>
+    Transform _posedBody;
+
     void Update()
     {
         if (Time.unscaledTime < _nextCheck) return;
@@ -49,6 +52,7 @@ public class PlayerArtAttach : MonoBehaviour
         var authored = FindAuthoredBody(transform);
         if (authored != null)
         {
+            EnsureIdlePose(authored);
             HideCapsule(authored);
             return;
         }
@@ -78,6 +82,55 @@ public class PlayerArtAttach : MonoBehaviour
 
         HideCapsule(art.transform);
         ArtPlaceholderFitter.Fit(art.transform);
+        EnsureIdlePose(art.transform);
+    }
+
+    /// <summary>
+    /// Drop a Synty character rig's arms out of its shipped T-pose into a resting
+    /// idle. The pack ships <c>SM_Chr_*</c> bodies in a bind T-pose and the game has
+    /// no animation system (no clips, animators stay off), so a shift worker would
+    /// otherwise stand on the deck with both arms stuck straight out. Rather than
+    /// bake bone overrides into the scene — which re-serialises the hand-authored
+    /// sector and strips its runtime-baked dressing — this poses the live rig once,
+    /// in code, where skinning actually runs.
+    ///
+    /// Rig-agnostic: it aims each upper arm at "down and slightly out" in the body's
+    /// own frame (so it holds whatever way the body faces) via a single
+    /// <see cref="Quaternion.FromToRotation"/>, instead of guessing the rig's local
+    /// bone axes. A no-op on the Kenney astronaut fallback, which has no arm bones.
+    /// Applied once per body (guarded) so it never compounds across the 0.5s tick or
+    /// double-bends after a respawn swaps the body.
+    /// </summary>
+    void EnsureIdlePose(Transform body)
+    {
+        if (body == null || body == _posedBody) return;
+
+        var shoulderL = FindBone(body, "Shoulder_L");
+        var shoulderR = FindBone(body, "Shoulder_R");
+        var handL = FindBone(body, "Hand_L");
+        var handR = FindBone(body, "Hand_R");
+        if (shoulderL == null || shoulderR == null || handL == null || handR == null)
+        {
+            _posedBody = body; // not a Synty humanoid rig — don't probe it every tick
+            return;
+        }
+
+        Vector3 downOutL = (-body.up * 0.92f - body.right * 0.32f).normalized;
+        Vector3 downOutR = (-body.up * 0.92f + body.right * 0.32f).normalized;
+        shoulderL.rotation = Quaternion.FromToRotation((handL.position - shoulderL.position).normalized, downOutL) * shoulderL.rotation;
+        shoulderR.rotation = Quaternion.FromToRotation((handR.position - shoulderR.position).normalized, downOutR) * shoulderR.rotation;
+        _posedBody = body;
+    }
+
+    static Transform FindBone(Transform root, string boneName)
+    {
+        if (root.name == boneName) return root;
+        foreach (Transform child in root)
+        {
+            var found = FindBone(child, boneName);
+            if (found != null) return found;
+        }
+        return null;
     }
 
     /// <summary>
