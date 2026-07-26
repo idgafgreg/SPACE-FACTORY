@@ -8,11 +8,11 @@ Rolling map of useful themes. Updated by daily research runs.
 
 | Pillar | What to mine | Status |
 |--------|----------------|--------|
-| Workplace as trap | Isolation baked into the job, not contrived lockdown | Strong — authenticity 07-19; protocol/rules-as-threat 07-22; oversized empty plant 07-23; grim overtime 07-24; **cheerful debt-PA / asset write-off texture** 2026-07-25 |
-| Industrial biomass / hive | Threat uses vents, heat, logistics; ship becomes habitat | Upgraded 07-20 Flood staging; Carrion habitat + path-to-source 07-24; **noise/interest pull + light-averse wall-forms (Bunker)** 2026-07-25 |
-| Factory pressure = identity | Enemies tied to production loop (Factorio pollution lesson) | Strong; WaveFuel/HiveDebt 07-23; path-to-hottest + foothold caps 07-24; **layered closed-loop ripples (ONI) + expansion/breach cascade (TAB careful)** 2026-07-25 |
-| Diegetic dread | Diegetic UI, failing systems, environmental storytelling | Upgraded 07-20; Mixer EQ 07-22; delayed scanner 07-23; atmosphere bricks 07-24; **tangible power/fuel clock + empty HUD / Signalis dual-view** 2026-07-25 |
-| Lonely worker fantasy | Rustic space labor, patched ship, schedule vs survival | Strong — recovery beats; dual view; distant-signal 07-22; absent-crew 07-23; purposeless factory 07-24; **refuel/repair as calm-labor valley** 2026-07-25 |
+| Workplace as trap | Isolation baked into the job, not contrived lockdown | Strong — authenticity 07-19; protocol/rules-as-threat 07-22; oversized empty plant 07-23; grim overtime 07-24; cheerful debt-PA 07-25; **facility-as-home under breach (Abiotic Factor vibe)** 2026-07-26 |
+| Industrial biomass / hive | Threat uses vents, heat, logistics; ship becomes habitat | Upgraded 07-20 Flood staging; Carrion habitat + path-to-source 07-24; Bunker noise/light 07-25; **warm-dark nest preference + self-warming footholds (RimWorld)** 2026-07-26 |
+| Factory pressure = identity | Enemies tied to production loop (Factorio pollution lesson) | Strong; WaveFuel/HiveDebt 07-23; path-to-hottest + foothold caps 07-24; ONI ripples + expansion cascade 07-25; **quality hunters over trash swarms (Dark Descent careful)** 2026-07-26 |
+| Diegetic dread | Diegetic UI, failing systems, environmental storytelling | Upgraded 07-20; Mixer EQ 07-22; delayed scanner 07-23; atmosphere bricks 07-24; power clock + empty HUD 07-25; **mediated cams / tech that obstructs (Duskers)** 2026-07-26 |
+| Lonely worker fantasy | Rustic space labor, patched ship, schedule vs survival | Strong — recovery beats; dual view; distant-signal 07-22; absent-crew 07-23; purposeless factory 07-24; refuel valley 07-25; **bay-as-garage maintenance companion (Pacific Drive mood)** 2026-07-26 |
 
 ## Comp watchlist
 
@@ -29,6 +29,11 @@ Rolling map of useful themes. Updated by daily research runs.
 - They Are Billions (**expansion risk / breach cascade** — careful; anti tower-defense)
 - Against the Storm (**growth Hostility** — light only; no Queen meters)
 - SIGNALIS (**empty HUD / diegetic systems UI** — dual iso↔FP lesson)
+- Abiotic Factor (**facility-as-home vibe** — adjacent; refuse co-op/Half-Life comedy)
+- Duskers (**mediated operator vision** — adjacent FP; refuse CLI/drone RTS)
+- RimWorld infestation (**warm-dark nest preference** — mechanic motif only; not colony-sim)
+- Pacific Drive (**garage recovery / companion machine** — mood only; refuse driving fantasy)
+- Aliens: Dark Descent (**fog + quality hunters** — careful; anti-RTS / anti-IP copy)
 - Rain World (offscreen ecology / geometry-as-AI — light)
 - Frostpunk (grim labor sacrifice tone — adjacent; not city-builder)
 - Iron Lung (suggestion / sealed workplace / delayed vision — adjacent FP mood)
@@ -64,8 +69,8 @@ Paid + free lore asset leads export to [`assets-wishlist.csv`](assets-wishlist.c
 
 ## Last run
 
-- Date: 2026-07-25
+- Date: 2026-07-26
 - Landed on: `main`
-- Focus weight: Amnesia Bunker tangible light/fuel clock + noise interest; ONI layered closed-loop ripples; They Are Billions expansion/breach cascade (anti-TD); Against the Storm Hostility (light); Signalis empty HUD / dual-view diegesis; free Yughues Nature oils + Warwolf InfoDecals; wishlist Wet Stuff (~$25 Deferred) + Spillage Decals (~$8)
-- Prior run: 2026-07-24 (Factorio path-to-source / Carrion habitat / DS Intensity bricks / Frostpunk tone)
+- Focus weight: Abiotic Factor facility-as-home / vibe-first; Duskers mediated operator vision; RimWorld warm-dark nest preference; Pacific Drive garage recovery; Aliens Dark Descent fog + quality hunters (anti-RTS); free Distress Beacon + Polyzero cables; wishlist Rotating and Flashing Light (~€18.40)
+- Prior run: 2026-07-25 (Bunker power clock / ONI ripples / TAB expansion cascade / Signalis empty HUD)
 - Render pipeline note: project currently **Built-in** (prefer Built-in-compatible kits; Wet Stuff needs Deferred cameras)
