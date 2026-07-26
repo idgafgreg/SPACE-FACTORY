@@ -216,7 +216,7 @@ Parked until Gate: OPEN. Commit-sized; bible-aligned; no code until sounds exist
 | **Pack conversion** | Done: **P0–P12, P14, P16–P21** (+P19). Env, machines, defenses, hub, workshop, dressing, FX, FP viewmodel, **player actor** all Synty **and build-safe**. Remaining P: **P13** (enemies, pose-gated — reuse P12's runtime-pose approach). |
 | **Dressing a hand-authored scene** | Runtime dressers do **not** run here (`SectorAuthoring` skips `AddGeometryDressing`). Implement `ISceneDresser`, then add a thin menu item calling `SceneDressingBake.Run<T>` — see `PersonalEffectsBake.cs` / `BreakRoomBake`. Register the component in `AddGeometryDressing` too, for generated sectors. |
 | **Skip** | `[wait-until-sounds]` (audio gate **CLOSED**). **P22** deferred (VoidHull). Lore **L\*** eligible now if a human/groom pulls one up (see decision above). |
-| **Lore** | Bible absorbed through **2026-07-24**. Open lore: **L27–L39**, **L41–L49** (below pack / after P14 unless groomed up). Audio beds stay `[wait-until-sounds]`. |
+| **Lore** | Bible absorbed through **2026-07-25**. Open lore: **L27–L39**, **L41–L55** (below the pack/FP fork unless groomed up). Newest: **L50–L55** (07-25 absorb — power calm-clock, noise interest, delayed cascade, breach snowball, quiet-HUD, cheerful-debt notice). Audio beds stay `[wait-until-sounds]`. |
 | **Gates** | Asset pack **OPEN** · Audio **CLOSED** · Deck size locked · Prep **40s / 30s** |
 
 ---
@@ -1556,6 +1556,63 @@ of this block (**L49** only; audio experiments stay under SND*).
   Change: one authored checkpoint cluster at a lane approach (prefer West or Vent) — desk/booth + still-lit map/terminal (Synty console/monitor/kiosk), company habitat first. Collider-free dressing; off lane; light its own small pool or sit in an existing lamp. Optional soft wrongness when local HorrorClock/infection high (screen copy glitches) — restrained, no arcade. Complements L25 plaques / L38 organ tags — do not duplicate them.
   done-when: Play — booth reads as company security workplace in iso+FP; lit terminal visible; lanes clear; console clean
 
+### Lore-gap refill — 2026-07-26 (bible absorb 2026-07-25: power-clock / expansion-risk / cascade / empty-HUD)
+
+**Priority note:** these sit **below** the open pack/FP/lore fork (`## Needs human decision`) — do not
+jump the queue. Bible current through `lore/2026-07-25`. Map size locked; prep 40s / 30s; audio gate
+**CLOSED** (any PA-**voice** half stays `[wait-until-sounds]`; these tasks use printed copy / lamps /
+existing `Sfx` only). Visual/audio-only ≤30% — none here; all systemic or diegetic-logic.
+
+Code reality: `PowerSystem` exists but power is a supply constraint, not a *felt calm clock*, and nothing
+couples darkness/stalled HVAC to hive boldness; `FactoryHeatTracker`/Heat01 drive share but there is no
+pre-combat **noise interest** field (L45 sets a raid *destination* at spawn, not investigation drift);
+`ProcessInfection`/`InfectionResidue` cascade **spatially** (L36) but nothing schedules a *delayed
+re-failure* of a cleared deck; no foothold→adjacent **convert window**; HUD chrome is always-on in both
+views. Numbers land in `SPACE FACTORY INFO/Progression_Spec.md` in the same commit as each task.
+
+- [ ] L50. Sector power is a calm clock the hive exploits
+  Type: systemic | Pillar: Diegetic dread / Industrial biomass / hive
+  Lore: `lore/BIBLE.md` diegetic grammar (**power and light are things the player spends, not a fear meter**); Amnesia: The Bunker (`lore/2026-07-25/summary.md` #1)
+  Unity: **yes** — let a sector lose power; its lamps dim and its forms get bolder there.
+  Change: give each sector a **calm reserve** (power/HVAC) on top of `PowerSystem` that decays while the sector is unpowered/unattended; when it bottoms out, that sector's lamps dim (reuse `LampFlicker`/`HorrorClock`) and its hive wall-forms get a **measurable local boldness bump** (spawn/aggro share) — darkness and stalled air are where the hive commits. Refuel/repair via the existing power/repair path restores calm (a recovery-beat labour, pairs with L43). **No floating fear bar** — read it in lamps + machine faces (diegetic grammar). Couple to Heat01/HorrorClock, do not invent a parallel meter. Complements **L34** (proximity wrongness easing) — L50 is the spendable reserve + boldness, L34 is ambient. Numbers in `Progression_Spec.md`.
+  done-when: Play — let a sector's power lapse → its lamps dim and its forms measurably bolder there; restore power → calm returns; an attended/powered deck stays calm; no floating fear meter added; console clean
+
+- [ ] L51. Noise interest radius — loud work draws the hive before combat
+  Type: systemic | Pillar: Factory pressure = identity / Industrial biomass / hive
+  Lore: `lore/BIBLE.md` hive soft rules + factory×horror; Amnesia Bunker interest + They Are Billions sound-reactive (`lore/2026-07-25/summary.md` #1, #3)
+  Unity: **yes** — run a loud processor / fire a tool near idle forms; they investigate first.
+  Change: loud sources — running processors/drills, player tools (mining laser, welder), gunfire — raise a soft **interest field** (radius scales with loudness) that idle / duct-resident forms (**L47**) drift toward and investigate **before** committing to combat. Distinct from **L45** (raid *destination* at spawn): this is pre-commit investigation for forms already present, off existing `FactoryHeatTracker` / machine-activity hooks. Quiet, unpowered work draws nothing; interest decays when noise stops. No new spawns. Do not duplicate L45/L47. Numbers in `Progression_Spec.md`.
+  done-when: Play — run a loud processor or fire a tool near idle/vent forms → they measurably drift toward the noise before engaging; go quiet → interest decays; combat spawn counts unchanged; console clean
+
+- [ ] L52. Cascade checklist — a "solved" breach fails again later
+  Type: systemic | Pillar: Factory pressure = identity
+  Lore: `lore/BIBLE.md` factory×horror (**layered loops that ripple**); Oxygen Not Included (`lore/2026-07-25/summary.md` #2)
+  Unity: **yes** — clear a contaminated processor; the same deck springs a fresh fault later.
+  Change: when a contamination/breach is cleared (L35 stages / `ProcessInfection` repair), schedule a **delayed, capped side-effect** on that deck a while later — a heat spike, a filter going sticky again, or a slurry-wrong event — so a "solved" deck can fail quietly again instead of resolving cleanly. Telegraph it diegetically (terminal line / machine face); always fair (re-clearable, never a soft-lock) and rate-capped so it is dread, not whack-a-mole. Distinct from **L36** (spatial cascade to a linked belt *now*) — this is *temporal* delayed re-failure. Numbers in `Progression_Spec.md`.
+  done-when: Play — clear a contaminated processor → after a delay the same deck shows a fresh, telegraphed, re-clearable side-effect; the original never soft-locks; re-failures are rate-capped; console clean
+
+- [ ] L53. Breach snowball — a foothold converts its bay neighbors
+  Type: systemic | Pillar: Industrial biomass / hive / Workplace as trap
+  Lore: `lore/BIBLE.md` factory×horror (**expansion is the risk; one breach snowballs a bay; walls buy time**); They Are Billions (`lore/2026-07-25/summary.md` #3) — refuse RTS/TD
+  Unity: **yes** — a foothold in a dense bay pulls in an adjacent machine unless cleared.
+  Change: when a foothold infects a machine, open a short **convert window** in which an adjacent same-bay machine/prop can be pulled in (infected/disabled) unless the player intervenes — punishing open sprawl, rewarding spacing and chokepoints. Bounded: same-bay neighbours within a small radius, **one hop per window**, never a whole-ship chain, and **never** the hub or a lane the player must clear to end a wave (fairness). Reuse `ProcessInfection`. Not building-infection comedy / RTS identity. Caps in `Progression_Spec.md`.
+  done-when: Play — let a foothold take a machine in a dense bay → one adjacent machine/prop is pulled in within the window unless cleared; spaced layouts resist; hub and wave-critical lanes never convert; no runaway chain; console clean
+
+- [ ] L54. Quiet the HUD in both views
+  Type: diegetic / mechanical | Pillar: Diegetic dread
+  Lore: `lore/BIBLE.md` diegetic grammar (**quiet the HUD in both views**); SIGNALIS empty-HUD (`lore/2026-07-25/summary.md` #5)
+  Unity: **yes** — in calm, both iso and FP shed non-essential chrome; state still readable.
+  Change: during calm (low `AlarmLevel`, no active wave) fade **non-essential** HUD chrome in **both** iso and FP, keeping only what the world cannot show; lean on machine faces + sector tags for throughput/alerts (pairs with **F12**) so switching view never changes what is true. Chrome returns on pressure (wave / alarm / scan). Iso mid-wave legibility unchanged; no new art — toggle existing HUD elements. Distinct from **F12** (machine-face world readout) — this is the calm chrome fade, not the world readout itself.
+  done-when: Play — in calm, both views drop non-essential HUD while essential state stays readable; on wave/alarm chrome returns; iso mid-wave legibility unchanged; console clean
+
+- [ ] L55. Cheerful company notice riding on debt
+  Type: diegetic | Pillar: Workplace as trap
+  Lore: `lore/BIBLE.md` motif (**bright company PA riding on debt / asset over labor**); fiction texture (`lore/2026-07-25/summary.md` #6) — original copy only, no prose paste
+  Unity: **yes** — a printed notice reads upbeat, contradicted by a written-off crew beside it.
+  Tag: `[asset-pack: POLYGON Sci-Fi Horror]`
+  Change: one authored company notice/board (**printed, not voice** — the PA-audio half stays `[wait-until-sounds]`) near hub or a berth: bright hazard-pay / safety-bonus copy beside a quietly crossed-out or "reassigned" crew roster — asset valued over labour. Original terse copy in the flat, tired **grim-not-gag** register. Reuse the existing plaque/decal path (`SectorPlaques` / L25). Distinct from **L28** (schedule board ticking) and **L39** (leased-asset copy) — this is the cheerful-voice-over-debt trap specifically.
+  done-when: Play — the notice reads in iso+FP as upbeat company copy contradicted by the written-off crew beside it; no audio added; copy is original (no quoted fiction); lanes clear; console clean
+
 ### Done archive — 2026-07-19 lore-gap + map integrity (shipped)
 
 Code reality snapshot (kept for history): L15-L19 shipped; map seams/props sealed; A9/A10 verified. Asset pack: **not purchased**.
@@ -1871,6 +1928,15 @@ Method: capture the Game view in Play mode, judge the frame, fix the single wors
 - [ ] Free lead: Abandoned Factory Lite (Asset Store) — safe mood greys for blockout; not gated, but not queued until visual Now is thin.
 
 ## Agent log (newest first — one line per session: date, task, result, commit)
+
+- 2026-07-26: **lore-gap** — bible now absorbed through `lore/2026-07-25` (ran `/lore-bible` first; the
+  07-25 digest had landed via the cloud agent). Queued **L50–L55** from the 07-25 canon: power as a
+  tangible calm-clock the hive exploits (L50, Amnesia Bunker), pre-combat noise interest radius (L51,
+  cross-refs L45), delayed cascade re-failure (L52, distinct from L36's spatial cascade), breach
+  snowball convert window (L53, They Are Billions, fairness-capped), quiet-HUD-in-both-views (L54, pairs
+  F12), cheerful-company-notice-over-debt (L55, printed only — PA-voice half stays gated). All
+  systemic/diegetic (0 visual/audio-only). Kept below the pack/FP/lore human fork; no game code.
+  Commit: `lore-gap: refill backlog from research` (2026-07-26 HEAD).
 
 - 2026-07-24: **P12 player Synty suit idle-pose — DONE (auto-dev, Unity MCP, verified in play).**
   Model swap was already authored (`SM_Chr_Space_Suit_01_M` on Player) but shipped in a bind T-pose;
