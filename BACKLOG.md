@@ -25,7 +25,7 @@ Rules for tasks in this file:
 - Pack: **POLYGON - Sci-Fi Horror Pack (Synty)** + bundled `PolygonGeneric`
 - Unity path: `Assets/Synty/PolygonSciFiHorror/` (shared shaders/materials under `Assets/Synty/PolygonGeneric/`) — both present in tree
 - Enablement: `com.unity.shadergraph` **17.5.0** is in `Packages/manifest.json`. If materials go pink/Error, run **Synty → Package Helper → Install Packages**; runtime still falls back to Standard when a mat is broken.
-- **Build mirror (P14, required for standalone builds):** `SyntyHorrorLoader` resolves pack prefabs via `AssetDatabase` in the editor but `Resources.Load("SyntyHorror/…")` in a player — so a build with **no** `Assets/Resources/SyntyHorror/` mirror ships zero Synty art. **Tools → Space Factory → Mirror Synty Art Into Resources** copies every used pack prefab into `Resources/SyntyHorror/{Environment,Buildings,Props,FX,Weapons}/` (135 today). The used-set is harvested from the loader's `static string[]` path arrays (reflection) **plus** every bare `"SM_…"`/`"FX_…"` literal under `Assets/Scripts` (LoadProp/LoadFx/LoadActor callers), so it cannot drift — **re-run it after adding pack art**. **Tools → Space Factory → Verify Synty Resources Mirror** confirms all resolve via the build path. The mirror is committed (like `PostProcessResources.asset`). Add `Characters` here + in the loader's folder switch together when P12/P13 land.
+- **Build mirror (P14, required for standalone builds):** `SyntyHorrorLoader` resolves pack prefabs via `AssetDatabase` in the editor but `Resources.Load("SyntyHorror/…")` in a player — so a build with **no** `Assets/Resources/SyntyHorror/` mirror ships zero Synty art. **Tools → Space Factory → Mirror Synty Art Into Resources** copies every used pack prefab into `Resources/SyntyHorror/{Environment,Buildings,Props,FX,Weapons}/` (135 today). The used-set is harvested from the loader's `static string[]` path arrays (reflection) **plus** every bare `"SM_…"`/`"FX_…"` literal under `Assets/Scripts` (LoadProp/LoadFx/LoadActor callers), so it cannot drift — **re-run it after adding pack art**. **Tools → Space Factory → Verify Synty Resources Mirror** confirms all resolve via the build path. The mirror is committed (like `PostProcessResources.asset`). P12 player art is scene-authored; when **P13** adds loader `Characters/` paths, extend the folder switch + re-run the mirror in the same commit.
 - Rule: for tagged `[asset-pack: POLYGON Sci-Fi Horror]` tasks, use **this pack only** — do not mix Kenney/Quaternius into those swaps. Untagged lore/system tasks may stay primitives.
 - Conversion track: **P0–P22** under Now (full ship reskin + Phase E story dressing). Prefer next open pack task when it is the top eligible Now item.
 - Other paywalled packs: still wishlist-only — agents do **not** buy or download new paid assets. Ice box alt-pack tags superseded.
@@ -134,20 +134,16 @@ Parked until Gate: OPEN. Commit-sized; bible-aligned; no code until sounds exist
 
 ## Needs human decision
 
-- **Priority after the ship reads Synty (groom 2026-07-23).** Pack conversion is substantially done:
-  environment, machines, defenses, hub, workshop, dressing, FX and the FP viewmodel are all Synty
-  (P0–P11, P16–P21). What remains splits three ways and it is a preference call, not a clear win:
-  1. **Finish actor conversion** — P12 (player suit) + P13 (enemies). Both are pose-gated by your
-     2026-07-22 Decision (retarget/author poses, no T-pose), so they are the heaviest remaining P
-     work. The player currently shows the Synty suit but in a static bind pose; enemies are still
-     Kenney.
-  2. **Unblock FP polish** — F11–F14 were parked "until the ship reads Synty." It mostly does now.
-     F13 (embodiment + scale audit) overlaps with P12. These make first person shippable.
-  3. **Systemic lore** — L41 (second hive-debt clock), L42 (intensity valley), L43 (recovery labour),
-     L44 (lagged scan). Highest north-star value, no pack dependency, changes how the game *plays*.
-  **P14 (build mirrors) is build-critical and comes before any of these regardless** — nothing in a
-  build shows Synty until it lands. After P14, which track? Left in current file order (P12→P13, then
-  F, then L) until you rule.
+- **Priority after P13 (groom 2026-07-26).** Pack conversion + build mirror are done (P0–P12, P14,
+  P16–P21). Player suit is posed at runtime (`PlayerArtAttach`). **One pack actor task remains: P13
+  (enemies)** — agents take that next. After P13, two tracks and it is still a preference call:
+  1. **FP polish F11–F14** — make first person shippable (threat awareness, machine-face readouts,
+     scale audit; F13 viewmodel already largely covered by P18). Matches the 2026-07-20 dual-mode
+     Decision.
+  2. **Systemic lore L41+** (through L60) — two-clock hive debt, intensity valleys, heat-path raids,
+     power calm-clock, etc. Highest north-star *play* value; no pack dependency.
+  Which track after P13? Left as **F11 → F12 → F13 → F14** until you rule (prior default: pack → FP →
+  lore). Say the word to pull **L41** (or another L*) up instead.
 
 ## Decisions (human-made, newest first)
 
@@ -210,24 +206,36 @@ Parked until Gate: OPEN. Commit-sized; bible-aligned; no code until sounds exist
 
 | | |
 |--|--|
-| **Next task** | **P13** — enemy meshes → Synty alien/zub, same pose problem as P12. **Reuse P12's solution:** pose in code via a runtime hook (see `PlayerArtAttach.EnsureIdlePose`), do **not** bake bone-overrides into `Sector01` (it rewrites the hand-authored sector's runtime dressing). Then the **human decision** below is the live fork (FP polish **F11–F14** or systemic lore **L41–L49**). |
+| **Next task** | **BUG1** — one-line `CharacterController` enabled guard (spam fix). Then **P13**. |
+| **Active queue** | **1. BUG1** → **2. P13** → **3. F11** → **4. F12** → **5. F13** → **6. F14**. Lore **L\*** stays below unless a human pulls one up (see Needs human). |
 | **Command** | `/auto-dev` (Unity MCP preferred; else mark `[?]` for `/unity-pass`) |
-| **P12/P14 done** | P14 build mirror (2026-07-24, 135 prefabs) + P12 player idle-pose (2026-07-24, runtime `FromToRotation`) both landed. Builds ship Synty art; the player no longer stands in a T-pose. |
-| **Pack conversion** | Done: **P0–P12, P14, P16–P21** (+P19). Env, machines, defenses, hub, workshop, dressing, FX, FP viewmodel, **player actor** all Synty **and build-safe**. Remaining P: **P13** (enemies, pose-gated — reuse P12's runtime-pose approach). |
-| **Dressing a hand-authored scene** | Runtime dressers do **not** run here (`SectorAuthoring` skips `AddGeometryDressing`). Implement `ISceneDresser`, then add a thin menu item calling `SceneDressingBake.Run<T>` — see `PersonalEffectsBake.cs` / `BreakRoomBake`. Register the component in `AddGeometryDressing` too, for generated sectors. |
-| **Skip** | `[wait-until-sounds]` (audio gate **CLOSED**). **P22** deferred (VoidHull). Lore **L\*** eligible now if a human/groom pulls one up (see decision above). |
-| **Lore** | Bible absorbed through **2026-07-26**. Open lore: **L27–L39**, **L41–L60** (below the pack/FP fork unless groomed up). Newest: **L56–L60** (07-26 absorb — warm-dark footholds, mediated cams, quality hunters, bay-as-garage faults, empty-protocol workstation). Prior **L50–L55** still open. Audio beds stay `[wait-until-sounds]`. |
+| **P13 how** | Same pose problem as P12. **Reuse P12's solution:** pose in code via a runtime hook (see `PlayerArtAttach.EnsureIdlePose`), do **not** bake bone-overrides into `Sector01`. Re-run **Mirror Synty Art Into Resources** if new `Characters/` paths are added. |
+| **Pack conversion** | Done: **P0–P12, P14, P16–P21**. Remaining P: **P13** (enemies). **P22** deferred (VoidHull). |
+| **Dressing a hand-authored scene** | Runtime dressers do **not** run here (`SectorAuthoring` skips `AddGeometryDressing`). Implement `ISceneDresser`, then a thin menu item calling `SceneDressingBake.Run<T>` — see `PersonalEffectsBake.cs` / `BreakRoomBake`. Register in `AddGeometryDressing` too for generated sectors. |
+| **Skip** | `[wait-until-sounds]` (audio gate **CLOSED**). **P22** deferred. Do **not** jump to L* ahead of F11–F14 without a human/groom reorder. |
+| **Lore** | Bible absorbed through **2026-07-26**. Open: **L27–L39**, **L41–L60** (parked under the FP strip). Newest block **L56–L60**. Audio beds stay gated. |
 | **Gates** | Asset pack **OPEN** · Audio **CLOSED** · Deck size locked · Prep **40s / 30s** |
+
+---
+
+### Bugs (groom 2026-07-26)
+
+- [ ] BUG1. Guard `CharacterController.SimpleMove` when disabled
+  Type: mechanical
+  Unity: yes — Play with controller briefly disabled (or harness pin) should not spam console
+  Change: in `PlayerController.HandleMovement`, early-out if `characterController == null` or
+  `!characterController.enabled` before `SimpleMove`. One-line; no gameplay change in normal play.
+  done-when: Play — disabling the controller while input is live produces **zero**
+  "CharacterController.Move called on inactive controller" logs; normal walk/respawn/soft-recover
+  unchanged; console clean otherwise
 
 ---
 
 ### F1–F14. First-person view mode (human decision 2026-07-20)
 
-**Status:** F1–F10 shipped. F11–F14 were parked until pack conversion made the ship read Synty
-(owner 2026-07-21). **That condition is now substantially met** — env/machines/defenses/landmarks/
-dressing/FX/viewmodel are all Synty (P0–P11, P16–P21). Whether to take F11–F14 next, finish the
-actor conversion (P12/P13), or pull the systemic lore track is an **open human decision** (see
-`## Needs human decision`). P14 (build mirrors) comes first regardless.
+**Status:** F1–F10 shipped. Pack conversion condition for F11–F14 is **met**. After **BUG1** + **P13**,
+the active queue continues **F11 → F14** unless a human pulls systemic lore up instead (see
+`## Needs human decision`).
 
 Goal: toggleable FP that looks/reads at least as well as iso. Iso stays until F14 passes.
 
@@ -662,7 +670,7 @@ Without it, mats may pink; runtime falls back to Standard albedo when Error.
   vanish). Everything P0–P21 shipped is editor-only until this lands.
   Change: editor tool copies every used pack prefab into the mirror, preserving the folder the loader
   maps to — now **`Resources/SyntyHorror/{Environment,Props,Buildings,FX,Weapons}/`** (FX added by
-  P21, Weapons by P10/P18; add `Characters/` when P12/P13 land). Drive the mirror list off the loader
+  P21, Weapons by P10/P18; add `Characters/` when P13 lands). Drive the mirror list off the loader
   path arrays so it cannot drift. Confirm Synty Package Helper Shader Graph is installed; document the
   mirror + refresh step in `## Asset pack status`.
   done-when: standalone build loads the same Synty dress as the editor (spot-check a machine, a wall,
@@ -1301,9 +1309,9 @@ fog all check out, enumerate renderers along the sight line before touching anyt
   sizes and F6's ceiling height were all authored to read from 14 m and have never been checked
   against a 1.65 m eye. Measure against player height and fix anything that reads as dollhouse or
   cathedral; corridors should feel industrial-cramped. (b) **Embodiment** — restrained head motion
-  on walk (small, horror-paced, not FPS bob) and a simple tool viewmodel so the repair tool /
-  weapon / build ghost have a physical presence in frame. **Footstep audio is gated** as **SND7**
-  `[wait-until-sounds]` — do not expand procedural footstep synth here. Keep embodiment
+  on walk (small, horror-paced, not FPS bob). **Tool viewmodel is largely done by P18** — only
+  fill gaps (build ghost / modes still missing a hand presence). **Footstep audio is gated** as
+  **SND7** `[wait-until-sounds]` — do not expand procedural footstep synth here. Keep embodiment
   under-driven: tired shift worker, not a marine.
   done-when: Play (FP) — the ship reads at human scale, walking feels grounded without nausea, the
   held tool is visible and matches the active mode (footsteps optional until SND7); Play (iso) —
@@ -1558,10 +1566,10 @@ of this block (**L49** only; audio experiments stay under SND*).
 
 ### Lore-gap refill — 2026-07-26 (bible absorb 2026-07-25: power-clock / expansion-risk / cascade / empty-HUD)
 
-**Priority note:** these sit **below** the open pack/FP/lore fork (`## Needs human decision`) — do not
-jump the queue. Bible current through `lore/2026-07-25`. Map size locked; prep 40s / 30s; audio gate
-**CLOSED** (any PA-**voice** half stays `[wait-until-sounds]`; these tasks use printed copy / lamps /
-existing `Sfx` only). Visual/audio-only ≤30% — none here; all systemic or diegetic-logic.
+**Priority note:** sit **below** the active queue (BUG1 → P13 → F11–F14) unless a human pulls lore up
+(`## Needs human decision`). Bible current through `lore/2026-07-26`. Map size locked; prep 40s / 30s;
+audio gate **CLOSED** (any PA-**voice** half stays `[wait-until-sounds]`; these tasks use printed copy /
+lamps / existing `Sfx` only). Visual/audio-only ≤30% — none here; all systemic or diegetic-logic.
 
 Code reality: `PowerSystem` exists but power is a supply constraint, not a *felt calm clock*, and nothing
 couples darkness/stalled HVAC to hive boldness; `FactoryHeatTracker`/Heat01 drive share but there is no
@@ -1615,8 +1623,9 @@ views. Numbers land in `SPACE FACTORY INFO/Progression_Spec.md` in the same comm
 
 ### Lore-gap refill — 2026-07-26 (bible absorb 2026-07-26: warm-dark / mediation / quality hunters / garage / empty protocol)
 
-**Priority note:** sit **below** the open pack/FP/lore fork (`## Needs human decision`) — do not jump the
-queue. Bible current through `lore/2026-07-26`. Map size locked; prep **40s / 30s**; audio gate **CLOSED**.
+**Priority note:** sit **below** the active queue (BUG1 → P13 → F11–F14) unless a human pulls lore up
+(`## Needs human decision`). Bible current through `lore/2026-07-26`. Map size locked; prep **40s / 30s**;
+audio gate **CLOSED**.
 **Vibe gate (agent rule for this block):** any new survival/pressure system in L56–L59 ships **one
 diegetic world beat** in the same commit (lamp bed, machine-face line, break-room prop) — facility-as-home
 before another abstract meter (`lore/BIBLE.md` open experiment). Visual/audio-only ≤30% — **L60** is the
@@ -1967,11 +1976,7 @@ Method: capture the Game view in Play mode, judge the frame, fix the single wors
 
 ## Ice box (ideas, ungroomed)
 
-- [ ] `PlayerController.HandleMovement` calls `characterController.SimpleMove` without checking the
-  controller is enabled, so anything that disables it while movement input is live logs
-  "CharacterController.Move called on inactive controller" every frame. Harmless in normal play
-  (respawn early-returns on `IsDead`, `SoftRecoverToHub` re-enables in the same frame) — surfaced by
-  a playtest helper that pinned the transform with the controller off. One-line guard.
+- [x] CharacterController.SimpleMove when disabled — **promoted** to **BUG1** (groom 2026-07-26).
 - [x] [asset-pack: Alien Biomass Planet] Superseded — owner bought POLYGON Sci-Fi Horror instead; P0 covers residue swap.
 - [x] [asset-pack: Bio Horror / Sci-fi Environment] Superseded — P1 uses Synty Alien Wall/Pillar for breach infestation.
 - [x] [asset-pack: Bionic structures] Superseded — not needed while POLYGON growth/wall kitbash is in tree.
@@ -1982,6 +1987,12 @@ Method: capture the Game view in Play mode, judge the frame, fix the single wors
 - [ ] Free lead: Abandoned Factory Lite (Asset Store) — safe mood greys for blockout; not gated, but not queued until visual Now is thin.
 
 ## Agent log (newest first — one line per session: date, task, result, commit)
+
+- 2026-07-26: **groom backlog** — de-staled Needs human (P12/P14 done; fork is **after P13**: F11–F14 vs
+  L41+). Active queue **BUG1 → P13 → F11–F14**; lore stays parked. Promoted CharacterController spam
+  guard from Ice box to **BUG1**. Noted F13 viewmodel mostly covered by P18; Characters mirror note
+  for P13. No new lore tasks (queue thick; bible current through 07-26). No game code. Local commit
+  only (`groom backlog`).
 
 - 2026-07-26: **lore-gap** — bible already absorbed through `lore/2026-07-26`. Queued **L56–L60** from
   the 07-26 canon/experiments: warm-dark foothold bias (L56, RimWorld nest), mediated sector cams
