@@ -31,9 +31,8 @@ using UnityEngine;
 ///      built by interpolation, so the scan is complete.
 /// Re-running picks up any prefab added to either source — no hand-maintained list.
 ///
-/// Only the five categories <see cref="SyntyHorrorLoader.Load"/> maps to a Resources
-/// subfolder are mirrored. When P12/P13 add character art, add "Characters" here and
-/// to the loader's folder switch together.
+/// Categories <see cref="SyntyHorrorLoader.Load"/> maps to a Resources subfolder
+/// (incl. Characters for P13 enemy bodies).
 ///
 /// Re-run after adding pack art or upgrading the pack:
 /// Tools → Space Factory → Mirror Synty Art Into Resources
@@ -45,7 +44,8 @@ public static class SyntyResourceMirror
     const string ScriptRoot = "Assets/Scripts";
 
     // The pack categories SyntyHorrorLoader.Load() maps to a Resources subfolder.
-    static readonly string[] Categories = { "Environment", "Buildings", "Props", "FX", "Weapons" };
+    static readonly string[] Categories =
+        { "Environment", "Buildings", "Props", "FX", "Weapons", "Characters" };
 
     static readonly Regex BareName =
         new Regex("\"((?:SM_|FX_)[A-Za-z0-9_]+)\"", RegexOptions.Compiled);
@@ -200,6 +200,9 @@ public static class SyntyResourceMirror
             string p = $"{SyntyHorrorLoader.PackRoot}Prefabs/{c}/{name}.prefab";
             if (AssetDatabase.LoadAssetAtPath<GameObject>(p) != null) return p;
         }
+        // P13 — alien head attaches live one folder deeper.
+        string attach = $"{SyntyHorrorLoader.PackRoot}Prefabs/Characters/Chr_Attach/{name}.prefab";
+        if (AssetDatabase.LoadAssetAtPath<GameObject>(attach) != null) return attach;
         return null;
     }
 

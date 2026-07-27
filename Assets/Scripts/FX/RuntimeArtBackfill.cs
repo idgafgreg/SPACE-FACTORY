@@ -158,9 +158,12 @@ public class RuntimeArtBackfill : MonoBehaviour
 
     static string PickEnemyModel(EnemyBase e)
     {
-        if (e is Bruiser) return "ArtPlaceholders/Enemy_Bruiser";
-        if (e is Sapper) return "ArtPlaceholders/Enemy_Sapper";
-        return "ArtPlaceholders/Enemy_Crawler";
+        // P13 — POLYGON Sci-Fi Horror characters. Bruiser = biped alien; sapper +
+        // crawler (incl. infection residue) = low Zub scuttler. Pose is authored
+        // in code after fit (see EnemyArtPose) — pack ships T-pose / bind pose.
+        if (e is Bruiser) return "SM_Chr_Alien_01";
+        if (e is Sapper) return "SM_Chr_Zub_01";
+        return "SM_Chr_Zub_01";
     }
 
     static string PickNodeModel(ResourceNode node)
@@ -210,10 +213,16 @@ public class RuntimeArtBackfill : MonoBehaviour
                 if (marker.fitted)
                 {
                     HideHostRenderers(host, existing);
+                    // P13: a baked/locked Synty enemy may still be in bind pose if
+                    // EnsureArt ran before EnemyArtPose existed — pose once.
+                    if (resourcesPath.StartsWith("SM_") && host.GetComponent<EnemyBase>() != null)
+                        EnemyArtPose.Apply(existing, resourcesPath);
                     return; // LOCKED — never re-fit
                 }
                 ArtPlaceholderFitter.Fit(existing);
                 HideHostRenderers(host, existing);
+                if (resourcesPath.StartsWith("SM_") && host.GetComponent<EnemyBase>() != null)
+                    EnemyArtPose.Apply(existing, resourcesPath);
                 return;
             }
 
@@ -247,6 +256,10 @@ public class RuntimeArtBackfill : MonoBehaviour
 
         HideHostRenderers(host, art.transform);
         ArtPlaceholderFitter.Fit(art.transform);
+
+        // P13: drop enemy bodies out of the pack T-pose / bind pose once fitted.
+        if (synty && host.GetComponent<EnemyBase>() != null)
+            EnemyArtPose.Apply(art.transform, resourcesPath);
 
         if (preferTag == "HubArt")
             SoftenEmission(art.transform);

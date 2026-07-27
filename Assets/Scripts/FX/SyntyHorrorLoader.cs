@@ -17,7 +17,20 @@ public static class SyntyHorrorLoader
     public const string PropRoot = PackRoot + "Prefabs/Props/";
     public const string FxRoot = PackRoot + "Prefabs/FX/";
     public const string WeaponRoot = PackRoot + "Prefabs/Weapons/";
+    public const string CharacterRoot = PackRoot + "Prefabs/Characters/";
     const string ResourcesRoot = "SyntyHorror/";
+
+    /// <summary>
+    /// P13 — enemy character bodies (+ optional alien head attach). Listed so the
+    /// Resources mirror harvests them via reflection; <see cref="RuntimeArtBackfill"/>
+    /// also names them as bare <c>SM_Chr_*</c> literals.
+    /// </summary>
+    public static readonly string[] EnemyCharacterPrefabPaths =
+    {
+        CharacterRoot + "SM_Chr_Alien_01.prefab",
+        CharacterRoot + "SM_Chr_Zub_01.prefab",
+        CharacterRoot + "Chr_Attach/SM_Chr_Attach_Alien_01.prefab",
+    };
 
     /// <summary>Static wall-hugging growth clusters (A10 encroachment).</summary>
     public static readonly string[] AlienGrowthPrefabPaths =
@@ -214,17 +227,19 @@ public static class SyntyHorrorLoader
     }
 
     /// <summary>
-    /// P10 — a machine/defense "actor" mesh, which the pack scatters across two
-    /// folders: the generators and consoles live under Props, the drill, welder,
-    /// mining laser, rifle and shock stick under Weapons. Callers name a prefab and
-    /// this finds it in either, so the <see cref="RuntimeArtBackfill"/> remap table
-    /// does not have to track which folder each one came from.
+    /// P10/P13 — a machine/defense/character "actor" mesh. Machines live under
+    /// Weapons + Props; enemy bodies under Characters. Callers name a prefab and
+    /// this finds it, so the <see cref="RuntimeArtBackfill"/> remap table does not
+    /// have to track which folder each one came from.
     /// </summary>
     public static GameObject LoadActor(string prefabFileName)
     {
         if (string.IsNullOrEmpty(prefabFileName)) return null;
         if (!prefabFileName.EndsWith(".prefab")) prefabFileName += ".prefab";
-        return Load(WeaponRoot + prefabFileName) ?? Load(PropRoot + prefabFileName);
+        return Load(WeaponRoot + prefabFileName)
+            ?? Load(PropRoot + prefabFileName)
+            ?? Load(CharacterRoot + prefabFileName)
+            ?? Load(CharacterRoot + "Chr_Attach/" + prefabFileName);
     }
 
     public static GameObject Load(string assetPath)
@@ -244,6 +259,7 @@ public static class SyntyHorrorLoader
             : assetPath.Contains("/Buildings/") ? "Buildings/"
             : assetPath.Contains("/FX/") ? "FX/"
             : assetPath.Contains("/Weapons/") ? "Weapons/"
+            : assetPath.Contains("/Characters/") ? "Characters/"
             : "";
         return Resources.Load<GameObject>(ResourcesRoot + folder + file);
     }
