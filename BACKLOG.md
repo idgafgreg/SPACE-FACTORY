@@ -216,7 +216,7 @@ Parked until Gate: OPEN. Commit-sized; bible-aligned; no code until sounds exist
 | **Pack conversion** | Done: **P0–P12, P14, P16–P21** (+P19). Env, machines, defenses, hub, workshop, dressing, FX, FP viewmodel, **player actor** all Synty **and build-safe**. Remaining P: **P13** (enemies, pose-gated — reuse P12's runtime-pose approach). |
 | **Dressing a hand-authored scene** | Runtime dressers do **not** run here (`SectorAuthoring` skips `AddGeometryDressing`). Implement `ISceneDresser`, then add a thin menu item calling `SceneDressingBake.Run<T>` — see `PersonalEffectsBake.cs` / `BreakRoomBake`. Register the component in `AddGeometryDressing` too, for generated sectors. |
 | **Skip** | `[wait-until-sounds]` (audio gate **CLOSED**). **P22** deferred (VoidHull). Lore **L\*** eligible now if a human/groom pulls one up (see decision above). |
-| **Lore** | Bible absorbed through **2026-07-25**. Open lore: **L27–L39**, **L41–L55** (below the pack/FP fork unless groomed up). Newest: **L50–L55** (07-25 absorb — power calm-clock, noise interest, delayed cascade, breach snowball, quiet-HUD, cheerful-debt notice). Audio beds stay `[wait-until-sounds]`. |
+| **Lore** | Bible absorbed through **2026-07-26**. Open lore: **L27–L39**, **L41–L60** (below the pack/FP fork unless groomed up). Newest: **L56–L60** (07-26 absorb — warm-dark footholds, mediated cams, quality hunters, bay-as-garage faults, empty-protocol workstation). Prior **L50–L55** still open. Audio beds stay `[wait-until-sounds]`. |
 | **Gates** | Asset pack **OPEN** · Audio **CLOSED** · Deck size locked · Prep **40s / 30s** |
 
 ---
@@ -1613,6 +1613,60 @@ views. Numbers land in `SPACE FACTORY INFO/Progression_Spec.md` in the same comm
   Change: one authored company notice/board (**printed, not voice** — the PA-audio half stays `[wait-until-sounds]`) near hub or a berth: bright hazard-pay / safety-bonus copy beside a quietly crossed-out or "reassigned" crew roster — asset valued over labour. Original terse copy in the flat, tired **grim-not-gag** register. Reuse the existing plaque/decal path (`SectorPlaques` / L25). Distinct from **L28** (schedule board ticking) and **L39** (leased-asset copy) — this is the cheerful-voice-over-debt trap specifically.
   done-when: Play — the notice reads in iso+FP as upbeat company copy contradicted by the written-off crew beside it; no audio added; copy is original (no quoted fiction); lanes clear; console clean
 
+### Lore-gap refill — 2026-07-26 (bible absorb 2026-07-26: warm-dark / mediation / quality hunters / garage / empty protocol)
+
+**Priority note:** sit **below** the open pack/FP/lore fork (`## Needs human decision`) — do not jump the
+queue. Bible current through `lore/2026-07-26`. Map size locked; prep **40s / 30s**; audio gate **CLOSED**.
+**Vibe gate (agent rule for this block):** any new survival/pressure system in L56–L59 ships **one
+diegetic world beat** in the same commit (lamp bed, machine-face line, break-room prop) — facility-as-home
+before another abstract meter (`lore/BIBLE.md` open experiment). Visual/audio-only ≤30% — **L60** is the
+one dressing task; L57 is diegetic systems with a CRT mesh.
+
+Code reality: `FactoryHeatTracker.Heat01` + `HorrorClock`/`LampFlicker` exist but nothing biases sticky
+forms toward **warm + under-lit** pockets (L50 is player-spent calm boldness; L45 is raid *destination*);
+no delayed sector-cam feed; `WaveController` still leans count/residue share (incl. Horde) rather than
+**few pathing flankers**; post-clear recovery is a line (`RecoveryBeat`) + optional debris plan (**L43**)
+— nothing leaves *your* machines in a diagnoseable fault state; empty-protocol workstation motif has no
+authored set piece (P17/P20 cover sticky notes / break-room, not a finished bay humming for nobody).
+Numbers in `SPACE FACTORY INFO/Progression_Spec.md` same commit as each task.
+
+- [ ] L56. Warm-dark foothold bias
+  Type: systemic | Pillar: Industrial biomass / hive
+  Lore: `lore/BIBLE.md` hive soft rules (**warm-dark footholds**); RimWorld nest preference (`lore/2026-07-26/summary.md` #3)
+  Unity: **yes** — sticky forms cluster in a warm under-lit pocket; a cooled/lit deck resists.
+  Change: bias `InfectionResidue` / sticky foothold **spawn and hold** toward sectors (or local samples) above a heat threshold and below a light threshold — reuse `FactoryHeatTracker.Heat01` + fixture/`HorrorClock` light state; nests that hold may nudge local warmth slightly (small Heat01 / lamp-stress bleed, capped). Cooling + lighting a bay is containment labor. Distinct from **L45** (raid destination at spawn), **L50** (player-spent calm reserve → boldness when dark), and **L48** (offscreen drift between warm machines). Thresholds/caps in `Progression_Spec.md`. Same-commit vibe beat: one under-lit warm pocket reads in lamps before the meter exists.
+  done-when: Play — a warm under-lit pocket accumulates sticky footholds measurably more than a cool well-lit deck; cooling/lighting reduces new hold; no floating nest meter; console clean
+
+- [ ] L57. Mediated sector cams
+  Type: diegetic / mechanical | Pillar: Diegetic dread
+  Lore: `lore/BIBLE.md` diegetic grammar (**mediation helps and obstructs**); Duskers operator feeds (`lore/2026-07-26/summary.md` #2)
+  Unity: **yes** — a desk/wall CRT shows another bay delayed and noisy; factory state still readable in-world.
+  Tag: `[asset-pack: POLYGON Sci-Fi Horror]`
+  Change: one wall/desk CRT (Synty monitor — reuse `SM_Prop_Monitor_*` path) shows a **delayed, cropped, noisy** RenderTexture (or equivalent) of another bay / lane approach — operator feed, not marine intel. Lag + noise scale with `AlarmLevel` / local infection; never replaces machine-face or plaque legibility (**F12** / L25). Dedicated child object for the screen mesh + camera (SectorRuntime pitfall). Complements **L44** (scanner reveal delay) — this is a persistent bay feed, not the Q-scan. No typing UI / drone RTS.
+  done-when: Play — CRT shows another bay with visible lag/crop/noise; iso+FP still read factory state without the feed; feed degrades under alarm; lanes clear; console clean
+
+- [ ] L58. Fewer smarter hunters when pressure spends
+  Type: systemic | Pillar: Factory pressure = identity / Industrial biomass / hive
+  Lore: `lore/BIBLE.md` hive soft rules (**few pathing hunters over trash swarms**); Dark Descent quality pressure (`lore/2026-07-26/summary.md` #5) — refuse squad-RTS / Alien IP
+  Unity: **yes** — a pressure-spend wave fields 1–3 vent-pathing hunters instead of a trash pile.
+  Change: when near-term pressure / heat spends into a wave (post-W1, not teaching W1), prefer **1–3 tougher pathing forms** that enter via vents and can flank/retreat over converting the same budget into many weak crawlers. Hook `WaveController` composition (distinct from endless **Horde** modifier — Horde may still roll, but default pressure-spend path is quality). Destination still follows **L45** when present. Caps in `Progression_Spec.md`. No new shooter fantasy; no IP silhouettes.
+  done-when: Play — a hot post-W1 pressure wave spawns a small countable hunter set via vents (not a trash swarm); W1 teaching unchanged; Horde modifier still identifiable when rolled; console clean
+
+- [ ] L59. Bay-as-garage — diagnose your line after a peak
+  Type: systemic / mechanical | Pillar: Lonely worker fantasy
+  Lore: `lore/BIBLE.md` factory×horror (**recovery beats are the garage**); Pacific Drive garage labor (`lore/2026-07-26/summary.md` #4) — refuse driving fantasy
+  Unity: **yes** — after a clear, a used machine runs wrong until repaired; prep length unchanged.
+  Change: when a wave clears, leave **1–2 of the player's machines** that were near the used lane in a diagnoseable fault (throughput dip / sticky filter / power brown — reuse `ProcessInfection` repair path or existing repair tool). Full rate returns only when repaired. **Does not extend prep** (Decision 40s/30s); **not a hard gate** — skipping costs throughput into the next wave, never soft-locks. Distinct from **L43** (optional lane debris → scrap) and **L42** (menace clamp): this is *your line* as companion machine. Terminal one-liner optional, grim-not-gag. Numbers in `Progression_Spec.md`.
+  done-when: Play — after a clear, at least one near-lane machine runs degraded until repaired; prep still 40s/30s; skipping leaves the fault into the next wave; repair restores rate; console clean
+
+- [ ] L60. Empty-protocol workstation (machine mausoleum)
+  Type: diegetic / visual | Pillar: Workplace as trap
+  Lore: `lore/BIBLE.md` motifs (**empty protocol** / **machine mausoleum**); fiction texture (`lore/2026-07-26/summary.md` #6) — motif only, no prose paste
+  Unity: **yes** — a finished bay desk still lit and scheduled, with nobody left to clock in.
+  Tag: `[asset-pack: POLYGON Sci-Fi Horror]`
+  Change: one authored finished workstation cluster (desk + still-running schedule/terminal + cold mug or badge) on far or mid deck — company protocol humming after Last Contact. Original terse copy only. Collider-free; off lane. Distinct from **L49** (security booth), **L55** (cheerful debt notice), **P20** (break-room set piece). Prefer bake/`ISceneDresser` path used by P17/P20.
+  done-when: Play — cluster reads in iso+FP as finished work for an absent crew; schedule/terminal still "on"; lanes clear; console clean
+
 ### Done archive — 2026-07-19 lore-gap + map integrity (shipped)
 
 Code reality snapshot (kept for history): L15-L19 shipped; map seams/props sealed; A9/A10 verified. Asset pack: **not purchased**.
@@ -1928,6 +1982,14 @@ Method: capture the Game view in Play mode, judge the frame, fix the single wors
 - [ ] Free lead: Abandoned Factory Lite (Asset Store) — safe mood greys for blockout; not gated, but not queued until visual Now is thin.
 
 ## Agent log (newest first — one line per session: date, task, result, commit)
+
+- 2026-07-26: **lore-gap** — bible already absorbed through `lore/2026-07-26`. Queued **L56–L60** from
+  the 07-26 canon/experiments: warm-dark foothold bias (L56, RimWorld nest), mediated sector cams
+  (L57, Duskers — delayed CRT), fewer smarter hunters (L58, Dark Descent careful), bay-as-garage
+  diagnose faults on *your* machines after a peak (L59, Pacific Drive mood — no prep extend, distinct
+  from L42/L43), empty-protocol workstation (L60, machine mausoleum motif). Preamble adds vibe-gate
+  agent rule for L56–L59. Skipped beacon/cable/strobe shopping + audio (gate CLOSED). Kept below the
+  pack/FP/lore human fork; no game code. Commit: `lore-gap: refill backlog from research`.
 
 - 2026-07-26: **lore-gap** — bible now absorbed through `lore/2026-07-25` (ran `/lore-bible` first; the
   07-25 digest had landed via the cloud agent). Queued **L50–L55** from the 07-25 canon: power as a
