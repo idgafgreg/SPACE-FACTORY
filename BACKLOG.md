@@ -1989,6 +1989,11 @@ Method: capture the Game view in Play mode, judge the frame, fix the single wors
 
 ## Agent log (newest first — one line per session: date, task, result, commit)
 
+- 2026-07-26 game-state — Playable dual-mode Synty ship; P13+F11–F14 still open; FP readability shards
+  look like debug cubes — `SPACE FACTORY INFO/Game_State/Game_State_Agent_2026-07-26_234930.md` (also
+  `LATEST.md` / `LATEST_Agent.md` + captures). No new Now bugs (F12 already owns shard language).
+  Unity Play surveyed; console Errors 0. Commit+push with reports.
+
 - 2026-07-26: **groom backlog** — de-staled Needs human (P12/P14 done; fork is **after P13**: F11–F14 vs
   L41+). Active queue **BUG1 → P13 → F11–F14**; lore stays parked. Promoted CharacterController spam
   guard from Ice box to **BUG1**. Noted F13 viewmodel mostly covered by P18; Characters mirror note
