@@ -207,8 +207,8 @@ Parked until Gate: OPEN. Commit-sized; bible-aligned; no code until sounds exist
 
 | | |
 |--|--|
-| **Next task** | **BUG1** — one-line `CharacterController` enabled guard (spam fix). Then **P13**. |
-| **Active queue** | **1. BUG1** → **2. P13** → **3. F11** → **4. F12** → **5. F13** → **6. F14**. Lore **L\*** stays below unless a human pulls one up (see Needs human). |
+| **Next task** | **P13** — enemy meshes → Synty alien/zub (runtime pose like P12). Then **F11**. |
+| **Active queue** | **1. P13** → **2. F11** → **3. F12** → **4. F13** → **5. F14**. Lore **L\*** stays below unless a human pulls one up (see Needs human). |
 | **Command** | `/auto-dev` (Unity MCP preferred; else mark `[?]` for `/unity-pass`) |
 | **P13 how** | Same pose problem as P12. **Reuse P12's solution:** pose in code via a runtime hook (see `PlayerArtAttach.EnsureIdlePose`), do **not** bake bone-overrides into `Sector01`. Re-run **Mirror Synty Art Into Resources** if new `Characters/` paths are added. |
 | **Pack conversion** | Done: **P0–P12, P14, P16–P21**. Remaining P: **P13** (enemies). **P22** deferred (VoidHull). |
@@ -221,7 +221,7 @@ Parked until Gate: OPEN. Commit-sized; bible-aligned; no code until sounds exist
 
 ### Bugs (groom 2026-07-26)
 
-- [ ] BUG1. Guard `CharacterController.SimpleMove` when disabled
+- [x] BUG1. Guard `CharacterController.SimpleMove` when disabled — DONE 2026-07-27 (verify-and-close)
   Type: mechanical
   Unity: yes — Play with controller briefly disabled (or harness pin) should not spam console
   Change: in `PlayerController.HandleMovement`, early-out if `characterController == null` or
@@ -229,12 +229,15 @@ Parked until Gate: OPEN. Commit-sized; bible-aligned; no code until sounds exist
   done-when: Play — disabling the controller while input is live produces **zero**
   "CharacterController.Move called on inactive controller" logs; normal walk/respawn/soft-recover
   unchanged; console clean otherwise
+  **DONE:** Guard already shipped in `PlayerController.HandleMovement` (line 52, commit `88718507`).
+  Play-verified 2026-07-27: SoftRecover re-enables CC; 40 frames with CC disabled → **0** inactive-
+  controller logs; restored enabled=true. No code change this session.
 
 ---
 
 ### F1–F14. First-person view mode (human decision 2026-07-20)
 
-**Status:** F1–F10 shipped. Pack conversion condition for F11–F14 is **met**. After **BUG1** + **P13**,
+**Status:** F1–F10 shipped. Pack conversion condition for F11–F14 is **met**. After **P13**,
 the active queue continues **F11 → F14** unless a human pulls systemic lore up instead (see
 `## Needs human decision`).
 
@@ -1567,7 +1570,7 @@ of this block (**L49** only; audio experiments stay under SND*).
 
 ### Lore-gap refill — 2026-07-26 (bible absorb 2026-07-25: power-clock / expansion-risk / cascade / empty-HUD)
 
-**Priority note:** sit **below** the active queue (BUG1 → P13 → F11–F14) unless a human pulls lore up
+**Priority note:** sit **below** the active queue (P13 → F11–F14) unless a human pulls lore up
 (`## Needs human decision`). Bible current through `lore/2026-07-26`. Map size locked; prep 40s / 30s;
 audio gate **CLOSED** (any PA-**voice** half stays `[wait-until-sounds]`; these tasks use printed copy /
 lamps / existing `Sfx` only). Visual/audio-only ≤30% — none here; all systemic or diegetic-logic.
@@ -1624,7 +1627,7 @@ views. Numbers land in `SPACE FACTORY INFO/Progression_Spec.md` in the same comm
 
 ### Lore-gap refill — 2026-07-26 (bible absorb 2026-07-26: warm-dark / mediation / quality hunters / garage / empty protocol)
 
-**Priority note:** sit **below** the active queue (BUG1 → P13 → F11–F14) unless a human pulls lore up
+**Priority note:** sit **below** the active queue (P13 → F11–F14) unless a human pulls lore up
 (`## Needs human decision`). Bible current through `lore/2026-07-26`. Map size locked; prep **40s / 30s**;
 audio gate **CLOSED**.
 **Vibe gate (agent rule for this block):** any new survival/pressure system in L56–L59 ships **one
@@ -1988,6 +1991,11 @@ Method: capture the Game view in Play mode, judge the frame, fix the single wors
 - [ ] Free lead: Abandoned Factory Lite (Asset Store) — safe mood greys for blockout; not gated, but not queued until visual Now is thin.
 
 ## Agent log (newest first — one line per session: date, task, result, commit)
+
+- 2026-07-27: **BUG1** — verify-and-close. Guard already in `PlayerController.HandleMovement`
+  (`characterController == null || !enabled` before `SimpleMove`, since `88718507`). Play: SoftRecover
+  leaves CC enabled; 40 frames with CC disabled → **0** inactive-controller logs. No code change.
+  Work next → **P13**.
 
 - 2026-07-26 game-state — Playable dual-mode Synty ship; P13+F11–F14 still open; FP readability shards
   look like debug cubes — `SPACE FACTORY INFO/Game_State/Game_State_Agent_2026-07-26_234930.md` (also
