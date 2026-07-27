@@ -8,11 +8,11 @@ Rolling map of useful themes. Updated by daily research runs.
 
 | Pillar | What to mine | Status |
 |--------|----------------|--------|
-| Workplace as trap | Isolation baked into the job, not contrived lockdown | Strong — authenticity 07-19; protocol/rules-as-threat 07-22; oversized empty plant 07-23; grim overtime 07-24; cheerful debt-PA 07-25; **facility-as-home under breach (Abiotic Factor vibe)** 2026-07-26 |
-| Industrial biomass / hive | Threat uses vents, heat, logistics; ship becomes habitat | Upgraded 07-20 Flood staging; Carrion habitat + path-to-source 07-24; Bunker noise/light 07-25; **warm-dark nest preference + self-warming footholds (RimWorld)** 2026-07-26 |
-| Factory pressure = identity | Enemies tied to production loop (Factorio pollution lesson) | Strong; WaveFuel/HiveDebt 07-23; path-to-hottest + foothold caps 07-24; ONI ripples + expansion cascade 07-25; **quality hunters over trash swarms (Dark Descent careful)** 2026-07-26 |
-| Diegetic dread | Diegetic UI, failing systems, environmental storytelling | Upgraded 07-20; Mixer EQ 07-22; delayed scanner 07-23; atmosphere bricks 07-24; power clock + empty HUD 07-25; **mediated cams / tech that obstructs (Duskers)** 2026-07-26 |
-| Lonely worker fantasy | Rustic space labor, patched ship, schedule vs survival | Strong — recovery beats; dual view; distant-signal 07-22; absent-crew 07-23; purposeless factory 07-24; refuel valley 07-25; **bay-as-garage maintenance companion (Pacific Drive mood)** 2026-07-26 |
+| Workplace as trap | Isolation baked into the job, not contrived lockdown | Strong — authenticity 07-19; protocol/rules-as-threat 07-22; oversized empty plant 07-23; grim overtime 07-24; cheerful debt-PA 07-25; facility-as-home 07-26; **empty-station archaeology / hub-spoke berths (Tacoma)** 2026-07-27 |
+| Industrial biomass / hive | Threat uses vents, heat, logistics; ship becomes habitat | Upgraded 07-20 Flood staging; Carrion habitat + path-to-source 07-24; Bunker noise/light 07-25; warm-dark nests 07-26; **architecture impregnated not replaced (Scorn careful) + duct habitat kit** 2026-07-27 |
+| Factory pressure = identity | Enemies tied to production loop (Factorio pollution lesson) | Strong; WaveFuel/HiveDebt 07-23; path-to-hottest + foothold caps 07-24; ONI ripples + expansion cascade 07-25; quality hunters 07-26; **expansion sidegrade poison / combination hazards (Lobotomy anti-comp)** 2026-07-27 |
+| Diegetic dread | Diegetic UI, failing systems, environmental storytelling | Upgraded 07-20; Mixer EQ 07-22; delayed scanner 07-23; atmosphere bricks 07-24; power clock + empty HUD 07-25; mediated cams 07-26; **you-are-the-station systems UI (Observation) + CRT-Free spike** 2026-07-27 |
+| Lonely worker fantasy | Rustic space labor, patched ship, schedule vs survival | Strong — recovery beats; dual view; distant-signal 07-22; absent-crew 07-23; purposeless factory 07-24; refuel valley 07-25; bay-as-garage 07-26; **ghost-in-the-HVAC / keep-the-station-going motif** 2026-07-27 |
 
 ## Comp watchlist
 
@@ -34,13 +34,17 @@ Rolling map of useful themes. Updated by daily research runs.
 - RimWorld infestation (**warm-dark nest preference** — mechanic motif only; not colony-sim)
 - Pacific Drive (**garage recovery / companion machine** — mood only; refuse driving fantasy)
 - Aliens: Dark Descent (**fog + quality hunters** — careful; anti-RTS / anti-IP copy)
+- Observation (**you-are-the-station systems mediation** — diegetic cams/panels; refuse AI-protagonist genre)
+- Tacoma (**empty workplace archaeology / hub-spoke berths** — light; refuse walking-sim primary)
+- Lobotomy Corporation (**expansion sidegrade poison / combination hazards** — **anti-comp**; not monster zoo / not hive-as-product)
+- Scorn (**biomechanical impregnation** — careful visual; anti-shooter lesson; refuse full Giger replace)
 - Rain World (offscreen ecology / geometry-as-AI — light)
 - Frostpunk (grim labor sacrifice tone — adjacent; not city-builder)
 - Iron Lung (suggestion / sealed workplace / delayed vision — adjacent FP mood)
 - Return of the Obra Dinn (empty ship archaeology — light)
 - Annihilation / Shimmer score (beauty/fear refraction — light audio-organism)
 - Papers, Please (diegetic paperwork friction — adjacent; factory stays primary)
-- StarRupture (corporate debt + catastrophe prep windows — watch, don’t copy planet loop)
+- StarRupture (corporate debt + catastrophe prep windows — watch, don't copy planet loop)
 - Drill Deep (incremental dread via depth — adjacent)
 - Substructure (factory + descent dread — watch)
 - Biofactory (hive-as-factory **anti-comp** — do not drift)
@@ -69,8 +73,8 @@ Paid + free lore asset leads export to [`assets-wishlist.csv`](assets-wishlist.c
 
 ## Last run
 
-- Date: 2026-07-26
+- Date: 2026-07-27
 - Landed on: `main`
-- Focus weight: Abiotic Factor facility-as-home / vibe-first; Duskers mediated operator vision; RimWorld warm-dark nest preference; Pacific Drive garage recovery; Aliens Dark Descent fog + quality hunters (anti-RTS); free Distress Beacon + Polyzero cables; wishlist Rotating and Flashing Light (~€18.40)
-- Prior run: 2026-07-25 (Bunker power clock / ONI ripples / TAB expansion cascade / Signalis empty HUD)
+- Focus weight: Observation systems mediation; Tacoma empty-workplace berths; Lobotomy combination expansion poison (anti-comp); Scorn impregnation (careful); ghost-in-HVAC fiction; free CRT-Free; wishlist Modular Industrial Air Duct System (~$15)
+- Prior run: 2026-07-26 (Abiotic facility-as-home / Duskers mediation / RimWorld warm-dark / Pacific Drive garage / Dark Descent quality hunters)
 - Render pipeline note: project currently **Built-in** (prefer Built-in-compatible kits; Wet Stuff needs Deferred cameras)
