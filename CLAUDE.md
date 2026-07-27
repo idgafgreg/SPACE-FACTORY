@@ -37,10 +37,11 @@ Shared queue: `BACKLOG.md`. Commands live in `.claude/commands/` (Cursor mirrors
 4. `/playtest` — `PlaytestHarness` smoke + Wave 1 gate → report + backlog bugs
 5. `/unity-pass` — clear every task another agent parked on Unity Editor work (compile, scene wiring, Play-verify, resolve `[?]`)
 6. `/backlog-groom` — optional reprioritize
+7. `/game-state` — optional survey (issues / out-of-place / ideas) → dual reports → commit **and push**
 
 Agents **without** Unity MCP: implement, self-review the diff, then mark the task `[?] needs Unity pass — <what>` rather than `[x]`. Never claim verification you could not perform. `/unity-pass` sweeps those.
 
-Only the two lore commands push (owner, 2026-07-23) — the daily cloud lore agent reads `origin/main`, so canon that stays local sends it re-researching ground already absorbed. Rebase onto `origin/main` first, never force-push. Every other command stops at a local commit for the human to review and push.
+Only `/lore-bible`, `/lore-gap`, and `/game-state` push (owner; game-state added 2026-07-26) — the daily cloud lore agent reads `origin/main`, so canon that stays local sends it re-researching absorbed ground; game-state reports are shared the same way. Rebase onto `origin/main` first, never force-push. Every other command stops at a local commit for the human to review and push.
 
 ### Verified pitfalls (full text in `AGENTS.md` — read before touching FX/visuals/view modes)
 

@@ -24,7 +24,7 @@ Producer/builder/closer/playtest commands share one queue: [`BACKLOG.md`](BACKLO
 | 4 | [`/playtest`](.claude/commands/playtest.md) | Scripted Play Mode suite via `PlaytestHarness` → report + backlog bugs | Report / bugs only |
 | 5 | [`/unity-pass`](.claude/commands/unity-pass.md) | Clear every task parked on Unity Editor work — compile, author scene-side, Play-verify, resolve `[?]` | Fixes + editor wiring only |
 
-Optional: [`/backlog-groom`](.claude/commands/backlog-groom.md) reprioritizes when the queue is messy (also pulls lore when Now is thin).
+Optional: [`/game-state`](.claude/commands/game-state.md) surveys playable state + queue (issues / out-of-place / ideas), writes dual reports under [`SPACE FACTORY INFO/Game_State/`](SPACE%20FACTORY%20INFO/Game_State/), commits **and pushes**. Optional: [`/backlog-groom`](.claude/commands/backlog-groom.md) reprioritizes when the queue is messy (also pulls lore when Now is thin).
 
 **Suggested loop:** lore-bible (if research/ideas are newer than the bible) → lore-gap once → auto-dev × 3–5 → bug-pass once → playtest once → human reviews local commits → push.
 
@@ -159,7 +159,7 @@ See `## Audio / sounds status` in `BACKLOG.md`. **Current state: CLOSED** — wa
 ### Hard rules that stay
 
 - One queue only: `BACKLOG.md` (no parallel roadmap files)
-- Local commits only — never push unless a human asks. **Exception (owner, 2026-07-23): `/lore-bible` and `/lore-gap` push their own commit every run**, because the daily cloud lore agent works from `origin/main` and stale canon there sends it re-researching absorbed ground. Rebase onto `origin/main` first (that agent pushes to the same branch), never force-push, and abort to the human on a conflict. Every other command still stops at a local commit.
+- Local commits only — never push unless a human asks. **Exception (owner, 2026-07-23): `/lore-bible` and `/lore-gap` push their own commit every run**, because the daily cloud lore agent works from `origin/main` and stale canon there sends it re-researching absorbed ground. **Exception (owner, 2026-07-26): `/game-state` also commits and pushes** so the dual Game_State reports stay on `origin/main` for other agents. Rebase onto `origin/main` first (cloud/lore agents push to the same branch), never force-push, and abort to the human on a conflict. Every other command still stops at a local commit.
 - No paywalled asset purchases by agents; wishlist + `lore/sync-assets-sheet.ps1`
 - Do not paste copyrighted fiction into the game
 - `/auto-dev` = one task per invocation; `/bug-pass` = no new features; `/playtest` = no features (report + backlog only)

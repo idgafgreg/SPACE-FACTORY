@@ -8,8 +8,9 @@ Autonomous cycle (see `AGENTS.md`):
 3. `/bug-pass` — fix regressions / `[?]` items → commit
 4. `/playtest` — PlaytestHarness smoke + Wave 1 gate → report + backlog
 5. `/backlog-groom` — optional reprioritize when the queue is messy
+6. `/game-state` — optional survey (issues / out-of-place / ideas) → dual reports in `SPACE FACTORY INFO/Game_State/` → commit + push
 
-Humans and producer commands edit this file; `/auto-dev`, `/bug-pass`, and `/playtest` check boxes and append Agent log notes.
+Humans and producer commands edit this file; `/auto-dev`, `/bug-pass`, and `/playtest` check boxes and append Agent log notes. `/game-state` appends a log line and may add at most a few clear bugs.
 
 Rules for tasks in this file:
 - One task = one commit-sized change (fits in a single session, testable).
