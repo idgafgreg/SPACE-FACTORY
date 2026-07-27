@@ -67,7 +67,9 @@ Use these when inventing features, VFX, audio, enemy behavior, or backlog tasks.
 - **The hive is a resident, not a spawn.** It treats vents, grates and utility crawlspace as home, deposits into wall fissures to corrupt the architecture, and makes the worker a guest in their own plant. Its forms have their own goals — hunting residue and warmth in the ducts — and stay alive when the player is elsewhere; they are ecology, not aggro magnets waiting to be triggered. Steal the *habitat grammar* only: we never hand the player the monster (see Carrion anti-comp).
 - First contact should read **beautiful-wrong before hostile**: infection refracts a machine loop or a PA bed into something almost pleasant, and only then curdles. Fear earned by wrongness lands harder than fear announced by gore.
 - Prefer ecology beats and **timed contamination stages** (filters sticky → processors “wrong” → logistics-aware forms) over pure aggro spikes.
+- **Warm-dark footholds.** Sticky forms prefer warm, under-lit pockets; nests that take hold can warm their own bay. Cooling and lighting a deck is containment labor — distinct from “raids path to the loudest machine” (destination) and from the player-spent power clock (calm resource).
 - Cascading vessel failure is fair game: pumps, wiring, HVAC, and process lines can carry the scare — not only spawn waves. Prefer **layered loops that ripple** — a sticky filter feeds wrong slurry feeds heat feeds louder machines feeds louder raids — so a “solved” deck can fail quietly again later, rather than one hard obstacle solved in isolation.
+- Prefer **few pathing hunters** over trash swarms when pressure spends — flank via vents, retreat, force care — without becoming squad-RTS or endless horde spectacle.
 - Visual: industrial biomass, not cute aliens or cozy bugs.
 - Comp energy OK (Flood ladder, Dead Space ship-body, Barotrauma husk staging); do **not** paste copyrighted fiction or copy unique IP silhouettes wholesale.
 
@@ -85,7 +87,8 @@ Use these when inventing features, VFX, audio, enemy behavior, or backlog tasks.
 - **Grim, never gag.** Shift-board copy, overtime pressure and workplace sacrifice read as sad labor under a company that does not care — push them and they tip into satire, soften them and they vanish. Aim for the flat, tired register, not the joke.
 - **The company built the hostile workplace first.** Locked doors, surveillance, recycling chutes, compliance signage and leased tooling are corporate, and predate the hive; the hive only has to inherit the pipes. Threat that repurposes what the company already installed beats threat that arrives with its own new monster kit.
 - **Paperwork is mood, never the loop.** Shift boards, stamped orders and sealed notices sit *beside* the belts as texture and pressure. The moment reading documents becomes the skill being tested, the factory has been demoted.
-- Authenticity before haunt: the ship must read as a real labor habitat first; biomass wrongness lands harder on true workplace bones.
+- Authenticity before haunt: the ship must read as a **lived workplace people could exist in** first — offices, break rooms, utility closets as lonely berth under breach — before stacking another abstract meter. Atmosphere is the product; meters are scaffolding.
+- **Recovery beats are the garage.** Between peaks, the safe bay is where lonely labor lives — repair, diagnose, restack *your* line — not a timer staring back. Hands-on maintenance of the factory is the valley.
 - **Expansion fills emptiness — and is the risk.** Unused deck is future workplace: grow into it (layout, breach pressure, lived-in dressing) rather than cropping the ship to feel “full” early. But every deck you open can be lethal — one breach can snowball through a bay, and walls or chokepoints *buy time*, not safety. Expansion should earn dread, not just fill space (anti-tower-defense: no wall-spam immortality).
 - Anti-comp: **Biofactory** (hive-as-factory) — do not drift into “the factory *is* the hive.” We are ship factory *under* parasite pressure.
 
@@ -102,6 +105,7 @@ Use these when inventing features, VFX, audio, enemy behavior, or backlog tasks.
 - HUD: diegetic where possible; avoid pure sci-fi arcade chrome.
 - In **first-person**, factory state must still be readable on machine faces and in the world — never require the iso overview to stay legible.
 - **In first person, withheld information is the horror tool.** Lag the scanner, muffle what is beyond the bulkhead, let a dark sector be reported rather than seen. Suggestion carries FP dread far cheaper than spectacle — but it may never cost the player the factory legibility the rule above guarantees.
+- **Mediation helps and obstructs.** Scanners, machine faces, and sector cams are lifelines that also lag, crop, and glitch — the player is an *operator* under incomplete feeds, not a marine with perfect intel. (Duskers energy — no typing UI required.)
 - **Power and light are things the player spends, not a fear meter.** Sector power / HVAC burns down while you work or hide, and a dark or loud deck is where the hive gets bold — calm is a tangible resource refuelled and defended by labor, never a floating panic bar. (Amnesia: The Bunker.)
 - **Quiet the HUD in both views.** Strip non-essential chrome in calm iso and FP alike; the factory's truth lives on machine faces and sector tags, so switching view never changes what is true. (Signalis empty-HUD lesson — pairs with the FP world-legibility rule above.)
 
@@ -137,6 +141,11 @@ Use these when inventing features, VFX, audio, enemy behavior, or backlog tasks.
 | Oxygen Not Included | Overlapping persistent loops that ripple — a "solved" system fails again later | Colony-sim micromanagement as the identity |
 | They Are Billions | Expansion is the risk; one breach snowballs a bay; walls and chokepoints *buy time*, not safety | RTS tower-defense identity / zombie tropes |
 | SIGNALIS | Empty gameplay HUD carries iso dread; diegetic menus survive the iso↔FP switch intact | Chrome that re-anchors the camera or demotes the factory |
+| Abiotic Factor | Facility-as-home vibe first; smart play over brute force | Half-Life comedy / co-op clown energy |
+| Duskers | Operator mediation — tech enables and obstructs incomplete feeds | Typing-UI gimmick / marine power fantasy |
+| RimWorld (infestation) | Warm-dark nest preference; cooling as containment | Colony-sim sprawl as identity |
+| Pacific Drive | Garage-style recovery labor between peaks | Car/road / Zone-drive fantasy |
+| Aliens: Dark Descent | Fog-of-war + few flanking hunters over trash swarms | Squad-RTS / Alien IP silhouette copy |
 | Biofactory | — | **Anti-comp** — hive-as-factory drift |
 
 ---
@@ -158,6 +167,8 @@ Short, original motifs agents may use in copy, props, systems (no copyrighted qu
 - A dark security/checkpoint booth with a still-lit map terminal — company surveillance the hive later inherits  
 - A machine loop or PA bed that goes subtly *lovely* as infection takes a deck, before it turns  
 - Far deck that still looks like a ship waiting for a crew — empty until *you* industrialize it  
+- Company systems that keep humming on schedule after Last Contact — empty protocol building for nobody  
+- A generation-ship bay that reads as a machine mausoleum: finished workstations, no one left to clock in  
 
 ---
 
@@ -178,6 +189,11 @@ Promote to sections above only via `/lore-bible` when clearly good and north-sta
 - **Noise interest radius:** loud processors and player tools raise a soft interest field the hive investigates *before* combat forms commit (Bunker interest + They-Are-Billions sound-reactive, light)  
 - **Cascade checklist:** a “solved” breach schedules a delayed heat/slurry side-effect so the deck can fail quietly again later (ONI ripple, scoped)  
 - **Breach snowball cap:** a foothold that infects a machine opens a short convert window for adjacent props/workers — punishes open sprawl without RTS building-infection comedy  
+- **Vibe gate before new meters:** any new survival/pressure system ships one diegetic world beat in the same commit (lamp bed, vent tone, break-room prop) — facility-as-home rule, scoped  
+- **Mediated sector cams:** wall/desk CRT shows a delayed noisy crop of another bay — operator feed, never replaces factory legibility  
+- **Warm-dark foothold bias:** sticky forms prefer sectors above a heat threshold and below a light threshold; cooling/scrubbing is containment labor  
+- **Bay-as-garage valley:** after a breach peak, force a short repair/restack/diagnose loop on *your* machines before the next wave arms (pairs with L42/L43)  
+- **Fewer smarter hunters:** when near-term pressure spends, prefer 1–3 pathing flankers via vents over a trash swarm (pairs with L45 destination rule)  
 
 **Absorbed / no longer experiments:** soft menace director + scanner lag, HorrorClock sector decay, heat-raised infection share, recovery-beat AlarmLevel ease, diegetic PA that cuts mid-sentence — treat as canon grammar above.
 **Graduated to backlog tasks (tracked in `BACKLOG.md`, not here):** two measured clocks → L41, intensity valley timer → L42, recovery-beat labour → L43, delayed sector snapshot → L44; directional raids → L45, atmosphere brick table → L46, hive-as-resident ticks → L47/L48, lit security booth → L49.
@@ -212,7 +228,7 @@ Promote to sections above only via `/lore-bible` when clearly good and north-sta
 
 | Date | Change | Source |
 |------|--------|--------|
-| 2026-07-26 | no canon changes — digest reviewed (newest still 2026-07-25; Decisions unchanged; experiments already parked) | re-run `/lore-bible` |
+| 2026-07-26 | Absorb 07-26 (landed on remote during prior re-run). Canon: facility-as-home vibe before meters; mediation helps-and-obstructs; warm-dark footholds; recovery bay as garage labor; few hunters over trash swarms. Comps +Abiotic Factor, +Duskers, +RimWorld infestation, +Pacific Drive, +Dark Descent (careful). Motifs +empty protocol / machine mausoleum. Experiments +vibe gate, +mediated cams, +warm-dark bias, +bay-as-garage valley, +fewer smarter hunters. Rejected: beacon/cable/strobe shopping; Half-Life comedy; car/road fantasy; squad-RTS / Alien IP | `lore/2026-07-26/summary.md` |
 | 2026-07-26 | Absorb 07-25 (landed mid-run via the cloud agent). Canon: power/light is a *tangible* spent clock the hive exploits on dark or loud decks (Amnesia: The Bunker); expansion is the risk — one breach snowballs a bay, walls/chokepoints buy time not safety (They Are Billions); layered loops ripple so a "solved" system fails again later (ONI); quiet the HUD in both views with factory truth on machine faces so iso↔FP share it (Signalis). Comps +Bunker, +ONI, +They Are Billions, +Signalis; Against the Storm growth-debt folded into the existing two-clock. Motif +cheerful-PA-riding-on-debt. Experiments +sector calm budget, +noise interest radius, +cascade checklist, +breach snowball cap. Rejected: leak/spillage asset shopping (wishlist only, Built-in). | `lore/2026-07-25/summary.md` |
 | 2026-07-24 | Absorb 07-24. Canon: raids path to the loudest machine (heat/throughput source) via belts/vents, not the player, so layout is the defense; the hive is a resident (owns ducts/fissures, has its own goals, alive offscreen) — habitat grammar only, never play the monster; atmosphere events fire with or without spawns (false-scare palette); grim-not-gag tone. Comps +Dead Space remake Intensity Director, +Carrion (anti reverse-horror), +Frostpunk, +Rain World; Prey/Talos folded into the Citadel row. Motif +lit security booth. Experiments +directional raids, +hive-as-resident ticks, +atmosphere brick table; trimmed the three now tracked as backlog tasks (two-clock→L41, valley→L42, delayed snapshot→L44). Rejected: worn-surface asset shopping (wishlist only), playing-the-monster reverse horror | `lore/2026-07-24/summary.md` |
 | 2026-07-23 | Absorb 07-22 + 07-23 (both were unabsorbed). Canon: two-clock hive pressure (spendable local fuel vs lifetime production debt); beautiful-wrong before hostile; pace peak *frequency* not amplitude, valley is systemic; recovery beats are labor; the company built the hostile workplace the hive inherits; paperwork is mood not loop; infection audible before visible; withheld information as the FP horror tool. Comps +System Shock/Citadel, L4D Director, Annihilation, Iron Lung, Obra Dinn, Papers Please; ROUTINE/Site17/Haze and StarRupture/Drill Deep/Substructure merged to keep the table skimmable. Motifs +distant shift channel, +absent-crew residue, +refraction. Experiments +two measured clocks, +intensity valley timer, +protocol breach window, +delayed sector snapshot; retired PA-cut and scrap-coupling experiments as absorbed | `lore/2026-07-22/summary.md`, `lore/2026-07-23/summary.md` |
@@ -225,8 +241,8 @@ Promote to sections above only via `/lore-bible` when clearly good and north-sta
 
 ## Last absorbed research
 
-- Date: 2026-07-26 (re-run; newest digest still 2026-07-25)  
-- Digests: 2026-07-19 → 2026-07-25, `lore/2026-07-25/summary.md` newest  
-- Focus absorbed: Amnesia: The Bunker (power/light as a tangible spent clock; hive prefers dark/loud decks); Oxygen Not Included (overlapping loops that ripple into delayed failure); They Are Billions (expansion-as-risk, one breach cascades, walls buy time — anti-tower-defense); SIGNALIS (empty gameplay HUD + diegetic menus that survive the iso↔FP switch); Against the Storm growth-debt (light, folded into the two-clock); cheerful-company-PA-over-debt as fiction texture. Prior focus (07-19 → 07-24) unchanged.  
-- Left out on purpose: leak/spillage asset shopping — Yughues oils, Warwolf decals, Wet Stuff / Spillage wishlist (wishlist only, Built-in Projector, some Deferred-only); RTS/tower-defense and zombie tropes (They Are Billions Avoid); colony-sim micromanagement identity (ONI Avoid). No preference forks arose, so no new `Needs human decision` entries.  
-- Re-run check: digest headlines already in canon or Open experiments; INDEX pillars already reflect 07-25 upgrades. `/lore-gap` may still queue the four parked 07-25 experiments if not yet in `BACKLOG.md`.
+- Date: 2026-07-26  
+- Digests: 2026-07-19 → 2026-07-26, `lore/2026-07-26/summary.md` newest  
+- Focus absorbed: Abiotic Factor facility-as-home / vibe-first; Duskers operator mediation; RimWorld warm-dark nest preference; Pacific Drive garage recovery; Aliens Dark Descent fog + quality hunters (anti-RTS); empty-protocol / machine-mausoleum motifs. Prior 07-25 (Bunker power clock, ONI ripples, TAB expansion, Signalis HUD) and 07-19→07-24 focus unchanged.  
+- Left out on purpose: free beacon/cable + rotating-light wishlist shopping; Half-Life comedy / co-op clown; car/road fantasy; squad-RTS and Alien IP silhouettes; colony-sim sprawl. No preference forks — no new `Needs human decision`.  
+- Next: `/lore-gap` should queue strong 07-25/07-26 experiments not yet in `BACKLOG.md` (calm budget, noise interest, warm-dark bias, mediated cams, fewer hunters, etc.).
