@@ -135,11 +135,11 @@ Parked until Gate: OPEN. Commit-sized; bible-aligned; no code until sounds exist
 
 ## Needs human decision
 
-- **Priority after pack actors (groom 2026-07-27).** Pack conversion + build mirror + actors are done
-  (P0–P14, P16–P21; P13 enemies Synty-posed). Active queue is **F11–F14**. Preference fork still open:
-  1. **FP polish F11–F14** — make first person shippable (default until you rule).
+- **Priority after pack actors (groom 2026-07-27).** Pack conversion + actors done. **F11 shipped.**
+  Active queue is **F12–F14**. Preference fork still open:
+  1. **Finish FP polish F12–F14** — machine-face readouts, scale audit, dual-mode gate (default).
   2. **Systemic lore L41+** (through L60) — highest north-star *play* value; no pack dependency.
-  Say the word to pull **L41** (or another L*) up instead of F11.
+  Say the word to pull **L41** (or another L*) up instead of F12.
 
 ## Decisions (human-made, newest first)
 
@@ -202,8 +202,8 @@ Parked until Gate: OPEN. Commit-sized; bible-aligned; no code until sounds exist
 
 | | |
 |--|--|
-| **Next task** | **F11** — threat readability in FP (light spill / diegetic cue; audio half = SND6 gated). |
-| **Active queue** | **1. F11** → **2. F12** → **3. F13** → **4. F14**. Lore **L\*** stays below unless a human pulls one up (see Needs human). |
+| **Next task** | **F12** — factory legibility in FP (diegetic machine-face readouts). |
+| **Active queue** | **1. F12** → **2. F13** → **3. F14**. Lore **L\*** stays below unless a human pulls one up (see Needs human). |
 | **Command** | `/auto-dev` (Unity MCP preferred; else mark `[?]` for `/unity-pass`) |
 | **P13 how** | Same pose problem as P12. **Reuse P12's solution:** pose in code via a runtime hook (see `PlayerArtAttach.EnsureIdlePose`), do **not** bake bone-overrides into `Sector01`. Re-run **Mirror Synty Art Into Resources** if new `Characters/` paths are added. |
 | **Pack conversion** | Done: **P0–P14, P16–P21**. Remaining P: **P22** deferred (VoidHull). |
@@ -232,8 +232,8 @@ Parked until Gate: OPEN. Commit-sized; bible-aligned; no code until sounds exist
 
 ### F1–F14. First-person view mode (human decision 2026-07-20)
 
-**Status:** F1–F10 shipped. Pack conversion condition for F11–F14 is **met**. Active queue is
-**F11 → F14** unless a human pulls systemic lore up instead (see `## Needs human decision`).
+**Status:** F1–F11 shipped. Active queue continues **F12 → F14** unless a human pulls systemic lore
+up instead (see `## Needs human decision`).
 
 Goal: toggleable FP that looks/reads at least as well as iso. Iso stays until F14 passes.
 
@@ -1270,7 +1270,7 @@ fog all check out, enumerate renderers along the sight line before touching anyt
   dressed on rescan. Single-face housings (front +Z) — if FP shows a plain box from the rear,
   follow-up is to mirror the housing to the −Z face (cheap now that the layer is iso-hidden).
 
-- [ ] F11. Threat readability in FP
+- [x] F11. Threat readability in FP — DONE 2026-07-27 (auto-dev, Unity-verified)
   Type: visual / systemic | Pillar: Industrial biomass / hive
   Lore: A8b lineage; `BIBLE.md` — hive uses our systems, dread over jump-scare spam.
   Unity: **yes** — Play spawn tests in dark deck + hub pool, FP.
@@ -1285,6 +1285,10 @@ fog all check out, enumerate renderers along the sight line before touching anyt
   done-when: Play (FP) — an enemy approaching from behind is detectable before it hits you via
   light spill and/or diegetic suit/compass cue (audio optional until SND6); Play (iso) — A8b
   unchanged; console clean
+  **DONE:** Rewrote `ThreatCompass` (was unwired arcade chevrons) — FP-only: boosts off-screen
+  `ThreatGlow` spill (range/intensity up, lifted for ceiling catch) and draws a terminal
+  `PROX · AFT/PORT/…` chip + soft edge wash. Wired in `SectorRuntimeBootstrap.AddHud`. Play:
+  aft crawler fpSpill 5.60/2.87, iso restored 2.60/1.5; 0 Errors. SND6 still gated.
 
 - [ ] F12. Factory legibility in FP — diegetic machine-face readouts
   Type: diegetic / systemic | Pillar: Factory pressure = identity / Diegetic dread
@@ -1568,7 +1572,7 @@ of this block (**L49** only; audio experiments stay under SND*).
 
 ### Lore-gap refill — 2026-07-26 (bible absorb 2026-07-25: power-clock / expansion-risk / cascade / empty-HUD)
 
-**Priority note:** sit **below** the active queue (F11–F14) unless a human pulls lore up
+**Priority note:** sit **below** the active queue (F12–F14) unless a human pulls lore up
 (`## Needs human decision`). Bible current through `lore/2026-07-26`. Map size locked; prep 40s / 30s;
 audio gate **CLOSED** (any PA-**voice** half stays `[wait-until-sounds]`; these tasks use printed copy /
 lamps / existing `Sfx` only). Visual/audio-only ≤30% — none here; all systemic or diegetic-logic.
@@ -1625,7 +1629,7 @@ views. Numbers land in `SPACE FACTORY INFO/Progression_Spec.md` in the same comm
 
 ### Lore-gap refill — 2026-07-26 (bible absorb 2026-07-26: warm-dark / mediation / quality hunters / garage / empty protocol)
 
-**Priority note:** sit **below** the active queue (F11–F14) unless a human pulls lore up
+**Priority note:** sit **below** the active queue (F12–F14) unless a human pulls lore up
 (`## Needs human decision`). Bible current through `lore/2026-07-26`. Map size locked; prep **40s / 30s**;
 audio gate **CLOSED**.
 **Vibe gate (agent rule for this block):** any new survival/pressure system in L56–L59 ships **one
@@ -1989,6 +1993,10 @@ Method: capture the Game view in Play mode, judge the frame, fix the single wors
 - [ ] Free lead: Abandoned Factory Lite (Asset Store) — safe mood greys for blockout; not gated, but not queued until visual Now is thin.
 
 ## Agent log (newest first — one line per session: date, task, result, commit)
+
+- 2026-07-27: **F11** — FP threat readability. Rewrote/wired `ThreatCompass`: off-screen spill boost
+  on `ThreatGlow` + terminal `PROX · bearing` chip (no arcade arrows). Play: spill 5.60/2.87 behind
+  player, iso restores 2.60/1.5; 0 Errors. SND6 still gated. Work next → **F12**.
 
 - 2026-07-27: **P13** — enemy meshes → Synty Alien/Zub + runtime pose. `PickEnemyModel` remapped;
   `EnemyArtPose` poses alien arms / Zub legs + alien head attach; Characters mirrored into

@@ -180,6 +180,8 @@ public static class SectorRuntimeBootstrap
         go.AddComponent<ScanCooldownHud>();
         go.AddComponent<BuildGhostCostHud>();
         go.AddComponent<FPCrosshair>();
+        // F11: FP off-screen threat spill + terminal PROX chip (iso unchanged).
+        go.AddComponent<ThreatCompass>();
 
         go.AddComponent<PlaytestOverlay>();
         go.AddComponent<PlaytestHarness>();
