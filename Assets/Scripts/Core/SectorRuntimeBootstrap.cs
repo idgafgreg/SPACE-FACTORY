@@ -183,6 +183,8 @@ public static class SectorRuntimeBootstrap
         go.AddComponent<LaneThreatLamp>();
         // L28: the shift board keeps posting the roster through a breach.
         go.AddComponent<ShiftScheduleBoard>();
+        // L32: fill the empty far deck as the operation grows (never shrink it).
+        go.AddComponent<FarDeckLabourFill>();
 
         go.AddComponent<AmbientDustMotes>();
         // P21: pack particle accents, gated on heat/menace/wave state.

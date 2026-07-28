@@ -202,7 +202,7 @@ Parked until Gate: OPEN. Commit-sized; bible-aligned; no code until sounds exist
 
 | | |
 |--|--|
-| **Next task** | **Lore `L*`** — next in file order is **L32** (far-deck labour dressing scales with progress; L31 became SND3, gated). L27 + L28 landed 2026-07-27; **L29 + L30** 2026-07-28. Highest north-star value if a human/groom reorders: **L41–L44**, **L50–L55**. |
+| **Next task** | **Lore `L*`** — next in file order is **L33** (distant scrap/salvage lure toward empty deck; pairs naturally with L32's fill). L27 + L28 landed 2026-07-27; **L29, L30, L32** 2026-07-28. Highest north-star value if a human/groom reorders: **L41–L44**, **L50–L55**. |
 | **Active queue** | Lore **L\***. **F strip COMPLETE** (F1–F14) and **suite green in both modes** — BUG2 turned out to be a bad assertion, not a game bug (2026-07-27). **Changing the default view mode is now unblocked but is a human call** — F14 deliberately did not touch it. |
 | **Command** | `/auto-dev` (Unity MCP preferred; else mark `[?]` for `/unity-pass`) |
 | **P13 how** | Same pose problem as P12. **Reuse P12's solution:** pose in code via a runtime hook (see `PlayerArtAttach.EnsureIdlePose`), do **not** bake bone-overrides into `Sector01`. Re-run **Mirror Synty Art Into Resources** if new `Characters/` paths are added. |
@@ -1574,12 +1574,31 @@ Code reality: L15–L26 shipped (Play-verified where noted); L27–L30 / L32–L
   what the verification depends on. `DebugRunResidueMark` samples the throughput term for the same
   reason its own comment already gives for heat. Bands table in `Progression_Spec.md`. Console clean.
 
-- [ ] L32. Far-deck labour dressing scales with progress (fill, don’t shrink)
+- [x] L32. Far-deck labour dressing scales with progress (fill, don’t shrink) — DONE 2026-07-28 (auto-dev, Play-verified)
   Type: diegetic / systemic | Pillar: Lonely worker fantasy / Factory pressure = identity
   Lore: `lore/BIBLE.md` Deck lock + “expansion fills emptiness”; Decision 2026-07-21
   Unity: **yes** — compare W0 vs W3+ prop density on far deck (not hub cluster).
   Change: extend `PlaceholderPropDressing` (or small companion) so additional lived-in labour clusters (crates, conduit, schedule stubs, spilled parts — primitives only) spawn on **empty far-deck samples** as `WavesCleared` and/or powered machine count rises. Never resize ground/walls. Cap density; keep lane/hub clearance rules from P3. Sector_Layout note: emptiness → industrialization.
   done-when: Play — after several clears, far deck shows measurable new dressing vs fresh run; map bounds unchanged; lanes clear; console clean
+  **DONE 2026-07-28 (auto-dev, Play-verified).** New `FarDeckLabourFill` (wired in
+  `SectorRuntimeBootstrap`, own child root) adds Synty labour clusters to open deck. Budget =
+  `WavesCleared×2 + PoweredProducers`, capped **24**; **only ever adds** (verified: budget dropping does
+  not remove props). Keep-outs **16 m** hub / **3 m** lanes, colliders stripped. Deterministic sweep so a
+  run always fills the same way. Wall rejection by **renderer bounds, not raycast** — the hull is
+  collider-free, so a physics query reports clear air inside a wall.
+  **Scope correction (important for future dresser work):** the task said extend
+  `PlaceholderPropDressing` — I did, then found **that component does not exist in this scene**;
+  `SectorAuthoring` skips `AddGeometryDressing`, so it is dead code here and the pass would have
+  silently done nothing. Reverted and built the "small companion" the task also allowed. **Check which
+  dressers actually run before extending one.**
+  Asset note: task said "primitives only" (written pre-purchase); pack is OPEN and P7 made every other
+  deck prop Synty, so primitives would now read as a bug.
+  Verified: fresh run **7** props → grown operation (14 powered) **14** (cap 24); clearance audit
+  `inLane=0` (nearest **3.42 m**), `nearHub=0` (min **16.3 m**), `colliders=0`, none outside play area,
+  rejects cleaned up (14 children == 14 placed). Map bounds unchanged. Console clean.
+  **Honest limitation:** the far deck is unlit by design, so these read as low-contrast shapes rather
+  than lit dressing. Biasing toward lamps would defeat filling the *far* deck — that's the F7/F8
+  lighting question. Raised as an Ice box item.
 
 - [ ] L33. Distant scrap/salvage lure toward empty deck
   Type: systemic | Pillar: Factory pressure = identity / Workplace as trap
@@ -2143,6 +2162,14 @@ Method: capture the Game view in Play mode, judge the frame, fix the single wors
 
 ## Ice box (ideas, ungroomed)
 
+- [ ] Far-deck dressing is unlit (noted during L32, 2026-07-28). `FarDeckLabourFill` places correctly
+  (verified 14 props, clearance clean) but the far deck has no lamps, so the props read as low-contrast
+  shapes rather than set dressing. **Do not "fix" it by pulling placement toward existing lamps** —
+  that defeats filling the *far* deck, which the 2026-07-21 Decision explicitly wants filled. The real
+  question is whether expansion should bring its own work light (a placeable/auto lamp as the operation
+  spreads), which is an F7/F8 lighting design call, not a dressing bug. Same "dress into the light"
+  tension that P5/P6/P9 each hit.
+
 - [ ] Player actor reads ~26% oversized in iso (F13 audit finding, 2026-07-27) — **needs a human
   preference call, not a silent fix.** The player body renders **~2.26 m** tall against props that are
   correctly human (locker 1.85, console 1.53), so the worker slightly towers over the deck and the
@@ -2164,6 +2191,17 @@ Method: capture the Game view in Play mode, judge the frame, fix the single wors
 - [ ] Free lead: Abandoned Factory Lite (Asset Store) — safe mood greys for blockout; not gated, but not queued until visual Now is thin.
 
 ## Agent log (newest first — one line per session: date, task, result, commit)
+
+- 2026-07-28: **L32 far-deck labour fill — DONE (auto-dev, Play-verified).** New `FarDeckLabourFill`
+  adds Synty labour clusters to open deck; budget `waves×2 + poweredProducers` capped 24, **adds only**,
+  16 m hub / 3 m lane keep-outs, collider-free, deterministic sweep, wall rejection by renderer bounds
+  (not raycast — the hull is collider-free). **Scope correction:** the task said extend
+  `PlaceholderPropDressing`; I did, then found **that component isn't in this scene at all**
+  (`SectorAuthoring` skips `AddGeometryDressing`), so it would have been dead code — reverted and built
+  the companion the task also allowed. Verified fresh 7 → grown 14 props, `inLane=0` (3.42 m), hub min
+  16.3 m, colliders 0, rejects cleaned. Limitation logged to Ice box: the far deck is unlit, so the
+  props read low-contrast; biasing toward lamps would defeat the point. Console clean.
+  Commit: `L32: fill the empty far deck as the operation grows` (2026-07-28 HEAD).
 
 - 2026-07-28: **L30 throughput tax — DONE (auto-dev, A/B verified).** `FactoryHeatTracker` exposes
   `Throughput01` / `MachineLoad01` / `ThroughputExcess01`; `WaveController` adds a capped residue bias

@@ -1810,3 +1810,32 @@ would allocate a string four times a second for a sign that changes a handful of
 Verified in play across the real wave path: `SHIFT 01 | PREP WINDOW` → `SHIFT 01 | BREACH ACTIVE` →
 `SHIFT 01 | CLEAR - RESUME DUTY` → back to `PREP WINDOW`, and later `SHIFT 02 | BREACH ACTIVE` once
 wave 2 began — legible in an iso capture beside the hub.
+
+# Far-Deck Labour Fill (L32, 2026-07-28)
+
+Emptiness becomes industrialization. The 2026-07-21 Decision rules that the empty deck is expansion
+headroom, not a bug, so it is FILLED as the run goes on — never shrunk. `FarDeckLabourFill` adds small
+labour clusters (Synty crates, barrels, power cells, greebles) onto open deck as the operation grows.
+
+- Budget = `WavesCleared * 2 + PoweredProducers`, capped at **24** props. The deck should look
+  increasingly worked, never carpeted. It only ever ADDS — a shrinking factory does not remove props.
+- Keep-outs: **16 m** from the hub (the nest pass already owns that ground) and **3 m** from every
+  lane. Colliders are stripped, so dressing can never block pathing or narrow a walkway.
+- Placement is a deterministic sweep, so a given run always fills the same way and a later pass
+  continues where the last one stopped instead of re-rolling the deck.
+- Rejects anything overlapping authored wall geometry by **renderer bounds, not a raycast** — the hull
+  and most dressing are collider-free, so a physics query reports clear air inside a wall.
+
+Why a standalone runtime component and not a pass inside `PlaceholderPropDressing`: that dresser
+**never runs in the hand-authored sector** (`SectorAuthoring` skips `AddGeometryDressing`), so
+extending it would have shipped dead code that silently did nothing. `SectorRuntimeBootstrap` adds
+`FarDeckLabourFill` directly. Check which dressers actually execute before extending one.
+
+Asset note: the L32 task text said "primitives only", written while the asset pack was unpurchased.
+The pack is open and P7 made every other deck prop Synty, so primitives would now read as a bug.
+
+Verified in play: a fresh run placed 7; with the operation grown to 14 powered producers it filled to
+14 (cap 24), with `inLane=0` (nearest 3.42 m), `nearHub=0` (min 16.3 m), `colliders=0`, and nothing
+outside the play area. Map bounds unchanged. The far deck is dim by design — these props read as
+low-contrast shapes out there rather than lit set dressing, which is the F7/F8 lighting question, not
+this one.
