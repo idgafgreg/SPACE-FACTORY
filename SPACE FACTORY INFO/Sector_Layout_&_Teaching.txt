@@ -19,8 +19,9 @@
 # Interior Volume (F6, 2026-07-21)
 
 - The deck is enclosed. Ceiling underside sits at y = 3.2 against wall tops at ~2.9, giving roughly
-  1.55 of headroom over a 1.65 eye — industrial-cramped rather than warehouse. F13 audits this
-  against the final astronaut art.
+  1.55 of headroom over a 1.65 eye — industrial-cramped rather than warehouse. **F13 audited this
+  (2026-07-27) and the volume PASSES — see "Human-Scale Audit" below. No wall, ceiling or gate
+  geometry was changed.**
 - Coverage spans the whole walkable deck (x ±60, z ±40), not just the authored hull (x ±42.5,
   z ±24.5). The edge rails from P2 sit at the Ground lip, so the player can stand well outside the
   hull; a lid that stopped at the hull left a band to walk into and look up at open sky from.
@@ -1716,3 +1717,43 @@ Runtime `MapEdgeGuard` places invisible Buildable-layer rails on the four lips o
 ## Prop Placement Sanity (P3, 2026-07-20)
 
 `PlaceholderPropDressing` (v12+) snaps props to deck via `FindDeckY`, strips colliders (never block CharacterController), and rejects placements that overlap Walls / seam seals, sit within ~1.85m of a lane path, or clutter the hub approach (~2.4m — nest + workshop exempt). Corridor/workshop/bay dressers try alternate side offsets before giving up so the ship stays lived-in without spearing bulkheads.
+
+# Human-Scale Audit + FP Embodiment (F13, 2026-07-27)
+
+The ship's geometry was authored to read from the 14 m iso camera and had never been checked against
+a 1.65 m eye. Measured in Play against that eye; the headline is that **the deck passes and nothing
+about the ship was resized** — the one real outlier is the player character, recorded below.
+
+Measured (Play, eye 1.65):
+- Props sit at human scale: desk 0.79, barrel 0.78, table 0.89, bench 1.21, console 1.53,
+  locker 1.85. A worker reads correctly against every one of these.
+- Ceiling lid at y ~3.07-3.2 = 1.94x eye. Industrial-plausible (real plant decks run 3-4 m); reads
+  as a lid overhead in first person, not a cathedral.
+- Corridors measure 6.0 m clear between wall faces. Wider than a real ship passage, but this is
+  **deliberately not changed**: the 2026-07-21 human Decision forbids pulling the walls in, and the
+  width is what lets belts, machines and lanes share a corridor. Factory layout is the primary skill
+  expression; narrowing it would cost the loop more than it would buy in atmosphere.
+- Gate mouths ~4.0 tall x 7.0 wide including the P6 airlock frame — sized for lane throughput.
+
+Caveat worth remembering: a raycast up from the deck reports **no ceiling**, because the lid and most
+dressing are collider-free. Renderer bounds are the correct instrument (207 ceiling renderers spanning
+121.9 x 81.6). Do not "fix" a missing ceiling that is only missing from the physics query.
+
+Known outlier, NOT fixed here: the player body renders ~2.26 m tall (126% of a 1.8 m human), so in
+iso the worker slightly towers over a 1.85 m locker, and the 1.65 eye sits at ~73% of body height
+where a human's is ~93%. This is invisible in first person (the body is hidden there), so it is an
+iso silhouette / lore-fantasy issue rather than an FP scale one. Left alone deliberately: shrinking
+the actor also shrinks its iso readability at 14 m, which is a preference call rather than a bug.
+Logged to the backlog Ice box.
+
+FP embodiment (`FirstPersonCamera.HeadMotion`):
+- Walk head motion is a LOCAL camera offset added to (never replacing) the CameraShake term, so hits
+  and impacts still punch through the gait.
+- Full-walk values, measured over a sustained 4.50 m/s run: vertical travel 0.044 m peak-to-peak,
+  lateral 0.022 m, ~3.1 Hz (vertical runs at twice the sway frequency — two footfalls per cycle).
+  For comparison a conventional FPS bob is 0.10-0.15 m; this is deliberately about a third of that.
+- Amplitude scales with actual horizontal speed and eases (not the phase), so stopping mid-stride
+  settles the head instead of snapping it to centre. Standing still leaves only a ~0.006 m breath.
+- `headMotion = false` on the component disables it entirely as a motion-sickness fallback.
+- Footstep audio is deliberately absent: that is SND7, behind the closed audio gate.
+- Iso is untouched — the whole routine sits behind LateUpdate's first-person guard.

@@ -202,8 +202,8 @@ Parked until Gate: OPEN. Commit-sized; bible-aligned; no code until sounds exist
 
 | | |
 |--|--|
-| **Next task** | **F13** — FP embodiment + architectural scale audit. |
-| **Active queue** | **1. F13** → **2. F14**. Lore **L\*** stays below unless a human pulls one up (see Needs human). |
+| **Next task** | **F14** — FP Wave 1 gate + dual-mode playtest (the last F task; closes the first-person strip). |
+| **Active queue** | **1. F14**. Then lore **L\*** — the FP strip is done after F14 (F13 landed 2026-07-27: deck passes human-scale audit, FP head motion in). |
 | **Command** | `/auto-dev` (Unity MCP preferred; else mark `[?]` for `/unity-pass`) |
 | **P13 how** | Same pose problem as P12. **Reuse P12's solution:** pose in code via a runtime hook (see `PlayerArtAttach.EnsureIdlePose`), do **not** bake bone-overrides into `Sector01`. Re-run **Mirror Synty Art Into Resources** if new `Characters/` paths are added. |
 | **Pack conversion** | Done: **P0–P14, P16–P21**. Remaining P: **P22** deferred (VoidHull). |
@@ -1312,7 +1312,7 @@ fog all check out, enumerate renderers along the sight line before touching anyt
   dirty/baked SectorRuntime. Hardened visibility rescan/subscribe. Play: 7 faces, FP on / iso off,
   infected processor → CONTAM (frame-verified), EyeLevelId also hides in iso; 0 Errors.
 
-- [ ] F13. FP embodiment + architectural scale audit
+- [x] F13. FP embodiment + architectural scale audit — DONE 2026-07-27 (auto-dev, Play-verified)
   Type: visual / mechanical | Pillar: Lonely worker fantasy
   Lore: `BIBLE.md` — patched tools, human labour texture; restrained, not FPS-punchy.
   Unity: **yes** — measurement pass in the editor + eye-level Play captures.
@@ -1328,6 +1328,31 @@ fog all check out, enumerate renderers along the sight line before touching anyt
   held tool is visible and matches the active mode (footsteps optional until SND7); Play (iso) —
   no scale changes visible from the iso camera, or changes are deliberate improvements documented
   in `Sector_Layout_&_Teaching.txt`; console clean
+  **DONE 2026-07-27 (auto-dev, Play-verified).** Both halves; full write-up in
+  `SPACE FACTORY INFO/Sector_Layout_&_Teaching.txt` → "Human-Scale Audit + FP Embodiment".
+  **(a) Scale audit — the deck PASSES and nothing about the ship was resized.** Measured in Play
+  against the 1.65 eye: props are human (desk 0.79, barrel 0.78, table 0.89, bench 1.21, console 1.53,
+  locker 1.85), the lid is 1.94x eye (industrial-plausible; real plant decks run 3–4 m), gate mouths
+  ~4.0×7.0 with the P6 frame. Corridors measure **6.0 m** clear — wider than a real passage, and
+  deliberately **left alone**: the 2026-07-21 human Decision forbids pulling walls in, and the width is
+  what lets belts, machines and lanes share a corridor (factory layout is the primary skill expression).
+  Closed the F6 note's open "F13 audits this against the final astronaut art" question.
+  **Instrument trap worth remembering:** a raycast up from the deck reports **no ceiling** — the lid and
+  most dressing are collider-free. Renderer bounds are the right instrument (207 ceiling renderers
+  spanning 121.9×81.6). Nearly filed a bug against a ceiling that was only missing from the physics query.
+  **(b) Embodiment — `FirstPersonCamera.HeadMotion()`,** the genuinely missing piece (there was no head
+  motion at all). A LOCAL offset **added to**, never replacing, the CameraShake term, so hits still punch
+  through the gait; vertical runs at 2x the sway frequency (two footfalls per cycle); **amplitude** eases
+  with speed rather than the phase, so stopping mid-stride settles the head instead of snapping it to
+  centre; idle leaves only breathing. `headMotion=false` is a motion-sickness fallback.
+  Verified over a sustained **4.50 m/s** run (13.5 m travelled): vertical **0.0440 m** p2p, lateral
+  **0.0220 m**, **3.33 Hz** — on design and ~⅓ of a conventional FPS bob; idle settles to ~0.006 m.
+  Iso untouched (routine sits behind LateUpdate's FP guard). Console clean, 0 errors.
+  Tool viewmodel confirmed already present from **P18**. Footsteps deliberately absent → **SND7** (gated).
+  **Not fixed, logged to Ice box:** the player body renders **~2.26 m** (126% of a 1.8 m human), so the
+  1.65 eye sits at 73% of body height (human ≈93%) and in iso the worker slightly towers over a 1.85 m
+  locker. Invisible in FP (body hidden there), so it is an iso-silhouette/lore call, and shrinking the
+  actor trades away iso readability at 14 m — a preference decision, not a bug to slip into this task.
 
 ---
 
@@ -1987,6 +2012,16 @@ Method: capture the Game view in Play mode, judge the frame, fix the single wors
 
 ## Ice box (ideas, ungroomed)
 
+- [ ] Player actor reads ~26% oversized in iso (F13 audit finding, 2026-07-27) — **needs a human
+  preference call, not a silent fix.** The player body renders **~2.26 m** tall against props that are
+  correctly human (locker 1.85, console 1.53), so the worker slightly towers over the deck and the
+  1.65 eye sits at 73% of body height where a human's is ~93%. **Invisible in first person** (the body
+  is hidden there), so this is purely iso silhouette + "tired shift worker, not a marine" lore fantasy.
+  Fix would be scaling the body ~0.80 in code (same runtime hook as `PlayerArtAttach.EnsureIdlePose` —
+  do NOT bake into `Sector01`). Deliberately not done in F13: a smaller actor also reads *less* clearly
+  from the 14 m iso camera, which is a trade the owner should make. Enemies were not sampled (none alive
+  during the audit) — check them in the same pass.
+
 - [x] CharacterController.SimpleMove when disabled — **promoted** to **BUG1** (groom 2026-07-26).
 - [x] [asset-pack: Alien Biomass Planet] Superseded — owner bought POLYGON Sci-Fi Horror instead; P0 covers residue swap.
 - [x] [asset-pack: Bio Horror / Sci-fi Environment] Superseded — P1 uses Synty Alien Wall/Pillar for breach infestation.
@@ -1998,6 +2033,19 @@ Method: capture the Game view in Play mode, judge the frame, fix the single wors
 - [ ] Free lead: Abandoned Factory Lite (Asset Store) — safe mood greys for blockout; not gated, but not queued until visual Now is thin.
 
 ## Agent log (newest first — one line per session: date, task, result, commit)
+
+- 2026-07-27: **F13 human-scale audit + FP embodiment — DONE (auto-dev, Play-verified).**
+  **(a)** Audited the ship against the 1.65 eye: props measure human, lid 1.94x eye, gates sized for
+  throughput → **deck passes, no geometry resized.** 6.0 m corridors left alone on purpose (2026-07-21
+  Decision forbids pulling walls in; the width is what lets belts/machines/lanes share a corridor).
+  Caught an instrument trap: raycasts report "no ceiling" because the lid is collider-free — renderer
+  bounds are the right tool (207 renderers, 121.9×81.6). **(b)** Added `FirstPersonCamera.HeadMotion()`
+  — there was none. Offset is *added to* CameraShake; amplitude (not phase) eases with speed so stopping
+  settles rather than snaps; `headMotion=false` fallback. Measured on a sustained 4.50 m/s run: vertical
+  0.0440 m p2p, lateral 0.0220 m, 3.33 Hz (~⅓ of a normal FPS bob); idle → 0.006 m breath. Iso untouched;
+  console clean. Viewmodel already done by P18; footsteps stay **SND7** (gated). Oversized player actor
+  (~2.26 m, 126% of human) found but **not** silently fixed — Ice box, needs an owner call.
+  Commit: `F13: human-scale audit + restrained FP head motion` (2026-07-27 HEAD).
 
 - 2026-07-27: **F12** DONE — `MachineFaceStatus` FP face panels (CONTAM/RUN/IDLE…); ensure-missing
   bootstrap; `EyeLevelIdentityVisibility` rescan fix. Play: 7 faces FP on/iso off, CONTAM frame OK,

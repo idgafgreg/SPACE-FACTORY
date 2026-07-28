@@ -11,8 +11,23 @@ public class FirstPersonCamera : MonoBehaviour
     [Header("Player")]
     [Tooltip("Player transform. If null, found from PlayerController.Instance on Start.")]
     public Transform player;
-    [Tooltip("Eye height above the player root. F13 will audit against final astronaut art.")]
+    [Tooltip("Eye height above the player root. F13 audit: correct against the deck — props measure " +
+             "human (desk 0.79, locker 1.85, console 1.53) and the 3.2 m lid reads industrial from here.")]
     public float eyeHeight = 1.65f;
+
+    [Header("Embodiment (F13)")]
+    [Tooltip("Head motion while walking. Off = perfectly rigid camera (motion-sickness fallback).")]
+    public bool headMotion = true;
+    [Tooltip("Vertical head travel at full walk, in metres. Deliberately tiny — a tired shift worker " +
+             "carrying tools, not an FPS bob.")]
+    public float headBobAmount = 0.022f;
+    [Tooltip("Side-to-side sway at full walk, in metres. Half the vertical, so the gait reads as weight " +
+             "shifting rather than a bouncing camera.")]
+    public float headSwayAmount = 0.011f;
+    [Tooltip("Steps per second at full walk. Under-driven on purpose: a trudge, not a jog.")]
+    public float headBobRate = 1.55f;
+    [Tooltip("Idle breathing travel, in metres. Only fully present when standing still.")]
+    public float breathAmount = 0.006f;
 
     [Header("Look")]
     public float mouseSensitivityX = 180f;
@@ -36,6 +51,9 @@ public class FirstPersonCamera : MonoBehaviour
     Vector3 _originalLocalPos;
     Quaternion _originalLocalRot;
     CameraFollow _isoRig;
+    CharacterController _playerCc;
+    float _bobPhase;
+    float _bobWeight;
 
     void Awake()
     {
@@ -117,7 +135,53 @@ public class FirstPersonCamera : MonoBehaviour
 
         // CameraShake is world-space additive; transform into the head anchor's local space.
         Vector3 shakeLocal = _headAnchor.InverseTransformDirection(CameraShake.Sample(Time.deltaTime));
-        transform.localPosition = shakeLocal;
+        transform.localPosition = shakeLocal + HeadMotion();
+    }
+
+    /// <summary>
+    /// Restrained walk motion so first person has a body behind the eyes (F13).
+    ///
+    /// Deliberately under-driven: ~2 cm of vertical travel and half that sideways
+    /// at a 1.55 steps/sec trudge. The brief is a tired shift worker carrying
+    /// tools, not a marine — an FPS-sized bob would both fight the horror pacing
+    /// and make the mode nauseating to play for a long shift. The vertical term
+    /// runs at twice the sway frequency because both feet land per gait cycle,
+    /// which is what stops it reading as a hover.
+    ///
+    /// Returns a LOCAL offset that is added to (never replaces) the CameraShake
+    /// term, so impacts and hits still punch through the walk cycle.
+    /// Footstep audio is deliberately absent — that is SND7, behind the audio gate.
+    /// </summary>
+    Vector3 HeadMotion()
+    {
+        if (!headMotion) return Vector3.zero;
+
+        if (_playerCc == null && player != null)
+            _playerCc = player.GetComponent<CharacterController>();
+
+        // Horizontal speed only: falling or riding a lift is not a gait.
+        float speed01 = 0f;
+        if (_playerCc != null)
+        {
+            Vector3 v = _playerCc.velocity;
+            v.y = 0f;
+            var pc = PlayerController.Instance;
+            float top = pc != null && pc.moveSpeed > 0.01f ? pc.moveSpeed : 4.5f;
+            speed01 = Mathf.Clamp01(v.magnitude / top);
+        }
+
+        // Ease the amplitude rather than the phase, so stopping mid-stride settles
+        // the head instead of snapping it back to centre.
+        _bobWeight = Mathf.MoveTowards(_bobWeight, speed01, Time.deltaTime * 3.5f);
+        _bobPhase += Time.deltaTime * headBobRate * Mathf.PI * 2f * speed01;
+        if (_bobPhase > Mathf.PI * 2f) _bobPhase -= Mathf.PI * 2f;
+
+        float sway = Mathf.Sin(_bobPhase) * headSwayAmount * _bobWeight;
+        float bob = Mathf.Sin(_bobPhase * 2f) * headBobAmount * _bobWeight;
+        // Breathing fills the silence when standing still and fades out under walking.
+        float breath = Mathf.Sin(Time.time * 0.7f) * breathAmount * (1f - _bobWeight);
+
+        return new Vector3(sway, bob + breath, 0f);
     }
 
     void EnsureHeadAnchor()
