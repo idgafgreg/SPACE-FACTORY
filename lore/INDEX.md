@@ -8,11 +8,11 @@ Rolling map of useful themes. Updated by daily research runs.
 
 | Pillar | What to mine | Status |
 |--------|----------------|--------|
-| Workplace as trap | Isolation baked into the job, not contrived lockdown | Strong — authenticity 07-19; protocol/rules-as-threat 07-22; oversized empty plant 07-23; grim overtime 07-24; cheerful debt-PA 07-25; facility-as-home 07-26; **empty-station archaeology / hub-spoke berths (Tacoma)** 2026-07-27 |
-| Industrial biomass / hive | Threat uses vents, heat, logistics; ship becomes habitat | Upgraded 07-20 Flood staging; Carrion habitat + path-to-source 07-24; Bunker noise/light 07-25; warm-dark nests 07-26; **architecture impregnated not replaced (Scorn careful) + duct habitat kit** 2026-07-27 |
-| Factory pressure = identity | Enemies tied to production loop (Factorio pollution lesson) | Strong; WaveFuel/HiveDebt 07-23; path-to-hottest + foothold caps 07-24; ONI ripples + expansion cascade 07-25; quality hunters 07-26; **expansion sidegrade poison / combination hazards (Lobotomy anti-comp)** 2026-07-27 |
-| Diegetic dread | Diegetic UI, failing systems, environmental storytelling | Upgraded 07-20; Mixer EQ 07-22; delayed scanner 07-23; atmosphere bricks 07-24; power clock + empty HUD 07-25; mediated cams 07-26; **you-are-the-station systems UI (Observation) + CRT-Free spike** 2026-07-27 |
-| Lonely worker fantasy | Rustic space labor, patched ship, schedule vs survival | Strong — recovery beats; dual view; distant-signal 07-22; absent-crew 07-23; purposeless factory 07-24; refuel valley 07-25; bay-as-garage 07-26; **ghost-in-the-HVAC / keep-the-station-going motif** 2026-07-27 |
+| Workplace as trap | Isolation baked into the job, not contrived lockdown | Strong — authenticity 07-19; protocol/rules-as-threat 07-22; oversized empty plant 07-23; grim overtime 07-24; cheerful debt-PA 07-25; facility-as-home 07-26; empty-station archaeology / hub-spoke berths (Tacoma) 07-27; **lonely-job radio intimacy (Firewatch) + Teamster labor (Mothership light)** 2026-07-28 |
+| Industrial biomass / hive | Threat uses vents, heat, logistics; ship becomes habitat | Upgraded 07-20 Flood staging; Carrion habitat + path-to-source 07-24; Bunker noise/light 07-25; warm-dark nests 07-26; architecture impregnated not replaced (Scorn careful) + duct habitat kit 07-27; **forecastable surge / take-shelter (STALKER Emissions careful) + night-hull travel** 2026-07-28 |
+| Factory pressure = identity | Enemies tied to production loop (Factorio pollution lesson) | Strong; WaveFuel/HiveDebt 07-23; path-to-hottest + foothold caps 07-24; ONI ripples + expansion cascade 07-25; quality hunters 07-26; expansion sidegrade poison / combination hazards (Lobotomy anti-comp) 07-27; **failure tax not panic HUD (Mothership) + siege-around-the-line (This War of Mine adjacent)** 2026-07-28 |
+| Diegetic dread | Diegetic UI, failing systems, environmental storytelling | Upgraded 07-20; Mixer EQ 07-22; delayed scanner 07-23; atmosphere bricks 07-24; power clock + empty HUD 07-25; mediated cams 07-26; you-are-the-station systems UI (Observation) + CRT-Free spike 07-27; **ISO workplace signage + hold-to-listen shift radio** 2026-07-28 |
+| Lonely worker fantasy | Rustic space labor, patched ship, schedule vs survival | Strong — recovery beats; dual view; distant-signal 07-22; absent-crew 07-23; purposeless factory 07-24; refuel valley 07-25; bay-as-garage 07-26; ghost-in-the-HVAC / keep-the-station-going 07-27; **berth-as-house FP densify (Returnal careful) + naming-the-station motif** 2026-07-28 |
 
 ## Comp watchlist
 
@@ -38,6 +38,11 @@ Rolling map of useful themes. Updated by daily research runs.
 - Tacoma (**empty workplace archaeology / hub-spoke berths** — light; refuse walking-sim primary)
 - Lobotomy Corporation (**expansion sidegrade poison / combination hazards** — **anti-comp**; not monster zoo / not hive-as-product)
 - Scorn (**biomechanical impregnation** — careful visual; anti-shooter lesson; refuse full Giger replace)
+- S.T.A.L.K.E.R. (**Emission / take-shelter surge + detector anomalies** — careful; refuse Zone FPS / artifact loot)
+- Returnal (**dual intimacy FP house vs hostile overview; haunt not jump scare** — careful; refuse roguelike / bullet hell)
+- Firewatch (**lonely-job radio intimacy** — light; refuse walking-sim primary)
+- Mothership RPG (**failure stress debt / Shore Leave recovery** — light texture; refuse panic HUD / tabletop comedy)
+- This War of Mine (**siege happens around you** — adjacent grim labor; refuse war-sim / moral-adventure primary)
 - Rain World (offscreen ecology / geometry-as-AI — light)
 - Frostpunk (grim labor sacrifice tone — adjacent; not city-builder)
 - Iron Lung (suggestion / sealed workplace / delayed vision — adjacent FP mood)
@@ -73,8 +78,8 @@ Paid + free lore asset leads export to [`assets-wishlist.csv`](assets-wishlist.c
 
 ## Last run
 
-- Date: 2026-07-27
+- Date: 2026-07-28
 - Landed on: `main`
-- Focus weight: Observation systems mediation; Tacoma empty-workplace berths; Lobotomy combination expansion poison (anti-comp); Scorn impregnation (careful); ghost-in-HVAC fiction; free CRT-Free; wishlist Modular Industrial Air Duct System (~$15)
-- Prior run: 2026-07-26 (Abiotic facility-as-home / Duskers mediation / RimWorld warm-dark / Pacific Drive garage / Dark Descent quality hunters)
+- Focus weight: STALKER Emission take-shelter (careful); Returnal dual intimacy / haunt; Firewatch lonely-job radio; Mothership failure-tax (no panic HUD); This War of Mine siege-around-you (adjacent); night-hull fiction; free Three signs ISO 7010; wishlist Hazard & Safety 285 (~$22)
+- Prior run: 2026-07-27 (Observation systems mediation; Tacoma empty-workplace berths; Lobotomy combination expansion poison; Scorn impregnation careful; ghost-in-HVAC; CRT-Free; Modular Air Duct wishlist)
 - Render pipeline note: project currently **Built-in** (prefer Built-in-compatible kits; Wet Stuff needs Deferred cameras)
