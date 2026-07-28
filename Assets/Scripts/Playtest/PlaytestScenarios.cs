@@ -485,23 +485,57 @@ public partial class PlaytestHarness
             $"hp={player.CurrentHealth:0}/{fullHp:0}");
 
         // FP body must still be hidden after the respawn path ran.
-        int visible = 0;
-        foreach (var r in player.GetComponentsInChildren<Renderer>(true))
-            if (r != null && r.enabled) visible++;
+        int visible = DrawnBodyRenderers(player);
         Assert("fp: body still hidden after respawn", visible == 0, sb, pass,
-            $"visibleRenderers={visible}");
+            $"drawnBodyRenderers={visible}");
 
         // And iso must get its art back.
         ViewMode.Current = ViewMode.Mode.Iso;
         yield return null;
-        int isoVisible = 0;
-        foreach (var r in player.GetComponentsInChildren<Renderer>(true))
-            if (r != null && r.enabled) isoVisible++;
+        int isoVisible = DrawnBodyRenderers(player);
         Assert("iso: body visible after respawn", isoVisible > 0, sb, pass,
-            $"visibleRenderers={isoVisible}");
+            $"drawnBodyRenderers={isoVisible}");
 
         ViewMode.Current = startMode;
         yield return null;
+    }
+
+    /// <summary>
+    /// Renderers of the player's OWN BODY that are actually drawing right now.
+    ///
+    /// Both respawn checks used to count every renderer under the player that had
+    /// <c>enabled == true</c>, and that measured two things it never meant to:
+    ///
+    /// 1. The P18 held-tool viewmodel is parented under the FP camera, which is a
+    ///    child of the player in first person — and it is <i>supposed</i> to be
+    ///    visible there. It is the one thing first person must show.
+    /// 2. <c>Renderer.enabled</c> stays true on a deactivated GameObject.
+    ///    <see cref="PlayerToolViewmodel"/> switches tools with SetActive, so the
+    ///    two holstered tools report enabled while drawing nothing.
+    ///
+    /// Together those made the FP check fail with "9 visible renderers" on a
+    /// perfectly healthy respawn. Measured at the time: all 9 were viewmodel, of
+    /// which only 4 were actually drawn (the active mining laser), body renderers
+    /// were 0 — and the identical 9 were already enabled BEFORE dying, so respawn
+    /// had changed nothing. Scope the count to the body and require the renderer to
+    /// actually draw, so the assertion tests the thing it is named after.
+    /// </summary>
+    static int DrawnBodyRenderers(PlayerController player)
+    {
+        if (player == null) return 0;
+        var body = PlayerArtAttach.ResolveBody(player.transform);
+        if (body == null) return 0;
+
+        int n = 0;
+        foreach (var r in body.GetComponentsInChildren<Renderer>(true))
+        {
+            if (r == null || !r.enabled) continue;
+            if (!r.gameObject.activeInHierarchy) continue;      // enabled but not drawn
+            if (PlayerToolViewmodel.IsViewmodel(r.transform)) continue;
+            if (r.name.Contains("BlobShadow")) continue;        // ground decal, not the body
+            n++;
+        }
+        return n;
     }
 
     // ── Scenario 4: cursor ownership across a first-person exit ──────────────

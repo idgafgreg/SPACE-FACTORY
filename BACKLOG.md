@@ -202,8 +202,8 @@ Parked until Gate: OPEN. Commit-sized; bible-aligned; no code until sounds exist
 
 | | |
 |--|--|
-| **Next task** | **BUG2** — respawn re-shows the player body in FP (`visibleRenderers=9`, expected 0). Found by F14's dual-mode gate; it is the only red check in an otherwise green suite, so clear it before new features. |
-| **Active queue** | **1. BUG2** → then lore **L\***. **The F strip is COMPLETE** (F1–F14): first person clears the same Wave 1 gate iso does (hub 500/500 both modes), human-scale audit passed, head motion in. **Changing the default view mode is now unblocked but is a human call** — F14 deliberately did not touch it. |
+| **Next task** | **Lore `L*`** — pack conversion, the F strip and BUG2 are all closed, and the suite is green in both modes. Take the topmost eligible L task (or let a human/groom pick); **L41–L44** and the newest **L50–L55** are the highest north-star value. |
+| **Active queue** | Lore **L\***. **F strip COMPLETE** (F1–F14) and **suite green in both modes** — BUG2 turned out to be a bad assertion, not a game bug (2026-07-27). **Changing the default view mode is now unblocked but is a human call** — F14 deliberately did not touch it. |
 | **Command** | `/auto-dev` (Unity MCP preferred; else mark `[?]` for `/unity-pass`) |
 | **P13 how** | Same pose problem as P12. **Reuse P12's solution:** pose in code via a runtime hook (see `PlayerArtAttach.EnsureIdlePose`), do **not** bake bone-overrides into `Sector01`. Re-run **Mirror Synty Art Into Resources** if new `Characters/` paths are added. |
 | **Pack conversion** | Done: **P0–P14, P16–P21**. Remaining P: **P22** deferred (VoidHull). |
@@ -1392,7 +1392,8 @@ fog all check out, enumerate renderers along the sight line before touching anyt
   for a run whose own report said COMBAT DONE FAIL (blocks list passing checks before their verdict).
   Fixed to read the authoritative `<TAG> DONE PASS|FAIL` line; the mis-parsed reports were discarded.
 
-- [ ] BUG2. Respawn re-shows the player body in first person
+- [x] BUG2. Respawn re-shows the player body in first person — **NOT A GAME BUG.** The *check* was
+  wrong. DONE 2026-07-27 (auto-dev, mutation-tested)
   Type: mechanical / bug | Found by: F14 dual-mode gate 2026-07-27
   Unity: **yes** — die in FP, respawn, count visible body renderers.
   Symptom: the COMBAT scenario's `fp: body still hidden after respawn` check fails with
@@ -1406,6 +1407,26 @@ fog all check out, enumerate renderers along the sight line before touching anyt
   other character variants in iso. Verify with the existing COMBAT scenario, not by eye.
   done-when: `fp: body still hidden after respawn` passes (0 visible), iso still shows the body after
   respawn, and the full suite is green in both modes; console clean
+  **DONE 2026-07-27 (auto-dev). The game was fine — the assertion was wrong; no product code changed.**
+  Enumerated the 9 "visible" renderers in play: **every one was the P18 held-tool viewmodel**
+  (`Player/FPHeadAnchor/Main Camera/ToolViewmodelRoot/…`, `underBody=False`), and the **identical 9 were
+  already enabled BEFORE dying** — so respawn changed nothing and body renderers were **0** throughout.
+  My BUG2 write-up guessed at `RespawnRoutine`'s blanket re-enable; that guess was wrong, and measuring
+  first is what caught it.
+  Two flaws in one line — the check counted every renderer under the player with `enabled == true`:
+  (1) the **FP viewmodel is parented under the FP camera**, itself a child of the player, and is exactly
+  what first person must show; (2) **`Renderer.enabled` stays true on a deactivated GameObject** —
+  `PlayerToolViewmodel` swaps tools with `SetActive`, so the two holstered tools reported enabled while
+  drawing nothing (9 enabled, only **4** actually drawn).
+  Fix: `DrawnBodyRenderers()` — scoped to the resolved body and requiring `enabled && activeInHierarchy`.
+  This also repairs the **iso** half, which counted the same viewmodel and so **could not fail** even if
+  the body were invisible in iso.
+  Verified: `COMBAT DONE PASS`, fp `drawnBodyRenderers=0`, iso `drawnBodyRenderers=4`.
+  **Mutation-tested** (project bar — a check that has never failed proves nothing): destroying
+  `PlayerArtAttach` + `PlayerBodyVisibility` flipped iso **4 → 0** and the scenario **PASS → FAIL**, so
+  the counter tracks real body visibility rather than passing unconditionally. Sabotage discarded with
+  play state. Console clean, 0 compile errors.
+  **Consequence: the full suite is now green in both modes** — F14's dual-mode gate has no red checks.
 
 ---
 
@@ -2071,6 +2092,18 @@ Method: capture the Game view in Play mode, judge the frame, fix the single wors
 - [ ] Free lead: Abandoned Factory Lite (Asset Store) — safe mood greys for blockout; not gated, but not queued until visual Now is thin.
 
 ## Agent log (newest first — one line per session: date, task, result, commit)
+
+- 2026-07-27: **BUG2 — NOT a game bug; the check was wrong. DONE (auto-dev, mutation-tested).**
+  Enumerated the 9 "visible" renderers: all were the P18 held-tool viewmodel under the FP camera, and
+  the same 9 were enabled **before** dying — body renderers 0 throughout, so respawn was innocent (my
+  own BUG2 write-up had guessed at `RespawnRoutine`; measuring first disproved it). The assertion
+  counted every renderer under the player with `enabled==true`, which swept in the viewmodel FP must
+  show, plus renderers on deactivated GameObjects (`Renderer.enabled` stays true after `SetActive(false)`
+  — 9 enabled, 4 drawn). Replaced with `DrawnBodyRenderers()` (scoped to the body, requires
+  `enabled && activeInHierarchy`); this also repaired the iso half, which counted the viewmodel and so
+  **could not fail**. COMBAT PASS (fp 0 / iso 4); mutation — destroying `PlayerArtAttach` +
+  `PlayerBodyVisibility` flipped iso 4→0 and PASS→FAIL. No product code changed; suite now green in both
+  modes. Commit: `BUG2: fix the respawn body check, not the respawn path` (2026-07-27 HEAD).
 
 - 2026-07-27: **F14 dual-mode playtest gate — DONE (auto-dev). The F strip (F1–F14) is complete.**
   Harness gains `RunFullSuiteInMode(firstPerson)`, an FP-rig assertion block, and
