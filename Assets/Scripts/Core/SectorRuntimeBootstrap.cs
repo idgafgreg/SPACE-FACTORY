@@ -187,6 +187,8 @@ public static class SectorRuntimeBootstrap
         go.AddComponent<FarDeckLabourFill>();
         // L33: give the player a reason to build out there — rich, distant veins.
         go.AddComponent<FarDeckSalvageLure>();
+        // L34: cold unworked deck feels wronger; industry pushes that back.
+        go.AddComponent<DeckHabitation>();
 
         go.AddComponent<AmbientDustMotes>();
         // P21: pack particle accents, gated on heat/menace/wave state.

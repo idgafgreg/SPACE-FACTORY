@@ -77,6 +77,33 @@ Flood-style ecology ladder start: fragile infection forms on breach lanes that s
 - On death within **5.5m** of a drill/processor: seeds `ProcessInfection` (same 0.55x rate as L17)
 - Tunables on `WaveController`: `residueBreachBaselineShare`, `residueHpMult`, `residueSpeedMult`, `residueSeedRadius`
 
+## Deck habitation wrongness (L34, 2026-07-28) - NEEDS IN-EDITOR VERIFICATION
+
+Cold, unworked deck should read as a lonely ship rather than as missing content, and running industry
+is what pushes that loneliness back. `DeckHabitation` samples the player's surroundings and publishes
+a soft 0-1 `Wrongness01`; `AtmosphereController` folds it into the fog pull it already computes.
+
+- Inhabited within **12 m** of a powered drill/processor; fully lonely past **30 m**.
+- The **hub always counts as inhabited** (18 m) so the teaching area stays readable from minute one.
+- Only **powered** producers count: a stalled machine stops holding the dark back, which is the point.
+- Eases over ~**2.5 s** so walking out reads as a drift, not a switch.
+- Fog pull capped at `habitationFogPull` = **0.30**, deliberately the weakest of the three terms
+  (alarm and HorrorClock decay both outrank it) - loneliness is a drift, not an alarm.
+
+Ownership: `AtmosphereController.Update` writes `RenderSettings` fog every frame, so the habitation
+term is folded into **its** `pull` expression beside `HorrorClock.ZoneDecay01` rather than written from
+a second component. A second writer would fight the alarm and zone pulls depending on execution order -
+the same one-owner-per-field rule L27 (lamp flags) and L29 (zone stress) follow. Because the pull
+scales `fogEnd`, which `ApplyViewProfile` has already swapped per view mode, the F8 first-person fog
+band keeps its own numbers instead of being overridden by an iso value.
+
+**Status: unverified.** The code compiles clean and the component is present, single-instance and
+enabled on SectorRuntime, but across several play sessions `Wrongness01` never moved off 0.000 while a
+hand-calculation at the same far-deck position (nearest powered industry 29.5 m) expected **0.974**.
+Cause not identified - a stale-assembly play session is suspected but was not proven, and a duplicate
+writer was ruled out. Do not treat these numbers as shipped behaviour until a `/unity-pass` confirms
+the value moves on the far deck and eases when industry arrives.
+
 ## Deep far-deck veins (L33, 2026-07-28)
 
 L32 fills the empty deck with dressing; this gives the player a *motive* to build out there. Two rich

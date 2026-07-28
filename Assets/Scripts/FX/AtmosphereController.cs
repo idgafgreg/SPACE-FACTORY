@@ -78,6 +78,11 @@ public class AtmosphereController : MonoBehaviour
 
     // ── F8: per-mode fog + ambient ───────────────────────────────────────────
 
+    [Header("Deck habitation (L34)")]
+    [Tooltip("How hard fully uninhabited deck may pull the fog in. Soft on purpose — loneliness " +
+             "must stay under the alarm and horror-clock pulls, not compete with them.")]
+    [Range(0f, 0.6f)] public float habitationFogPull = 0.3f;
+
     [Header("First-person profile (F8)")]
     [Tooltip("Corridor depth rather than 14m deck read. A2's numbers fog a 6m corridor into mush.")]
     public float fpFogStart = 6f;
@@ -315,7 +320,15 @@ public class AtmosphereController : MonoBehaviour
 
         // Fog pulls in and gets greener during alarm — and from L20 VentBreach horror-clock decay.
         float zone = HorrorClock.ZoneDecay01;
-        float pull = Mathf.Max(alarm, zone * 0.72f);
+        // L34: cold, unworked deck pulls too, easing back as industry reaches it.
+        // Folded in HERE rather than written from DeckHabitation, because this method
+        // owns RenderSettings fog every frame — a second writer would fight the alarm
+        // and zone pulls depending on execution order. Weakest of the three terms on
+        // purpose: loneliness is a drift, not an alarm. It scales fogEnd, which
+        // ApplyViewProfile has already swapped for the mode, so the F8 first-person
+        // profile keeps its own band instead of being overridden by an iso number.
+        float lonely = DeckHabitation.Wrongness01 * habitationFogPull;
+        float pull = Mathf.Max(alarm, zone * 0.72f, lonely);
         RenderSettings.fogEndDistance = Mathf.Lerp(fogEnd, fogEnd * 0.62f, pull);
         RenderSettings.fogColor = Color.Lerp(fogColor, ShipPalette.SickGreenDeep,
             Mathf.Max(alarm * 0.35f, zone * 0.42f));

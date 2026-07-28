@@ -202,7 +202,7 @@ Parked until Gate: OPEN. Commit-sized; bible-aligned; no code until sounds exist
 
 | | |
 |--|--|
-| **Next task** | **Lore `L*`** — next in file order is **L34** (uninhabited-deck wrongness eases near powered industry). L27 + L28 landed 2026-07-27; **L29, L30, L32, L33** 2026-07-28. Highest north-star value if a human/groom reorders: **L41–L44**, **L50–L55**. |
+| **Next task** | **`/unity-pass` to close L34** (shipped `[?]` 2026-07-28 — `Wrongness01` never left 0.000 in play; see its entry for the exact repro steps). Then lore **L35**. L27 + L28 landed 2026-07-27; **L29, L30, L32, L33** 2026-07-28. Highest north-star value if a human/groom reorders: **L41–L44**, **L50–L55**. |
 | **Active queue** | Lore **L\***. **F strip COMPLETE** (F1–F14) and **suite green in both modes** — BUG2 turned out to be a bad assertion, not a game bug (2026-07-27). **Changing the default view mode is now unblocked but is a human call** — F14 deliberately did not touch it. |
 | **Command** | `/auto-dev` (Unity MCP preferred; else mark `[?]` for `/unity-pass`) |
 | **P13 how** | Same pose problem as P12. **Reuse P12's solution:** pose in code via a runtime hook (see `PlayerArtAttach.EnsureIdlePose`), do **not** bake bone-overrides into `Sector01`. Re-run **Mirror Synty Art Into Resources** if new `Characters/` paths are added. |
@@ -1625,12 +1625,33 @@ Code reality: L15–L26 shipped (Play-verified where noted); L27–L30 / L32–L
   `Extract(10)=10`, infinite; correct layer/trigger/art; all authored veins still present and untouched
   (starter economy unchanged, hub viable without ever walking out). Console clean.
 
-- [ ] L34. Uninhabited-deck wrongness eases near powered industry
+- [?] L34. Uninhabited-deck wrongness eases near powered industry — **needs in-editor verification** (auto-dev 2026-07-28)
   Type: systemic / diegetic | Pillar: Diegetic dread / Factory pressure = identity
   Lore: `lore/BIBLE.md` cold/quiet decks calm vs heat/industry; expansion headroom reads as lonely ship not missing content
   Unity: **yes** — far empty vs near running machines.
   Change: lightweight “habitation” field — samples distance to nearest powered drill/processor/belt; far unused deck gets slight fog pull and/or ambient wrongness (reuse AtmosphereController / HorrorClock-style hooks), easing as industry approaches. Soft only; hub teaching area stays readable. Must not fight F8 FP fog profile (gate or blend per ViewMode if needed). Numbers in Progression_Spec.
   done-when: Play — standing on empty far deck feels slightly wronger than beside a running line; building out reduces that local wrongness; map bounds unchanged; console clean
+  **[?] 2026-07-28 (auto-dev) — CODE SHIPPED, RUNTIME EFFECT UNVERIFIED.** New `DeckHabitation`
+  (bootstrap-wired) publishes a soft 0–1 `Wrongness01`: inhabited within **12 m** of a *powered*
+  drill/processor, fully lonely past **30 m**, hub always inhabited (**18 m**) so the teaching area stays
+  readable, eased over ~**2.5 s**. Only powered producers count — a stalled machine stops holding the
+  dark back.
+  **Ownership (the design point):** `AtmosphereController.Update` writes `RenderSettings` fog every
+  frame, so the term is folded into **its** `pull` expression beside `HorrorClock.ZoneDecay01` rather
+  than written from a second component — same one-owner rule as L27 (lamp flags) and L29 (zone stress).
+  Pull capped at **0.30**, weakest of the three terms. Because it scales `fogEnd`, which
+  `ApplyViewProfile` already swaps per mode, **the F8 FP fog band is respected automatically**.
+  **Why `[?]`:** compiles clean, component present/single-instance/enabled on SectorRuntime, but across
+  several play sessions `Wrongness01` never moved off **0.000** while a hand-calc at the same far-deck
+  spot (nearest powered industry **29.5 m**) expected **0.974**. Cause not identified — stale-assembly
+  play sessions suspected (an earlier duplicate-`[Tooltip]` compile error of mine had blocked the whole
+  assembly, and play kept starting mid-compile) but **not proven**; duplicate writer ruled out.
+  **For `/unity-pass`:** enter play on a settled compile, walk to ~(−34, 17), confirm `Wrongness01`
+  climbs toward ~0.97 and `RenderSettings.fogEndDistance` drops below 44, then place/power a drill
+  nearby and confirm it eases back. If the value is still pinned at 0, check whether `DeckHabitation
+  .Update` is running at all before touching the formula.
+  Fixed en route: the duplicate `[Tooltip]` compile error, and a `PlayerController.Instance`-only lookup
+  with no `Find` fallback (every other caller in the project pairs the two).
 
 ### Lore-gap refill — 2026-07-22 (bible absorb: employment trap / organ logic / contamination)
 
@@ -2209,6 +2230,16 @@ Method: capture the Game view in Play mode, judge the frame, fix the single wors
 - [ ] Free lead: Abandoned Factory Lite (Asset Store) — safe mood greys for blockout; not gated, but not queued until visual Now is thin.
 
 ## Agent log (newest first — one line per session: date, task, result, commit)
+
+- 2026-07-28: **L34 deck habitation wrongness — `[?]` shipped unverified (auto-dev).** `DeckHabitation`
+  publishes a 0–1 wrongness (12 m warm / 30 m lonely, hub always inhabited, powered producers only);
+  `AtmosphereController` folds it into the fog `pull` it already owns beside `HorrorClock.ZoneDecay01`
+  — single-owner rule, and scaling `fogEnd` means the F8 FP band is respected for free. **Did NOT verify:**
+  `Wrongness01` stayed 0.000 across several play sessions while a hand-calc at the same spot expected
+  0.974; cause unidentified (stale-assembly play suspected after my own duplicate-`[Tooltip]` compile
+  error blocked the assembly; duplicate writer ruled out). Marked `[?]` rather than claiming it works —
+  repro steps for `/unity-pass` are in the task entry. Console clean; no other system touched.
+  Commit: `L34: deck habitation wrongness [?] needs in-editor verification` (2026-07-28 HEAD).
 
 - 2026-07-28: **L33 deep far-deck veins — DONE (auto-dev, Play-verified).** `FarDeckSalvageLure` places
   `Vein_DeepSalvage` (Scrap ×2.4) from the start and `Vein_DeepCircuits` (Circuits ×2.6) at
