@@ -135,11 +135,12 @@ Parked until Gate: OPEN. Commit-sized; bible-aligned; no code until sounds exist
 
 ## Needs human decision
 
-- **Priority after pack actors (groom 2026-07-27).** Pack conversion + actors done. **F11–F12 shipped.**
-  Active queue is **F13–F14**. Preference fork still open:
-  1. **Finish FP polish F13–F14** — scale audit / embodiment, dual-mode gate (default).
-  2. **Systemic lore L41+** (through L60) — highest north-star *play* value; no pack dependency.
-  Say the word to pull **L41** (or another L*) up instead of F13.
+- **Priority after F strip (groom 2026-07-28).** Pack conversion + **F1–F14 complete**; suite green in
+  both modes. Active queue is lore **L\*** (next open = **L36**). Preference fork still open:
+  1. **Continue sequential lore L36 → L39** then park (default — keep teaching cascade / organ / berth).
+  2. **Pull systemic L41+** (two clocks / valleys / heat-path raids) or newest **L61–L66** (surge
+     shelter / failure tax / expansion poison) — highest north-star *play* value.
+  Say the word to reorder. Default view mode (iso vs FP) remains a separate human call (F14 left it).
 
 ## Decisions (human-made, newest first)
 
@@ -202,14 +203,14 @@ Parked until Gate: OPEN. Commit-sized; bible-aligned; no code until sounds exist
 
 | | |
 |--|--|
-| **Next task** | **Lore `L35`** (staged processor contamination) — the parked queue is empty: **L34 verified 2026-07-28** by `/unity-pass`. L27 + L28 landed 2026-07-27; **L29, L30, L32, L33, L34** 2026-07-28. Highest north-star value if a human/groom reorders: **L41–L44**, **L50–L55**. |
-| **Active queue** | Lore **L\***. **F strip COMPLETE** (F1–F14) and **suite green in both modes** — BUG2 turned out to be a bad assertion, not a game bug (2026-07-27). **Changing the default view mode is now unblocked but is a human call** — F14 deliberately did not touch it. |
+| **Next task** | **Lore `L36`** (infected processor → linked belt cascade). **L35 shipped 2026-07-28** (`7ada61aa`). Highest north-star value if a human/groom reorders: **L41–L44**, **L50–L55**, or newest **L61–L66**. |
+| **Active queue** | Lore **L\***. **F strip COMPLETE** (F1–F14); suite green in both modes. Default view mode is a **human call** (F14 left it). |
 | **Command** | `/auto-dev` (Unity MCP preferred; else mark `[?]` for `/unity-pass`) |
 | **P13 how** | Same pose problem as P12. **Reuse P12's solution:** pose in code via a runtime hook (see `PlayerArtAttach.EnsureIdlePose`), do **not** bake bone-overrides into `Sector01`. Re-run **Mirror Synty Art Into Resources** if new `Characters/` paths are added. |
 | **Pack conversion** | Done: **P0–P14, P16–P21**. Remaining P: **P22** deferred (VoidHull). |
 | **Dressing a hand-authored scene** | Runtime dressers do **not** run here (`SectorAuthoring` skips `AddGeometryDressing`). Implement `ISceneDresser`, then a thin menu item calling `SceneDressingBake.Run<T>` — see `PersonalEffectsBake.cs` / `BreakRoomBake`. Register in `AddGeometryDressing` too for generated sectors. |
-| **Skip** | `[wait-until-sounds]` (audio gate **CLOSED**). **P22** deferred. Do **not** jump to L* ahead of F13–F14 without a human/groom reorder. |
-| **Lore** | Bible absorbed through **2026-07-26**. Open: **L27–L39**, **L41–L60** (parked under the FP strip). Newest block **L56–L60**. Audio beds stay gated. |
+| **Skip** | `[wait-until-sounds]` (audio gate **CLOSED**). **P22** deferred. Do **not** invent procedural beep substitutes for radio/PA voice. |
+| **Lore** | Bible absorbed through **2026-07-28**. Open: **L36–L39**, **L41–L66**. Newest block **L61–L66** (07-27/07-28). Observation “systems-as-interface” covered by **F12** + **L38** + **L57** — do not re-queue. |
 | **Gates** | Asset pack **OPEN** · Audio **CLOSED** · Deck size locked · Prep **40s / 30s** |
 
 ---
@@ -232,8 +233,8 @@ Parked until Gate: OPEN. Commit-sized; bible-aligned; no code until sounds exist
 
 ### F1–F14. First-person view mode (human decision 2026-07-20)
 
-**Status:** F1–F12 shipped. Active queue continues **F13 → F14** unless a human pulls systemic lore
-up instead (see `## Needs human decision`).
+**Status:** F1–F14 COMPLETE (suite green both modes). Lore **L\*** is the active queue unless a human
+reorders (see `## Needs human decision`).
 
 Goal: toggleable FP that looks/reads at least as well as iso. Iso stays until F14 passes.
 
@@ -1670,18 +1671,21 @@ Code reality: L15–L26 shipped (Play-verified where noted); L27–L30 / L32–L
 
 ### Lore-gap refill — 2026-07-22 (bible absorb: employment trap / organ logic / contamination)
 
-**Priority note:** Same as above — **P7+ first**. L35–L39 wait unless groomed up. Map size locked.
-Bible current through `lore/2026-07-21` absorb.
+**Priority note:** Pack/F strip done — lore **L\*** is the active queue. Map size locked.
+Bible later absorbed through **2026-07-28**.
 
-Code reality: `ProcessInfection` still binary (L35 stages open); L28 owns world schedule text; audio
+Code reality: **L35 shipped** (`ProcessInfection` 3-stage ladder); L28 owns world schedule text; audio
 under `[wait-until-sounds]`; organ tags / leased-copy = L38/L39. No audio-only tasks in this block.
 
-- [ ] L35. Staged processor contamination (copy → slow → ecology)
+- [x] L35. Staged processor contamination (copy → slow → ecology) — DONE 2026-07-28 (`7ada61aa`)
   Type: systemic / diegetic | Pillar: Industrial biomass / hive
   Lore: `lore/BIBLE.md` hive soft rules (timed contamination stages + **beautiful-wrong before hostile**) + open experiment Contamination stages; Barotrauma husk energy (`lore/2026-07-21/summary.md` #3); refraction (`lore/2026-07-23/summary.md` #4)
   Unity: **yes** — stage ladder on an infected processor + early cure window.
   Change: extend `ProcessInfection` (processors) from binary to **3 stages** before full ecology bite: (1) **UI/terminal copy only** — cheerful-or-clinical reclaim line goes “off” (original wording; no copyrighted quotes), no rate hit yet (real stage audio = **SND8** `[wait-until-sounds]`), **and the machine's own emissive drifts to an unnaturally lovely hue before anything reads as damage** — refraction, restrained, no rainbow; (2) the pretty tint curdles, existing rateMult + slurry stall; (3) seeds a small residue/vent ecology beat (reuse `InfectionResidue` / HorrorClock stress — no new shooter fantasy). Repair clears early stages fully; stage 3 still clearable but leaves a brief wrongness echo. Caps/timings in Progression_Spec. W1 teaching processors may cap at stage 2. Refreshed 2026-07-23 with the refraction stage; do not also queue it as a standalone visual task.
   done-when: Play — an infected processor visibly climbs ≥2 stages before stage-3 ecology; stage 1 reads *attractive-wrong* rather than damaged; repairing at stage 1 restores clean copy with no throughput loss; W1 still teachable; console clean
+  **DONE 2026-07-28:** stage 1 free pretty tint + reclaim “value”; stage 2 curdles + rateMult/stall;
+  stage 3 seeds ecology via `HorrorClock.AddZoneStress`; W1 caps at stage 2. Play-verified in that
+  commit. Audio half stays **SND8**.
 
 - [ ] L36. Infected processor cascades to a linked belt
   Type: systemic / mechanical | Pillar: Factory pressure = identity / Industrial biomass / hive
@@ -1806,8 +1810,8 @@ of this block (**L49** only; audio experiments stay under SND*).
 
 ### Lore-gap refill — 2026-07-26 (bible absorb 2026-07-25: power-clock / expansion-risk / cascade / empty-HUD)
 
-**Priority note:** sit **below** the active queue (F12–F14) unless a human pulls lore up
-(`## Needs human decision`). Bible current through `lore/2026-07-26`. Map size locked; prep 40s / 30s;
+**Priority note:** sit **below** sequential open lore (**L36** next) unless a human pulls this block up
+(`## Needs human decision`). Bible current through `lore/2026-07-28`. Map size locked; prep 40s / 30s;
 audio gate **CLOSED** (any PA-**voice** half stays `[wait-until-sounds]`; these tasks use printed copy /
 lamps / existing `Sfx` only). Visual/audio-only ≤30% — none here; all systemic or diegetic-logic.
 
@@ -1863,8 +1867,8 @@ views. Numbers land in `SPACE FACTORY INFO/Progression_Spec.md` in the same comm
 
 ### Lore-gap refill — 2026-07-26 (bible absorb 2026-07-26: warm-dark / mediation / quality hunters / garage / empty protocol)
 
-**Priority note:** sit **below** the active queue (F12–F14) unless a human pulls lore up
-(`## Needs human decision`). Bible current through `lore/2026-07-26`. Map size locked; prep **40s / 30s**;
+**Priority note:** sit **below** sequential open lore (**L36** next) unless a human pulls this block up
+(`## Needs human decision`). Bible current through `lore/2026-07-28`. Map size locked; prep **40s / 30s**;
 audio gate **CLOSED**.
 **Vibe gate (agent rule for this block):** any new survival/pressure system in L56–L59 ships **one
 diegetic world beat** in the same commit (lamp bed, machine-face line, break-room prop) — facility-as-home
@@ -1915,6 +1919,98 @@ Numbers in `SPACE FACTORY INFO/Progression_Spec.md` same commit as each task.
   Tag: `[asset-pack: POLYGON Sci-Fi Horror]`
   Change: one authored finished workstation cluster (desk + still-running schedule/terminal + cold mug or badge) on far or mid deck — company protocol humming after Last Contact. Original terse copy only. Collider-free; off lane. Distinct from **L49** (security booth), **L55** (cheerful debt notice), **P20** (break-room set piece). Prefer bake/`ISceneDresser` path used by P17/P20.
   done-when: Play — cluster reads in iso+FP as finished work for an absent crew; schedule/terminal still "on"; lanes clear; console clean
+
+### Lore-gap refill — 2026-07-28 (bible absorb 2026-07-27 + 2026-07-28)
+
+**Priority note:** sit **below** sequential open lore (**L36** next) unless a human pulls this block up
+(`## Needs human decision`). Bible current through `lore/2026-07-28`. Map size locked; prep **40s / 30s**;
+audio gate **CLOSED** — radio/PA **voice** stays `[wait-until-sounds]`; printed / terminal / lamp cues OK.
+Visual/audio-only ≤30% — **L66** is the one densify/dressing task; the rest change play pressure.
+
+**Skipped / covered elsewhere:** Observation “system-as-interface pass” → already **F12** machine faces +
+**L38** organ tags + **L57** mediated cams. CRT-Free / Modular Air Duct / Hazard & Safety 285 → wishlist
+only. Zone FPS, roguelike loop, panic HUD, war-sim → rejected in bible.
+
+Code reality: no forecastable take-shelter window (L42 valleys throttle *frequency*; L50 is spent calm);
+no failure→sticky/WaveFuel tax without a fear bar; `FactoryExpansion` builds a free refine line with no
+named compounding risk; combat peaks do not sell offscreen bay siege while you restack; distant-shift
+motif has no hold-to-listen channel; P20 break-room exists but no denser private berth vs communal hub
+split at eye level. Numbers in `SPACE FACTORY INFO/Progression_Spec.md` same commit as each task.
+
+- [ ] L61. Forecastable surge / take-shelter window
+  Type: systemic / diegetic | Pillar: Industrial biomass / hive / Lonely worker fantasy
+  Lore: `lore/BIBLE.md` hive soft rules (**Forecastable surges**); STALKER Emissions careful (`lore/2026-07-28/summary.md` #1)
+  Unity: **yes** — warned window; outside sticky interest spikes; sealed bay holds; prep length unchanged.
+  Change: once per late prep or early combat (post-W1), fire a **forecastable surge**: terminal/PA *printed*
+  line + corridor lamp cue → worker has a short window to reach a sealed bay / under-deck shelter volume
+  (hub core or authored shelter child — dedicated GO, not SectorRuntime root). While the surge runs,
+  sticky interest / HorrorClock stress spikes **outside** the shelter and is capped inside. Distinct from
+  **L42** (post-clear menace clamp / frequency) and **L50** (spent power calm). Must **not** extend prep
+  (Decision 40s/30s). No Zone loot, no mutant bestiary, no new audio banks. Caps in `Progression_Spec.md`.
+  done-when: Play — surge warns before it hits; outside the shelter sticky/stress rises for the window;
+  inside stays calmer; prep still 40s/30s; W1 unchanged; console clean
+
+- [ ] L62. Failure tax — sticky debt, not a panic HUD
+  Type: systemic | Pillar: Factory pressure = identity
+  Lore: `lore/BIBLE.md` factory×horror (**Failure taxes the worker, not a panic bar**); Mothership stress-as-debt (`lore/2026-07-28/summary.md` #4)
+  Unity: **yes** — fail a seal/scrub/overheat → measurable sticky or next-wave pressure; no fear meter UI.
+  Change: when the player fails a containment beat (repair interrupted on stage-2+ infection, power brown
+  that drops a sector calm if L50 exists, or a loud overheat on a hot processor), add a **small capped
+  tax** to sticky foothold chance or near-term Heat01 / next-wave pressure — never a floating panic bar.
+  Recovery labour (repair / clear residue / L43–L59 paths) bleeds the tax down. Distinct from **L30**
+  (scrap/min heat blend) and **L41** (lifetime HiveDebt). Grim-not-gag terminal one-liner optional.
+  Numbers in `Progression_Spec.md`.
+  done-when: Play — a failed containment beat raises sticky or next-wave pressure measurably; successful
+  recovery labour reduces it; no panic/fear HUD added; console clean
+
+- [ ] L63. Sidegrade expansion poison
+  Type: systemic | Pillar: Factory pressure = identity / Workplace as trap
+  Lore: `lore/BIBLE.md` factory×horror (**Expansion is a sidegrade, not a free unlock**); Lobotomy combination structure only (`lore/2026-07-27/summary.md` #3) — anti-comp zoo/product
+  Unity: **yes** — opening/expanding a bay attaches one named risk that interacts with existing heat/sticky.
+  Change: when `FactoryExpansion` (or WavesCleared-gated far-deck open) adds a new line/bay, attach **one
+  named compounding risk** that interacts with sticky/Heat01 already on the deck (e.g. hotter refine
+  feeds louder raids *and* warmer nest bias if L56 exists — combination, not a new monster species).
+  Soft telegraph on a machine face or plaque. Never containment zoo, employee management, or hive-as-
+  product. Caps in `Progression_Spec.md`. Keep Biofactory anti-comp.
+  done-when: Play — after an expansion unlock, the new bay carries a readable named risk that changes
+  pressure vs a no-expansion run; no new enemy species added by this task; console clean
+
+- [ ] L64. Siege weather around the line
+  Type: systemic / diegetic | Pillar: Lonely worker fantasy / Industrial biomass / hive
+  Lore: `lore/BIBLE.md` factory×horror (**The siege happens around the plant**); This War of Mine around-you (`lore/2026-07-28/summary.md` #5); night-hull motif (#6)
+  Unity: **yes** — during a peak, offscreen bay stress / scrapes rise while the player’s line still runs.
+  Change: during combat peaks, apply **offscreen siege weather** to 1 adjacent unused bay or far approach:
+  HorrorClock / lamp stress, atmosphere brick scrape (pairs with **L46** if present), optional machine-face
+  “bay offline” flicker — while the player’s active line remains operable. Sell that the hive works the
+  plant *around* you; you keep restacking. No war-sim win condition; no moral-choice adventure. Reuse
+  existing FX/`Sfx` one-liners — **no new audio banks**. Distinct from **L53** (same-bay convert hop).
+  done-when: Play — mid-peak, an unused adjacent bay shows measurable stress/scrape while the active
+  line still produces; clearing the wave eases it; console clean
+
+- [ ] L65. Distant shift radio (hold-to-listen, printed)
+  Type: diegetic | Pillar: Workplace as trap / Lonely worker fantasy
+  Lore: `lore/BIBLE.md` diegetic grammar (**The radio is the other person on shift**) + motif; Firewatch (`lore/2026-07-28/summary.md` #3)
+  Unity: **yes** — hold a key; terse channel lines appear; never a face or chat panel.
+  Change: optional **hold-to-listen** company/crew channel — diegetic terminal chip or world radio prop
+  (Synty radio/monitor OK) that streams 2–4 original terse lines (another deck, never arriving in person).
+  Decline/release stops it. **No new audio banks** this task — printed/text + existing soft `Sfx` blip only;
+  true VO → park under Audio track as a future SND when gate OPEN. Distinct from **L55** (cheerful debt
+  notice) and cheerful-PA motif — this is incomplete intimacy, grim-not-gag. Never floating chat UI.
+  done-when: Play — hold shows channel lines; release stops; no face/portrait/chat panel; no new voice
+  clips; tone is lonely employment not comedy; console clean
+
+- [ ] L66. Hub/spoke berth densify (FP house intimacy)
+  Type: diegetic / visual | Pillar: Lonely worker fantasy / Workplace as trap
+  Lore: `lore/BIBLE.md` north-star FP berth densify + **Lived geography: hub and spoke**; Returnal careful + Tacoma (`lore/2026-07-27/summary.md` #2, `lore/2026-07-28/summary.md` #2)
+  Unity: **yes** — private nook denser at 1.65 m; communal hub readable; iso factory literacy unchanged.
+  Tag: `[asset-pack: POLYGON Sci-Fi Horror]`
+  Change: mark **one communal hub** edge + **one private bunk/break nook** with lived props (P17/P20 path /
+  `ISceneDresser` bake). Private nook authored denser for FP eye-level (Returnal house intimacy); hub stays
+  workplace bones. Collider-free; off lanes. Optional naming-the-station plaque (original copy). Must **not**
+  demote iso factory skill or shrink the deck. Complements **P20** break-room — do not rebuild it; add the
+  public/private contrast P20 lacks.
+  done-when: Play — FP reads a denser private nook vs a communal hub; iso still reads the factory as primary;
+  lanes clear; console clean
 
 ### Done archive — 2026-07-19 lore-gap + map integrity (shipped)
 
@@ -2245,6 +2341,13 @@ Method: capture the Game view in Play mode, judge the frame, fix the single wors
 - [ ] Free lead: Abandoned Factory Lite (Asset Store) — safe mood greys for blockout; not gated, but not queued until visual Now is thin.
 
 ## Agent log (newest first — one line per session: date, task, result, commit)
+
+- 2026-07-28: **lore-gap** — bible already absorbed through `lore/2026-07-28`. Marked **L35 DONE**
+  (shipped `7ada61aa`, checkbox was stale). Queued **L61–L66** from 07-27/07-28 experiments: surge
+  shelter (L61), failure tax (L62), sidegrade expansion poison (L63), siege weather (L64), distant
+  shift radio printed (L65, VO gated), hub/spoke berth densify (L66). Skipped system-as-interface
+  (covered by F12/L38/L57) and asset shopping. Work next → **L36**. Needs human fork updated
+  (sequential L36 vs pull L41+/L61+). No game code.
 
 - 2026-07-28: **unity-pass — L34 VERIFIED, queue cleared (1 parked item, 1 resolved, 0 blocked).**
   The feature was correct all along; the `[?]` was a **measurement failure**: `Application
