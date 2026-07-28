@@ -88,6 +88,21 @@ public class WaveController : MonoBehaviour
     [Tooltip("On death, seed ProcessInfection on drills/processors within this radius.")]
     public float residueSeedRadius = InfectionResidue.DefaultSeedRadius;
 
+    [Header("Vent carriers (L29 stage-2 specialise rung)")]
+    [Tooltip("First wave that can field stage-2 vent carriers. Waves 1-2 stay the teaching arc.")]
+    public int ventCarrierFromWave = 3;
+    [Tooltip("Hard cap on carriers per wave. The rung is an escalation, not a swarm.")]
+    public int ventCarrierMaxPerWave = 2;
+    [Tooltip("HP multiplier applied to VentCarrier crawlers.")]
+    [Range(1f, 4f)] public float ventCarrierHpMult = VentCarrier.DefaultHpMult;
+    [Tooltip("Move-speed multiplier for VentCarrier crawlers — slower than a plain crawler.")]
+    [Range(0.5f, 1f)] public float ventCarrierSpeedMult = VentCarrier.DefaultSpeedMult;
+    [Tooltip("Dying within this range of the VentBreach lane hands stress to the HorrorClock.")]
+    public float ventCarrierSeedRadius = VentCarrier.DefaultSeedRadius;
+
+    /// <summary>How many stage-2 carriers were fielded last wave (playtest hook).</summary>
+    public int LastVentCarrierCount { get; private set; }
+
     /// <summary>Last Heat01 sampled when lanes were assigned.</summary>
     public float LastFactoryHeat01 { get; private set; }
     /// <summary>Effective vent share used for teaching-arc assignment (-1 if all-gates path).</summary>
@@ -129,6 +144,7 @@ public class WaveController : MonoBehaviour
     List<GameObject> _spawnQueue = new List<GameObject>();
     List<LanePath>   _laneQueue  = new List<LanePath>();
     List<bool>       _residueFlags = new List<bool>();
+    List<bool>       _carrierFlags = new List<bool>();
     float        _spawnTimer;
     float        _spawnSpacing;
     int          _laneCursor;
@@ -220,6 +236,7 @@ public class WaveController : MonoBehaviour
         Shuffle(_spawnQueue);
         AssignLanes(def);
         MarkInfectionResidueSpawns();
+        MarkVentCarrierSpawns();
 
         _spawnQueueIndex = 0;
         Sfx.WaveHorn();   // "they're coming"
@@ -241,7 +258,8 @@ public class WaveController : MonoBehaviour
             int i = _spawnQueueIndex++;
             LanePath lane = i < _laneQueue.Count ? _laneQueue[i] : NextLane();
             bool residue = i < _residueFlags.Count && _residueFlags[i];
-            SpawnOne(_spawnQueue[i], lane, residue);
+            bool carrier = i < _carrierFlags.Count && _carrierFlags[i];
+            SpawnOne(_spawnQueue[i], lane, residue, carrier);
             _spawnTimer += _spawnSpacing;
         }
 
@@ -277,7 +295,7 @@ public class WaveController : MonoBehaviour
 
     // â”€â”€ Spawning helpers â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
-    void SpawnOne(GameObject prefab, LanePath lane, bool asResidue = false)
+    void SpawnOne(GameObject prefab, LanePath lane, bool asResidue = false, bool asCarrier = false)
     {
         if (prefab == null || lane == null)
         {
@@ -301,6 +319,10 @@ public class WaveController : MonoBehaviour
         ApplyModifier(enemy);
         if (asResidue && enemy is Crawler)
             InfectionResidue.Apply(enemy, residueHpMult, residueSpeedMult, residueSeedRadius);
+        // Stage 2 never rides on top of stage 1 — MarkVentCarrierSpawns skips
+        // residue indices, so a crawler is one rung of the ladder or the other.
+        else if (asCarrier && enemy is Crawler)
+            VentCarrier.Apply(enemy, ventCarrierHpMult, ventCarrierSpeedMult, ventCarrierSeedRadius);
         if (enemy is Sapper sapper) sapper.supportTarget = FindSupportTarget(pos);
         EnemiesAlive++;
     }
@@ -352,6 +374,52 @@ public class WaveController : MonoBehaviour
         LastResidueSpawnCount = convert;
     }
 
+    /// <summary>
+    /// L29: from wave 3, field a small, capped number of stage-2 vent carriers on
+    /// the breach lanes.
+    ///
+    /// Capped rather than heat-scaled on purpose. Stage 1 (residue) is the rung
+    /// that answers the factory — the hotter you run, the more of it you get.
+    /// Stage 2 answers *time*: the hive specialising because the run has gone on,
+    /// which should read as a rung on the ladder rather than another dial the
+    /// player can accidentally spin to eleven by building well.
+    /// </summary>
+    void MarkVentCarrierSpawns() => MarkVentCarrierSpawns(WaveNumber);
+
+    void MarkVentCarrierSpawns(int waveNumber)
+    {
+        _carrierFlags.Clear();
+        LastVentCarrierCount = 0;
+        for (int i = 0; i < _spawnQueue.Count; i++)
+            _carrierFlags.Add(false);
+
+        if (waveNumber < ventCarrierFromWave || ventCarrierMaxPerWave <= 0) return;
+
+        var candidates = new List<int>();
+        for (int i = 0; i < _spawnQueue.Count; i++)
+        {
+            // Crawlers only, and never one already spent on stage 1.
+            if (crawlerPrefab != null && _spawnQueue[i] != crawlerPrefab) continue;
+            if (crawlerPrefab == null && (_spawnQueue[i] == bruiserPrefab || _spawnQueue[i] == sapperPrefab))
+                continue;
+            if (i < _residueFlags.Count && _residueFlags[i]) continue;
+
+            LanePath lane = i < _laneQueue.Count ? _laneQueue[i] : null;
+            if (lane == null) continue;
+            if (!IsBreachLane(lane.laneId)) continue;
+            candidates.Add(i);
+        }
+
+        if (candidates.Count == 0) return;
+
+        int convert = Mathf.Min(ventCarrierMaxPerWave, candidates.Count);
+        Shuffle(candidates);
+        for (int i = 0; i < convert; i++)
+            _carrierFlags[candidates[i]] = true;
+
+        LastVentCarrierCount = convert;
+    }
+
     static bool IsBreachLane(string laneId) =>
         laneId == VentLaneId || laneId == EastFlankLaneId;
 
@@ -400,6 +468,36 @@ public class WaveController : MonoBehaviour
         _spawnQueue.Clear();
         _laneQueue.Clear();
         _residueFlags.Clear();
+        return n;
+    }
+
+    /// <summary>
+    /// Editor/test: simulate stage-2 carrier tagging for N VentBreach crawlers at a
+    /// wave number, so the wave gate can be checked without playing three waves.
+    /// Runs the residue pass first because carrier selection deliberately skips any
+    /// crawler stage 1 already claimed.
+    /// </summary>
+    public int DebugRunCarrierMark(int waveNumber, int breachCrawlerCount)
+    {
+        if (_layout == null) _layout = SectorLayout.Instance;
+        LanePath vent = _layout != null ? _layout.GetLane(VentLaneId) : null;
+        if (vent == null || crawlerPrefab == null) return -1;
+
+        _spawnQueue.Clear();
+        _laneQueue.Clear();
+        for (int i = 0; i < breachCrawlerCount; i++)
+        {
+            _spawnQueue.Add(crawlerPrefab);
+            _laneQueue.Add(vent);
+        }
+
+        MarkInfectionResidueSpawns(waveNumber);
+        MarkVentCarrierSpawns(waveNumber);
+        int n = LastVentCarrierCount;
+        _spawnQueue.Clear();
+        _laneQueue.Clear();
+        _residueFlags.Clear();
+        _carrierFlags.Clear();
         return n;
     }
 

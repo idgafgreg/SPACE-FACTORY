@@ -77,6 +77,29 @@ Flood-style ecology ladder start: fragile infection forms on breach lanes that s
 - On death within **5.5m** of a drill/processor: seeds `ProcessInfection` (same 0.55x rate as L17)
 - Tunables on `WaveController`: `residueBreachBaselineShare`, `residueHpMult`, `residueSpeedMult`, `residueSeedRadius`
 
+## Vent carriers — stage 2 (L29, 2026-07-28)
+
+The specialise rung of the ladder: the hive stops sending only more of the same and starts sending
+something *different*. Where stage 1 is fragile, fast and attacks the factory, stage 2 is slow, tough
+and attacks the **place** — dying in the vent zone hands that approach further to the hive.
+
+- From **Wave 3**, breach-lane (`VentBreach` / `EastFlank`) crawlers can become `VentCarrier`
+  (runtime mod on the crawler prefab, same pattern as stage 1 — no new prefab, no new AI, primitives only)
+- **Waves 1-2 have none** — the teaching arc is untouched
+- **Capped at 2 per wave**, deliberately *not* heat-scaled: stage 1 answers the factory (build hot, get
+  more residue), stage 2 answers **time**. It should read as a rung on the ladder, not another dial the
+  player can spin to eleven by building well. Verified: 30 breach crawlers in one wave still yields 2.
+- Never stacks with stage 1 — carrier selection skips any crawler already marked residue, so a crawler
+  is one rung or the other
+- Stats: HP × **1.75**, move speed × **0.90** (slower on purpose — the thing you hear coming and still
+  fail to stop is a different fear from the stage-1 rush), violet tint + carried sac silhouette
+- On death within **9 m** of the `VentBreach` lane: `HorrorClock.AddZoneStress(0.09)` — deepening the
+  clock that already drives that zone's lamp deaths and dressing, plus a terse `VENT YIELDED` beat.
+  Dying **off-zone** (dragged out onto the open deck) yields nothing, so where the player chooses to
+  fight matters. Clamped to the clock's `maxDecay`, so a bad wave cannot black out the sector for good.
+- Tunables on `WaveController`: `ventCarrierFromWave`, `ventCarrierMaxPerWave`, `ventCarrierHpMult`,
+  `ventCarrierSpeedMult`, `ventCarrierSeedRadius`; test hook `DebugRunCarrierMark(wave, crawlers)`
+
 ## Factory heat raises infection-form share (L23, 2026-07-20)
 
 The hive responds to a hot factory by sending more infection-form residue down breach lanes.

@@ -202,7 +202,7 @@ Parked until Gate: OPEN. Commit-sized; bible-aligned; no code until sounds exist
 
 | | |
 |--|--|
-| **Next task** | **Lore `L*`** — next in file order is **L29** (vent-carrier stage-2 ecology). L27 + L28 landed 2026-07-27. Highest north-star value if a human/groom reorders: **L41–L44**, **L50–L55**. |
+| **Next task** | **Lore `L*`** — next in file order is **L30** (scrap/min throughput tax beyond Heat01 blend). L27 + L28 landed 2026-07-27, **L29** 2026-07-28. Highest north-star value if a human/groom reorders: **L41–L44**, **L50–L55**. |
 | **Active queue** | Lore **L\***. **F strip COMPLETE** (F1–F14) and **suite green in both modes** — BUG2 turned out to be a bad assertion, not a game bug (2026-07-27). **Changing the default view mode is now unblocked but is a human call** — F14 deliberately did not touch it. |
 | **Command** | `/auto-dev` (Unity MCP preferred; else mark `[?]` for `/unity-pass`) |
 | **P13 how** | Same pose problem as P12. **Reuse P12's solution:** pose in code via a runtime hook (see `PlayerArtAttach.EnsureIdlePose`), do **not** bake bone-overrides into `Sector01`. Re-run **Mirror Synty Art Into Resources** if new `Characters/` paths are added. |
@@ -1524,12 +1524,31 @@ Code reality: L15–L26 shipped (Play-verified where noted); L27–L30 / L32–L
   began on its own (so the shift counter really ticks). Iso capture confirms it is legible beside the hub
   at gameplay zoom. Console clean, 0 errors.
 
-- [ ] L29. Vent-carrier stage-2 ecology (specialize rung)
+- [x] L29. Vent-carrier stage-2 ecology (specialize rung) — DONE 2026-07-28 (auto-dev, Play-verified)
   Type: systemic / mechanical | Pillar: Industrial biomass / hive
   Lore: `lore/BIBLE.md` hive ladder step 2 (vent carriers); Flood specialize (lore/2026-07-20/summary.md #3); keep Biofactory anti-comp
   Unity: **yes** — W3+ breach spawn + behavior check.
   Change: commit-sized **VentCarrier** path (Crawler runtime mod or thin variant): appears on vent/EastFlank from W3+, slightly tougher, prefers vent approach, on death near a sealed/closed vent prop or corridor lamp seeds a small `BiomassEncroachment` blob or bumps local HorrorClock stress (reuse existing systems — no new shooter fantasy). W1–W2 unchanged. Caps in Progression_Spec. Primitives only.
   done-when: Play — W3+ shows ≥1 carrier on breach lanes; W1–W2 have none; death leaves a readable ecology beat (residue/stress); console clean
+  **DONE 2026-07-28 (auto-dev, Play-verified).** New `VentCarrier` — a **runtime mod on a crawler**, the
+  same pattern as stage-1 `InfectionResidue`, so the escalation is ecology rather than a new encounter.
+  No new prefab, no new AI, primitives only. Stage 1 is fragile/fast and attacks the **factory**; stage 2
+  reads as its opposite — slow, tough, and what it leaves behind is a worse **place**.
+  From **W3**, breach lanes only, **capped at 2/wave** and deliberately **not heat-scaled**: stage 1
+  answers the factory (build hot → more residue), stage 2 answers **time**, so it stays a rung on the
+  ladder rather than another dial the player can spin by building well. Never stacks with stage 1 —
+  carrier selection skips crawlers already marked residue. HP **×1.75**, speed **×0.90** (slower on
+  purpose), violet tint + carried sac silhouette.
+  Death beat reuses existing systems: within 9 m of the VentBreach lane it calls the new
+  **`HorrorClock.AddZoneStress`**, deepening the clock that already drives that zone's lamp deaths and
+  dressing. Added as a *method on HorrorClock* rather than poking `_decay` from outside, so the clock
+  stays the only writer of its own state (same single-owner rule as L27's lamp flags), clamped to
+  `maxDecay`.
+  Verified: new `DebugRunCarrierMark` hook, 8 breach crawlers per wave → **W1=0, W2=0, W3/4/5=2**; cap
+  holds at 2 even with **30** breach crawlers. Mod measured hp **35→61** (×1.75), speed **1.60→1.44**,
+  sac attached. Death measured **both ways** — in-zone kill moved zone decay **0.000→0.048**, an
+  off-zone kill at (30, 26) moved it **−0.002** (nothing), so *where* the player fights it matters.
+  Console clean, 0 errors. Caps documented in `Progression_Spec.md`.
 
 - [ ] L30. Scrap/min throughput tax beyond Heat01 blend
   Type: systemic | Pillar: Factory pressure = identity
@@ -2128,6 +2147,16 @@ Method: capture the Game view in Play mode, judge the frame, fix the single wors
 - [ ] Free lead: Abandoned Factory Lite (Asset Store) — safe mood greys for blockout; not gated, but not queued until visual Now is thin.
 
 ## Agent log (newest first — one line per session: date, task, result, commit)
+
+- 2026-07-28: **L29 vent carriers (stage-2 rung) — DONE (auto-dev, Play-verified).** `VentCarrier` is a
+  runtime mod on a crawler (same shape as stage-1 residue): W3+, breach lanes, **capped 2/wave and
+  deliberately not heat-scaled** (stage 1 answers the factory, stage 2 answers time), never stacked on a
+  residue crawler. HP ×1.75, speed ×0.90, violet + carried sac. Death within 9 m of the vent lane calls
+  the new `HorrorClock.AddZoneStress` — a **method on the clock** so it stays the only writer of its own
+  decay (same single-owner rule as L27). Verified via new `DebugRunCarrierMark`: W1=0, W2=0, W3/4/5=2,
+  cap holds at 30 crawlers; mod hp 35→61, speed 1.60→1.44; in-zone death decay 0.000→**0.048** vs
+  off-zone **−0.002**, so location matters. Caps in `Progression_Spec.md`. Console clean.
+  Commit: `L29: vent carriers, the stage-2 specialise rung` (2026-07-28 HEAD).
 
 - 2026-07-27: **L28 shift schedule board — DONE (auto-dev, Play-verified).** New `ShiftScheduleBoard`
   posts `SHIFT nn` + `PREP WINDOW` / `BREACH ACTIVE` / `CLEAR - RESUME DUTY` (time-boxed 9 s) beside the

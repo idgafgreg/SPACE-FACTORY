@@ -252,6 +252,24 @@ public class HorrorClock : MonoBehaviour
         Sfx.SetAmbient(vol);
     }
 
+    /// <summary>
+    /// L29: hand this approach a little further to the hive.
+    ///
+    /// A vent carrier dying inside the zone deepens the clock, which is what
+    /// darkens its lamps and thickens its dressing — the escalation rides systems
+    /// that already exist rather than adding a parallel one. Routed through the
+    /// clock instead of poking <c>_decay</c> from outside so this class stays the
+    /// only writer of its own state, and clamped to <see cref="maxDecay"/> so a
+    /// bad wave cannot black out the sector permanently.
+    /// </summary>
+    public void AddZoneStress(float amount)
+    {
+        if (amount <= 0f) return;
+        _decay = Mathf.Min(maxDecay, _decay + amount);
+        ZoneDecay01 = _decay;
+        ApplyLampStress();
+    }
+
     /// <summary>Editor/test: force WavesCleared-equivalent and rebuild decay toward target.</summary>
     public void DebugSetCleared(int cleared)
     {
