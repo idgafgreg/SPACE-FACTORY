@@ -202,7 +202,7 @@ Parked until Gate: OPEN. Commit-sized; bible-aligned; no code until sounds exist
 
 | | |
 |--|--|
-| **Next task** | **Lore `L*`** — next in file order is **L30** (scrap/min throughput tax beyond Heat01 blend). L27 + L28 landed 2026-07-27, **L29** 2026-07-28. Highest north-star value if a human/groom reorders: **L41–L44**, **L50–L55**. |
+| **Next task** | **Lore `L*`** — next in file order is **L32** (far-deck labour dressing scales with progress; L31 became SND3, gated). L27 + L28 landed 2026-07-27; **L29 + L30** 2026-07-28. Highest north-star value if a human/groom reorders: **L41–L44**, **L50–L55**. |
 | **Active queue** | Lore **L\***. **F strip COMPLETE** (F1–F14) and **suite green in both modes** — BUG2 turned out to be a bad assertion, not a game bug (2026-07-27). **Changing the default view mode is now unblocked but is a human call** — F14 deliberately did not touch it. |
 | **Command** | `/auto-dev` (Unity MCP preferred; else mark `[?]` for `/unity-pass`) |
 | **P13 how** | Same pose problem as P12. **Reuse P12's solution:** pose in code via a runtime hook (see `PlayerArtAttach.EnsureIdlePose`), do **not** bake bone-overrides into `Sector01`. Re-run **Mirror Synty Art Into Resources** if new `Characters/` paths are added. |
@@ -1550,12 +1550,29 @@ Code reality: L15–L26 shipped (Play-verified where noted); L27–L30 / L32–L
   off-zone kill at (30, 26) moved it **−0.002** (nothing), so *where* the player fights it matters.
   Console clean, 0 errors. Caps documented in `Progression_Spec.md`.
 
-- [ ] L30. Scrap/min throughput tax beyond Heat01 blend
+- [x] L30. Scrap/min throughput tax beyond Heat01 blend — DONE 2026-07-28 (auto-dev, A/B verified)
   Type: systemic | Pillar: Factory pressure = identity
   Lore: `lore/BIBLE.md` open experiment (stronger scrap/min coupling); Factorio pollution lesson
   Unity: **yes** — idle vs high-throughput residue/vent share.
   Change: `FactoryHeatTracker` already folds scrap/min into Heat01 — expose a small **Throughput01** (or use raw `ScrapPerMinute` bands) so WaveController can add a capped residue/vent bias *on top of* heat when belts are screaming but producers are few (or vice versa). Goal: a bigger *running* factory feels more haunted, not only “more powered buildings.” Doc bands in Progression_Spec. W1 lock stays.
   done-when: Play — high scrap/min with modest producer count measurably raises breach residue or vent share vs idle; W1 clean; console clean
+  **DONE 2026-07-28 (auto-dev, A/B verified).** `FactoryHeatTracker` now exposes the **unblended** terms
+  — `Throughput01`, `MachineLoad01`, and `ThroughputExcess01 = clamp01(Throughput01 − MachineLoad01)`
+  (zero when the floor is merely large). `WaveController` adds
+  `ThroughputExcess01 × throughputResidueShareBonusMax` (**0.25**) to the residue share on top of the
+  Heat01 bonus, still under `heatResidueShareCap`.
+  **The measurement that mattered:** `Heat01` averages income against machine count, so before this a
+  factory at 40 scrap/min with 1 producer (Heat01 0.625) and one at 20 scrap/min with 5 producers
+  (Heat01 0.650) produced an **identical 10/20** residue — the blend was blind to "running" vs "built".
+  Verified by toggling the bonus **off and on** rather than just observing a rise:
+  **OFF → 10/20 vs 10/20 (indistinguishable); ON → 14/20 vs 10/20**, i.e. the throughput-heavy factory
+  is now more haunted **despite a lower Heat01**.
+  Guards: idle unchanged at **2/20** (baseline not inflated); **W1 lock holds** — a screaming factory at
+  wave 1 still yields **0/20**; cap respected (max heat → 0.700, max excess → 0.680, both under 0.80).
+  Also centralised the heat formula into one `Recompute()` — the live path and `DebugSetHeatInputs` each
+  had their own copy, so the new terms would have been unset on one of them, and that hook is exactly
+  what the verification depends on. `DebugRunResidueMark` samples the throughput term for the same
+  reason its own comment already gives for heat. Bands table in `Progression_Spec.md`. Console clean.
 
 - [ ] L32. Far-deck labour dressing scales with progress (fill, don’t shrink)
   Type: diegetic / systemic | Pillar: Lonely worker fantasy / Factory pressure = identity
@@ -2147,6 +2164,16 @@ Method: capture the Game view in Play mode, judge the frame, fix the single wors
 - [ ] Free lead: Abandoned Factory Lite (Asset Store) — safe mood greys for blockout; not gated, but not queued until visual Now is thin.
 
 ## Agent log (newest first — one line per session: date, task, result, commit)
+
+- 2026-07-28: **L30 throughput tax — DONE (auto-dev, A/B verified).** `FactoryHeatTracker` exposes
+  `Throughput01` / `MachineLoad01` / `ThroughputExcess01`; `WaveController` adds a capped residue bias
+  (0.25 max) for throughput outrunning the machine footprint. **Proved the old blend was blind**, not
+  just that the number moved: with the bonus OFF a 40-scrap/1-producer line and a 20-scrap/5-producer
+  floor both gave **10/20** residue; ON they give **14/20 vs 10/20**, with the throughput-heavy factory
+  more haunted *despite lower Heat01*. Idle still 2/20, W1 lock still 0/20 under a screaming factory,
+  cap respected. Centralised the heat formula (live path and the test hook each had a copy — the new
+  terms would have been unset on one). Bands table in `Progression_Spec.md`. Console clean.
+  Commit: `L30: throughput tax on top of the heat blend` (2026-07-28 HEAD).
 
 - 2026-07-28: **L29 vent carriers (stage-2 rung) — DONE (auto-dev, Play-verified).** `VentCarrier` is a
   runtime mod on a crawler (same shape as stage-1 residue): W3+, breach lanes, **capped 2/wave and

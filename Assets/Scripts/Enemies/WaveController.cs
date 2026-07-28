@@ -88,6 +88,13 @@ public class WaveController : MonoBehaviour
     [Tooltip("On death, seed ProcessInfection on drills/processors within this radius.")]
     public float residueSeedRadius = InfectionResidue.DefaultSeedRadius;
 
+    [Tooltip("L30: extra residue share when throughput outruns the machine footprint " +
+             "(ThroughputExcess01 = 1). Stacks on top of the Heat01 bonus, still under the cap.")]
+    [Range(0f, 0.5f)] public float throughputResidueShareBonusMax = 0.25f;
+
+    /// <summary>Last ThroughputExcess01 sampled when lanes were assigned (L30).</summary>
+    public float LastThroughputExcess01 { get; private set; }
+
     [Header("Vent carriers (L29 stage-2 specialise rung)")]
     [Tooltip("First wave that can field stage-2 vent carriers. Waves 1-2 stay the teaching arc.")]
     public int ventCarrierFromWave = 3;
@@ -359,7 +366,15 @@ public class WaveController : MonoBehaviour
         if (candidates.Count == 0) return;
 
         float heat01 = LastFactoryHeat01; // sampled by AssignLanes just before this call
-        float effectiveShare = Mathf.Clamp01(residueBreachBaselineShare + heat01 * heatResidueShareBonusMax);
+        // L30: Heat01 averages income against machine count, so a small line running
+        // flat out reads the same as a big idle floor. Add a capped bias for the part
+        // that average hides — throughput outrunning the footprint — so a factory that
+        // is genuinely RUNNING is more haunted than one that has merely been built.
+        // Still bounded by the same cap, so this cannot escalate past the ceiling.
+        float excess01 = LastThroughputExcess01;
+        float effectiveShare = Mathf.Clamp01(residueBreachBaselineShare
+                                             + heat01 * heatResidueShareBonusMax
+                                             + excess01 * throughputResidueShareBonusMax);
         effectiveShare = Mathf.Min(heatResidueShareCap, effectiveShare);
         LastEffectiveResidueShare = effectiveShare;
 
@@ -451,8 +466,13 @@ public class WaveController : MonoBehaviour
         // whenever lanes were last assigned - making idle and hot factories
         // report identical residue counts and rendering the hook useless for
         // testing the very coupling it exists to test.
+        // L30 rides the same rule: sample the throughput term here too, or this hook
+        // would report identical counts for a screaming line and a big idle floor.
         LastFactoryHeat01 = FactoryHeatTracker.Instance != null
             ? FactoryHeatTracker.Instance.Heat01
+            : 0f;
+        LastThroughputExcess01 = FactoryHeatTracker.Instance != null
+            ? FactoryHeatTracker.Instance.ThroughputExcess01
             : 0f;
 
         _spawnQueue.Clear();
@@ -537,6 +557,8 @@ public class WaveController : MonoBehaviour
 
         float heat01 = FactoryHeatTracker.Instance != null ? FactoryHeatTracker.Instance.Heat01 : 0f;
         LastFactoryHeat01 = heat01;
+        LastThroughputExcess01 = FactoryHeatTracker.Instance != null
+            ? FactoryHeatTracker.Instance.ThroughputExcess01 : 0f;
 
         if (def.ventBreachShare < 0f)
         {

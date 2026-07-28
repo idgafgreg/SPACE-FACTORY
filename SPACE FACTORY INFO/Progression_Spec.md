@@ -77,6 +77,40 @@ Flood-style ecology ladder start: fragile infection forms on breach lanes that s
 - On death within **5.5m** of a drill/processor: seeds `ProcessInfection` (same 0.55x rate as L17)
 - Tunables on `WaveController`: `residueBreachBaselineShare`, `residueHpMult`, `residueSpeedMult`, `residueSeedRadius`
 
+## Throughput tax on top of the heat blend (L30, 2026-07-28)
+
+`Heat01` averages income against machine count (`0.55 × scrap + 0.45 × machines`), so a small line
+running flat out and a big idle floor can land on the *same* number. Measured: a factory at
+40 scrap/min with 1 producer (Heat01 **0.625**) and one at 20 scrap/min with 5 producers (Heat01
+**0.650**) produced an **identical** 10/20 residue crawlers. The blend could not tell "running" from
+"built" — which is exactly the thing the hive is supposed to answer.
+
+`FactoryHeatTracker` now exposes the unblended terms:
+- `Throughput01` — the pure scrap/min term
+- `MachineLoad01` — the pure powered-producer term
+- `ThroughputExcess01` = `clamp01(Throughput01 − MachineLoad01)` — how far throughput outruns the
+  footprint. **Zero when the floor is merely large**, which is the point.
+
+`WaveController` adds `ThroughputExcess01 × throughputResidueShareBonusMax` (**0.25**) to the residue
+share on top of the existing Heat01 bonus, still bounded by `heatResidueShareCap` (0.80).
+
+Measured bands (wave 3, 20 breach crawlers):
+
+| factory | scrap/min | producers | Heat01 | excess | share | residue |
+|--|--|--|--|--|--|--|
+| idle | 0 | 0 | 0.000 | 0.00 | 0.100 | 2/20 |
+| throughput-heavy | 40 | 1 | 0.625 | 0.83 | 0.683 | **14/20** |
+| machine-heavy | 20 | 5 | 0.650 | 0.00 | 0.490 | 10/20 |
+| max heat | 999 | 6 | 1.000 | 0.00 | 0.700 | 14/20 |
+| max excess | 999 | 0 | 0.550 | 1.00 | 0.680 | 14/20 |
+
+The throughput-heavy factory is now measurably more haunted than the machine-heavy one **despite a
+lower Heat01** — a line that is genuinely running draws nearly as much pressure as a maxed-out floor.
+Idle is unchanged at 2/20, so the baseline is not inflated, and the **Wave 1 lock still holds**: a
+screaming factory at wave 1 yields 0 residue.
+
+Tunable on `WaveController`: `throughputResidueShareBonusMax`.
+
 ## Vent carriers — stage 2 (L29, 2026-07-28)
 
 The specialise rung of the ladder: the hive stops sending only more of the same and starts sending

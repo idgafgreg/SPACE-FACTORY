@@ -28,6 +28,23 @@ public class FactoryHeatTracker : MonoBehaviour
     /// <summary>0 = idle factory, 1 = hot throughput.</summary>
     public float Heat01 { get; private set; }
 
+    /// <summary>L30: the pure scrap/min term, before it is blended with machine count.</summary>
+    public float Throughput01 { get; private set; }
+
+    /// <summary>L30: the pure powered-producer term.</summary>
+    public float MachineLoad01 { get; private set; }
+
+    /// <summary>
+    /// L30: how far actual throughput outruns the factory's footprint.
+    ///
+    /// <see cref="Heat01"/> averages income and machine count, so a small line
+    /// running flat out and a big idle floor can land on the same number. This is
+    /// the part the average hides: belts screaming out of relatively few machines.
+    /// Zero when the floor is merely large, which is the point — the hive answers
+    /// a factory that is *running*, not one that has been built.
+    /// </summary>
+    public float ThroughputExcess01 => Mathf.Clamp01(Throughput01 - MachineLoad01);
+
     void Awake()
     {
         if (Instance != null && Instance != this) { FxSafe.Destroy(this); return; }
@@ -66,12 +83,22 @@ public class FactoryHeatTracker : MonoBehaviour
     void RefreshHeat()
     {
         PoweredProducers = CountPoweredProducers();
-        float scrapHeat = scrapPerMinForFullHeat > 0f
+        Recompute();
+    }
+
+    /// <summary>
+    /// Single place the heat terms are derived, so the live path and the test hook
+    /// cannot drift apart — they previously duplicated this formula, which would
+    /// have left <see cref="Throughput01"/> unset on one of them.
+    /// </summary>
+    void Recompute()
+    {
+        Throughput01 = scrapPerMinForFullHeat > 0f
             ? Mathf.Clamp01(_scrapPerMin / scrapPerMinForFullHeat) : 0f;
-        float machineHeat = machinesForFullHeat > 0
+        MachineLoad01 = machinesForFullHeat > 0
             ? Mathf.Clamp01(PoweredProducers / (float)machinesForFullHeat) : 0f;
         // Slight scrap bias: growing income is the clearest "factory is humming" signal.
-        Heat01 = Mathf.Clamp01(0.55f * scrapHeat + 0.45f * machineHeat);
+        Heat01 = Mathf.Clamp01(0.55f * Throughput01 + 0.45f * MachineLoad01);
     }
 
     static int CountPoweredProducers()
@@ -96,15 +123,11 @@ public class FactoryHeatTracker : MonoBehaviour
         return n;
     }
 
-    /// <summary>Editor/test: force scrap/min + producer count, recompute Heat01.</summary>
+    /// <summary>Editor/test: force scrap/min + producer count, recompute the heat terms.</summary>
     public void DebugSetHeatInputs(float scrapPerMin, int poweredProducers)
     {
         _scrapPerMin = Mathf.Max(0f, scrapPerMin);
         PoweredProducers = Mathf.Max(0, poweredProducers);
-        float scrapHeat = scrapPerMinForFullHeat > 0f
-            ? Mathf.Clamp01(_scrapPerMin / scrapPerMinForFullHeat) : 0f;
-        float machineHeat = machinesForFullHeat > 0
-            ? Mathf.Clamp01(PoweredProducers / (float)machinesForFullHeat) : 0f;
-        Heat01 = Mathf.Clamp01(0.55f * scrapHeat + 0.45f * machineHeat);
+        Recompute();
     }
 }
