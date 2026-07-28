@@ -1784,3 +1784,29 @@ telegraph the player can see.
 
 Verified in play: combat on the west lane put the mouth fixture at (-40, 3, 0) to intensity 0.000
 with 6 lamps still lit; after the wave cleared (Prep, alarm 0.00) the same fixture returned to 3.240.
+
+# Shift Schedule Board (L28, 2026-07-27)
+
+A steel/amber board beside the hub posts the roster in flat scheduling language while the deck is
+being breached. From `lore/BIBLE.md`: the company built the hostile workplace the hive inherited, and
+its paperwork never notices — the board reports the same catastrophe the player is living through as
+a routine status change, which is the joke and the dread at once.
+
+Two terse lines, no cheer, no exclamation, no screen chrome:
+- `SHIFT nn` — tracks the wave number, so it ticks up across a run.
+- Status: `PREP WINDOW` → `BREACH ACTIVE` (any non-Prep phase) → `CLEAR - RESUME DUTY` for 9 s after
+  a wave clears, then back to `PREP WINDOW`. The stand-down line is deliberately time-boxed: the
+  paperwork acknowledges the catastrophe for exactly as long as required and then resumes scheduling.
+
+Built from primitives + `TextMesh` in the same grammar as the L25 `SectorPlaques` (steel body, amber
+emissive edge, `ShipTerminalUI` font) so it reads from the iso camera and in first person without a
+canvas. Sits at hub + (3.0, −2.6), clear of the L25 hub plaque at (−2.6, −2.6); own child root, never
+on the shared SectorRuntime object.
+
+Implementation note: the board compares the *inputs* (shift number, breach, recovering) rather than
+the composed string before rewriting the label — composing every poll just to discover nothing changed
+would allocate a string four times a second for a sign that changes a handful of times per run.
+
+Verified in play across the real wave path: `SHIFT 01 | PREP WINDOW` → `SHIFT 01 | BREACH ACTIVE` →
+`SHIFT 01 | CLEAR - RESUME DUTY` → back to `PREP WINDOW`, and later `SHIFT 02 | BREACH ACTIVE` once
+wave 2 began — legible in an iso capture beside the hub.

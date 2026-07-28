@@ -202,7 +202,7 @@ Parked until Gate: OPEN. Commit-sized; bible-aligned; no code until sounds exist
 
 | | |
 |--|--|
-| **Next task** | **Lore `L*`** — next in file order is **L28** (schedule board ticks through catastrophe). L27 landed 2026-07-27. Highest north-star value if a human/groom reorders: **L41–L44**, **L50–L55**. |
+| **Next task** | **Lore `L*`** — next in file order is **L29** (vent-carrier stage-2 ecology). L27 + L28 landed 2026-07-27. Highest north-star value if a human/groom reorders: **L41–L44**, **L50–L55**. |
 | **Active queue** | Lore **L\***. **F strip COMPLETE** (F1–F14) and **suite green in both modes** — BUG2 turned out to be a bad assertion, not a game bug (2026-07-27). **Changing the default view mode is now unblocked but is a human call** — F14 deliberately did not touch it. |
 | **Command** | `/auto-dev` (Unity MCP preferred; else mark `[?]` for `/unity-pass`) |
 | **P13 how** | Same pose problem as P12. **Reuse P12's solution:** pose in code via a runtime hook (see `PlayerArtAttach.EnsureIdlePose`), do **not** bake bone-overrides into `Sector01`. Re-run **Mirror Synty Art Into Resources** if new `Characters/` paths are added. |
@@ -1499,12 +1499,30 @@ Code reality: L15–L26 shipped (Play-verified where noted); L27–L30 / L32–L
   own stomped value. Combat arming was confirmed directly instead (same branch); alarm was observed at
   0.70, above the 0.55 threshold, before a wave lands.
 
-- [ ] L28. Schedule board ticks through catastrophe
+- [x] L28. Schedule board ticks through catastrophe — DONE 2026-07-27 (auto-dev, Play-verified)
   Type: diegetic | Pillar: Lonely worker fantasy / Workplace as trap
   Lore: `lore/BIBLE.md` motifs (schedule boards / shift timers that keep ticking); authenticity-before-haunt
   Unity: **yes** — board text changes across Prep → Combat → Recovery.
   Change: the existing `ScheduleBoard` prop from `PlaceholderPropDressing` is static — drive 2–4 terse lines from wave/phase (`SHIFT n`, `PREP WINDOW`, `BREACH ACTIVE`, `CLEAR — RESUME DUTY`) via TextMesh or equivalent. Steel/amber; no cheer; no new screen chrome. Wire so boards refresh when phase changes.
   done-when: Play — at least one board updates on Prep enter, Combat enter, and RecoveryBeat; iso readable; console clean
+  **DONE 2026-07-27 (auto-dev, Play-verified).** New `ShiftScheduleBoard` (wired in
+  `SectorRuntimeBootstrap`): two terse lines — `SHIFT nn` tracking the wave number, and
+  `PREP WINDOW` → `BREACH ACTIVE` (any non-Prep phase) → `CLEAR - RESUME DUTY` for 9 s after a clear,
+  then back. The stand-down line is **time-boxed on purpose**: the paperwork acknowledges the
+  catastrophe for exactly as long as required, then resumes scheduling.
+  **Scope correction:** this task said to drive "the existing `ScheduleBoard` prop from
+  `PlaceholderPropDressing`" — **no such prop exists** (that dresser only places signs/posters). Rather
+  than invent art, the board is built from primitives + `TextMesh` in the **L25 `SectorPlaques` grammar**
+  (steel body, amber emissive edge, `ShipTerminalUI` font) so it matches the wayfinding language already
+  on the deck. Sits at hub + (3.0, −2.6), clear of the L25 hub plaque; own child root, never the shared
+  SectorRuntime object.
+  Perf note: compares the **inputs** (shift / breach / recovering) rather than the composed string before
+  rewriting the label — composing every poll to discover nothing changed would allocate 4×/sec for a sign
+  that changes a handful of times a run.
+  Verified on the real wave path: `SHIFT 01 | PREP WINDOW` → `SHIFT 01 | BREACH ACTIVE` →
+  `SHIFT 01 | CLEAR - RESUME DUTY` → back to `PREP WINDOW`; later `SHIFT 02 | BREACH ACTIVE` once wave 2
+  began on its own (so the shift counter really ticks). Iso capture confirms it is legible beside the hub
+  at gameplay zoom. Console clean, 0 errors.
 
 - [ ] L29. Vent-carrier stage-2 ecology (specialize rung)
   Type: systemic / mechanical | Pillar: Industrial biomass / hive
@@ -2110,6 +2128,15 @@ Method: capture the Game view in Play mode, judge the frame, fix the single wors
 - [ ] Free lead: Abandoned Factory Lite (Asset Store) — safe mood greys for blockout; not gated, but not queued until visual Now is thin.
 
 ## Agent log (newest first — one line per session: date, task, result, commit)
+
+- 2026-07-27: **L28 shift schedule board — DONE (auto-dev, Play-verified).** New `ShiftScheduleBoard`
+  posts `SHIFT nn` + `PREP WINDOW` / `BREACH ACTIVE` / `CLEAR - RESUME DUTY` (time-boxed 9 s) beside the
+  hub — the company paperwork reporting the breach as a routine status change. **Task premise was wrong:**
+  there is no `ScheduleBoard` prop in `PlaceholderPropDressing` (signs/posters only), so the board is
+  built from primitives + `TextMesh` in the **L25 `SectorPlaques` grammar** instead of inventing art.
+  Verified across the real wave path (all three transitions, plus `SHIFT 02` once wave 2 started) and
+  read legibly in an iso capture. Console clean.
+  Commit: `L28: the shift board keeps posting the roster through a breach` (2026-07-27 HEAD).
 
 - 2026-07-27: **L27 threatened-lane lamp death — DONE (auto-dev, Play-verified).** New `LaneThreatLamp`
   kills the single fixture over the approach of the lane actually under threat (late prep + whole

@@ -181,6 +181,8 @@ public static class SectorRuntimeBootstrap
         // L27: kills one lamp on the threatened lane's approach. Owns its own
         // LampFlicker flag, so it never fights HorrorClock's zone decay above.
         go.AddComponent<LaneThreatLamp>();
+        // L28: the shift board keeps posting the roster through a breach.
+        go.AddComponent<ShiftScheduleBoard>();
 
         go.AddComponent<AmbientDustMotes>();
         // P21: pack particle accents, gated on heat/menace/wave state.
