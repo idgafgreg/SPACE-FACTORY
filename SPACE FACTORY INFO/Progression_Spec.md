@@ -77,6 +77,37 @@ Flood-style ecology ladder start: fragile infection forms on breach lanes that s
 - On death within **5.5m** of a drill/processor: seeds `ProcessInfection` (same 0.55x rate as L17)
 - Tunables on `WaveController`: `residueBreachBaselineShare`, `residueHpMult`, `residueSpeedMult`, `residueSeedRadius`
 
+## Staged processor contamination (L35, 2026-07-28)
+
+`lore/BIBLE.md`: **beautiful-wrong before hostile**. Contamination is no longer a switch from clean to
+broken - it arrives as something the player might stop and look at, and only later admits what it is.
+`ProcessInfection` now climbs a 3-rung ladder instead of being binary.
+
+| Stage | After | Reads as | Costs |
+|--|--|--|--|
+| 1 | on infect | Machine's own emissive drifts to a cool blue-white it has no business glowing; reclaim line reports an unlogged "value". **No residue blob.** | **Nothing** |
+| 2 | 20 s | The pretty hue curdles to sick green and the residue blob appears | `rateMult` 0.55 + slurry stalls (L24) |
+| 3 | +28 s | Stops being this machine's problem | Seeds the ecology: `HorrorClock.AddZoneStress(0.06)` |
+
+- **Stage 1 is free on purpose.** The player pays only for *ignoring* it, so a machine caught early is
+  a save rather than damage already taken. Repairing at stage 1 restores the original emissive exactly
+  (captured on first tint) with zero throughput lost.
+- **Cleared at stage 3** the machine keeps a faint wrongness echo for **6 s** - the line runs again but
+  the colour takes a moment to forget.
+- **Wave 1 teaching lock:** `ProcessInfectionController` caps the ladder at **stage 2** while
+  `WaveNumber <= 1`, so the opening arc can show the pretty stage and its cost without the hive taking
+  free ground while the player is still learning to repair.
+- Ownership: stage 3 routes through `HorrorClock.AddZoneStress` (the L29 entry point) rather than
+  spawning anything - the clock already owns zone escalation and a second owner would fight it.
+- The **audio** half of the stage ladder is **SND8** and stays behind the closed audio gate.
+
+Tunables on `ProcessInfection`: `stage1Seconds`, `stage2Seconds`, `maxStage`, `echoSeconds`.
+
+Verified in Play: stage 1 `rateMult` **1.00** with no residue blob; stage 2 **0.55** with blob; stage 3
+`seededEcology` true and zone decay **0.000 -> 0.060**; early repair leaves `rateMult` 1.00 and restores
+emission to the captured original; `maxStage = 2` stops the ladder at 2 with no ecology seed. Captures
+show stage 1 lit cool blue-white (attractive) versus stage 2 sick green plus blob (damaged).
+
 ## Deck habitation wrongness (L34, 2026-07-28)
 
 Cold, unworked deck should read as a lonely ship rather than as missing content, and running industry

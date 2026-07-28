@@ -77,6 +77,12 @@ public class ProcessInfectionController : MonoBehaviour
         var inf = host.GetComponent<ProcessInfection>();
         bool was = inf != null && inf.IsInfected;
         if (inf == null) inf = host.AddComponent<ProcessInfection>();
+        // L35 W1 teaching lock: during the first wave the ladder stops at stage 2,
+        // so the opening arc can show the pretty stage and its cost without the
+        // hive taking ground while the player is still learning to repair.
+        var wc = WaveController.Instance != null
+            ? WaveController.Instance : WaveController.DebugResolveInstance();
+        inf.SetMaxStage(wc != null && wc.WaveNumber <= 1 ? 2 : 3);
         inf.Infect(infectionRateMult);
         return !was;
     }
