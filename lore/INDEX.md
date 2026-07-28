@@ -81,5 +81,6 @@ Paid + free lore asset leads export to [`assets-wishlist.csv`](assets-wishlist.c
 - Date: 2026-07-28
 - Landed on: `main`
 - Focus weight: STALKER Emission take-shelter (careful); Returnal dual intimacy / haunt; Firewatch lonely-job radio; Mothership failure-tax (no panic HUD); This War of Mine siege-around-you (adjacent); night-hull fiction; free Three signs ISO 7010; wishlist Hazard & Safety 285 (~$22)
+- **Bible absorbed:** 2026-07-28 via `/lore-bible` — also absorbed lingering 07-27 (systems-as-interface, sidegrade expansion, hub/spoke, impregnate-don't-replace) plus 07-28 (forecastable surge shelter, dual-mode berth intimacy, radio-as-shift-partner, failure tax not panic HUD, siege-around-the-line); experiments parked for `/lore-gap`
 - Prior run: 2026-07-27 (Observation systems mediation; Tacoma empty-workplace berths; Lobotomy combination expansion poison; Scorn impregnation careful; ghost-in-HVAC; CRT-Free; Modular Air Duct wishlist)
 - Render pipeline note: project currently **Built-in** (prefer Built-in-compatible kits; Wet Stuff needs Deferred cameras)
