@@ -46,9 +46,26 @@ public static class SectorRuntimeBootstrap
         }
 
         // Idempotent: never stack a second runtime container on the same scene.
-        if (Object.FindAnyObjectByType<SectorRuntimeMarker>() != null) return;
+        // Hand-authored / edit-mode preview often leaves a SectorRuntime in the
+        // open scene — still attach systems added after that container was built.
+        var existing = Object.FindAnyObjectByType<SectorRuntimeMarker>();
+        if (existing != null)
+        {
+            EnsureMissingRuntimeSystems(existing.gameObject);
+            return;
+        }
 
         CreateRuntimeContainer();
+    }
+
+    /// <summary>
+    /// When a SectorRuntime already exists (baked preview, dirty scene, prior
+    /// session), new bootstrap entries never ran. Add only the missing pieces.
+    /// </summary>
+    static void EnsureMissingRuntimeSystems(GameObject runtime)
+    {
+        if (runtime.GetComponent<MachineFaceStatus>() == null)
+            runtime.AddComponent<MachineFaceStatus>();
     }
 
     /// <summary>
@@ -148,6 +165,8 @@ public static class SectorRuntimeBootstrap
         go.AddComponent<ArtPlaceholderFitter>();
         go.AddComponent<RuntimeArtBackfill>();
         go.AddComponent<MachineIdentityTint>();
+        // F12: FP machine-face RUN/IDLE/CONTAM panels (iso unchanged).
+        go.AddComponent<MachineFaceStatus>();
 
         go.AddComponent<CameraFramingTune>();
         go.AddComponent<FactoryReadabilityPass>();

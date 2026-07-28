@@ -135,11 +135,11 @@ Parked until Gate: OPEN. Commit-sized; bible-aligned; no code until sounds exist
 
 ## Needs human decision
 
-- **Priority after pack actors (groom 2026-07-27).** Pack conversion + actors done. **F11 shipped.**
-  Active queue is **F12–F14**. Preference fork still open:
-  1. **Finish FP polish F12–F14** — machine-face readouts, scale audit, dual-mode gate (default).
+- **Priority after pack actors (groom 2026-07-27).** Pack conversion + actors done. **F11–F12 shipped.**
+  Active queue is **F13–F14**. Preference fork still open:
+  1. **Finish FP polish F13–F14** — scale audit / embodiment, dual-mode gate (default).
   2. **Systemic lore L41+** (through L60) — highest north-star *play* value; no pack dependency.
-  Say the word to pull **L41** (or another L*) up instead of F12.
+  Say the word to pull **L41** (or another L*) up instead of F13.
 
 ## Decisions (human-made, newest first)
 
@@ -202,13 +202,13 @@ Parked until Gate: OPEN. Commit-sized; bible-aligned; no code until sounds exist
 
 | | |
 |--|--|
-| **Next task** | **F12** — factory legibility in FP (diegetic machine-face readouts). |
-| **Active queue** | **1. F12** → **2. F13** → **3. F14**. Lore **L\*** stays below unless a human pulls one up (see Needs human). |
+| **Next task** | **F13** — FP embodiment + architectural scale audit. |
+| **Active queue** | **1. F13** → **2. F14**. Lore **L\*** stays below unless a human pulls one up (see Needs human). |
 | **Command** | `/auto-dev` (Unity MCP preferred; else mark `[?]` for `/unity-pass`) |
 | **P13 how** | Same pose problem as P12. **Reuse P12's solution:** pose in code via a runtime hook (see `PlayerArtAttach.EnsureIdlePose`), do **not** bake bone-overrides into `Sector01`. Re-run **Mirror Synty Art Into Resources** if new `Characters/` paths are added. |
 | **Pack conversion** | Done: **P0–P14, P16–P21**. Remaining P: **P22** deferred (VoidHull). |
 | **Dressing a hand-authored scene** | Runtime dressers do **not** run here (`SectorAuthoring` skips `AddGeometryDressing`). Implement `ISceneDresser`, then a thin menu item calling `SceneDressingBake.Run<T>` — see `PersonalEffectsBake.cs` / `BreakRoomBake`. Register in `AddGeometryDressing` too for generated sectors. |
-| **Skip** | `[wait-until-sounds]` (audio gate **CLOSED**). **P22** deferred. Do **not** jump to L* ahead of F11–F14 without a human/groom reorder. |
+| **Skip** | `[wait-until-sounds]` (audio gate **CLOSED**). **P22** deferred. Do **not** jump to L* ahead of F13–F14 without a human/groom reorder. |
 | **Lore** | Bible absorbed through **2026-07-26**. Open: **L27–L39**, **L41–L60** (parked under the FP strip). Newest block **L56–L60**. Audio beds stay gated. |
 | **Gates** | Asset pack **OPEN** · Audio **CLOSED** · Deck size locked · Prep **40s / 30s** |
 
@@ -232,7 +232,7 @@ Parked until Gate: OPEN. Commit-sized; bible-aligned; no code until sounds exist
 
 ### F1–F14. First-person view mode (human decision 2026-07-20)
 
-**Status:** F1–F11 shipped. Active queue continues **F12 → F14** unless a human pulls systemic lore
+**Status:** F1–F12 shipped. Active queue continues **F13 → F14** unless a human pulls systemic lore
 up instead (see `## Needs human decision`).
 
 Goal: toggleable FP that looks/reads at least as well as iso. Iso stays until F14 passes.
@@ -1290,7 +1290,7 @@ fog all check out, enumerate renderers along the sight line before touching anyt
   `PROX · AFT/PORT/…` chip + soft edge wash. Wired in `SectorRuntimeBootstrap.AddHud`. Play:
   aft crawler fpSpill 5.60/2.87, iso restored 2.60/1.5; 0 Errors. SND6 still gated.
 
-- [ ] F12. Factory legibility in FP — diegetic machine-face readouts
+- [x] F12. Factory legibility in FP — diegetic machine-face readouts — DONE 2026-07-27
   Type: diegetic / systemic | Pillar: Factory pressure = identity / Diegetic dread
   Lore: `BIBLE.md` — "Can we cut floating chrome and still read the state?"; Milham diegetic
   wayfinding (L25 is the sector-tag cousin of this task).
@@ -1306,6 +1306,11 @@ fog all check out, enumerate renderers along the sight line before touching anyt
   done-when: Play (FP) — walking a production line, you can tell each machine's state from its own
   face; a contaminated processor is identifiable on approach; no new screen chrome; Play (iso) —
   world bars unchanged; console clean
+  **DONE:** `MachineFaceStatus` — FP-only face plates (panel + lamp + TextMesh RUN/IDLE/STALL/
+  NO PWR/CONTAM/LIVE) under `ArtPlaceholder/FaceStatus` with `EyeLevelIdentityVisibility`; contam
+  also flips the F10 identity marker sick-green. Bootstrap wire + `EnsureMissingRuntimeSystems` for
+  dirty/baked SectorRuntime. Hardened visibility rescan/subscribe. Play: 7 faces, FP on / iso off,
+  infected processor → CONTAM (frame-verified), EyeLevelId also hides in iso; 0 Errors.
 
 - [ ] F13. FP embodiment + architectural scale audit
   Type: visual / mechanical | Pillar: Lonely worker fantasy
@@ -1993,6 +1998,10 @@ Method: capture the Game view in Play mode, judge the frame, fix the single wors
 - [ ] Free lead: Abandoned Factory Lite (Asset Store) — safe mood greys for blockout; not gated, but not queued until visual Now is thin.
 
 ## Agent log (newest first — one line per session: date, task, result, commit)
+
+- 2026-07-27: **F12** DONE — `MachineFaceStatus` FP face panels (CONTAM/RUN/IDLE…); ensure-missing
+  bootstrap; `EyeLevelIdentityVisibility` rescan fix. Play: 7 faces FP on/iso off, CONTAM frame OK,
+  0 Errors. Work next → **F13**. `3d710d6`.
 
 - 2026-07-27: **F11** — FP threat readability. Rewrote/wired `ThreatCompass`: off-screen spill boost
   on `ThreatGlow` + terminal `PROX · bearing` chip (no arcade arrows). Play: spill 5.60/2.87 behind
