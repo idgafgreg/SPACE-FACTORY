@@ -1757,3 +1757,30 @@ FP embodiment (`FirstPersonCamera.HeadMotion`):
 - `headMotion = false` on the component disables it entirely as a motion-sickness fallback.
 - Footstep audio is deliberately absent: that is SND7, behind the closed audio gate.
 - Iso is untouched — the whole routine sits behind LateUpdate's first-person guard.
+
+# Threatened-Lane Lamp Death (L27, 2026-07-27)
+
+The lamp over the approach that is about to be used dies first, so the player can read which
+corridor to go stand in without a HUD marker. Diegetic dread from `lore/BIBLE.md`: lights die and
+rooms get blacker as the ship loses ground, and pressure is read off the world, not off a meter.
+
+Rules:
+- Armed during **late Prep** (AlarmLevel >= 0.55, i.e. the wave is nearly here) and for the whole
+  **fight**. Recovery and early prep restore the fixture, so the beat reads as pressure arriving and
+  then passing.
+- Exactly **one** fixture, the live lamp nearest the threatened lane's mouth (within 18 m).
+  Threatened lane = VentBreach when the wave actually assigned spawns there, otherwise WestCorridor
+  as the teaching arc expects.
+- Fixtures within 12 m of the hub are never darkened — the player has to keep building and reading
+  the factory floor while a lane goes dark. Measured in play: 1 dark, 6 lit.
+- Deliberately distinct from the HorrorClock zone decay, which kills a *fraction* of the VentBreach
+  zone as a long-run scar. This is a single, temporary, directional cue.
+
+Ownership note for future agents: `HorrorClock` owns `LampFlicker.forceDead` and rewrites it every
+tick for its zone lamps. L27 therefore owns a **separate** flag, `LampFlicker.laneThreatDead`, and a
+lamp is dark if `IsDark` (either flag) is set. Do not add a second writer to `forceDead`; L27 also
+skips any fixture the clock has already killed, since darkening an already-dark lamp is not a
+telegraph the player can see.
+
+Verified in play: combat on the west lane put the mouth fixture at (-40, 3, 0) to intensity 0.000
+with 6 lamps still lit; after the wave cleared (Prep, alarm 0.00) the same fixture returned to 3.240.

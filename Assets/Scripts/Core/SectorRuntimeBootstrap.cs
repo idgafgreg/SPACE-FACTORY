@@ -178,6 +178,9 @@ public static class SectorRuntimeBootstrap
         go.AddComponent<ThreatTelegraph>();
         go.AddComponent<HorrorClock>();
         go.AddComponent<RecoveryBeat>();
+        // L27: kills one lamp on the threatened lane's approach. Owns its own
+        // LampFlicker flag, so it never fights HorrorClock's zone decay above.
+        go.AddComponent<LaneThreatLamp>();
 
         go.AddComponent<AmbientDustMotes>();
         // P21: pack particle accents, gated on heat/menace/wave state.

@@ -202,7 +202,7 @@ Parked until Gate: OPEN. Commit-sized; bible-aligned; no code until sounds exist
 
 | | |
 |--|--|
-| **Next task** | **Lore `L*`** — pack conversion, the F strip and BUG2 are all closed, and the suite is green in both modes. Take the topmost eligible L task (or let a human/groom pick); **L41–L44** and the newest **L50–L55** are the highest north-star value. |
+| **Next task** | **Lore `L*`** — next in file order is **L28** (schedule board ticks through catastrophe). L27 landed 2026-07-27. Highest north-star value if a human/groom reorders: **L41–L44**, **L50–L55**. |
 | **Active queue** | Lore **L\***. **F strip COMPLETE** (F1–F14) and **suite green in both modes** — BUG2 turned out to be a bad assertion, not a game bug (2026-07-27). **Changing the default view mode is now unblocked but is a human call** — F14 deliberately did not touch it. |
 | **Command** | `/auto-dev` (Unity MCP preferred; else mark `[?]` for `/unity-pass`) |
 | **P13 how** | Same pose problem as P12. **Reuse P12's solution:** pose in code via a runtime hook (see `PlayerArtAttach.EnsureIdlePose`), do **not** bake bone-overrides into `Sector01`. Re-run **Mirror Synty Art Into Resources** if new `Characters/` paths are added. |
@@ -1474,12 +1474,30 @@ Code reality: L15–L26 shipped (Play-verified where noted); L27–L30 / L32–L
   Change: during Prep, one-line diegetic quota chip via existing terminal HUD (`[SHIFT] SCRAP GOAL n` from wave + modest heat). Soft only: meet before combat → quiet terminal ack (no green cheer); miss → brief `AlarmLevel` bump into early combat (no scrap tax, no soft-lock). Doc targets in Progression_Spec.
   done-when: Play — prep shows goal; hit and miss paths both readable; factory loop still primary; console clean. DONE 2026-07-21 (ResourceInventory.TotalEarned + ShiftQuotaHud + bootstrap wire): goal = 35 + 12×wave + up to 25×heat; HUD chip `[SHIFT] SCRAP GOAL n/m`; early-Combat hit/miss evaluation; quiet FloatingText ack or 4s 0.22 AlarmLevel bump. Syntax verified with ad-hoc Roslyn parser; in-editor Play-mode hit/miss paths still needed.
 
-- [ ] L27. Dentist-spot lamp death on active breach lane
+- [x] L27. Dentist-spot lamp death on active breach lane — DONE 2026-07-27 (auto-dev, Play-verified)
   Type: diegetic / visual | Pillar: Diegetic dread
   Lore: `lore/BIBLE.md` diegetic grammar (lights die, rooms blacker); interrogation lighting (lore/2026-07-20/summary.md #1)
   Unity: **yes** — threatened-lane lamp death + recovery restore.
   Change: when late-prep `AlarmLevel` or active combat targets a breach lane, kill **one** corridor lamp nearest that lane’s approach (intensity→0 / disable), restore after RecoveryBeat ease. Reuse `LampFlicker` / HorrorClock hooks; no new flashy FX. Distinct from zone-wide HorrorClock decay — this is a single approach telegraph. No asset pack.
   done-when: Play — late prep/combat darkens one approach lamp on the threatened lane; recovery restores; hub pool still usable; console clean
+  **DONE 2026-07-27 (auto-dev, Play-verified).** New `LaneThreatLamp` (wired in `SectorRuntimeBootstrap`
+  beside `HorrorClock`): armed in late Prep (`AlarmLevel >= 0.55`) and for the whole fight; threatened
+  lane = **VentBreach** when the wave assigned spawns there, else **WestCorridor** per the teaching arc;
+  kills the nearest live fixture to that lane's mouth; never one within 12 m of the hub; holds its pick
+  while the lane stays threatened so the dark spot doesn't wander.
+  **Flag-ownership rule (read before touching lamps):** `HorrorClock` rewrites `LampFlicker.forceDead`
+  every tick for its zone lamps, so a second writer would silently lose — or resurrect a lamp the clock
+  wanted dead — depending on execution order. L27 owns a **separate** flag `laneThreatDead`; the lamp is
+  dark if `LampFlicker.IsDark` (either owner). L27 also skips fixtures the clock already killed, since
+  darkening an already-dark lamp is not a telegraph the player can see. Distinct from the HorrorClock
+  zone decay (a *fraction* of the zone as a long-run scar) — this is a single, temporary, directional cue.
+  Verified through the real wave path: combat on the west lane put the mouth fixture at (-40, 3, 0) to
+  intensity **0.000** with **6 lamps still lit** (hub pool usable); after the clear (Prep, alarm 0.00)
+  the same fixture read **3.240**, `laneThreatDead=false`. Console clean, 0 errors.
+  *Verification trap logged:* forcing `AtmosphereController.SetAlarmLevel` by hand proves nothing —
+  **`ThreatTelegraph` rewrites `AlarmLevel` every frame**, so the first late-prep test was reading its
+  own stomped value. Combat arming was confirmed directly instead (same branch); alarm was observed at
+  0.70, above the 0.55 threshold, before a wave lands.
 
 - [ ] L28. Schedule board ticks through catastrophe
   Type: diegetic | Pillar: Lonely worker fantasy / Workplace as trap
@@ -2092,6 +2110,17 @@ Method: capture the Game view in Play mode, judge the frame, fix the single wors
 - [ ] Free lead: Abandoned Factory Lite (Asset Store) — safe mood greys for blockout; not gated, but not queued until visual Now is thin.
 
 ## Agent log (newest first — one line per session: date, task, result, commit)
+
+- 2026-07-27: **L27 threatened-lane lamp death — DONE (auto-dev, Play-verified).** New `LaneThreatLamp`
+  kills the single fixture over the approach of the lane actually under threat (late prep + whole
+  fight), restores after the clear; hub-adjacent fixtures never darken. **Ownership rule:** `HorrorClock`
+  rewrites `LampFlicker.forceDead` every tick, so L27 owns a separate `laneThreatDead` flag and the lamp
+  is dark if `IsDark` (either) — no second writer on `forceDead`; it also skips lamps the clock already
+  killed. Verified on the real wave path: west-mouth fixture (-40,3,0) intensity **0.000** in combat with
+  **6 lamps still lit**, back to **3.240** after the clear. Trap logged for future agents: forcing
+  `SetAlarmLevel` proves nothing because **ThreatTelegraph rewrites AlarmLevel every frame** — my first
+  late-prep test measured its own stomped value. Docs synced. Console clean.
+  Commit: `L27: the lamp over the threatened approach dies first` (2026-07-27 HEAD).
 
 - 2026-07-27: **BUG2 — NOT a game bug; the check was wrong. DONE (auto-dev, mutation-tested).**
   Enumerated the 9 "visible" renderers: all were the P18 held-tool viewmodel under the FP camera, and

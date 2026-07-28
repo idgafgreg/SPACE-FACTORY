@@ -24,6 +24,21 @@ public class LampFlicker : MonoBehaviour
     /// <summary>L20 HorrorClock: lamp is fully dead until restored after clear ease.</summary>
     [System.NonSerialized] public bool forceDead;
 
+    /// <summary>
+    /// L27 LaneThreatLamp: this one approach fixture is dark because its lane is
+    /// the one under threat right now.
+    ///
+    /// Deliberately a SECOND flag rather than reusing <see cref="forceDead"/>:
+    /// HorrorClock rewrites forceDead for every VentBreach-zone lamp on its own
+    /// schedule, so a second writer would have its kill silently undone (or would
+    /// resurrect a lamp the clock wanted dead) depending on execution order. One
+    /// owner per field; the lamp is dark if EITHER owner says so.
+    /// </summary>
+    [System.NonSerialized] public bool laneThreatDead;
+
+    /// <summary>Dark for any reason — HorrorClock zone decay or an L27 lane telegraph.</summary>
+    public bool IsDark => forceDead || laneThreatDead;
+
     Light _light;
     float _base;
     float _seed;
@@ -51,7 +66,7 @@ public class LampFlicker : MonoBehaviour
     {
         if (_light == null) _light = GetComponent<Light>();
         _base = value;
-        if (_light != null && !forceDead) _light.intensity = value;
+        if (_light != null && !IsDark) _light.intensity = value;
     }
 
     float StutterDelay() => stutterEvery * (0.4f + Random.value * 1.2f);
@@ -60,7 +75,7 @@ public class LampFlicker : MonoBehaviour
     {
         if (_light == null) return;
 
-        if (forceDead)
+        if (IsDark)
         {
             _light.intensity = 0f;
             return;
