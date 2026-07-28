@@ -202,7 +202,7 @@ Parked until Gate: OPEN. Commit-sized; bible-aligned; no code until sounds exist
 
 | | |
 |--|--|
-| **Next task** | **`/unity-pass` to close L34** (shipped `[?]` 2026-07-28 — `Wrongness01` never left 0.000 in play; see its entry for the exact repro steps). Then lore **L35**. L27 + L28 landed 2026-07-27; **L29, L30, L32, L33** 2026-07-28. Highest north-star value if a human/groom reorders: **L41–L44**, **L50–L55**. |
+| **Next task** | **Lore `L35`** (staged processor contamination) — the parked queue is empty: **L34 verified 2026-07-28** by `/unity-pass`. L27 + L28 landed 2026-07-27; **L29, L30, L32, L33, L34** 2026-07-28. Highest north-star value if a human/groom reorders: **L41–L44**, **L50–L55**. |
 | **Active queue** | Lore **L\***. **F strip COMPLETE** (F1–F14) and **suite green in both modes** — BUG2 turned out to be a bad assertion, not a game bug (2026-07-27). **Changing the default view mode is now unblocked but is a human call** — F14 deliberately did not touch it. |
 | **Command** | `/auto-dev` (Unity MCP preferred; else mark `[?]` for `/unity-pass`) |
 | **P13 how** | Same pose problem as P12. **Reuse P12's solution:** pose in code via a runtime hook (see `PlayerArtAttach.EnsureIdlePose`), do **not** bake bone-overrides into `Sector01`. Re-run **Mirror Synty Art Into Resources** if new `Characters/` paths are added. |
@@ -1625,7 +1625,7 @@ Code reality: L15–L26 shipped (Play-verified where noted); L27–L30 / L32–L
   `Extract(10)=10`, infinite; correct layer/trigger/art; all authored veins still present and untouched
   (starter economy unchanged, hub viable without ever walking out). Console clean.
 
-- [?] L34. Uninhabited-deck wrongness eases near powered industry — **needs in-editor verification** (auto-dev 2026-07-28)
+- [x] L34. Uninhabited-deck wrongness eases near powered industry — **VERIFIED 2026-07-28 (unity-pass)**
   Type: systemic / diegetic | Pillar: Diegetic dread / Factory pressure = identity
   Lore: `lore/BIBLE.md` cold/quiet decks calm vs heat/industry; expansion headroom reads as lonely ship not missing content
   Unity: **yes** — far empty vs near running machines.
@@ -1646,12 +1646,27 @@ Code reality: L15–L26 shipped (Play-verified where noted); L27–L30 / L32–L
   spot (nearest powered industry **29.5 m**) expected **0.974**. Cause not identified — stale-assembly
   play sessions suspected (an earlier duplicate-`[Tooltip]` compile error of mine had blocked the whole
   assembly, and play kept starting mid-compile) but **not proven**; duplicate writer ruled out.
-  **For `/unity-pass`:** enter play on a settled compile, walk to ~(−34, 17), confirm `Wrongness01`
-  climbs toward ~0.97 and `RenderSettings.fogEndDistance` drops below 44, then place/power a drill
-  nearby and confirm it eases back. If the value is still pinned at 0, check whether `DeckHabitation
-  .Update` is running at all before touching the formula.
-  Fixed en route: the duplicate `[Tooltip]` compile error, and a `PlayerController.Instance`-only lookup
-  with no `Find` fallback (every other caller in the project pairs the two).
+  **RESOLVED → `[x]` 2026-07-28 (unity-pass). The feature was correct all along; the previous session's
+  measurement was broken.** Root cause: `Application.runInBackground` was never set. Under MCP-driven
+  Play the editor is unfocused, so **the player loop halts and `Update` never ticks between samples** —
+  the value looked frozen at 0.000 while the code was fine. Exactly the trap this command's own doc
+  warns about. No product code needed changing.
+  Verified with `runInBackground = true` on a settled compile:
+  - **Far empty deck** (−34, 17), nearest powered industry **29.5 m** → `Wrongness01` **0.941**,
+    `fogEndDistance` **39.3** (pulled in from base 44).
+  - **Isolated the fog claim** rather than assuming it: lonely term = 0.941 × 0.30 = **0.282**, and the
+    measured pull = (44 − 39.3)/(44 − 27.28) = **0.281** — an exact match, so that pull was loneliness,
+    not alarm.
+  - **Beside a running line** (0.8 m from a powered drill) → `Wrongness01` **0.012**. Building out
+    demonstrably reduces local wrongness.
+  - **Precedence holds:** during Spawning, alarm **0.700** dominated and masked the lonely term, which
+    is the intended "loneliness is a drift, not an alarm" rule.
+  - **F8 FP profile respected:** in first person the base stayed **26.0** (not overwritten with the iso
+    44) and expected fogEnd **18.1 == actual 18.1**.
+  Map bounds untouched; console clean (0 errors/exceptions); frame counter advanced 2189 → 10243 proving
+  the loop ran.
+  Fixed during the original session: the duplicate `[Tooltip]` compile error, and a
+  `PlayerController.Instance`-only lookup with no `Find` fallback (every other caller pairs the two).
 
 ### Lore-gap refill — 2026-07-22 (bible absorb: employment trap / organ logic / contamination)
 
@@ -2230,6 +2245,18 @@ Method: capture the Game view in Play mode, judge the frame, fix the single wors
 - [ ] Free lead: Abandoned Factory Lite (Asset Store) — safe mood greys for blockout; not gated, but not queued until visual Now is thin.
 
 ## Agent log (newest first — one line per session: date, task, result, commit)
+
+- 2026-07-28: **unity-pass — L34 VERIFIED, queue cleared (1 parked item, 1 resolved, 0 blocked).**
+  The feature was correct all along; the `[?]` was a **measurement failure**: `Application
+  .runInBackground` was never set, so under MCP-driven Play the unfocused editor halted the player loop
+  and `DeckHabitation.Update` never ticked between samples — the value looked frozen at 0.000.
+  **No product code changed.** With it set: far deck (industry 29.5 m) → wrongness **0.941**, fogEnd
+  **39.3** from base 44, and the pull was *isolated* to loneliness (0.941×0.30 = 0.282 vs measured
+  0.281, exact match) rather than assumed; beside a running line (0.8 m) → **0.012**; alarm 0.700
+  correctly masked it during Spawning; FP kept its F8 base **26.0** with expected fogEnd 18.1 == actual.
+  Frame counter 2189 → 10243 proves the loop ran. Console clean, 0 errors. Docs status flipped to
+  VERIFIED. Lesson recorded for future MCP Play measurement.
+  Commit: `unity-pass: verify L34 deck habitation wrongness in Play` (2026-07-28 HEAD).
 
 - 2026-07-28: **L34 deck habitation wrongness — `[?]` shipped unverified (auto-dev).** `DeckHabitation`
   publishes a 0–1 wrongness (12 m warm / 30 m lonely, hub always inhabited, powered producers only);

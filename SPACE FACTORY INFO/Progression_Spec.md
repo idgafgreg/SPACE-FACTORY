@@ -77,7 +77,7 @@ Flood-style ecology ladder start: fragile infection forms on breach lanes that s
 - On death within **5.5m** of a drill/processor: seeds `ProcessInfection` (same 0.55x rate as L17)
 - Tunables on `WaveController`: `residueBreachBaselineShare`, `residueHpMult`, `residueSpeedMult`, `residueSeedRadius`
 
-## Deck habitation wrongness (L34, 2026-07-28) - NEEDS IN-EDITOR VERIFICATION
+## Deck habitation wrongness (L34, 2026-07-28)
 
 Cold, unworked deck should read as a lonely ship rather than as missing content, and running industry
 is what pushes that loneliness back. `DeckHabitation` samples the player's surroundings and publishes
@@ -97,12 +97,16 @@ the same one-owner-per-field rule L27 (lamp flags) and L29 (zone stress) follow.
 scales `fogEnd`, which `ApplyViewProfile` has already swapped per view mode, the F8 first-person fog
 band keeps its own numbers instead of being overridden by an iso value.
 
-**Status: unverified.** The code compiles clean and the component is present, single-instance and
-enabled on SectorRuntime, but across several play sessions `Wrongness01` never moved off 0.000 while a
-hand-calculation at the same far-deck position (nearest powered industry 29.5 m) expected **0.974**.
-Cause not identified - a stale-assembly play session is suspected but was not proven, and a duplicate
-writer was ruled out. Do not treat these numbers as shipped behaviour until a `/unity-pass` confirms
-the value moves on the far deck and eases when industry arrives.
+**Status: VERIFIED in Play (unity-pass, 2026-07-28).** Far deck (nearest powered industry 29.5 m):
+`Wrongness01` **0.941**, fog end **39.3** from a base of 44 - and the pull was isolated to loneliness
+rather than assumed, since 0.941 x 0.30 = **0.282** matches the measured (44-39.3)/(44-27.28) =
+**0.281**. Beside a running line (0.8 m from a powered drill): **0.012**. During Spawning, alarm 0.700
+correctly masked the lonely term. In first person the F8 base stayed **26.0** and expected fog end
+**18.1 == actual 18.1**, so the per-mode band is respected.
+
+The earlier "unverified" note was a measurement failure, not a code failure: `Application
+.runInBackground` was not set, so an unfocused editor halted the player loop and `Update` never ticked
+between samples. Set it before any MCP-driven Play measurement.
 
 ## Deep far-deck veins (L33, 2026-07-28)
 
