@@ -2001,7 +2001,7 @@ Method: capture the Game view in Play mode, judge the frame, fix the single wors
 
 - 2026-07-27: **F12** DONE — `MachineFaceStatus` FP face panels (CONTAM/RUN/IDLE…); ensure-missing
   bootstrap; `EyeLevelIdentityVisibility` rescan fix. Play: 7 faces FP on/iso off, CONTAM frame OK,
-  0 Errors. Work next → **F13**. `3d710d6`.
+  0 Errors. Work next → **F13**. `6f7d222`.
 
 - 2026-07-27: **F11** — FP threat readability. Rewrote/wired `ThreatCompass`: off-screen spill boost
   on `ThreatGlow` + terminal `PROX · bearing` chip (no arcade arrows). Play: spill 5.60/2.87 behind
