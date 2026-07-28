@@ -77,6 +77,29 @@ Flood-style ecology ladder start: fragile infection forms on breach lanes that s
 - On death within **5.5m** of a drill/processor: seeds `ProcessInfection` (same 0.55x rate as L17)
 - Tunables on `WaveController`: `residueBreachBaselineShare`, `residueHpMult`, `residueSpeedMult`, `residueSeedRadius`
 
+## Deep far-deck veins (L33, 2026-07-28)
+
+L32 fills the empty deck with dressing; this gives the player a *motive* to build out there. Two rich
+veins sit beyond the starter footprint, and the trade is the one the map already teaches: higher
+yield, further from the hub you have to defend and belt back across.
+
+- **Site 1** (`Vein_DeepSalvage`, ScrapMetal, yield x**2.4**) exists from the first minute.
+- **Site 2** (`Vein_DeepCircuits`, CircuitComponents, yield x**2.6**) unlocks at **WavesCleared >= 2**.
+  Circuits deliberately, not more scrap: the later unlock should pull the factory further out, not
+  hand over more of what the player already has.
+- Both are infinite, like every authored vein, and richer than the best authored one (x2.0) so the
+  trek is worth it.
+- Keep-outs: **4 m** from every lane (a vein inside a lane would be farmed from cover) and **10 m**
+  from any existing node. Placement takes the **farthest valid candidate**, not the first that fits.
+- The starter economy is untouched — nothing is moved or removed, and the hub remains viable without
+  ever walking out there.
+
+Map-size note for future work: the Decision text says "~120x80", but that is the Ground plane
+including the band outside the hull. `SectorBounds.TryGetPlayArea` returns the authored playable
+interior, measured **75 x 39** — the farthest any point can be from the hub is about **42**. An
+absolute distance threshold above ~40 is therefore unplaceable; the first build of this task used 44
+and silently placed nothing. Prefer "farthest valid candidate" over a fixed radius.
+
 ## Throughput tax on top of the heat blend (L30, 2026-07-28)
 
 `Heat01` averages income against machine count (`0.55 × scrap + 0.45 × machines`), so a small line

@@ -185,6 +185,8 @@ public static class SectorRuntimeBootstrap
         go.AddComponent<ShiftScheduleBoard>();
         // L32: fill the empty far deck as the operation grows (never shrink it).
         go.AddComponent<FarDeckLabourFill>();
+        // L33: give the player a reason to build out there — rich, distant veins.
+        go.AddComponent<FarDeckSalvageLure>();
 
         go.AddComponent<AmbientDustMotes>();
         // P21: pack particle accents, gated on heat/menace/wave state.

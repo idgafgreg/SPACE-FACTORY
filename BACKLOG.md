@@ -202,7 +202,7 @@ Parked until Gate: OPEN. Commit-sized; bible-aligned; no code until sounds exist
 
 | | |
 |--|--|
-| **Next task** | **Lore `L*`** — next in file order is **L33** (distant scrap/salvage lure toward empty deck; pairs naturally with L32's fill). L27 + L28 landed 2026-07-27; **L29, L30, L32** 2026-07-28. Highest north-star value if a human/groom reorders: **L41–L44**, **L50–L55**. |
+| **Next task** | **Lore `L*`** — next in file order is **L34** (uninhabited-deck wrongness eases near powered industry). L27 + L28 landed 2026-07-27; **L29, L30, L32, L33** 2026-07-28. Highest north-star value if a human/groom reorders: **L41–L44**, **L50–L55**. |
 | **Active queue** | Lore **L\***. **F strip COMPLETE** (F1–F14) and **suite green in both modes** — BUG2 turned out to be a bad assertion, not a game bug (2026-07-27). **Changing the default view mode is now unblocked but is a human call** — F14 deliberately did not touch it. |
 | **Command** | `/auto-dev` (Unity MCP preferred; else mark `[?]` for `/unity-pass`) |
 | **P13 how** | Same pose problem as P12. **Reuse P12's solution:** pose in code via a runtime hook (see `PlayerArtAttach.EnsureIdlePose`), do **not** bake bone-overrides into `Sector01`. Re-run **Mirror Synty Art Into Resources** if new `Characters/` paths are added. |
@@ -1600,12 +1600,30 @@ Code reality: L15–L26 shipped (Play-verified where noted); L27–L30 / L32–L
   than lit dressing. Biasing toward lamps would defeat filling the *far* deck — that's the F7/F8
   lighting question. Raised as an Ice box item.
 
-- [ ] L33. Distant scrap/salvage lure toward empty deck
+- [x] L33. Distant scrap/salvage lure toward empty deck — DONE 2026-07-28 (auto-dev, Play-verified)
   Type: systemic | Pillar: Factory pressure = identity / Workplace as trap
   Lore: `lore/BIBLE.md` expansion fills emptiness; factory layout as primary skill
   Unity: **yes** — player has a reason to belt/build toward far deck without a map shrink.
   Change: place or unlock 1–2 high-yield `ScrapVein` and/or `SalvageCrate` clusters in underused far deck (outside starter footprint), readable by scanner. Optional soft gate: second cluster appears after WavesCleared ≥ 2. Risk = distance from hub (existing pattern). Doc in Sector_Layout / Progression_Spec. No new lanes required in this task.
   done-when: Play — far-deck nodes exist and pay out; starter hub still viable without them; map size unchanged; console clean
+  **DONE 2026-07-28 (auto-dev, Play-verified).** New `FarDeckSalvageLure` (bootstrap-wired, own child
+  root). **Site 1** `Vein_DeepSalvage` (ScrapMetal ×2.4) from the first minute; **Site 2**
+  `Vein_DeepCircuits` (CircuitComponents ×2.6) at **WavesCleared ≥ 2** — circuits deliberately, so the
+  later unlock pulls the factory *further out* rather than handing over more of what the player has.
+  Both infinite and richer than the best authored vein (×2.0). Keep-outs **4 m** lane / **10 m** node.
+  No lanes added, no resize.
+  Built in the same shape as authored veins (trigger sphere on the `ResourceNode` layer), so
+  `RuntimeArtBackfill` dresses them and `PlayerScanner` reads them with **no extra wiring** —
+  `SceneScanCache` re-scans ~2×/sec and picks them up itself (verified: cache lists them).
+  **Map-size correction worth keeping:** the Decision text says "~120×80", so the first build used a
+  44-unit minimum hub distance and **silently placed nothing**. Measured,
+  `SectorBounds.TryGetPlayArea` returns the authored playable interior at **75 × 39** — the farthest
+  any point sits from the hub is **~42**, so 44 was unsatisfiable by construction (the 120×80 figure is
+  the Ground plane including the band outside the hull). Placement now takes the **farthest valid
+  candidate** above a reachable floor rather than a fixed radius.
+  Verified: gate closed → **1** site, opened → **2**, at **38.3** and **37.9** from hub; both
+  `Extract(10)=10`, infinite; correct layer/trigger/art; all authored veins still present and untouched
+  (starter economy unchanged, hub viable without ever walking out). Console clean.
 
 - [ ] L34. Uninhabited-deck wrongness eases near powered industry
   Type: systemic / diegetic | Pillar: Diegetic dread / Factory pressure = identity
@@ -2191,6 +2209,16 @@ Method: capture the Game view in Play mode, judge the frame, fix the single wors
 - [ ] Free lead: Abandoned Factory Lite (Asset Store) — safe mood greys for blockout; not gated, but not queued until visual Now is thin.
 
 ## Agent log (newest first — one line per session: date, task, result, commit)
+
+- 2026-07-28: **L33 deep far-deck veins — DONE (auto-dev, Play-verified).** `FarDeckSalvageLure` places
+  `Vein_DeepSalvage` (Scrap ×2.4) from the start and `Vein_DeepCircuits` (Circuits ×2.6) at
+  WavesCleared ≥ 2 — richer than any authored vein (×2.0), 4 m lane / 10 m node keep-outs, no lanes and
+  no resize. Built in the authored vein's shape so `RuntimeArtBackfill` + `PlayerScanner` pick them up
+  free via `SceneScanCache`. **Corrected a map-size assumption:** the Decision's "~120×80" is the Ground
+  plane incl. the outer band; the playable interior measures **75 × 39** (max ~42 from hub), so my first
+  44-unit threshold placed **nothing silently** — now takes the farthest valid candidate. Verified gate
+  1→2 sites at 38.3/37.9, `Extract(10)=10` infinite, authored veins untouched. Console clean.
+  Commit: `L33: deep far-deck veins give a reason to build out there` (2026-07-28 HEAD).
 
 - 2026-07-28: **L32 far-deck labour fill — DONE (auto-dev, Play-verified).** New `FarDeckLabourFill`
   adds Synty labour clusters to open deck; budget `waves×2 + poweredProducers` capped 24, **adds only**,
