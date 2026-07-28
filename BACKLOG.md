@@ -202,8 +202,8 @@ Parked until Gate: OPEN. Commit-sized; bible-aligned; no code until sounds exist
 
 | | |
 |--|--|
-| **Next task** | **F14** — FP Wave 1 gate + dual-mode playtest (the last F task; closes the first-person strip). |
-| **Active queue** | **1. F14**. Then lore **L\*** — the FP strip is done after F14 (F13 landed 2026-07-27: deck passes human-scale audit, FP head motion in). |
+| **Next task** | **BUG2** — respawn re-shows the player body in FP (`visibleRenderers=9`, expected 0). Found by F14's dual-mode gate; it is the only red check in an otherwise green suite, so clear it before new features. |
+| **Active queue** | **1. BUG2** → then lore **L\***. **The F strip is COMPLETE** (F1–F14): first person clears the same Wave 1 gate iso does (hub 500/500 both modes), human-scale audit passed, head motion in. **Changing the default view mode is now unblocked but is a human call** — F14 deliberately did not touch it. |
 | **Command** | `/auto-dev` (Unity MCP preferred; else mark `[?]` for `/unity-pass`) |
 | **P13 how** | Same pose problem as P12. **Reuse P12's solution:** pose in code via a runtime hook (see `PlayerArtAttach.EnsureIdlePose`), do **not** bake bone-overrides into `Sector01`. Re-run **Mirror Synty Art Into Resources** if new `Characters/` paths are added. |
 | **Pack conversion** | Done: **P0–P14, P16–P21**. Remaining P: **P22** deferred (VoidHull). |
@@ -1358,7 +1358,7 @@ fog all check out, enumerate renderers along the sight line before touching anyt
 
 #### Phase 3 — gate
 
-- [ ] F14. FP Wave 1 gate + dual-mode playtest
+- [x] F14. FP Wave 1 gate + dual-mode playtest — DONE 2026-07-27 (auto-dev, both modes gated)
   Type: verification | Pillar: —
   Unity: **yes** — full `PlaytestHarness` run in both modes.
   Change: extend `PlaytestHarness` so the smoke suite and the Wave 1 design gate run in **both**
@@ -1368,6 +1368,44 @@ fog all check out, enumerate renderers along the sight line before touching anyt
   whether to change the default view mode — do not change the default inside this task.
   done-when: `/playtest` suite PASS in iso AND in FP; report names concrete differences; any new
   bugs filed as backlog items; console clean
+  **DONE 2026-07-27 (auto-dev).** `PlaytestHarness.RunFullSuiteInMode(firstPerson)` forces a mode and
+  runs the identical suite (smoke → Wave 1 gate → scenarios); every report now states its view mode.
+  `CheckFirstPersonRig()` asserts what only FP owns and no gameplay check covers: camera handed to the
+  head anchor at eye height, player body hidden (else it fills the near plane), F13 walk motion present.
+  `WriteDualComparison()` emits the iso-vs-FP report.
+  **Why a scene reload between passes:** `SetupWave1Defense` refuses a dirty session (first Prep,
+  `WavesCleared==0`) and there is no wave reset, so gating Wave 1 twice *requires* reloading — which
+  destroys the harness component. Results therefore accumulate in a **static** list, which survives
+  `LoadScene`. Both passes confirmed a genuine fresh Wave 1 (`wave=0 phase=Prep cleared=0`).
+  **Headline: first person clears the same Wave 1 gate iso does.** Both passes `WAVE1 DONE PASS` with
+  the hub untouched **500/500**; MOVEMENT, BUILD, PLACEMENT, TRANSITION all PASS in both. FP rig block
+  clean: camera parented to anchor, eye 1.65, body hidden (0 visible renderers), head motion on
+  (bob 0.022 / sway 0.011). Measured difference worth noting: FP ran ~**300 fps** vs iso ~**185**
+  (fewer objects in frustum); no gameplay divergence otherwise.
+  **Not a clean sweep — one check FAILS identically in BOTH modes** and is *not* an iso-vs-FP
+  difference: `fp: body still hidden after respawn [visibleRenderers=9]`. Filed as **BUG2** below.
+  F14 is a verification task, so it was filed rather than fixed here (the fix belongs to the respawn
+  path). Console clean (0 errors/exceptions; 2 pre-existing MainMenu warnings).
+  **Default view mode deliberately unchanged** — the task reserves that for a human.
+  Reports: `Playtest_Agent_2026-07-27_195351.md` (iso), `..._195427.md` (FP), `..._195430.md` (comparison).
+  *Self-caught:* the first summary scanned sections for the substring "PASS" and reported COMBAT: PASS
+  for a run whose own report said COMBAT DONE FAIL (blocks list passing checks before their verdict).
+  Fixed to read the authoritative `<TAG> DONE PASS|FAIL` line; the mis-parsed reports were discarded.
+
+- [ ] BUG2. Respawn re-shows the player body in first person
+  Type: mechanical / bug | Found by: F14 dual-mode gate 2026-07-27
+  Unity: **yes** — die in FP, respawn, count visible body renderers.
+  Symptom: the COMBAT scenario's `fp: body still hidden after respawn` check fails with
+  `visibleRenderers=9` (expected 0). Fails in **both** suite passes, so it is a real FP defect, not a
+  mode difference. Prior suites were 7/7 green, so it regressed during the P12/P13/F11–F13 run of work.
+  Where to look: `PlayerController.RespawnRoutine` re-enables every renderer under the resolved body
+  (`r.enabled = underArt || blob`) and then calls `PlayerArtAttach.Refresh()` + `PlayerBodyVisibility
+  .Apply()`, which are supposed to re-hide them in FP. One of those three is not covering the 9
+  renderers — note the player body is a modular Synty prefab with **18** SkinnedMeshRenderers of which
+  only one (the space suit) should ever be enabled, so a blanket re-enable also risks showing the
+  other character variants in iso. Verify with the existing COMBAT scenario, not by eye.
+  done-when: `fp: body still hidden after respawn` passes (0 visible), iso still shows the body after
+  respawn, and the full suite is green in both modes; console clean
 
 ---
 
@@ -2033,6 +2071,20 @@ Method: capture the Game view in Play mode, judge the frame, fix the single wors
 - [ ] Free lead: Abandoned Factory Lite (Asset Store) — safe mood greys for blockout; not gated, but not queued until visual Now is thin.
 
 ## Agent log (newest first — one line per session: date, task, result, commit)
+
+- 2026-07-27: **F14 dual-mode playtest gate — DONE (auto-dev). The F strip (F1–F14) is complete.**
+  Harness gains `RunFullSuiteInMode(firstPerson)`, an FP-rig assertion block, and
+  `WriteDualComparison()`. Wave 1 had to be gated once per mode with a **scene reload** between passes —
+  the gate refuses a dirty session and there is no wave reset — so records live in a static that
+  survives `LoadScene`. **First person clears the same Wave 1 gate iso does**: both passes WAVE1 PASS,
+  hub 500/500, MOVEMENT/BUILD/PLACEMENT/TRANSITION green in both; FP rig clean (camera on anchor, eye
+  1.65, body hidden, head motion on); FP ~300 fps vs iso ~185. One check fails **identically in both
+  modes** — `fp: body still hidden after respawn [visibleRenderers=9]` — filed as **BUG2**, not fixed
+  here (verification task). Caught and fixed my own summary bug pre-commit: substring-scanning a block
+  for "PASS" reported COMBAT: PASS against a report saying COMBAT DONE FAIL; now reads the
+  `<TAG> DONE` line, and the mis-parsed reports were discarded rather than committed. Default view mode
+  left alone (human's call). Console clean.
+  Commit: `F14: dual-mode playtest gate (iso + first person)` (2026-07-27 HEAD).
 
 - 2026-07-27: **F13 human-scale audit + FP embodiment — DONE (auto-dev, Play-verified).**
   **(a)** Audited the ship against the 1.65 eye: props measure human, lid 1.94x eye, gates sized for

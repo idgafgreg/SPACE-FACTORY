@@ -37,6 +37,19 @@ public partial class PlaytestHarness : MonoBehaviour
     public string LastReportPath => _lastReportPath;
     public bool IsBusy => _suiteRunning;
 
+    /// <summary>
+    /// One compact record per completed suite, kept so the two halves of the F14
+    /// dual-mode run can be compared.
+    ///
+    /// It is <b>static</b> on purpose. The Wave 1 gate refuses to run on a dirty
+    /// session (<see cref="SetupWave1Defense"/> demands the first Prep with
+    /// WavesCleared 0), and there is no wave reset, so the only way to gate Wave 1
+    /// twice is to reload the scene between modes — which destroys this component.
+    /// Statics survive <c>LoadScene</c>, so the iso result is still here when the
+    /// first-person pass finishes. Cleared by <see cref="BeginDualRun"/>.
+    /// </summary>
+    static readonly System.Collections.Generic.List<string> _modeRuns = new();
+
     void Awake()
     {
         if (Instance != null && Instance != this) { FxSafe.Destroy(this); return; }
@@ -92,6 +105,62 @@ public partial class PlaytestHarness : MonoBehaviour
         if (h._suiteRunning) return $"{LogPrefix} BUSY — suite already running";
         h.StartCoroutine(h.CoFullSuite());
         return $"{LogPrefix} STARTED full-suite (watch for SUITE DONE)";
+    }
+
+    /// <summary>
+    /// F14 — run the whole suite (smoke, Wave 1 gate, scenarios) in a specific view
+    /// mode, so first person has to clear exactly the gate iso clears.
+    ///
+    /// The caller runs this once per mode with a scene reload in between; see
+    /// <see cref="_modeRuns"/> for why a reload rather than a second gate call.
+    /// </summary>
+    public static string RunFullSuiteInMode(bool firstPerson)
+    {
+        var h = Ensure();
+        if (h._suiteRunning) return $"{LogPrefix} BUSY — suite already running";
+        if (ViewMode.IsFirstPerson != firstPerson) ViewMode.Toggle();
+        h.StartCoroutine(h.CoFullSuite());
+        return $"{LogPrefix} STARTED full-suite mode={(firstPerson ? "first-person" : "iso")}";
+    }
+
+    /// <summary>Drop any previous dual-mode records. Call before the first pass.</summary>
+    public static string BeginDualRun()
+    {
+        _modeRuns.Clear();
+        return $"{LogPrefix} dual-mode run reset";
+    }
+
+    /// <summary>Records collected so far — one line per completed suite.</summary>
+    public static int DualRunCount => _modeRuns.Count;
+
+    /// <summary>
+    /// F14 — write the iso-vs-first-person comparison once both passes have run.
+    /// Names concrete differences rather than a bare pass/fail, because the point of
+    /// the gate is deciding whether first person is shippable, not whether it boots.
+    /// </summary>
+    public static string WriteDualComparison()
+    {
+        if (_modeRuns.Count < 2)
+            return $"{LogPrefix} DUAL INCOMPLETE — {_modeRuns.Count}/2 passes recorded";
+
+        var doc = new StringBuilder();
+        doc.AppendLine($"# F14 — Dual-mode playtest (iso vs first person) — {DateTime.Now:yyyy-MM-dd HH:mm}");
+        doc.AppendLine();
+        doc.AppendLine("Both passes ran the identical suite: smoke, the Wave 1 design gate");
+        doc.AppendLine("(1 Barrier + 1 AutoTurret at the west choke), then the input scenarios.");
+        doc.AppendLine("The scene was reloaded between passes so each mode gated a genuine Wave 1");
+        doc.AppendLine("from the first Prep — the gate refuses a dirty session by design.");
+        doc.AppendLine();
+        foreach (var run in _modeRuns)
+        {
+            doc.AppendLine(run);
+            doc.AppendLine();
+        }
+        string text = doc.ToString();
+        var h = Ensure();
+        string path = h.WriteReport(text);
+        Debug.Log($"{LogPrefix} DUAL DONE report={path}");
+        return path;
     }
 
     // ── Smoke ────────────────────────────────────────────────────────────────
@@ -210,12 +279,34 @@ public partial class PlaytestHarness : MonoBehaviour
         report.AppendLine($"Scene: `{UnityEngine.SceneManagement.SceneManager.GetActiveScene().name}`");
         report.AppendLine();
 
-        Debug.Log($"{LogPrefix} SUITE BEGIN");
+        // F14: every suite records which mode it ran in — a report that does not say
+        // whether it was iso or first person cannot settle the dual-mode question.
+        bool fp = ViewMode.IsFirstPerson;
+        string modeName = fp ? "first-person" : "iso";
+        report.AppendLine($"View mode: **{modeName}**");
+        report.AppendLine();
+
+        Debug.Log($"{LogPrefix} SUITE BEGIN mode={modeName}");
         report.AppendLine("## Smoke");
         report.AppendLine("```");
-        report.AppendLine(ExecuteSmoke());
+        string smoke = ExecuteSmoke();
+        report.AppendLine(smoke);
         report.AppendLine("```");
         report.AppendLine();
+
+        // F14: first person owns rendering state iso does not (camera parented to the
+        // head anchor, body hidden so it cannot clip the near plane, cursor captured).
+        // Those are exactly the things that can regress without failing any gameplay
+        // check, so assert them in the mode where they matter.
+        string fpBlock = fp ? CheckFirstPersonRig() : null;
+        if (fpBlock != null)
+        {
+            report.AppendLine("## First-person rig");
+            report.AppendLine("```");
+            report.AppendLine(fpBlock);
+            report.AppendLine("```");
+            report.AppendLine();
+        }
 
         yield return CoWave1Gate(writeReport: false, suiteLabel: "suite", report);
 
@@ -236,8 +327,99 @@ public partial class PlaytestHarness : MonoBehaviour
 
         Time.timeScale = prevScale;
         _lastReportPath = WriteReport(report.ToString());
-        Debug.Log($"{LogPrefix} SUITE DONE report={_lastReportPath}");
+
+        // F14: keep a compact record so the comparison survives the scene reload.
+        string full = report.ToString();
+        var rec = new StringBuilder();
+        rec.AppendLine($"## {modeName}");
+        rec.AppendLine($"- report: `{_lastReportPath}`");
+        rec.AppendLine($"- smoke: {(smoke.Contains("SMOKE PASS") ? "PASS" : "FAIL")}");
+        rec.AppendLine($"- wave 1 gate: {(WaveGateVerdict(full))}");
+        foreach (string tag in new[] { "MOVEMENT", "BUILD", "COMBAT", "PLACEMENT", "TRANSITION" })
+            rec.AppendLine($"- {tag}: {(ScenarioVerdict(full, tag))}");
+        if (fpBlock != null)
+            rec.AppendLine($"- first-person rig: {(fpBlock.Contains("MISSING") ? "FAIL" : "PASS")}");
+        rec.AppendLine($"- final: `{BuildMetricsBlock().Replace("\n", " | ")}`");
+        _modeRuns.Add(rec.ToString());
+
+        Debug.Log($"{LogPrefix} SUITE DONE mode={modeName} report={_lastReportPath}");
         _suiteRunning = false;
+    }
+
+    /// <summary>PASS/FAIL of the Wave 1 gate as recorded in a finished report.</summary>
+    static string WaveGateVerdict(string report) => VerdictOf(report, "WAVE1");
+
+    /// <summary>PASS/FAIL of one named scenario as recorded in a finished report.</summary>
+    static string ScenarioVerdict(string report, string tag) => VerdictOf(report, tag);
+
+    /// <summary>
+    /// Read a block's verdict from its authoritative <c>&lt;TAG&gt; DONE PASS|FAIL</c>
+    /// line.
+    ///
+    /// Deliberately NOT a "does this section contain PASS" scan: every block lists
+    /// its individual checks first, and those start with PASS lines even when the
+    /// block as a whole fails. The first version of this summary did exactly that
+    /// and cheerfully reported COMBAT: PASS for a run whose own report said
+    /// COMBAT DONE FAIL. A summary that disagrees with its source is worse than no
+    /// summary, so match the one line that states the outcome.
+    /// </summary>
+    static string VerdictOf(string report, string tag)
+    {
+        string needle = tag + " DONE ";
+        int i = report.IndexOf(needle, StringComparison.Ordinal);
+        if (i < 0) return "ABSENT";
+        int from = i + needle.Length;
+        if (report.Length - from >= 4 && report.Substring(from, 4) == "PASS") return "PASS";
+        return "FAIL";
+    }
+
+    /// <summary>
+    /// F14 — assert the first-person rig is actually assembled: camera handed to the
+    /// head anchor at eye height, the player's own body hidden (it would otherwise
+    /// fill the near plane), and the walk motion component present. Iso never
+    /// exercises any of this, so nothing else in the suite would catch a regression.
+    /// </summary>
+    string CheckFirstPersonRig()
+    {
+        var sb = new StringBuilder();
+        var cam = Camera.main;
+        var fpCam = FindAnyObjectByType<FirstPersonCamera>();
+        var player = PlayerController.Instance != null
+            ? PlayerController.Instance
+            : FindAnyObjectByType<PlayerController>();
+
+        bool haveCam = Check("Camera.main", cam != null, sb);
+        Check("FirstPersonCamera", fpCam != null, sb);
+
+        Transform anchor = player != null ? player.transform.Find("FPHeadAnchor") : null;
+        Check("FPHeadAnchor", anchor != null, sb);
+        if (haveCam && anchor != null)
+        {
+            Check("camera parented to head anchor", cam.transform.IsChildOf(anchor), sb);
+            sb.AppendLine($"  eye world y={cam.transform.position.y:0.00} " +
+                          $"(anchor {anchor.localPosition.y:0.00} above the player root)");
+        }
+
+        // The body must be hidden in first person or it clips the near plane.
+        if (player != null)
+        {
+            var body = PlayerArtAttach.ResolveBody(player.transform);
+            if (body == null) sb.AppendLine("  OK       no body attached yet");
+            else
+            {
+                int visible = 0;
+                foreach (var r in body.GetComponentsInChildren<Renderer>(true))
+                    if (r != null && r.enabled) visible++;
+                Check($"player body hidden in FP (visible renderers={visible})", visible == 0, sb);
+            }
+        }
+
+        if (fpCam != null)
+            sb.AppendLine($"  head motion={(fpCam.headMotion ? "on" : "off")} " +
+                          $"bob={fpCam.headBobAmount:0.000} sway={fpCam.headSwayAmount:0.000} (F13)");
+
+        sb.Append($"  cursor lockState={Cursor.lockState} visible={Cursor.visible}");
+        return sb.ToString();
     }
 
     IEnumerator CoWave1Gate(bool writeReport, string suiteLabel, StringBuilder externalReport = null)
