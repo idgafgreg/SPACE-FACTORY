@@ -4,11 +4,11 @@ Project render pipeline: **Built-in**. Prefer Built-in-compatible kits. Do not p
 
 ## Free / open leads
 
-### Modular Pipeline Pack — Unity Asset Store (free)
+### Modular Pipeline Pack — reconfirm / new use (already free-logged 2026-07-21)
 
 - **URL:** https://assetstore.unity.com/packages/3d/props/industrial/modular-pipeline-pack-70776  
-- **Fit:** Free modular industrial pipelines with PBR maps; store table lists **Built-in + URP + HDRP** compatible (verified listing language as of research day). Ceiling/utility runs for hive-as-habitat vent/pipe grammar and BLAME-ish overbuilt dead ends without buying another corridor kit.  
-- **Action:** Kitbash a short purposeless pipe spur past a live processor (visual loneliness). Prefer before Modular Sci-Fi Pipes paid pack or Modular Industrial Air Duct (~$15, 07-27). Compare vs already-logged Pipes FREE Collection / free pipelines (07-21–22) — use whichever imports cleaner on Built-in; don't stack three pipe kits.
+- **Fit:** Already on the free sheet from 07-21. Reconfirmed Built-in + URP + HDRP on store table. Today's angle: use it for **purposeless overbuilt spurs** (BLAME scale mood) past live processors — not as a newly discovered kit.  
+- **Action:** One short dead-end pipe run past a nominal machine (visual loneliness). Still prefer before Modular Sci-Fi Pipes paid pack or Modular Industrial Air Duct (~$15, 07-27). Don't stack with Pipes FREE / free pipelines — pick the cleanest import.
 
 ## Paid / wishlist candidates
 

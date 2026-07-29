@@ -85,7 +85,7 @@ Paid + free lore asset leads export to [`assets-wishlist.csv`](assets-wishlist.c
 
 - Date: 2026-07-29
 - Landed on: `main`
-- Focus weight: Metro station-home + filter diegesis (careful); BLAME! purposeless growth (visual only); KTANE manual≠machine (**anti-comp**); Inscryption SOP-as-trap (careful); Shipbreaker cassette tools / floor-ceiling deepen; free Modular Pipeline Pack; wishlist Modular Sci-Fi Pipes (~$12.99)
+- Focus weight: Metro station-home + filter diegesis (careful); BLAME! purposeless growth (visual only); KTANE manual≠machine (**anti-comp**); Inscryption SOP-as-trap (careful); Shipbreaker cassette tools / floor-ceiling deepen; Modular Pipeline Pack re-use (07-21 free); wishlist Modular Sci-Fi Pipes (~$12.99)
 - **Bible absorbed:** through 2026-07-28 (run `/lore-bible` to absorb 07-29)
 - Prior run: 2026-07-28 (STALKER Emission take-shelter; Returnal dual intimacy; Firewatch radio; Mothership failure-tax; This War of Mine siege-around-you; Three signs ISO; Hazard & Safety 285 wishlist)
 - Render pipeline note: project currently **Built-in** (prefer Built-in-compatible kits; Wet Stuff needs Deferred cameras)
