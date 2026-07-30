@@ -135,12 +135,20 @@ Parked until Gate: OPEN. Commit-sized; bible-aligned; no code until sounds exist
 
 ## Needs human decision
 
-- **Priority after F strip (groom 2026-07-28).** Pack conversion + **F1–F14 complete**; suite green in
-  both modes. Active queue is lore **L\*** (next open = **L36**). Preference fork still open:
-  1. **Continue sequential lore L36 → L39** then park (default — keep teaching cascade / organ / berth).
-  2. **Pull systemic L41+** (two clocks / valleys / heat-path raids) or newest **L61–L66** (surge
-     shelter / failure tax / expansion poison) — highest north-star *play* value.
-  Say the word to reorder. Default view mode (iso vs FP) remains a separate human call (F14 left it).
+- **~~Priority after F strip~~ — CLOSED by events (groom 2026-07-28).** The old fork asked whether to
+  keep going sequentially (L36→L39) or jump to the systemic block. Sequential ran and *reached* the
+  systemic work anyway: **L35, L36, L38, L39, L41, L42, L43, L44 all shipped 2026-07-28.** No answer
+  needed. The groom has since ordered Now by play value rather than by number — see
+  **Now queue — ACTIVE**.
+
+- **Default view mode: iso or first person?** Still open. **F14** deliberately left it; the suite is
+  green in both modes, so this is a taste call, not a blocker. Nothing in the active queue depends on it.
+
+- **Player actor reads ~26% oversized in iso.** Needs a preference call, not a silent fix — a smaller
+  body reads *less* clearly from the 14 m iso camera, which is the trade. Full detail in **Ice box**.
+
+- **Balance pass across progression numbers** (tier-2 costs, upgrade percents, endless multipliers,
+  clear-bonus curve). Needs a human playtest of waves 4+; not an agent task until then. Sits in **Next**.
 
 ## Decisions (human-made, newest first)
 
@@ -199,18 +207,27 @@ Parked until Gate: OPEN. Commit-sized; bible-aligned; no code until sounds exist
 
 ## Now (agent works top-down)
 
+### Player animation track (human-directed, runs alongside the lore queue)
+
+Owner: human is driving this directly, item by item. Full list, ordering and rationale:
+**`SPACE FACTORY INFO/Animation_Roadmap.md`**. Done so far: core locomotion (6 clips, IK
+gait core), work/hurt/death, foot IK + look-at, and third-person held tool with masked
+carry poses. **Next item: 2 — turn-in-place + start/stop.** Do not pull items off this
+list unattended; the human asks for them one at a time.
+
 ### Work next — read this first
 
 | | |
 |--|--|
-| **Next task** | **Lore `L36`** (infected processor → linked belt cascade). **L35 shipped 2026-07-28** (`7ada61aa`). Highest north-star value if a human/groom reorders: **L41–L44**, **L50–L55**, or newest **L61–L66**. |
-| **Active queue** | Lore **L\***. **F strip COMPLETE** (F1–F14); suite green in both modes. Default view mode is a **human call** (F14 left it). |
+| **Next task** | **Lore `L61`** (forecastable surge / take-shelter window) — top of **Now queue — ACTIVE** below. |
+| **Active queue** | **Now queue — ACTIVE (groom 2026-07-28)**: ~~L45~~ → ~~L62~~ → `L61 → L52 → L46 → L66`. Take these top-down and ignore the dated lore blocks until this drains. **F strip COMPLETE** (F1–F14); suite green in both modes. Default view mode is a **human call** (F14 left it). |
+| **Just shipped** | **L41–L44** (2026-07-28): lifetime hive debt (2nd clock), enforced intensity valley, deck wreckage as recovery labour, lagged scan reading. The pacing spine is in — the active queue builds pressure *on top of* it, so read `Progression_Spec.md` L41/L42 before adding another clock. |
 | **Command** | `/auto-dev` (Unity MCP preferred; else mark `[?]` for `/unity-pass`) |
 | **P13 how** | Same pose problem as P12. **Reuse P12's solution:** pose in code via a runtime hook (see `PlayerArtAttach.EnsureIdlePose`), do **not** bake bone-overrides into `Sector01`. Re-run **Mirror Synty Art Into Resources** if new `Characters/` paths are added. |
 | **Pack conversion** | Done: **P0–P14, P16–P21**. Remaining P: **P22** deferred (VoidHull). |
 | **Dressing a hand-authored scene** | Runtime dressers do **not** run here (`SectorAuthoring` skips `AddGeometryDressing`). Implement `ISceneDresser`, then a thin menu item calling `SceneDressingBake.Run<T>` — see `PersonalEffectsBake.cs` / `BreakRoomBake`. Register in `AddGeometryDressing` too for generated sectors. |
 | **Skip** | `[wait-until-sounds]` (audio gate **CLOSED**). **P22** deferred. Do **not** invent procedural beep substitutes for radio/PA voice. |
-| **Lore** | Bible absorbed through **2026-07-28**. Open: **L36–L39**, **L41–L66**. Newest block **L61–L66** (07-27/07-28). Observation “systems-as-interface” covered by **F12** + **L38** + **L57** — do not re-queue. |
+| **Lore** | Bible absorbed through **2026-07-29**. Active drain still `L61 → L52 → L46 → L66`. Newest parked block **L67–L71** (07-29). Parked → Next also: **L47–L51, L53–L60, L63–L65**. Observation “systems-as-interface” covered by **F12** + **L38** + **L57** — do not re-queue. |
 | **Gates** | Asset pack **OPEN** · Audio **CLOSED** · Deck size locked · Prep **40s / 30s** |
 
 ---
@@ -228,6 +245,62 @@ Parked until Gate: OPEN. Commit-sized; bible-aligned; no code until sounds exist
   **DONE:** Guard already shipped in `PlayerController.HandleMovement` (line 52, commit `88718507`).
   Play-verified 2026-07-27: SoftRecover re-enables CC; 40 frames with CC disabled → **0** inactive-
   controller logs; restored enabled=true. No code change this session.
+
+---
+
+### Now queue — ACTIVE (groom 2026-07-28)
+
+The only tasks `/auto-dev` should take, top-down. Everything else below is **parked → Next**
+(dated lore blocks are reference bodies, not the active queue). Nothing is broken and no `[?]`
+is outstanding, so this queue is ordered **systemic pressure first, dressing last**.
+
+Why these six: **L41–L44** shipped the pacing spine (two clocks, enforced valley, recovery
+labour, withheld readings). L45/L62/L61/L52 make the **factory itself** drive threat, cost, and
+timing on top of that spine; L46 buys dread without spawns; L66 is the single dressing task
+(1 of 6 ≈ 17%, under the 30% visual cap).
+
+- [x] L45. Raids path to the loudest machine — DONE 2026-07-28 (auto-dev, Play-verified)
+  Type: systemic / mechanical | Pillar: Factory pressure = identity / Industrial biomass / hive
+  Lore: `lore/BIBLE.md` hive soft rules (**Raids path to the loudest machine**); Factorio biters→pollution source (`lore/2026-07-24/summary.md` #1); keep Biofactory anti-comp
+  Unity: **yes** — hot processor run vs idle hub; enemies prefer heat source over player chase.
+  Change: when combat forms spawn (W2+), assign a **raid destination** = highest local heat/throughput chunk (powered processor / drill / busy belt sample — reuse `FactoryHeatTracker` / machine power hooks). Path preference: approach via lane that reaches that machine’s sector, then sap/attack the machine (or nearby barrier) before defaulting to hub/player. Player proximity still interrupts (existing engage rules). W1 teaching arc unchanged (West→hub). Cap: if one foothold’s local pressure is already high, spill destination pick to the next-loudest sector (anti-hoarding cousin of FFF #283 — light version; full WaveFuel bank can wait). Doc one paragraph in `Progression_Spec.md`.
+  done-when: Play — with a hot far processor and a quiet hub approach, W2+ forms measurably prefer the hot machine’s lane/sector over beelining the player; idle factory keeps today’s lane→hub behaviour; W1 unchanged; console clean
+
+- [x] L62. Failure tax — sticky debt, not a panic HUD — DONE 2026-07-28 (auto-dev, Play-verified)
+  Type: systemic | Pillar: Factory pressure = identity
+  Lore: `lore/BIBLE.md` factory×horror (**Failure taxes the worker, not a panic bar**); Mothership stress-as-debt (`lore/2026-07-28/summary.md` #4)
+  Unity: **yes** — fail a seal/scrub/overheat → measurable sticky or next-wave pressure; no fear meter UI.
+  Change: when the player fails a containment beat (repair interrupted on stage-2+ infection, power brown that drops a sector calm if L50 exists, or a loud overheat on a hot processor), add a **small capped tax** to sticky foothold chance or near-term Heat01 / next-wave pressure — never a floating panic bar. Recovery labour (repair / clear residue / **L43** restacking) bleeds the tax down. Distinct from **L30** (scrap/min heat blend) and **L41** (lifetime HiveDebt) — read that split in `Progression_Spec.md` before adding a third clock. Numbers in `Progression_Spec.md`.
+  done-when: Play — a failed containment beat raises sticky or next-wave pressure measurably; successful recovery labour reduces it; no panic/fear HUD added; console clean
+
+- [ ] L61. Forecastable surge / take-shelter window
+  Type: systemic / diegetic | Pillar: Industrial biomass / hive / Lonely worker fantasy
+  Lore: `lore/BIBLE.md` hive soft rules (**Forecastable surges**); STALKER Emissions careful (`lore/2026-07-28/summary.md` #1)
+  Unity: **yes** — warned window; outside sticky interest spikes; sealed bay holds; prep length unchanged.
+  Change: once per late prep or early combat (post-W1), fire a **forecastable surge**: terminal/PA *printed* line + corridor lamp cue → worker has a short window to reach a sealed bay / under-deck shelter volume (hub core or authored shelter child — dedicated GO, not SectorRuntime root). While the surge runs, sticky interest / HorrorClock stress spikes **outside** the shelter and is capped inside. Distinct from **L42** (post-clear menace clamp / frequency) and **L50** (spent power calm) — L42 clamps *after* a peak, this telegraphs one *coming*. Must **not** extend prep (Decision 40s/30s). No Zone loot, no mutant bestiary, no new audio banks. Caps in `Progression_Spec.md`.
+  done-when: Play — surge warns before it hits; outside the shelter sticky/stress rises for the window; inside stays calmer; prep still 40s/30s; W1 unchanged; console clean
+
+- [ ] L52. Cascade checklist — a "solved" breach fails again later
+  Type: systemic | Pillar: Factory pressure = identity
+  Lore: `lore/BIBLE.md` factory×horror (**layered loops that ripple**); Oxygen Not Included (`lore/2026-07-25/summary.md` #2)
+  Unity: **yes** — clear a contaminated processor; the same deck springs a fresh fault later.
+  Change: when a contamination/breach is cleared (L35 stages / `ProcessInfection` repair), schedule a **delayed, capped side-effect** on that deck a while later — a heat spike, a filter going sticky again, or a slurry-wrong event — so a "solved" deck can fail quietly again instead of resolving cleanly. Telegraph it diegetically (terminal line / machine face); always fair (re-clearable, never a soft-lock) and rate-capped so it is dread, not whack-a-mole. Distinct from **L36** (spatial cascade to a linked belt *now*) — this is *temporal* delayed re-failure. Numbers in `Progression_Spec.md`.
+  done-when: Play — clear a contaminated processor → after a delay the same deck shows a fresh, telegraphed, re-clearable side-effect; the original never soft-locks; re-failures are rate-capped; console clean
+
+- [ ] L46. Atmosphere brick table (false scares without spawns)
+  Type: systemic / diegetic | Pillar: Diegetic dread
+  Lore: `lore/BIBLE.md` factory×horror (**Atmosphere events are not spawn events**); DS remake Intensity Director palette (`lore/2026-07-24/summary.md` #3)
+  Unity: **yes** — revisit an empty expansion deck; hear/see bricks with zero enemies.
+  Change: extend `ThreatTelegraph` (or thin companion on a **dedicated child**, never SectorRuntime root) with a weighted **atmosphere brick** table: lamp death / steam burst / distant scrape / false quiet — fireable with **zero** combat spawns. Bias weight up on revisited sectors and far empty deck (Deck lock / expansion headroom). Soft director: max N bricks per prep, mandatory quiet between bricks, and **never during L42's valley or while L43 wreckage labour is the beat** — both now shipped, so honour them. Reuse `LampFlicker`, `HorrorClock`, `SyntyAmbientFx`, existing `Sfx` one-liners — **no new audio banks** (gate CLOSED). Distinct from L15 (mid-prep rollercoaster tied to wave warning) — this is revisit/empty-deck texture.
+  done-when: Play — standing on empty far deck or revisiting a cleared approach yields ≥1 spawn-free atmosphere brick; combat spawn math unchanged; L15 still fires its prep beats; no brick fires inside L42's valley; console clean
+
+- [ ] L66. Hub/spoke berth densify (FP house intimacy)
+  Type: diegetic / visual | Pillar: Lonely worker fantasy / Workplace as trap
+  Lore: `lore/BIBLE.md` north-star FP berth densify + **Lived geography: hub and spoke**; Returnal careful + Tacoma (`lore/2026-07-27/summary.md` #2, `lore/2026-07-28/summary.md` #2)
+  Unity: **yes** — private nook denser at 1.65 m; communal hub readable; iso factory literacy unchanged.
+  Tag: `[asset-pack: POLYGON Sci-Fi Horror]`
+  Change: mark **one communal hub** edge + **one private bunk/break nook** with lived props (P17/P20 path / `ISceneDresser` bake — see the "Dressing a hand-authored scene" row above; runtime dressers do not run in `Sector01`). Private nook authored denser for FP eye-level (Returnal house intimacy); hub stays workplace bones. Collider-free; off lanes. Optional naming-the-station plaque (original copy). Must **not** demote iso factory skill or shrink the deck. Complements **P20** break-room — do not rebuild it; add the public/private contrast P20 lacks.
+  done-when: Play — FP reads a denser private nook vs a communal hub; iso still reads the factory as primary; lanes clear; console clean
 
 ---
 
@@ -942,14 +1015,9 @@ fog all check out, enumerate renderers along the sight line before touching anyt
   spark source on the same machines would double up) and `FX_Electricity_Reactor_01` (10-unit
   particles, built for a reactor-sized anchor we do not have).
 
-- [!] P22. **DEFERRED** — VoidHull occludes perimeter void (P6 measured). Not blocked on a human
-  question anymore (P6 door-read resolved). Revisit only with an explicit VoidHull window / inside-shell
-  placement plan.
-  Vehicle landmark — `SM_Veh_Ship_01` docked/wrecked backdrop (optional, low)
-  Tag: `[asset-pack: POLYGON Sci-Fi Horror]` | Unity: yes — iso + FP silhouette
-  Change: one static `SM_Veh_Ship_01` as a docked or wrecked hull landmark. Must sit where VoidHull
-  does not paint over it (inside shell or cut a window — not “drop in the black”). Collider-free.
-  done-when: Play — a ship landmark grounds the map edge without blocking play; console clean
+- [→] P22 — **moved to Ice box** (groom 2026-07-28) with its blocking reason. It is not workable as
+  written: VoidHull paints over the perimeter void, so the task needs a placement plan before it is a
+  task. Left Now so the pack track reads as complete (P0–P21 done).
 
 ---
 
@@ -1687,26 +1755,78 @@ under `[wait-until-sounds]`; organ tags / leased-copy = L38/L39. No audio-only t
   stage 3 seeds ecology via `HorrorClock.AddZoneStress`; W1 caps at stage 2. Play-verified in that
   commit. Audio half stays **SND8**.
 
-- [ ] L36. Infected processor cascades to a linked belt
+- [x] L36. Infected processor cascades to a linked belt — **VERIFIED 2026-07-28 (unity-pass)**
   Type: systemic / mechanical | Pillar: Factory pressure = identity / Industrial biomass / hive
   Lore: `lore/BIBLE.md` factory×horror (layout consequences) + cascading vessel failure soft rule; `lore/2026-07-21/summary.md` #3
   Unity: **yes** — stall on processor measurably slows a feeding/exit belt.
   Change: when a processor is infected and stalling (or ≥ stage 2 from L35 if present), find nearest powered conveyor feeding or leaving it and apply a capped speed tax / brief jam telegraph (reuse belt APIs; no scrap delete). Clears when infection clears. Doc one line in Progression_Spec. No new audio banks.
   done-when: Play — infect+stall a processor → linked belt throughput drops; clear infection → belt recovers; unrelated belts unchanged; console clean
+  **[?] 2026-07-28 (auto-dev) — CASCADE LOGIC VERIFIED, ITEM SLOWDOWN NOT OBSERVED.** New
+  `InfectionBeltCascade` (bootstrap-wired) taxes the nearest belt feeding **or** leaving a processor at
+  **L35 stage 2+** by **0.55**; stage 1 taxes nothing (keeps L35's "catch it early = free save").
+  `ConveyorBelt.ContaminationTax` is a **separate multiplier**, not a write to `speedTilesPerSecond`, so
+  clearing restores the authored speed exactly; the cascade is its **sole writer** and untaxes anything
+  it drops (single-owner rule, as L27/L29/L34). **Speed tax, never a delete** — items keep resource and
+  place.
+  Verified: clean **0 taxed** → stage 1 **0 taxed** (min 1.00) → stage 2 **exactly 1** belt at **0.55**
+  with **3/4** unrelated at 1.00 → clear restores **all** to 1.00. Console clean, 0 errors.
+  **Why `[?]`:** could not observe items visibly slowing. Every belt reachable that session was idle or
+  **output-blocked** (6 items packed, **zero advance even untaxed**), so there was no live throughput to
+  reduce. Two measurement mistakes of mine are worth not repeating: (1) a *sum-of-progress* metric that
+  **drops when items are delivered** off the end (reported −0.269 for the clean run — invalid, use
+  per-item deltas); (2) a probe run while **`timeScale == 0`** because a cleared wave had opened the
+  upgrade offer (`UIUpgradeOffer.ForceClose()` + restore `timeScale` first).
+  **RESOLVED → `[x]` 2026-07-28 (unity-pass). Item slowdown measured: ratio exactly 0.55.** On a clean,
+  unblocked belt a chip advanced **0.251** of the belt in 2.0 s untaxed vs **0.138** taxed — **ratio
+  0.55**, matching `taxMultiplier`. Combined with the cascade targeting already verified (1 belt taxed,
+  3/4 unrelated at 1.00, clear restores all), every done-when clause now holds.
+  **The blocker was my instrument, not the game:** item icons are named **`ResourceChip`**, not
+  `CargoIcon` — my probes had been searching for the wrong object and reporting 0.000 movement on belts
+  that were in fact carrying. (`CargoIcon` exists elsewhere in the scene, which is why the name looked
+  plausible.) Measured on an isolated runtime belt so the reading is free of jammed/idle lines; the
+  cascade writes the same `ContaminationTax` field on the same component, and that targeting was
+  verified separately. Console clean, 0 errors; test belt destroyed, no scene changes.
 
-- [ ] L38. Organ-literacy tags on ship systems
+- [x] L38. Organ-literacy tags on ship systems — DONE 2026-07-28 (auto-dev, Play-verified)
   Type: diegetic | Pillar: Diegetic dread
   Lore: `lore/BIBLE.md` diegetic grammar (silent organ logic) + open experiment Organ-map labels; `lore/2026-07-21/summary.md` #8
   Unity: **yes** — readable in iso; still useful in FP (F12 cousin, do not block on F*).
   Change: add 3 world tags (reuse `SectorPlaques` pattern or thin companion) near HVAC/duct cluster, a processor bay, and power/hub heart — terse industrial labels e.g. `[HVAC / LUNGS]`, `[PROCESS / GUT]`, `[POWER / HEART]`. Steel/amber; no screen chrome. Optional soft rewrite when local infection/HorrorClock high (letters wrong / OVERGROWN) — keep restrained. Not a second roadmap UI.
   done-when: Play — all three tags readable near those systems; infection rewrite (if shipped) is subtle not meme-y; no extra canvas clutter; console clean
+  **DONE 2026-07-28 (auto-dev, Play-verified).** New `OrganLiteracyTags` (bootstrap-wired, own child
+  root) places `[HVAC / LUNGS]` at the duct run (falls back to the VentBreach mouth), `[PROCESS / GUT]`
+  at the process bay, `[POWER / HEART]` at a Power Tap else the hub — L25 `SectorPlaques` grammar
+  (steel + amber emissive edge + terminal font), collider-free, **no canvas**.
+  Each tag adds **one word** when its system goes bad, so it stays a maintenance tag rather than a
+  status readout: lungs/gut → `OVERGROWN`, heart → **`STRAINED`** (a growth word would be wrong — the
+  hub isn't colonised, it's hurt). Triggers: zone decay ≥ 0.35 / **L35 stage 2** / hub HP < 60%.
+  **Cross-system rule worth keeping:** the gut tag deliberately ignores **L35 stage 1** — signage that
+  panicked during the pretty, free stage would give away the beat L35 exists to sell.
+  Verified: 3 tags placed collider-free within **~2.2 m** of the systems they name; gut stayed clean at
+  stage 1 → `OVERGROWN` at stage 2 → reverted on repair; lungs `OVERGROWN` once decay crossed, cleared
+  again as the clock eased; heart `STRAINED` at **250/500** hub HP. Iso game-camera capture shows them
+  as ship signage with no chrome; close capture confirms crisp lettering. Console clean, 0 errors.
 
-- [ ] L39. Leased-asset / empty-berth employment copy
+- [x] L39. Leased-asset / empty-berth employment copy — DONE 2026-07-28 (auto-dev, Play-verified)
   Type: diegetic | Pillar: Workplace as trap / Lonely worker fantasy
   Lore: `lore/BIBLE.md` pillars + motifs (loneliness reads as employment; leased tools, empty berths, shift clocks); Shipbreaker pride-under-debt (`lore/2026-07-21/summary.md` #1)
   Unity: **yes** — nest/tool tip readable in iso (and FP later).
   Change: original diegetic copy only (no IP names): (a) one world plaque or TextMesh at the shift nest / berth cluster — leased tool / empty berth / company property energy; (b) repair-tool or scanner tip line that reminds the tool is issued/leased when first equipped each run. Prefer existing nest from P2/P16; primitives + TextMesh OK if pack mesh not needed. No new HUD chrome panels. Complements P17/P20 — do not rebuild the break-room.
   done-when: Play — nest shows employment-trap copy; tool tip fires once per run; tone is sad/lonely not parody; console clean
+  **DONE 2026-07-28 (auto-dev, Play-verified).** New `LeasedAssetCopy` (bootstrap-wired, own child root):
+  **(a)** berth plaque at the nest corner in the L25 `SectorPlaques` grammar —
+  `BERTH 04 - UNASSIGNED` / `EFFECTS HELD PENDING CLAIM`; **(b)** one line the first time the repair tool
+  is held in a run — `WELDER ON LEASE - LOG HOURS AT SHIFT END`, via the existing `FloatingText` beat
+  channel, **no new HUD panel**. Original copy, deliberately **flat not sardonic** — a company that
+  hasn't noticed, not a joke about one. Break room untouched (P17/P20 own it).
+  **Testing caveat worth keeping:** `PlayerRepairTool.RepairHeld` reads **raw `Input`**, not the
+  injectable `GameInput` source, so a scripted test cannot press the key. Added
+  `DebugSimulateToolPickup()` (project's `Debug*` hook convention) to exercise the guard + emit path;
+  the only unverified link is the one-line read of that public property — `PlayerRepairTool` confirmed
+  present on the player.
+  Verified: plaque collider-free **2.6 m** from the shift nest; first pickup fired **exactly one**
+  FloatingText and set the flag, two further pickups added **zero**; face-on capture shows the lettering
+  crisp on the steel/amber board in the berth corner. Console clean, 0 errors.
 
 ### Lore-gap refill — 2026-07-23 (bible absorb: two clocks / intensity valleys / suggestion)
 
@@ -1731,28 +1851,45 @@ Code reality checked this session, and it is what makes this block worth queuing
 No audio-only tasks in this block (gate CLOSED); no visual-only tasks (the one visual idea from this
 digest was folded into L35 instead of queued separately).
 
-- [ ] L41. Lifetime hive debt — the second pressure clock
+- [x] L41. Lifetime hive debt — the second pressure clock — DONE 2026-07-28 (auto-dev, Play-verified)
   Type: systemic | Pillar: Factory pressure = identity / Industrial biomass / hive
   Lore: `lore/BIBLE.md` hive soft rules (**Two clocks, not one**); Factorio pollution-vs-evolution split (`lore/2026-07-23/summary.md` #2); keep Biofactory anti-comp
   Unity: **yes** — compare a high-production run against a minimal one at the same wave.
   Change: add a lifetime, monotonic **HiveDebt** derived from cumulative production (`ResourceInventory.TotalEarned` across types is the existing hook — see `ShiftQuotaHud`) and expose a normalised `HiveDebt01` next to `Heat01`. Split the two jobs cleanly: **Heat01 keeps driving frequency and placement** (vent share, residue share — already wired, do not re-tune here), **HiveDebt drives which forms exist** — an earlier Bruiser/Sapper appearance and a modest tier bump in endless waves. It must never fall, so cooling or sealing a deck quiets the near-term raids without rewinding the arc. W1–W2 composition unchanged (teaching arc). Bands and caps documented in `Progression_Spec.md` in the same commit. Coordinate with **L30**, which taxes the *near-term* clock — these must not double-count.
   done-when: Play — a run that produced heavily then went idle keeps the harder composition while vent/residue share falls back toward baseline; a low-production run at the same wave number sees the easier composition; W1–W2 identical to today; console clean
+  **DONE 2026-07-28 (auto-dev, Play-verified).** `FactoryHeatTracker.HiveDebt01` = lifetime resources
+  earned (all types) / **1500**, **monotonic twice over** — lifetime earned only grows *and* the value is
+  floored against its own high-water mark, so no spend/reset/reload rewinds the arc.
+  **Clean split, no double-count with L30:** `Heat01` keeps frequency + placement (vent/residue share —
+  untouched here); debt only changes **which forms** exist. W1–W2 never touched (`debtFromWave`=3);
+  a wave with no bruisers gains one at **0.35**, no sappers at **0.60**; endless adds `1 + debt×0.35`.
+  **The measurement that proves the split:** debt pinned at 1.00, same run taken from screaming → idle →
+  residue share **0.700 → 0.100** (14/20 → 2/20) while the W7 roster stayed **22/10/10** and debt stayed
+  1.00. Cooling a deck quiets the next raid without rewinding what the hive became.
+  Also verified: W1/W2 identical at debt 0.00 vs 1.00; endless W7 bruisers/sappers **7→10**, W9 **12→17**;
+  debt held 0.80 while Heat01 fell to 0.00. `GetWave` now returns a **copy**, so a debt bump can never be
+  written back into the authored `waves` list — confirmed wave 3 still reads its authored 2/2 after a
+  high-debt query. Console clean, scene untouched.
+  *Note:* the earlier-appearance rule needed wave 3 temporarily blanked to exercise at all — **every
+  authored wave from W2 already fields both forms**, so in practice the endless bump is what the player
+  feels. It produced a bruiser at 0.40 and a sapper at 0.70; wave 3 restored exactly.
+  Hooks: `DebugWaveComposition(wave)`, `DebugSetHiveDebt01(x)`. Bands in `Progression_Spec.md`.
 
-- [ ] L42. Force the intensity valley after a breach peak
+- [x] L42. Force the intensity valley after a breach peak — DONE 2026-07-28 (auto-dev, Play-verified)
   Type: systemic | Pillar: Diegetic dread / Lonely worker fantasy
   Lore: `lore/BIBLE.md` factory×horror (**soft director pacing — pace frequency, not amplitude**; the valley is a system, not an optional screen); L4D Director relax valleys (`lore/2026-07-23/summary.md` #1)
   Unity: **yes** — measurable window after a clear where menace cannot climb.
   Change: `RecoveryBeat` currently only prints a line. Make the valley systemic: for a bounded window after a wave clears, clamp `AtmosphereController.AlarmLevel` escalation and hold `HorrorClock` stress from rising, then release so heat and production rebuild the next spike on their own. **Peak amplitude is untouched** — a wave is still as hard as its `WaveDef` says; only how soon the next pressure ramp starts is throttled. Must not lengthen prep (Decision 2026-07-22 locks 40s / 30s) — this rides inside the existing window rather than extending it. Distinct from shipped **L15**, which shapes tension *within* prep. Window length in `Progression_Spec.md`.
   done-when: Play — clear a wave → AlarmLevel/menace demonstrably cannot climb for the window, then resumes; prep duration still 40s wave 1 / 30s after; L15's mid-prep rollercoaster still fires once the window ends; console clean
 
-- [ ] L43. Recovery beats give the player something to do with their hands
+- [x] L43. Recovery beats give the player something to do with their hands — DONE 2026-07-28 (auto-dev, Play-verified)
   Type: mechanical / diegetic | Pillar: Lonely worker fantasy
   Lore: `lore/BIBLE.md` factory×horror (**recovery beats are labor, not idle**); aftermath-labor mood (`lore/2026-07-22/summary.md` #4 — steal the lonely cleanup, refuse the comedy register)
   Unity: **yes** — post-wave deck has clearable mess with a small payout.
   Change: pair with **L42**. When a wave clears, leave a small amount of clearable debris near the lane that actually broke — reuse `InfectionResidue` and/or a couple of knocked-over `SalvageCrate`s rather than inventing props — and let the existing interact/repair path clear or restack them for a modest scrap or construction-part trickle. No new tool, no minigame, no timer, no failure state: ignoring it costs nothing but the deck stays visibly messy into the next wave. Optional single terse ack through the existing terminal line (no cheer). Payout values in `Progression_Spec.md`; must not out-earn a working belt.
   done-when: Play — after a clear, debris exists near the used lane and can be cleared for a small payout; skipping it carries no penalty and the mess persists into the next wave; cleanup never beats running the factory for income; console clean
 
-- [ ] L44. The scan is a lagged reading, not instant truth
+- [x] L44. The scan is a lagged reading, not instant truth — DONE 2026-07-28 (auto-dev, Play-verified)
   Type: mechanical / diegetic | Pillar: Diegetic dread
   Lore: `lore/BIBLE.md` diegetic grammar (**in first person, withheld information is the horror tool**); Iron Lung suggestion (`lore/2026-07-23/summary.md` #3)
   Unity: **yes** — high-alarm scan result lands visibly after the keypress.
@@ -1760,6 +1897,9 @@ digest was folded into L35 instead of queued separately).
   done-when: Play — at high alarm the reading appears measurably later than the keypress and the HUD reads as waiting rather than broken; at low alarm in iso, reveal is unchanged from today; machine/factory readouts unaffected; console clean
 
 ### Lore-gap refill — 2026-07-24 (bible absorb: heat-path raids / resident hive / atmosphere bricks)
+
+> **PARKED → Next (groom 2026-07-28).** Not the active queue — see **Now queue — ACTIVE** above.
+> Task bodies here stay as groomed reference; promote from here when the active queue drains.
 
 **Priority note:** **P14** stays build-critical first. After that, track order still waits on the open
 human decision (P12/P13 vs F11–F14 vs systemic lore). Lore tasks here are ready when groomed up —
@@ -1772,19 +1912,7 @@ no hottest-machine pathing; no per-foothold fuel bank; `ThreatTelegraph` + `Horr
 false-quiet revisit weighting; no duct-idle AI; no offscreen residue drift. Visual/audio-only ≤30%
 of this block (**L49** only; audio experiments stay under SND*).
 
-- [ ] L45. Raids path to the loudest machine
-  Type: systemic / mechanical | Pillar: Factory pressure = identity / Industrial biomass / hive
-  Lore: `lore/BIBLE.md` hive soft rules (**Raids path to the loudest machine**); Factorio biters→pollution source (`lore/2026-07-24/summary.md` #1); keep Biofactory anti-comp
-  Unity: **yes** — hot processor run vs idle hub; enemies prefer heat source over player chase.
-  Change: when combat forms spawn (W2+), assign a **raid destination** = highest local heat/throughput chunk (powered processor / drill / busy belt sample — reuse `FactoryHeatTracker` / machine power hooks). Path preference: approach via lane that reaches that machine’s sector, then sap/attack the machine (or nearby barrier) before defaulting to hub/player. Player proximity still interrupts (existing engage rules). W1 teaching arc unchanged (West→hub). Cap: if one foothold’s local pressure is already high, spill destination pick to the next-loudest sector (anti-hoarding cousin of FFF #283 — light version; full WaveFuel bank can wait). Doc one paragraph in `Progression_Spec.md`.
-  done-when: Play — with a hot far processor and a quiet hub approach, W2+ forms measurably prefer the hot machine’s lane/sector over beelining the player; idle factory keeps today’s lane→hub behaviour; W1 unchanged; console clean
-
-- [ ] L46. Atmosphere brick table (false scares without spawns)
-  Type: systemic / diegetic | Pillar: Diegetic dread
-  Lore: `lore/BIBLE.md` factory×horror (**Atmosphere events are not spawn events**); DS remake Intensity Director palette (`lore/2026-07-24/summary.md` #3)
-  Unity: **yes** — revisit an empty expansion deck; hear/see bricks with zero enemies.
-  Change: extend `ThreatTelegraph` (or thin companion on a **dedicated child**, never SectorRuntime root) with a weighted **atmosphere brick** table: lamp death / steam burst / distant scrape / false quiet — fireable with **zero** combat spawns. Bias weight up on revisited sectors and far empty deck (Deck lock / expansion headroom). Soft director: max N bricks per prep, mandatory quiet between bricks, never during RecoveryBeat labour window if L42/L43 exist. Reuse `LampFlicker`, `HorrorClock`, `SyntyAmbientFx`, existing `Sfx` one-liners — **no new audio banks** (gate CLOSED). Distinct from L15 (mid-prep rollercoaster tied to wave warning) — this is revisit/empty-deck texture.
-  done-when: Play — standing on empty far deck or revisiting a cleared approach yields ≥1 spawn-free atmosphere brick; combat spawn math unchanged; L15 still fires its prep beats; console clean
+- [→] L45, L46 — **pulled into the ACTIVE Now queue** (groom 2026-07-28). Bodies live there.
 
 - [ ] L47. Vent-resident early forms (duct idle before deck combat)
   Type: systemic | Pillar: Industrial biomass / hive
@@ -1809,6 +1937,8 @@ of this block (**L49** only; audio experiments stay under SND*).
   done-when: Play — booth reads as company security workplace in iso+FP; lit terminal visible; lanes clear; console clean
 
 ### Lore-gap refill — 2026-07-26 (bible absorb 2026-07-25: power-clock / expansion-risk / cascade / empty-HUD)
+
+> **PARKED → Next (groom 2026-07-28).** Not the active queue — see **Now queue — ACTIVE** above.
 
 **Priority note:** sit **below** sequential open lore (**L36** next) unless a human pulls this block up
 (`## Needs human decision`). Bible current through `lore/2026-07-28`. Map size locked; prep 40s / 30s;
@@ -1836,12 +1966,7 @@ views. Numbers land in `SPACE FACTORY INFO/Progression_Spec.md` in the same comm
   Change: loud sources — running processors/drills, player tools (mining laser, welder), gunfire — raise a soft **interest field** (radius scales with loudness) that idle / duct-resident forms (**L47**) drift toward and investigate **before** committing to combat. Distinct from **L45** (raid *destination* at spawn): this is pre-commit investigation for forms already present, off existing `FactoryHeatTracker` / machine-activity hooks. Quiet, unpowered work draws nothing; interest decays when noise stops. No new spawns. Do not duplicate L45/L47. Numbers in `Progression_Spec.md`.
   done-when: Play — run a loud processor or fire a tool near idle/vent forms → they measurably drift toward the noise before engaging; go quiet → interest decays; combat spawn counts unchanged; console clean
 
-- [ ] L52. Cascade checklist — a "solved" breach fails again later
-  Type: systemic | Pillar: Factory pressure = identity
-  Lore: `lore/BIBLE.md` factory×horror (**layered loops that ripple**); Oxygen Not Included (`lore/2026-07-25/summary.md` #2)
-  Unity: **yes** — clear a contaminated processor; the same deck springs a fresh fault later.
-  Change: when a contamination/breach is cleared (L35 stages / `ProcessInfection` repair), schedule a **delayed, capped side-effect** on that deck a while later — a heat spike, a filter going sticky again, or a slurry-wrong event — so a "solved" deck can fail quietly again instead of resolving cleanly. Telegraph it diegetically (terminal line / machine face); always fair (re-clearable, never a soft-lock) and rate-capped so it is dread, not whack-a-mole. Distinct from **L36** (spatial cascade to a linked belt *now*) — this is *temporal* delayed re-failure. Numbers in `Progression_Spec.md`.
-  done-when: Play — clear a contaminated processor → after a delay the same deck shows a fresh, telegraphed, re-clearable side-effect; the original never soft-locks; re-failures are rate-capped; console clean
+- [→] L52 — **pulled into the ACTIVE Now queue** (groom 2026-07-28). Body lives there.
 
 - [ ] L53. Breach snowball — a foothold converts its bay neighbors
   Type: systemic | Pillar: Industrial biomass / hive / Workplace as trap
@@ -1866,6 +1991,8 @@ views. Numbers land in `SPACE FACTORY INFO/Progression_Spec.md` in the same comm
   done-when: Play — the notice reads in iso+FP as upbeat company copy contradicted by the written-off crew beside it; no audio added; copy is original (no quoted fiction); lanes clear; console clean
 
 ### Lore-gap refill — 2026-07-26 (bible absorb 2026-07-26: warm-dark / mediation / quality hunters / garage / empty protocol)
+
+> **PARKED → Next (groom 2026-07-28).** Not the active queue — see **Now queue — ACTIVE** above.
 
 **Priority note:** sit **below** sequential open lore (**L36** next) unless a human pulls this block up
 (`## Needs human decision`). Bible current through `lore/2026-07-28`. Map size locked; prep **40s / 30s**;
@@ -1922,6 +2049,9 @@ Numbers in `SPACE FACTORY INFO/Progression_Spec.md` same commit as each task.
 
 ### Lore-gap refill — 2026-07-28 (bible absorb 2026-07-27 + 2026-07-28)
 
+> **PARKED → Next (groom 2026-07-28).** Not the active queue — see **Now queue — ACTIVE** above.
+> **L61 / L62 / L66 were promoted** out of this block into the active queue.
+
 **Priority note:** sit **below** sequential open lore (**L36** next) unless a human pulls this block up
 (`## Needs human decision`). Bible current through `lore/2026-07-28`. Map size locked; prep **40s / 30s**;
 audio gate **CLOSED** — radio/PA **voice** stays `[wait-until-sounds]`; printed / terminal / lamp cues OK.
@@ -1937,31 +2067,7 @@ named compounding risk; combat peaks do not sell offscreen bay siege while you r
 motif has no hold-to-listen channel; P20 break-room exists but no denser private berth vs communal hub
 split at eye level. Numbers in `SPACE FACTORY INFO/Progression_Spec.md` same commit as each task.
 
-- [ ] L61. Forecastable surge / take-shelter window
-  Type: systemic / diegetic | Pillar: Industrial biomass / hive / Lonely worker fantasy
-  Lore: `lore/BIBLE.md` hive soft rules (**Forecastable surges**); STALKER Emissions careful (`lore/2026-07-28/summary.md` #1)
-  Unity: **yes** — warned window; outside sticky interest spikes; sealed bay holds; prep length unchanged.
-  Change: once per late prep or early combat (post-W1), fire a **forecastable surge**: terminal/PA *printed*
-  line + corridor lamp cue → worker has a short window to reach a sealed bay / under-deck shelter volume
-  (hub core or authored shelter child — dedicated GO, not SectorRuntime root). While the surge runs,
-  sticky interest / HorrorClock stress spikes **outside** the shelter and is capped inside. Distinct from
-  **L42** (post-clear menace clamp / frequency) and **L50** (spent power calm). Must **not** extend prep
-  (Decision 40s/30s). No Zone loot, no mutant bestiary, no new audio banks. Caps in `Progression_Spec.md`.
-  done-when: Play — surge warns before it hits; outside the shelter sticky/stress rises for the window;
-  inside stays calmer; prep still 40s/30s; W1 unchanged; console clean
-
-- [ ] L62. Failure tax — sticky debt, not a panic HUD
-  Type: systemic | Pillar: Factory pressure = identity
-  Lore: `lore/BIBLE.md` factory×horror (**Failure taxes the worker, not a panic bar**); Mothership stress-as-debt (`lore/2026-07-28/summary.md` #4)
-  Unity: **yes** — fail a seal/scrub/overheat → measurable sticky or next-wave pressure; no fear meter UI.
-  Change: when the player fails a containment beat (repair interrupted on stage-2+ infection, power brown
-  that drops a sector calm if L50 exists, or a loud overheat on a hot processor), add a **small capped
-  tax** to sticky foothold chance or near-term Heat01 / next-wave pressure — never a floating panic bar.
-  Recovery labour (repair / clear residue / L43–L59 paths) bleeds the tax down. Distinct from **L30**
-  (scrap/min heat blend) and **L41** (lifetime HiveDebt). Grim-not-gag terminal one-liner optional.
-  Numbers in `Progression_Spec.md`.
-  done-when: Play — a failed containment beat raises sticky or next-wave pressure measurably; successful
-  recovery labour reduces it; no panic/fear HUD added; console clean
+- [→] L61, L62 — **pulled into the ACTIVE Now queue** (groom 2026-07-28). Bodies live there.
 
 - [ ] L63. Sidegrade expansion poison
   Type: systemic | Pillar: Factory pressure = identity / Workplace as trap
@@ -1999,18 +2105,91 @@ split at eye level. Numbers in `SPACE FACTORY INFO/Progression_Spec.md` same com
   done-when: Play — hold shows channel lines; release stops; no face/portrait/chat panel; no new voice
   clips; tone is lonely employment not comedy; console clean
 
-- [ ] L66. Hub/spoke berth densify (FP house intimacy)
-  Type: diegetic / visual | Pillar: Lonely worker fantasy / Workplace as trap
-  Lore: `lore/BIBLE.md` north-star FP berth densify + **Lived geography: hub and spoke**; Returnal careful + Tacoma (`lore/2026-07-27/summary.md` #2, `lore/2026-07-28/summary.md` #2)
-  Unity: **yes** — private nook denser at 1.65 m; communal hub readable; iso factory literacy unchanged.
+- [→] L66 — **pulled into the ACTIVE Now queue** (groom 2026-07-28). Body lives there.
+
+### Lore-gap refill — 2026-07-29 (bible absorb 2026-07-29)
+
+> **PARKED → Next.** Not the active queue — drain **Now queue — ACTIVE** (`L61 → L52 → L46 → L66`)
+> first unless a human/groom promotes from here. Highest play-value pull-ups: **L67**, **L68**, **L69**.
+
+**Priority note:** Bible current through `lore/2026-07-29`. Map size locked; prep **40s / 30s**;
+audio gate **CLOSED**. Visual/audio-only ≤30% — **L70** is the one pure dressing task; **L71** is
+diegetic wayfinding with a prop (not a second set-piece bay).
+
+**Skipped / covered elsewhere:** Metro/Zone FPS, Nihei gunplay, co-op bomb party, card-battler /
+fourth-wall → rejected in bible. Modular Sci-Fi Pipes shopping → wishlist only (free Modular
+Pipeline Pack already logged 07-21 — prefer it for L70 spurs). **L50** (sector power calm) and
+**L63** (expansion sidegrade poison) stay distinct — do not merge into L67/L69.
+
+Code reality: sticky/breach sectors have no diegetic scrub/filter timer (FP vignette exists globally
+via PostFX, not as a sector scrub clock); no SOP plaque that contradicts machine-face LEDs; no
+mid-run procedure board that forces a throughput tradeoff; far-deck labour fill adds props but not
+purposeless overbuilt belt/duct dead-ends; no deck “up” chroma stripe for FP hull orientation.
+Numbers in `SPACE FACTORY INFO/Progression_Spec.md` same commit as each systemic task.
+
+- [ ] L67. Filter / scrub clock in sticky sectors
+  Type: systemic / diegetic | Pillar: Diegetic dread / Lonely worker fantasy
+  Lore: `lore/BIBLE.md` factory×horror (**Warm house, deadly plant**); Metro filter diegesis (`lore/2026-07-29/summary.md` #1)
+  Unity: **yes** — enter sticky/breach pocket → in-world timer readable; scrub clears it; no fear bar.
+  Change: while the player is in a sticky / high-HorrorClock / infected-sector pocket, show a **diegetic
+  wrist or panel scrub timer** (TextMesh / machine-face cousin — dedicated child, not SectorRuntime root)
+  that counts down; optional mild FP vignette lift only while the clock is live (reuse PostFX vignette
+  hook, do not invent a panic meter). Interacting with a scrub/seal point (repair tool or world panel)
+  resets the clock. When it hits zero, apply a small sticky/Heat tax (pairs with **L62** if present) —
+  never a soft-lock. Distinct from **L50** (sector power calm reserve). Caps in `Progression_Spec.md`.
+  Refuse Metro FPS combat identity.
+  done-when: Play — sticky pocket shows a readable scrub timer; scrubbing resets it; letting it expire
+  taxes sticky/heat without a fear HUD; hub/warm berth has no timer; console clean
+
+- [ ] L68. Manual ≠ machine — SOP contradicts the face
+  Type: systemic / diegetic | Pillar: Factory pressure = identity / Diegetic dread
+  Lore: `lore/BIBLE.md` factory×horror (**Procedure ≠ live state**); KTANE anti-comp (`lore/2026-07-29/summary.md` #3)
+  Unity: **yes** — plaque says SAFE/IDLE while the face shows CONTAM/STALL; fixing the machine clears both.
+  Change: once per run (post-W1), pick one powered processor and spawn a nearby **shift SOP plaque**
+  (SectorPlaques pattern) describing a safe/nominal state that the live `MachineFaceStatus` LEDs
+  contradict (CONTAM / STALL / NO PWR). Player must reconcile by repairing/powering — not by twitch aim.
+  Optional: when throughput/Heat01 is healthy, fire one quiet systems trip (false CLEAR on the plaque
+  for a few seconds). **Anti-comp:** no co-op bomb party, no comedy shouting. Original copy only.
+  done-when: Play — at least one SOP/face mismatch is readable in iso+FP; repairing the machine clears
+  the contradiction; no new combat encounter; console clean
+
+- [ ] L69. SOP turns trap — cheerful procedure demands a poison tradeoff
+  Type: systemic | Pillar: Workplace as trap / Factory pressure = identity
+  Lore: `lore/BIBLE.md` factory×horror (**The rules you trusted become the trap**); Inscryption careful + Lobotomy CNG (`lore/2026-07-29/summary.md` #4)
+  Unity: **yes** — mid-run board offers a “required” procedure that poisons another loop if accepted.
+  Change: mid-run (after W2 clear or mid-prep), a cheerful company **procedure board** (printed, not VO)
+  demands one visible tradeoff — e.g. boost refine throughput for N seconds while raising sticky/raid
+  pressure, or seal a bay (lower Heat) while cutting that bay’s output. Accepting applies the poison;
+  declining costs a soft quota miss / terminal write-up (grim-not-gag), never a soft-lock. Distinct from
+  **L63** (expansion unlock sidegrade) — this is a *trusted SOP that turns*. Cap once per wave.
+  Numbers in `Progression_Spec.md`. Refuse card-battler / fourth-wall gag.
+  done-when: Play — board appears once per eligible window; accept path poisons another loop measurably;
+  decline path is sad paperwork not a soft-lock; console clean
+
+- [ ] L70. Purposeless growth dressing — belts/ducts past usefulness
+  Type: visual / diegetic | Pillar: Industrial biomass / hive / Lonely worker fantasy
+  Lore: `lore/BIBLE.md` factory×horror (**Architecture that outlives its brief**); BLAME visual only (`lore/2026-07-29/summary.md` #2)
+  Unity: **yes** — one far bay reads as engineered overbuild into dead ends; no new combat there.
+  Change: one far/mid deck spur where conveyor/duct primitives (prefer free **Modular Pipeline Pack**
+  already in-project; Synty pipes OK) continue past useful machines into stairs-to-nowhere / sealed
+  stubs — purposeless growth mood, still industrial. Collider-free; off lanes; no encounter spawn.
+  Distinct from **L32** far-deck labour fill and **L60** empty-protocol desk. Optional soft sticky tint
+  if HorrorClock high — restrained. Do not shrink the deck.
+  done-when: Play — spur reads in iso+FP as engineered dead-end overbuild; lanes clear; no combat
+  added by this dressing; console clean
+
+- [ ] L71. Deck “up” stripe + worn labour tools
+  Type: diegetic / visual | Pillar: Diegetic dread / Lonely worker fantasy
+  Lore: `lore/BIBLE.md` diegetic grammar (**Tools look like labor**); Shipbreaker deepen (`lore/2026-07-29/summary.md` #5)
+  Unity: **yes** — FP corridor has a readable up/deck chroma cue; held/holstered tool reads issued labour.
   Tag: `[asset-pack: POLYGON Sci-Fi Horror]`
-  Change: mark **one communal hub** edge + **one private bunk/break nook** with lived props (P17/P20 path /
-  `ISceneDresser` bake). Private nook authored denser for FP eye-level (Returnal house intimacy); hub stays
-  workplace bones. Collider-free; off lanes. Optional naming-the-station plaque (original copy). Must **not**
-  demote iso factory skill or shrink the deck. Complements **P20** break-room — do not rebuild it; add the
-  public/private contrast P20 lacks.
-  done-when: Play — FP reads a denser private nook vs a communal hub; iso still reads the factory as primary;
-  lanes clear; console clean
+  Change: (a) sparse deck **chroma/stripe** wayfinding on 1–2 main corridors so FP “up” stays readable
+  in disorienting hull turns (FloorZoning / SyntyFloorDressing cousin — dedicated meshes, not
+  SectorRuntime root); (b) ensure scanner/cutter viewmodel or nest prop reads **cassette-futurist /
+  worn issued gear**, not magic SF chrome (lean on P18 tool path). Iso factory literacy unchanged.
+  Refuse zero-g flight fantasy.
+  done-when: Play — FP can reorient via deck stripe after a turn; tool/nest reads as labour gear; iso
+  top-down identity unchanged; console clean
 
 ### Done archive — 2026-07-19 lore-gap + map integrity (shipped)
 
@@ -2300,6 +2479,21 @@ Method: capture the Game view in Play mode, judge the frame, fix the single wors
 
 ## Next (groomed, not yet started)
 
+**Parked lore queue (groom 2026-07-28 + lore-gap 2026-07-29).** Already groomed with done-when lines;
+bodies live in the dated `### Lore-gap refill` blocks above, each marked **PARKED → Next**. Promote
+from here when **Now queue — ACTIVE** drains — take play-pressure tasks before dressing:
+
+- **Systemic pressure (prefer first):** `L67` filter/scrub clock · `L68` manual≠machine · `L69` SOP
+  turns trap · `L50` sector power calm clock · `L51` noise interest (wants `L47` first) · `L53`
+  breach snowball · `L58` fewer smarter hunters · `L63` sidegrade expansion poison · `L64` siege weather
+- **Hive habitat:** `L47` vent-resident early forms · `L48` offscreen residue drift · `L56` warm-dark
+  foothold bias
+- **Diegetic / readability:** `L54` quiet the HUD · `L57` mediated sector cams · `L59` bay-as-garage ·
+  `L65` distant shift radio (printed; VO gated) · `L71` deck “up” stripe + worn tools
+- **Dressing (keep ≤30% of any Now):** `L70` purposeless growth spurs · `L49` lit security booth ·
+  `L55` cheerful company notice · `L60` empty-protocol workstation
+- **Audio-gated:** `SND1–SND11` stay in the Audio track until the gate flips — do **not** promote.
+
 - [x] L31 / L40 — **moved** to Audio track as **SND3** / **SND5** `[wait-until-sounds]` (gate CLOSED).
 
 - [x] PlaytestHarness named eye-level vantages (hub / west lamp / vent approach) so F11+ visual verifies are comparable — DONE 2026-07-22 via C5: `PlaytestHarness.Vantages` (hub / west / vent) with pos + lookAt.
@@ -2311,6 +2505,15 @@ Method: capture the Game view in Play mode, judge the frame, fix the single wors
 - [ ] Balance pass across all progression numbers — tier-2 stats/costs (HeavyTurret 150 / Bulwark 70 / TurboDrill 120 are first-guess), upgrade-pool percents, endless modifier multipliers, clear-bonus curve. Needs a human playtest of waves 4+; not an agent task until then.
 
 ## Ice box (ideas, ungroomed)
+
+- [ ] P22. Vehicle landmark — `SM_Veh_Ship_01` docked/wrecked backdrop (**moved out of Now, groom
+  2026-07-28**). Tag: `[asset-pack: POLYGON Sci-Fi Horror]`.
+  **Blocking reason:** `VoidHull` occludes the perimeter void (measured in P6), so a hull dropped at the
+  map edge is simply painted over. Not a human question — P6's door-read is resolved. It needs an explicit
+  **VoidHull window or inside-shell placement plan** before it is a well-formed task; "drop it in the
+  black" does not work. Promote once someone decides where the landmark actually lives.
+  Change (when unblocked): one static `SM_Veh_Ship_01` as a docked or wrecked hull landmark, collider-free.
+  done-when: Play — a ship landmark grounds the map edge without blocking play; console clean
 
 - [ ] Far-deck dressing is unlit (noted during L32, 2026-07-28). `FarDeckLabourFill` places correctly
   (verified 14 props, clearance clean) but the far deck has no lamps, so the props read as low-contrast
@@ -2341,6 +2544,147 @@ Method: capture the Game view in Play mode, judge the frame, fix the single wors
 - [ ] Free lead: Abandoned Factory Lite (Asset Store) — safe mood greys for blockout; not gated, but not queued until visual Now is thin.
 
 ## Agent log (newest first — one line per session: date, task, result, commit)
+
+- 2026-07-29: **lore-gap** — bible already absorbed through `lore/2026-07-29`. Queued **L67–L71**
+  (parked → Next): filter/scrub clock (L67, Metro), manual≠machine SOP/face mismatch (L68, KTANE
+  anti-comp), SOP turns trap (L69, Inscryption), purposeless growth dressing (L70, BLAME visual),
+  deck-up stripe + worn tools (L71, Shipbreaker deepen). Did **not** reorder ACTIVE (`L61→L52→L46→L66`).
+  Skipped FPS/bomb-party/card-battler + Sci-Fi Pipes shopping. No game code.
+
+- 2026-07-28: **L62 failure tax — DONE (auto-dev, Play-verified).** A third pressure input that is
+  deliberately **not** a third clock: `Heat01` owns how much arrives, `HiveDebt01` owns what the hive
+  has become, `FailureTax01` owns **how sticky a foothold is once it lands** — three channels, no
+  double-count. Rises in `ProcessInfection.EnterStage`, because escalating a stage *is* the failed beat
+  (the player had the whole stage timer): stage 1 **free**, stage 2 **+0.12**, stage 3 **+0.32**, capped
+  **0.60**. Falls **only to labour, never to time** — that is what "sticky" means: repair **−0.15**,
+  L43 restack **−0.04** (small on purpose; tidying is not fixing the machine). Consumed in exactly one
+  place — `InfectionResidue` seed radius **×(1 + tax)**, so at full tax a death reaches **5.5 → 8.8 m**.
+  **No HUD, no bar, no number** anywhere: the player reads it in contamination spreading further than it
+  used to, which is precisely what the bible asks for. Measured: 0.000 → 0.120 → 0.440 across the stage
+  ladder, repair → 0.290, restack → 0.250, **3s idle held 0.250**, 20×+0.2 clamped to 0.600; and end to
+  end from one spot a residue death infected **1** machine untaxed vs **2** fully taxed. 200 frames,
+  0 errors; scene untouched. No mid-Play script edits this time — that trap from L45 cost nothing here.
+  Commit: `L62: failure tax — sticky debt, not a panic bar`.
+
+- 2026-07-28: **L45 raids path to the loudest machine — DONE (auto-dev, Play-verified).** The factory
+  you run is now the thing that gets raided. `FactoryHeatTracker.Loudness` ranks machines by work
+  actually happening — dark or disabled = **0** and never a destination, powered idle 0.2, drill
+  `0.2 + unitsPerSec×1.0`, refiner `0.2 + outputPerSec×5.0`. `WaveController` assigns a destination per
+  W2+ spawn, capped **3/machine** then spilling to the next-loudest. `EnemyBase.RaidIfClose` sits below
+  the player in the chain (`barrier → player → raid → hub`) at **14 m**, copying `Sapper`'s existing
+  engage-only-when-close discipline so nothing beelines through hull walls. Wave 1 never raids; sappers
+  keep their own `supportTarget`; an idle factory returns null, which *is* today's lane→hub path.
+  Lane assignment untouched — L30/L41 still own vent share and composition. Measured: Reactor **1.45**
+  beat the loudest drill **1.20** and won the pick; no live producers → null; W1 **0** raiders; W2 five
+  crawlers split **Refiner-1 ×3 (cap) → Reactor ×2**, spill working unprompted; a raider 11.7 m out with
+  the player **76.9 m** away closed **5.6 m** in 4 s, `CurrentTargetIsPlayer=False`. 200 frames, 0 errors.
+  Two traps cost time and are worth remembering: `WaveController` has `using System;`, so a bare
+  `Object.FindObjectsByType` is ambiguous and silently kept the whole assembly stale; and editing scripts
+  mid-Play triggers a domain reload that nulls `Awake`-assigned statics (`FactoryHeatTracker.Instance`),
+  which made a working feature read as completely dead until Play was restarted. Scene untouched.
+  Commit: `L45: raids path to the loudest machine`.
+
+- 2026-07-28: **L44 lagged scan reading — DONE (auto-dev, Play-verified).** Menace now buys
+  **latency, never accuracy**. Ping (sound/flash/pulse) still leaves the tool on the keypress;
+  the reading lands `lerp(0, 1.1s, AlarmLevel)` later, +0.09s per infected machine capped at
+  +0.35s, and is taken from **where you pinged**. Measured: calm/iso **0.000s**, lands same
+  frame, 10 full / 0 coarse — quiet play byte-identical to pre-L44 (immediate path runs inline,
+  no coroutine). High/iso **1.109s** measured vs 1.100 expected, did not land on the press frame,
+  still 10 full / 0 coarse. FP past 27.5m of 55m: **4 full / 6 coarse** (band RICH/FAIR/THIN, no
+  ring); marking the farthest node (41.3m) walked-to returned it to full (6→5), so the bible
+  guard rail holds. HUD reads `Q AWAITING RETURN 0.6s` — captured the frame to confirm it reads
+  as waiting, not as a dropped keypress. Nodes and salvage only; F12 factory readability
+  untouched. **Fixed a pre-existing crash on the way:** `VeinHighlight.Attach` destroyed the old
+  component but not its `LineRenderer`, and a GameObject may carry only one Renderer — so
+  rescanning a node inside the 12s `revealDuration` (cooldown is 8s, so reachable in normal play)
+  got null from `AddComponent` and threw `NullReferenceException`. Re-attach now reuses the
+  existing ring and light. Cost most of the session to find because the editor's Error Pause kept
+  halting play one frame at a time, and the exception was swallowed inside the scanner's own
+  coroutine. 180 frames watched, 0 game errors; scene untouched.
+  Commit: `L44: the scan is a lagged reading, not instant truth`.
+
+- 2026-07-28: **L43 deck wreckage — DONE (auto-dev, Play-verified).** Pairs with L42: the valley
+  now has labor in it. Each clear drops **3** knocked-over crates beside the lane that actually
+  carried the wave (new `WaveController.BusiestLaneLastWave` — `_laneQueue` is indexed, not
+  consumed, so it still describes the wave that just ended). Cleared with the repair tool by
+  aim-and-hold, the same free gesture as L17 residue clearing, at 1 piece / 0.45s. Measured on a
+  live clear: 3 pieces on `WestCorridor` at **2.14–2.43m** off the centerline, whole batch
+  restacked for **+15 scrap** vs the **20** a 40 scrap/min belt earns in one 30s prep — cleanup
+  never beats running the factory; cap 9 live pieces. Mess persists across a wave start (2→2)
+  and ignoring it costs nothing. Deliberately not a `SalvageCrate`: no magnet, no beacon, no
+  auto-collect — a chore, not a reward for walking. Three things the frame caught that a counter
+  would not: the first material rendered **near-black** on the dim deck (now dirty amber), the
+  3.4m offset band **buried pieces in wall panels** (now 2.0–2.9), and my first aim test failed
+  because I moved a camera `FirstPersonCamera` rewrites in LateUpdate — recast from the walkway,
+  2/2 resolved. Debris sits on Default with a solid collider; turrets and enemies both mask
+  `Buildable`, so it can neither eat turret fire nor block pathing. Console clean; scene untouched.
+  Commit: `L43: deck wreckage — recovery beats are labor, not idle`.
+
+- 2026-07-28: **L42 enforced intensity valley — DONE (auto-dev, Play-verified).** For **8s** after a clear
+  menace cannot climb. Enforced at the two owners of escalation, not from `RecoveryBeat`:
+  `AtmosphereController.SetAlarmLevel` (the single entry point every alarm writer already uses) clamps to
+  **0.12**, and `HorrorClock` may fall but not build, with `AddZoneStress` **dropped, not queued** — a
+  deferred backlog would spike the moment the valley released. Measured: alarm pinned 0.000/≤0.120 and zone
+  flat under **0.15/frame** stress for the whole window, then a 1.0 push drove alarm **1.000** and zone
+  **0.779** once released. Prep untouched at **30.0s** (valley released at 22.0s left); wave 1 still 40s.
+  Two real defects caught by verifying rather than asserting: (1) L15's beat was being **flattened, not
+  delayed** — its 0.32 bump landed inside the window, so `ThreatTelegraph` now schedules against the
+  countdown left *after* release (post-valley peak **0.320**, exactly `midBeatAlarm`), skipping the frame
+  prep begins because script execution order let it see "no valley yet"; 9s→**8s** keeps ~4.6s above L15's
+  17.4s scheduling floor. (2) static `_valleyUntil` survived a Play restart and opened a **phantom valley
+  over wave 1** — now reset in `Awake`/`OnDestroy`, same as `HorrorClock.ZoneDecay01`. Console clean;
+  scene untouched.
+  Commit: `L42: the intensity valley is a system, not a screen`.
+
+- 2026-07-28: **L41 lifetime hive debt — DONE (auto-dev, Play-verified).** `FactoryHeatTracker.HiveDebt01`
+  = lifetime earned / 1500, monotonic twice over (only-grows source **plus** a high-water floor).
+  `WaveController` uses it for **composition only** — W1–W2 untouched, bruiser at 0.35 / sapper at 0.60,
+  endless `1 + debt×0.35` — while `Heat01` keeps owning vent/residue share, so **no double-count with
+  L30**. Proof of the split: debt pinned 1.00, run taken screaming → idle → residue share **0.700→0.100**
+  (14/20→2/20) with the W7 roster unchanged at **22/10/10**. Endless W7 7→10, W9 12→17; W1/W2 identical.
+  `GetWave` now returns a copy so a debt bump can't rewrite the authored arc (verified wave 3 still 2/2).
+  Earlier-appearance rule needed a temporary blank to exercise — every authored wave from W2 already
+  fields both forms. Console clean; scene untouched.
+  Commit: `L41: lifetime hive debt, the second pressure clock`.
+
+- 2026-07-28: **L39 leased-asset / empty-berth copy — DONE (auto-dev, Play-verified).** `LeasedAssetCopy`
+  adds a berth plaque (`BERTH 04 - UNASSIGNED / EFFECTS HELD PENDING CLAIM`) at the nest corner in the
+  L25 plaque grammar, plus a once-per-run line when the repair tool is first held
+  (`WELDER ON LEASE - LOG HOURS AT SHIFT END`) through the existing FloatingText channel — no new HUD
+  panel, break room untouched. Copy kept **flat, not sardonic** (a company that hasn't noticed).
+  Verified: plaque collider-free 2.6 m from the nest; first pickup → exactly 1 line + flag set, two more
+  → 0; face-on capture shows crisp lettering. **Caveat:** `RepairHeld` reads raw `Input` (not
+  `GameInput`), so the trigger itself can't be scripted — added `DebugSimulateToolPickup()` to exercise
+  the guard/emit path and confirmed `PlayerRepairTool` is on the player. Console clean.
+  Commit: `L39: unassigned berth and a tool that is only on loan`.
+
+- 2026-07-28: **L38 organ-literacy tags — DONE (auto-dev, Play-verified).** `OrganLiteracyTags` places
+  `[HVAC / LUNGS]` / `[PROCESS / GUT]` / `[POWER / HEART]` in the L25 plaque grammar (steel + amber,
+  collider-free, no canvas). Each adds **one word** when its system goes bad — `OVERGROWN` for the
+  biomass organs, **`STRAINED`** for the heart (the hub is hurt, not colonised). **Gut deliberately
+  ignores L35 stage 1** so signage never gives away the pretty stage. Verified: 3 tags within ~2.2 m of
+  their systems; gut clean@stage1 → OVERGROWN@stage2 → reverted on repair; lungs OVERGROWN then cleared
+  as the clock eased; heart STRAINED at 250/500 hub HP; iso capture shows signage, no chrome. Console clean.
+  Commit: `L38: organ-literacy tags name the ship's systems`.
+
+- 2026-07-28: **unity-pass — L36 VERIFIED, queue cleared (1 parked, 1 resolved, 0 blocked).** Measured
+  the belt slowdown that `/auto-dev` could not observe: chip advanced **0.251** of a clean belt in 2.0 s
+  untaxed vs **0.138** taxed → **ratio 0.55**, matching `taxMultiplier`. With the cascade targeting
+  already verified (1 taxed / 3-of-4 untouched / clear restores), every L36 done-when clause now holds.
+  **The blocker was the instrument:** cargo icons are named **`ResourceChip`**, not `CargoIcon` — the
+  earlier probes searched the wrong name and read 0.000 on belts that were carrying. No product code
+  changed; test belt destroyed, no scene edits. Console clean, 0 errors.
+  Commit: `unity-pass: verify L36 belt cascade slowdown (ratio 0.55)`.
+
+- 2026-07-28: **L36 belt cascade — `[?]` cascade logic verified, item slowdown unobserved (auto-dev).**
+  `InfectionBeltCascade` taxes the nearest belt serving an L35 stage-2+ processor by 0.55 via a new
+  `ConveyorBelt.ContaminationTax` **separate multiplier** (authored speed survives, so clearing restores
+  it exactly); sole writer, untaxes on drop. Verified 0 → 0 (stage 1 free) → **1 belt @0.55, 3/4 others
+  at 1.00** → all back to 1.00. **Could not observe items slowing:** every reachable belt was idle or
+  output-blocked (6 packed, zero advance even untaxed). Logged two of my own bad measurements so they
+  are not repeated — a sum-of-progress metric that drops when items are *delivered*, and a probe run at
+  `timeScale == 0` under an open upgrade offer. Repro for `/unity-pass` is in the task entry.
+  Commit: `L36: contaminated processor drags the belt it serves [? throughput unobserved]`.
 
 - 2026-07-28: **lore-gap** — bible already absorbed through `lore/2026-07-28`. Marked **L35 DONE**
   (shipped `7ada61aa`, checkbox was stale). Queued **L61–L66** from 07-27/07-28 experiments: surge
