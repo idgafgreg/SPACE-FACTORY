@@ -92,6 +92,10 @@ Use these when inventing features, VFX, audio, enemy behavior, or backlog tasks.
 - **The company built the hostile workplace first.** Locked doors, surveillance, recycling chutes, compliance signage and leased tooling are corporate, and predate the hive; the hive only has to inherit the pipes. Threat that repurposes what the company already installed beats threat that arrives with its own new monster kit.
 - **Paperwork is mood, never the loop.** Shift boards, stamped orders and sealed notices sit *beside* the belts as texture and pressure. The moment reading documents becomes the skill being tested, the factory has been demoted.
 - Authenticity before haunt: the ship must read as a **lived workplace people could exist in** first — offices, break rooms, utility closets as lonely berth under breach — before stacking another abstract meter. Atmosphere is the product; meters are scaffolding.
+- **Warm house, deadly plant.** Berths and break nooks stay the warm job-site home; sticky/toxic decks outside cost a *tangible* maintenance beat you check in-world (scrub, seal, filter panel) — not a corner HUD. (Metro station grammar, careful; refuse Metro FPS.)
+- **Architecture that outlives its brief.** Empty expansion and runaway belts/ducts can still look engineered while serving nothing human — purposeless growth as loneliness, not chase. (BLAME visual mood only.)
+- **Procedure ≠ live state.** Soft pressure from information asymmetry: shift manuals and SOP boards describe a safe state the machine faces contradict — reconcile, don’t twitch-aim. When the line is healthy, a quiet systems trip (valve mismatch, false clear) is fair game. (**KTANE** energy as *anti-comp* for co-op bomb party; solo factory only.)
+- **The rules you trusted become the trap.** Company SOPs and quota boards start helpful, then force sad tradeoffs (sacrifice throughput to keep a bay sealed). Comfort of a learnable table, then the table turns. (Inscryption careful; refuse card-battler / fourth-wall gag.)
 - **Recovery beats are the garage.** Between peaks, the safe bay is where lonely labor lives — repair, diagnose, restack *your* line — not a timer staring back. Hands-on maintenance of the factory is the valley.
 - **Failure taxes the worker, not a panic bar.** Failed seals, overheats and noisy labor raise sticky interest or next-wave debt; shore-leave / recovery labor treats that debt. Never a floating fear meter (pairs with the spent power clock above).
 - **The siege happens around the plant.** Peaks can work adjacent bays and distant scrapes while you still restack *your* line — civilian labor under weather, not winning a war.
@@ -100,6 +104,7 @@ Use these when inventing features, VFX, audio, enemy behavior, or backlog tasks.
 - **Lived geography: hub and spoke.** Communal hubs vs private bunks/break nooks carry absent-crew loneliness as workplace bones under breach — archaeology texture beside the belts, not walking-sim story primacy. (Tacoma public/private.)
 - Anti-comp: **Biofactory** (hive-as-factory) — do not drift into “the factory *is* the hive.” We are ship factory *under* parasite pressure.
 - Anti-comp: **Lobotomy Corporation** as product fantasy — steal only the *combination-expansion* pressure shape; refuse monster zoo / facility-that-farms-the-hive.
+- Anti-comp: **Keep Talking and Nobody Explodes** as party genre — steal only solo procedure≠machine asymmetry; refuse co-op shouting bomb identity.
 
 ---
 
@@ -111,6 +116,7 @@ Use these when inventing features, VFX, audio, enemy behavior, or backlog tasks.
 - Audio treats the metal structure as a living organism: machine-lung HVAC, call-and-response ambience, reverb/occlusion; PA/radio muffled or cut mid-sentence when systems are compromised.
 - **Infection should be audible before it is visible** — a deck that has turned sounds muffled, detuned or submerged while it still looks fine.
 - Prefer tools and terminals that foreshadow in-world over floating chrome HUD.
+- **Tools look like labor.** Cassette-futurist cutters/scanners and worn hand props beat magic SF chrome; in FP, a readable deck chroma/stripe marks “up” so disorienting hulls stay navigable. (Shipbreaker deepen — refuse zero-g flight fantasy.)
 - HUD: diegetic where possible; avoid pure sci-fi arcade chrome.
 - In **first-person**, factory state must still be readable on machine faces and in the world — never require the iso overview to stay legible.
 - **In first person, withheld information is the horror tool.** Lag the scanner, muffle what is beyond the bulkhead, let a dark sector be reported rather than seen. Suggestion carries FP dread far cheaper than spectacle — but it may never cost the player the factory legibility the rule above guarantees.
@@ -166,6 +172,10 @@ Use these when inventing features, VFX, audio, enemy behavior, or backlog tasks.
 | Firewatch | Lonely-job radio intimacy; incomplete audio as the other person on shift | Walking-sim / relationship-plot as the skill |
 | Mothership RPG | Failure accumulates debt treated by leave/labor — not a panic HUD | Tabletop panic comedy / crew-slaughter management |
 | This War of Mine | Siege happens *around* the plant; you keep the line | War-sim / moral-adventure primary |
+| Metro (series) | Warm station-home vs deadly outside; filters/scrub checked in-world | Metro/Zone FPS combat identity; open-world checklist maps |
+| BLAME! | Purposeless megastructure growth; engineered loneliness at crushing scale | Nihei gunplay; NetSphere lore paste; full Brutalist replace of ship industrial |
+| Keep Talking and Nobody Explodes | Procedure ≠ live board; trips when you are doing well | **Anti-comp** — co-op bomb party / comedy shouting |
+| Inscryption | Learnable rules table that later forces hostile tradeoffs | Card-battler loop; meta fourth-wall; gag body horror |
 | Biofactory | — | **Anti-comp** — hive-as-factory drift |
 
 ---
@@ -196,6 +206,11 @@ Short, original motifs agents may use in copy, props, systems (no copyrighted qu
 - Night-shift hull: when human noise drops, structure-sounds rise — movement on the wrong side of the plating  
 - Naming-the-station: a lonely engineer who named the bay vs company shrink copy that never cared  
 - Forecastable surge PA: get under cover — the plant holds while the corridor goes lethal for a window  
+- Purposeless overbuilt spurs — belts and ducts that keep going past useful machines into dead ends  
+- Clean humming line over something harvested in the under-deck — immaculate protocol, wrong below  
+- Last-employee routines: schedule and tools still set for workers who never clock in  
+- Wrist/panel scrub timer you must look at before a sticky bay lets you linger  
+- Deck “up” stripe and a worn cutter that reads as issued labor, not a marine toy  
 
 ---
 
@@ -221,17 +236,15 @@ Promote to sections above only via `/lore-bible` when clearly good and north-sta
 - **Bay-as-garage valley:** after a breach peak, force a short repair/restack/diagnose loop on *your* machines before the next wave arms (pairs with L42/L43)  
 - **Fewer smarter hunters:** when near-term pressure spends, prefer 1–3 pathing flankers via vents over a trash swarm (pairs with L45 destination rule)  
 - **System-as-interface pass:** one more diegetic machine-face / sector status panel readable in both iso and FP — Observation “you are the station” without AI-protagonist fantasy (pairs with F12 machine faces)  
-- **Hub/spoke berth dressing:** one communal hub + one private bunk/break nook with lived props under the facility-as-home rule  
-- **Sidegrade expansion poison:** when a new bay opens, attach one *named* compounding risk that interacts with existing WaveFuel/HiveDebt (Lobotomy combination structure, scoped — not monster zoo)  
 - **Impregnated duct dressing:** sticky growth reads as *using* rectangular HVAC runs, not floating organic blobs (Scorn impregnation + Carrion habitat)  
-- **Emission / surge shelter window:** forecastable PA + light cue forces retreat into a sealed bay for N seconds while sticky interest spikes outside — not a soft valley timer, not a spent fuel bar (STALKER emission grammar scoped)  
-- **Berth-as-house FP densify:** one private bunk/break nook authored denser at 1.65 m than the belt deck (Returnal house intimacy + Tacoma private berth), without demoting iso factory skill  
-- **Distant shift radio:** optional hold-to-listen company/crew channel that never resolves into a face — Firewatch radio intimacy as employment texture beside cheerful-debt PA  
-- **Failure tax, not panic HUD:** failed seal/scrub/overheat adds sticky or WaveFuel interest rather than a fear meter — Mothership stress-as-debt motif, Bunker-compatible  
-- **Siege weather around the line:** during peaks, offscreen bay damage / distant scrapes sell that the hive is working the plant *around* you while you still restack (This War of Mine around-you energy)  
+- **Filter / scrub clock:** in sticky or breach sectors, a diegetic wrist/panel timer (+ optional fogged FP vignette) until scrub — Metro filter grammar, Bunker-compatible (no fear bar)  
+- **Purposeless growth dressing:** one far bay where belts/ducts continue past useful machines into dead ends (BLAME scale mood) without adding combat encounters  
+- **Manual ≠ machine:** a shift SOP that describes a safe state the live face LEDs contradict — KTANE asymmetry solo; player must reconcile, not twitch-aim  
+- **SOP turns trap:** mid-run, a cheerful procedure board demands a sidegrade that poisons another loop (Inscryption + Lobotomy CNG scoped)  
+- **Deck "up" stripe + worn tools:** Shipbreaker spatial cue + cassette-futurist scanner/cutter prop at 1.65 m  
 
 **Absorbed / no longer experiments:** soft menace director + scanner lag, HorrorClock sector decay, heat-raised infection share, recovery-beat AlarmLevel ease, diegetic PA that cuts mid-sentence — treat as canon grammar above.
-**Graduated to backlog tasks (tracked in `BACKLOG.md`, not here):** two measured clocks → L41, intensity valley timer → L42, recovery-beat labour → L43, delayed sector snapshot → L44; directional raids → L45, atmosphere brick table → L46, hive-as-resident ticks → L47/L48, lit security booth → L49; warm-dark / mediated cams / fewer hunters / bay-as-garage / empty-protocol → L56–L60; contamination stages → **L35** (shipped).
+**Graduated to backlog tasks (tracked in `BACKLOG.md`, not here):** two measured clocks → L41, intensity valley timer → L42, recovery-beat labour → L43, delayed sector snapshot → L44; directional raids → L45, atmosphere brick table → L46, hive-as-resident ticks → L47/L48, lit security booth → L49; warm-dark / mediated cams / fewer hunters / bay-as-garage / empty-protocol → L56–L60; contamination stages → **L35** (shipped); surge shelter / failure tax / sidegrade poison / siege weather / distant radio / berth densify → **L61–L66**.
 
 ---
 
@@ -243,6 +256,7 @@ Promote to sections above only via `/lore-bible` when clearly good and north-sta
 - Make document-checking, deduction, or cleanup the skill being tested — they are texture beside the belts  
 - Drift into Lobotomy-style containment zoo / employee management, or Biofactory hive-as-factory  
 - Drift into Zone open-world / artifact loot / mutant bestiary, or roguelike death-cycle as the loop  
+- Drift into Metro/Zone FPS identity, co-op bomb-party genre, or card-battler / fourth-wall gag loops  
 - Let FP rot iso, or let iso block world-legibility fixes FP needs  
 - Shrink the playable deck / pull walls in to “fix” early emptiness (Decision 2026-07-21)  
 - Invent a second roadmap — tasks go in `BACKLOG.md`  
@@ -265,6 +279,7 @@ Promote to sections above only via `/lore-bible` when clearly good and north-sta
 
 | Date | Change | Source |
 |------|--------|--------|
+| 2026-07-29 | Absorb 07-29. Canon: warm house vs deadly plant with in-world scrub/filter beat (Metro careful); purposeless engineered growth as loneliness (BLAME visual only); procedure≠live state + soft trip when healthy (KTANE anti-comp); SOP/rules table turns trap (Inscryption careful); cassette-futurist tools + deck “up” stripe (Shipbreaker deepen). Comps +Metro/+BLAME/+KTANE anti-comp/+Inscryption. Motifs +purposeless spurs/+scrub timer/+up stripe/+last-employee/+clean-over-harvest. Experiments +filter clock/+purposeless growth/+manual≠machine/+SOP trap/+deck up stripe. Graduated L61–L66 out of open experiments. Rejected: Metro FPS; Nihei gunplay; co-op bomb party; card-battler/fourth-wall; Sci-Fi Pipes shopping (wishlist only) | `lore/2026-07-29/summary.md` |
 | 2026-07-28 | Absorb 07-27 + 07-28. **07-27:** ship systems as the interface (Observation); expansion as sidegrade/combination hazard (Lobotomy structure only); hub/spoke lived geography (Tacoma); impregnate industrial architecture don’t replace it (Scorn careful); comps +Observation/+Tacoma/+Scorn/+Lobotomy anti-comp; motifs +ghost-in-HVAC/+hub-spoke/+duct impregnation. **07-28:** forecastable surge / take-shelter (STALKER careful); dual-mode berth intimacy (Returnal careful); radio as the other person on shift (Firewatch); failure tax not panic HUD (Mothership light); siege-around-the-plant (This War of Mine adjacent); motifs +night-hull/+naming-the-station/+surge PA; experiments +surge shelter/+berth densify/+distant radio/+failure tax/+siege weather. Graduated contamination stages → L35 (shipped). Rejected: play-as-AI; walking-sim primacy; monster zoo; full Giger replace; Zone FPS/artifact loot; roguelike loop; panic HUD comedy; war-sim; CRT-Free / duct-kit / hazard-sign asset shopping (wishlist only) | `lore/2026-07-27/summary.md`, `lore/2026-07-28/summary.md` |
 | 2026-07-26 | Absorb 07-26 (landed on remote during prior re-run). Canon: facility-as-home vibe before meters; mediation helps-and-obstructs; warm-dark footholds; recovery bay as garage labor; few hunters over trash swarms. Comps +Abiotic Factor, +Duskers, +RimWorld infestation, +Pacific Drive, +Dark Descent (careful). Motifs +empty protocol / machine mausoleum. Experiments +vibe gate, +mediated cams, +warm-dark bias, +bay-as-garage valley, +fewer smarter hunters. Rejected: beacon/cable/strobe shopping; Half-Life comedy; car/road fantasy; squad-RTS / Alien IP | `lore/2026-07-26/summary.md` |
 | 2026-07-26 | Absorb 07-25 (landed mid-run via the cloud agent). Canon: power/light is a *tangible* spent clock the hive exploits on dark or loud decks (Amnesia: The Bunker); expansion is the risk — one breach snowballs a bay, walls/chokepoints buy time not safety (They Are Billions); layered loops ripple so a "solved" system fails again later (ONI); quiet the HUD in both views with factory truth on machine faces so iso↔FP share it (Signalis). Comps +Bunker, +ONI, +They Are Billions, +Signalis; Against the Storm growth-debt folded into the existing two-clock. Motif +cheerful-PA-riding-on-debt. Experiments +sector calm budget, +noise interest radius, +cascade checklist, +breach snowball cap. Rejected: leak/spillage asset shopping (wishlist only, Built-in). | `lore/2026-07-25/summary.md` |
@@ -279,8 +294,8 @@ Promote to sections above only via `/lore-bible` when clearly good and north-sta
 
 ## Last absorbed research
 
-- Date: 2026-07-28  
-- Digests: 2026-07-19 → 2026-07-28, `lore/2026-07-28/summary.md` newest  
-- Focus absorbed: **07-27** Observation systems-as-interface; Tacoma hub/spoke; Lobotomy combination-expansion (anti-comp); Scorn impregnation; ghost-in-HVAC. **07-28** STALKER forecastable surge / take-shelter; Returnal dual-mode berth intimacy; Firewatch radio-as-shift-partner; Mothership failure tax (no panic HUD); This War of Mine siege-around-the-line; night-hull / naming-the-station motifs. Prior 07-26 and earlier unchanged.  
-- Left out on purpose: play-as-AI; walking-sim primacy; monster zoo / employee management; full Giger replace; Zone FPS / artifact loot / mutant bestiary; roguelike death-cycle; panic-HUD comedy; war-sim; CRT-Free + Modular Air Duct + Hazard & Safety 285 shopping (wishlist only). No preference forks — no new `Needs human decision`.  
-- Next: `/lore-gap` should queue strong **07-27/07-28** experiments not yet in `BACKLOG.md` (system-as-interface pass, hub/spoke berth, sidegrade expansion poison, impregnated ducts, surge shelter, berth densify, distant radio, failure tax, siege weather). L56–L60 cover the 07-26 block; L35 covers contamination stages.
+- Date: 2026-07-29  
+- Digests: 2026-07-19 → 2026-07-29, `lore/2026-07-29/summary.md` newest  
+- Focus absorbed: **07-29** Metro warm-house / filter diegesis (careful); BLAME purposeless growth (visual only); KTANE procedure≠machine (**anti-comp**); Inscryption SOP-as-trap (careful); Shipbreaker cassette tools + deck-up cue; last-employee / clean-over-harvest motifs. Prior 07-27/07-28 (Observation/Tacoma/Lobotomy/Scorn; STALKER/Returnal/Firewatch/Mothership/This War of Mine) unchanged.  
+- Left out on purpose: Metro/Zone FPS; Nihei gunplay / NetSphere paste; co-op bomb party; card-battler / fourth-wall gag; Modular Sci-Fi Pipes shopping (wishlist only; free Modular Pipeline Pack already logged). No preference forks — no new `Needs human decision`.  
+- Next: `/lore-gap` should queue strong **07-29** experiments not yet in `BACKLOG.md` (filter/scrub clock, purposeless growth dressing, manual≠machine, SOP trap, deck-up stripe). L61–L66 cover the 07-27/07-28 block.
