@@ -8,11 +8,11 @@ Rolling map of useful themes. Updated by daily research runs.
 
 | Pillar | What to mine | Status |
 |--------|----------------|--------|
-| Workplace as trap | Isolation baked into the job, not contrived lockdown | Strong — authenticity 07-19; protocol/rules-as-threat 07-22; oversized empty plant 07-23; grim overtime 07-24; cheerful debt-PA 07-25; facility-as-home 07-26; empty-station archaeology / hub-spoke berths (Tacoma) 07-27; lonely-job radio (Firewatch) + Teamster labor (Mothership light) 07-28; **station-as-warm-home + filter labor (Metro) + SOP/table-as-trap (Inscryption careful)** 2026-07-29 |
-| Industrial biomass / hive | Threat uses vents, heat, logistics; ship becomes habitat | Upgraded 07-20 Flood staging; Carrion habitat + path-to-source 07-24; Bunker noise/light 07-25; warm-dark nests 07-26; impregnate-don't-replace (Scorn careful) + duct habitat 07-27; forecastable surge / take-shelter (STALKER careful) 07-28; **purposeless megastructure growth (BLAME! visual) + clean line over under-deck harvest** 2026-07-29 |
-| Factory pressure = identity | Enemies tied to production loop (Factorio pollution lesson) | Strong; WaveFuel/HiveDebt 07-23; path-to-hottest + foothold caps 07-24; ONI ripples + expansion cascade 07-25; quality hunters 07-26; expansion sidegrade poison (Lobotomy anti-comp) 07-27; failure tax not panic HUD (Mothership) + siege-around-the-line 07-28; **manual≠machine asymmetry + trip-when-healthy pacing (KTANE anti-comp)** 2026-07-29 |
-| Diegetic dread | Diegetic UI, failing systems, environmental storytelling | Upgraded 07-20; Mixer EQ 07-22; delayed scanner 07-23; atmosphere bricks 07-24; power clock + empty HUD 07-25; mediated cams 07-26; systems-as-interface (Observation) + CRT-Free 07-27; ISO signage + hold-to-listen radio 07-28; **Metro filter/watch diegesis + Shipbreaker cassette boards / floor-ceiling cues** 2026-07-29 |
-| Lonely worker fantasy | Rustic space labor, patched ship, schedule vs survival | Strong — recovery beats; dual view; distant-signal 07-22; absent-crew 07-23; purposeless factory 07-24; refuel valley 07-25; bay-as-garage 07-26; ghost-in-the-HVAC 07-27; berth-as-house FP densify (Returnal) + naming-the-station 07-28; **empty-protocol routines (Last Employee) + labor tools not magic SF** 2026-07-29 |
+| Workplace as trap | Isolation baked into the job, not contrived lockdown | Strong — authenticity 07-19; protocol/rules-as-threat 07-22; oversized empty plant 07-23; grim overtime 07-24; cheerful debt-PA 07-25; facility-as-home 07-26; empty-station archaeology / hub-spoke berths (Tacoma) 07-27; lonely-job radio (Firewatch) + Teamster labor (Mothership light) 07-28; station-as-warm-home + filter labor (Metro) + SOP/table-as-trap (Inscryption careful) 07-29; **leased-body labor budget / stabilizer leash (Citizen Sleeper) + overtime lure (DREDGE day calm)** 2026-07-31 |
+| Industrial biomass / hive | Threat uses vents, heat, logistics; ship becomes habitat | Upgraded 07-20 Flood staging; Carrion habitat + path-to-source 07-24; Bunker noise/light 07-25; warm-dark nests 07-26; impregnate-don't-replace (Scorn careful) + duct habitat 07-27; forecastable surge / take-shelter (STALKER careful) 07-28; purposeless megastructure growth (BLAME! visual) + clean line over under-deck harvest 07-29; **omnipresent sticky weather / plague-air (Pathologic careful) + knowing-as-infection fiction** 2026-07-31 |
+| Factory pressure = identity | Enemies tied to production loop (Factorio pollution lesson) | Strong; WaveFuel/HiveDebt 07-23; path-to-hottest + foothold caps 07-24; ONI ripples + expansion cascade 07-25; quality hunters 07-26; expansion sidegrade poison (Lobotomy anti-comp) 07-27; failure tax not panic HUD (Mothership) + siege-around-the-line 07-28; manual≠machine asymmetry + trip-when-healthy pacing (KTANE anti-comp) 07-29; **cannot-save-every-bay triage + false-security overtime (Pathologic / DREDGE); Satisfactory joyful-factory anti-comp invert** 2026-07-31 |
+| Diegetic dread | Diegetic UI, failing systems, environmental storytelling | Upgraded 07-20; Mixer EQ 07-22; delayed scanner 07-23; atmosphere bricks 07-24; power clock + empty HUD 07-25; mediated cams 07-26; systems-as-interface (Observation) + CRT-Free 07-27; ISO signage + hold-to-listen radio 07-28; Metro filter/watch diegesis + Shipbreaker cassette boards / floor-ceiling cues 07-29; **player-centered fog close-in + abandoned beacon stay-away + work-light practicals** 2026-07-31 |
+| Lonely worker fantasy | Rustic space labor, patched ship, schedule vs survival | Strong — recovery beats; dual view; distant-signal 07-22; absent-crew 07-23; purposeless factory 07-24; refuel valley 07-25; bay-as-garage 07-26; ghost-in-the-HVAC 07-27; berth-as-house FP densify (Returnal) + naming-the-station 07-28; empty-protocol routines (Last Employee) + labor tools not magic SF 07-29; **architecture-not-for-you FP voids (NaissanceE) + body-as-leased-tool labor texture** 2026-07-31 |
 
 ## Comp watchlist
 
@@ -48,6 +48,11 @@ Rolling map of useful themes. Updated by daily research runs.
 - Keep Talking and Nobody Explodes (**manual≠board asymmetry + trip-when-healthy pacing** — **anti-comp**; refuse party bomb genre)
 - Inscryption (**rules/SOP-as-trap** — careful; refuse deckbuilder / meta fourth-wall)
 - Hardspace: Shipbreaker (**cassette-futurist tools + floor/ceiling cues** — deepen; debt trap already 07-21; refuse zero-g primary)
+- Pathologic 2 (**omnipresent plague-air dread / cannot-save-everyone triage** — careful; refuse town-sim / plot primary)
+- DREDGE (**day-calm overtime lure + player-centered fog / unsettle-not-jump-scare** — careful; refuse panic meter / fishing)
+- Citizen Sleeper (**leased-body Condition / stabilizer leash as labor budget** — careful; refuse narrative RPG / dice UI)
+- NaissanceE (**architecture-not-for-you / chiaroscuro FP voids** — visual/FP; refuse walking-sim primary)
+- Satisfactory (**joyful therapeutic factory** — **anti-comp** invert; keep FP scale literacy only)
 - Rain World (offscreen ecology / geometry-as-AI — light)
 - Frostpunk (grim labor sacrifice tone — adjacent; not city-builder)
 - Iron Lung (suggestion / sealed workplace / delayed vision — adjacent FP mood)
@@ -83,9 +88,9 @@ Paid + free lore asset leads export to [`assets-wishlist.csv`](assets-wishlist.c
 
 ## Last run
 
-- Date: 2026-07-29
+- Date: 2026-07-31
 - Landed on: `main`
-- Focus weight: Metro station-home + filter diegesis (careful); BLAME! purposeless growth (visual only); KTANE manual≠machine (**anti-comp**); Inscryption SOP-as-trap (careful); Shipbreaker cassette tools / floor-ceiling deepen; Modular Pipeline Pack re-use (07-21 free); wishlist Modular Sci-Fi Pipes (~$12.99)
-- **Bible absorbed:** 2026-07-29 via `/lore-bible` — warm-house/filter diegesis, purposeless growth, procedure≠machine (KTANE anti-comp), SOP-as-trap, cassette tools/deck-up; L61–L66 graduated; experiments parked for `/lore-gap`
-- Prior run: 2026-07-28 (STALKER Emission take-shelter; Returnal dual intimacy; Firewatch radio; Mothership failure-tax; This War of Mine siege-around-you; Three signs ISO; Hazard & Safety 285 wishlist)
+- Focus weight: Pathologic 2 plague-air / triage (careful); DREDGE day-calm→fog (careful); Citizen Sleeper leased-body labor budget (careful); NaissanceE architecture-not-for-you (FP deepen after BLAME); Satisfactory joyful-factory (**anti-comp** invert); free work lights + Industrial Lights Pack wishlist (~$15)
+- **Bible absorbed:** pending `/lore-bible` (Last absorbed research still 2026-07-29)
+- Prior run: 2026-07-29 (Metro station-home; BLAME growth; KTANE anti-comp; Inscryption SOP-as-trap; Shipbreaker cassette tools; Modular Sci-Fi Pipes wishlist)
 - Render pipeline note: project currently **Built-in** (prefer Built-in-compatible kits; Wet Stuff needs Deferred cameras)
