@@ -8,11 +8,11 @@ Rolling map of useful themes. Updated by daily research runs.
 
 | Pillar | What to mine | Status |
 |--------|----------------|--------|
-| Workplace as trap | Isolation baked into the job, not contrived lockdown | Strong — authenticity 07-19; protocol/rules-as-threat 07-22; oversized empty plant 07-23; grim overtime 07-24; cheerful debt-PA 07-25; facility-as-home 07-26; empty-station archaeology / hub-spoke berths (Tacoma) 07-27; lonely-job radio (Firewatch) + Teamster labor (Mothership light) 07-28; station-as-warm-home + filter labor (Metro) + SOP/table-as-trap (Inscryption careful) 07-29; leased-body labor budget / stabilizer leash (Citizen Sleeper) + overtime lure (DREDGE day calm) 07-31; **industrial-as-complicated-beauty (NORCO) + anti-adventure cleanup wage trap (Spaceport Janitor)** 2026-08-01 |
-| Industrial biomass / hive | Threat uses vents, heat, logistics; ship becomes habitat | Upgraded 07-20 Flood staging; Carrion habitat + path-to-source 07-24; Bunker noise/light 07-25; warm-dark nests 07-26; impregnate-don't-replace (Scorn careful) + duct habitat 07-27; forecastable surge / take-shelter (STALKER careful) 07-28; purposeless megastructure growth (BLAME! visual) + clean line over under-deck harvest 07-29; omnipresent sticky weather / plague-air (Pathologic careful) + knowing-as-infection fiction 07-31; **hive-as-longed-for-home / tempting foothold (You Dream of the Hive motif)** 2026-08-01 |
-| Factory pressure = identity | Enemies tied to production loop (Factorio pollution lesson) | Strong; WaveFuel/HiveDebt 07-23; path-to-hottest + foothold caps 07-24; ONI ripples + expansion cascade 07-25; quality hunters 07-26; expansion sidegrade poison (Lobotomy anti-comp) 07-27; failure tax not panic HUD (Mothership) + siege-around-the-line 07-28; manual≠machine asymmetry + trip-when-healthy pacing (KTANE anti-comp) 07-29; cannot-save-every-bay triage + false-security overtime (Pathologic / DREDGE); Satisfactory joyful-factory anti-comp invert 07-31; **aftermath residue as labor beat (Janitor); fog occlusion changes how you work the line (GTFO careful)** 2026-08-01 |
-| Diegetic dread | Diegetic UI, failing systems, environmental storytelling | Upgraded 07-20; Mixer EQ 07-22; delayed scanner 07-23; atmosphere bricks 07-24; power clock + empty HUD 07-25; mediated cams 07-26; systems-as-interface (Observation) + CRT-Free 07-27; ISO signage + hold-to-listen radio 07-28; Metro filter/watch diegesis + Shipbreaker cassette boards / floor-ceiling cues 07-29; player-centered fog close-in + abandoned beacon stay-away + work-light practicals 07-31; **utilitarian patina / Remus→Romulus retrofit eras (Romulus craft) + per-bay bespoke light + fuse-box fault bulbs** 2026-08-01 |
-| Lonely worker fantasy | Rustic space labor, patched ship, schedule vs survival | Strong — recovery beats; dual view; distant-signal 07-22; absent-crew 07-23; purposeless factory 07-24; refuel valley 07-25; bay-as-garage 07-26; ghost-in-the-HVAC 07-27; berth-as-house FP densify (Returnal) + naming-the-station 07-28; empty-protocol routines (Last Employee) + labor tools not magic SF 07-29; architecture-not-for-you FP voids (NaissanceE) + body-as-leased-tool labor texture 07-31; **proud lonely plant vista (NORCO) + scavenger-small under distant agendas (Forever Winter light)** 2026-08-01 |
+| Workplace as trap | Isolation baked into the job, not contrived lockdown | Strong — authenticity 07-19; protocol/rules-as-threat 07-22; oversized empty plant 07-23; grim overtime 07-24; cheerful debt-PA 07-25; facility-as-home 07-26; empty-station archaeology / hub-spoke berths (Tacoma) 07-27; lonely-job radio (Firewatch) + Teamster labor (Mothership light) 07-28; station-as-warm-home + filter labor (Metro) + SOP/table-as-trap (Inscryption careful) 07-29; leased-body labor budget / stabilizer leash (Citizen Sleeper) + overtime lure (DREDGE day calm) 07-31; industrial-as-complicated-beauty (NORCO) + anti-adventure cleanup wage trap (Spaceport Janitor) 08-01; **engineer keep-the-lights-on (Moons) + wry bureaucratic stagnation (Disco light) + maintenance override under broken command (Job Interview)** 2026-08-02 |
+| Industrial biomass / hive | Threat uses vents, heat, logistics; ship becomes habitat | Upgraded 07-20 Flood staging; Carrion habitat + path-to-source 07-24; Bunker noise/light 07-25; warm-dark nests 07-26; impregnate-don't-replace (Scorn careful) + duct habitat 07-27; forecastable surge / take-shelter (STALKER careful) 07-28; purposeless megastructure growth (BLAME! visual) + clean line over under-deck harvest 07-29; omnipresent sticky weather / plague-air (Pathologic careful) + knowing-as-infection fiction 07-31; hive-as-longed-for-home / tempting foothold (You Dream of the Hive motif) 08-01; **semi-passive place hazards / material anomalies (Into the Radius careful — not Emission)** 2026-08-02 |
+| Factory pressure = identity | Enemies tied to production loop (Factorio pollution lesson) | Strong; WaveFuel/HiveDebt 07-23; path-to-hottest + foothold caps 07-24; ONI ripples + expansion cascade 07-25; quality hunters 07-26; expansion sidegrade poison (Lobotomy anti-comp) 07-27; failure tax not panic HUD (Mothership) + siege-around-the-line 07-28; manual≠machine asymmetry + trip-when-healthy pacing (KTANE anti-comp) 07-29; cannot-save-every-bay triage + false-security overtime (Pathologic / DREDGE); Satisfactory joyful-factory anti-comp invert 07-31; aftermath residue as labor beat (Janitor); fog occlusion changes how you work the line (GTFO careful) 08-01; **logistics choke / through-vs-local flow hierarchy (InfraSpace light)** 2026-08-02 |
+| Diegetic dread | Diegetic UI, failing systems, environmental storytelling | Upgraded 07-20; Mixer EQ 07-22; delayed scanner 07-23; atmosphere bricks 07-24; power clock + empty HUD 07-25; mediated cams 07-26; systems-as-interface (Observation) + CRT-Free 07-27; ISO signage + hold-to-listen radio 07-28; Metro filter/watch diegesis + Shipbreaker cassette boards / floor-ceiling cues 07-29; player-centered fog close-in + abandoned beacon stay-away + work-light practicals 07-31; utilitarian patina / Remus→Romulus retrofit eras (Romulus craft) + per-bay bespoke light + fuse-box fault bulbs 08-01; **security booth map/roster bones (Prey deepen) + Signalscope-style distant bay beacon (Outer Wilds deepen) + control-panel / ammeter faces** 2026-08-02 |
+| Lonely worker fantasy | Rustic space labor, patched ship, schedule vs survival | Strong — recovery beats; dual view; distant-signal 07-22; absent-crew 07-23; purposeless factory 07-24; refuel valley 07-25; bay-as-garage 07-26; ghost-in-the-HVAC 07-27; berth-as-house FP densify (Returnal) + naming-the-station 07-28; empty-protocol routines (Last Employee) + labor tools not magic SF 07-29; architecture-not-for-you FP voids (NaissanceE) + body-as-leased-tool labor texture 07-31; proud lonely plant vista (NORCO) + scavenger-small under distant agendas (Forever Winter light) 08-01; **Mars-technician solitude before payoff (Moons) + travelers-as-shared-song loneliness (Outer Wilds deepen)** 2026-08-02 |
 
 ## Comp watchlist
 
@@ -58,6 +58,12 @@ Rolling map of useful themes. Updated by daily research runs.
 - Alien: Romulus (**utilitarian patina / Remus→Romulus tech eras** — craft only; refuse xenomorph IP paste)
 - GTFO (**fog/volumetrics as character + per-bay light** — careful; refuse co-op horde shooter)
 - Forever Winter (**scavenger-small under distant agendas** — light scale only; refuse extraction shooter)
+- Moons of Madness (**hard-SF engineer workplace before cosmic payoff / unnerve not jumpscares** — careful; refuse madness HUD / walking-sim primary)
+- Disco Elysium (**wry melancholy / bureaucratic stagnation / unseen industrial ruins** — light; refuse detective RPG comedy)
+- Into the Radius (**semi-passive anomalies as place hazards** — careful; refuse VR FPS / Zone artifact loot; distinct from STALKER Emission)
+- InfraSpace (**logistics choke / through-vs-local hierarchy** — light; refuse city-builder)
+- Prey / Talos I (**security booths as workplace bones** — deepen; refuse immersive-sim ability fantasy)
+- Outer Wilds (**Signalscope distant-connection loneliness** — deepen; refuse time-loop adventure primary)
 - Rain World (offscreen ecology / geometry-as-AI — light)
 - Frostpunk (grim labor sacrifice tone — adjacent; not city-builder)
 - Iron Lung (suggestion / sealed workplace / delayed vision — adjacent FP mood)
@@ -71,8 +77,6 @@ Rolling map of useful themes. Updated by daily research runs.
 - ROUTINE, Haze, Site 17 (adjacent industrial/sci-fi horror)
 - Control / Oldest House (bureaucratic Brutalism — adjacent)
 - Viscera Cleanup Detail (aftermath labor — mood only; refuse comedy)
-- Outer Wilds (lonely melancholy — light touch only)
-- Prey / Talos I (security booths as workplace bones — light)
 
 ## Branch policy
 
@@ -93,9 +97,9 @@ Paid + free lore asset leads export to [`assets-wishlist.csv`](assets-wishlist.c
 
 ## Last run
 
-- Date: 2026-08-01
+- Date: 2026-08-02
 - Landed on: `main`
-- Focus weight: NORCO industrial complicated beauty; Spaceport Janitor anti-adventure cleanup labor; Alien Romulus utilitarian patina / retrofit eras (craft only); GTFO fog-as-character (careful); Forever Winter scale (light); hive-desire fiction motif; free Abandoned Factory Lite + sockets + Poly Haven wall/caged lamps; Fuse Box Prop wishlist (~$15.99)
-- **Bible absorbed:** pending `/lore-bible` (Last absorbed research still 2026-07-29; 07-31 + 08-01 digests unabsorbed)
-- Prior run: 2026-07-31 (Pathologic plague-air; DREDGE day-calm fog; Citizen Sleeper body-budget; NaissanceE voids; Satisfactory anti-comp; Industrial Lights Pack wishlist)
-- Render pipeline note: project currently **Built-in** (prefer Built-in-compatible kits; Wet Stuff needs Deferred cameras)
+- Focus weight: Moons of Madness hard-SF engineer dread; Disco Elysium wry bureaucratic melancholy (light); Into the Radius semi-passive anomalies (careful); Prey security-booth deepen; Outer Wilds Signalscope deepen; InfraSpace logistics choke (light); Job Interview maintenance-override fiction; free Control Panels Pack; Vintage Ammeter Set wishlist (~$9.99 Built-in)
+- **Bible absorbed:** pending `/lore-bible` (Last absorbed research still 2026-07-29; 07-31 + 08-01 + 08-02 digests unabsorbed)
+- Prior run: 2026-08-01 (NORCO industrial beauty; Spaceport Janitor cleanup labor; Romulus craft; GTFO fog; Forever Winter scale; Fuse Box wishlist)
+- Render pipeline note: project currently **Built-in** (prefer Built-in-compatible kits; Wet Stuff needs Deferred cameras; skip URP-only gauges)
