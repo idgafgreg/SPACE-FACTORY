@@ -17,10 +17,19 @@ public class PlayerArtAttach : MonoBehaviour
     /// <summary>Fallback body, used only when the scene authored none.</summary>
     const string FallbackModel = "ArtPlaceholders/astronautA";
 
+    /// <summary>
+    /// Human Decision 2026-08-03: pack body reads ~2.26 m. Scale to ~0.80 so the
+    /// worker matches human props. Applied in code — do NOT bake into Sector01.
+    /// </summary>
+    const float BodyScale = 0.80f;
+
     float _nextCheck;
 
     /// <summary>The body whose arms have already been dropped out of the T-pose.</summary>
     Transform _posedBody;
+
+    /// <summary>The body that has already received the human-scale factor.</summary>
+    Transform _scaledBody;
 
     void Update()
     {
@@ -52,6 +61,7 @@ public class PlayerArtAttach : MonoBehaviour
         var authored = FindAuthoredBody(transform);
         if (authored != null)
         {
+            EnsureBodyScale(authored);
             EnsureIdlePose(authored);
             HideCapsule(authored);
             return;
@@ -60,6 +70,7 @@ public class PlayerArtAttach : MonoBehaviour
         var existing = transform.Find("ArtPlaceholder");
         if (existing != null)
         {
+            EnsureBodyScale(existing);
             HideCapsule(existing);
             var marker = existing.GetComponent<ArtPlaceholderMarker>();
             if (marker == null || !marker.fitted)
@@ -80,9 +91,22 @@ public class PlayerArtAttach : MonoBehaviour
         foreach (var c in art.GetComponentsInChildren<Collider>())
             FxSafe.Destroy(c);
 
+        EnsureBodyScale(art.transform);
         HideCapsule(art.transform);
         ArtPlaceholderFitter.Fit(art.transform);
         EnsureIdlePose(art.transform);
+    }
+
+    /// <summary>
+    /// Apply the human Decision 2026-08-03 body scale once per body so the
+    /// worker matches human props (~0.80 of the pack's oversized silhouette).
+    /// Guarded so it never compounds across the 0.5s tick or after a respawn.
+    /// </summary>
+    void EnsureBodyScale(Transform body)
+    {
+        if (body == null || body == _scaledBody) return;
+        body.localScale = Vector3.one * BodyScale;
+        _scaledBody = body;
     }
 
     /// <summary>

@@ -1,8 +1,10 @@
-﻿using UnityEngine;
+using UnityEngine;
 
 /// <summary>
-/// Global view-mode switch. Default is the persisted player preference; if no
-/// preference exists the game starts in the existing iso/orbit camera.
+/// Global view-mode switch. Default is first-person when no preference exists;
+/// existing PlayerPrefs still win. Iso remains fully playable and toggleable (V).
+/// Human Decision 2026-08-03: default view is first-person; focus near-term work
+/// on polishing FP as the primary view.
 /// </summary>
 public static class ViewMode
 {
@@ -12,7 +14,8 @@ public static class ViewMode
 
     public static event System.Action OnChanged;
 
-    static Mode _current = (Mode)PlayerPrefs.GetInt(PrefsKey, (int)Mode.Iso);
+    // Decision 2026-08-03: default view is first-person. Existing PlayerPrefs still win.
+    static Mode _current = (Mode)PlayerPrefs.GetInt(PrefsKey, (int)Mode.FirstPerson);
 
     public static Mode Current
     {
