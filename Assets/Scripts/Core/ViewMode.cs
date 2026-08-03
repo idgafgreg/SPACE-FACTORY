@@ -14,14 +14,28 @@ public static class ViewMode
 
     public static event System.Action OnChanged;
 
-    // Decision 2026-08-03: default view is first-person. Existing PlayerPrefs still win.
-    static Mode _current = (Mode)PlayerPrefs.GetInt(PrefsKey, (int)Mode.FirstPerson);
+    // Lazy-loaded — PlayerPrefs must not run in a static field initializer
+    // (domain reload / assembly load can throw).
+    static Mode _current;
+    static bool _loaded;
+
+    static void EnsureLoaded()
+    {
+        if (_loaded) return;
+        _current = (Mode)PlayerPrefs.GetInt(PrefsKey, (int)Mode.FirstPerson);
+        _loaded = true;
+    }
 
     public static Mode Current
     {
-        get => _current;
+        get
+        {
+            EnsureLoaded();
+            return _current;
+        }
         set
         {
+            EnsureLoaded();
             if (_current == value) return;
             _current = value;
             PlayerPrefs.SetInt(PrefsKey, (int)_current);
@@ -29,8 +43,8 @@ public static class ViewMode
         }
     }
 
-    public static bool IsIso => _current == Mode.Iso;
-    public static bool IsFirstPerson => _current == Mode.FirstPerson;
+    public static bool IsIso => Current == Mode.Iso;
+    public static bool IsFirstPerson => Current == Mode.FirstPerson;
 
     public static void Toggle() => Current = IsIso ? Mode.FirstPerson : Mode.Iso;
 }

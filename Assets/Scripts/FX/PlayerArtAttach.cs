@@ -70,11 +70,12 @@ public class PlayerArtAttach : MonoBehaviour
         var existing = transform.Find("ArtPlaceholder");
         if (existing != null)
         {
-            EnsureBodyScale(existing);
             HideCapsule(existing);
             var marker = existing.GetComponent<ArtPlaceholderMarker>();
             if (marker == null || !marker.fitted)
                 ArtPlaceholderFitter.Fit(existing);
+            // Scale after Fit so the fitter does not overwrite BodyScale.
+            EnsureBodyScale(existing);
             return;
         }
 
@@ -91,9 +92,10 @@ public class PlayerArtAttach : MonoBehaviour
         foreach (var c in art.GetComponentsInChildren<Collider>())
             FxSafe.Destroy(c);
 
-        EnsureBodyScale(art.transform);
         HideCapsule(art.transform);
         ArtPlaceholderFitter.Fit(art.transform);
+        // Scale after Fit so the fitter does not overwrite BodyScale.
+        EnsureBodyScale(art.transform);
         EnsureIdlePose(art.transform);
     }
 
