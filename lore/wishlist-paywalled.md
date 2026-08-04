@@ -2,7 +2,7 @@
 
 Assets and tools found during lore research that require purchase. **Do not buy until funded.** Prices are approximate store listing prices at discovery time and may change.
 
-Last updated: 2026-08-02
+Last updated: 2026-08-04
 
 | Priority | Item | Est. price | Link | Why it fits SPACE FACTORY | Notes |
 |----------|------|------------|------|---------------------------|-------|
@@ -10,6 +10,7 @@ Last updated: 2026-08-02
 | High | Modular Horror Kit: Industrial Edition | ~$23 | https://assetstore.unity.com/packages/3d/environments/industrial/modular-horror-kit-industrial-edition-342062 | Cheap industrial horror corridors, traps, creatures, URP | Good prototype kit; Dec 2025 release; URP — convert if still on Built-in |
 | High | Bionic structures | ~$9.90 | https://assetstore.unity.com/packages/3d/environments/bionic-structures-163649 | Low-cost organic outgrowths/cocoons for hive-on-metal kitbash | Added 2026-07-19; URP/HDRP shaders noted on store page |
 | High | Janky Audio | ~$20 | https://assetstore.unity.com/packages/tools/audio/janky-audio-288290 | Occlusion + non-spherical reverb for diegetic PA / vents / lonely decks | Added 2026-07-20; **Built-in compatible** (matches current project RP) |
+| Medium | Fire Safety Equipment Props Pack | ~$14.49 | https://assetstore.unity.com/packages/3d/props/fire-safety-equipment-props-pack-extinguishers-alarms-modular-pi-352168 | Extinguishers, alarms, modular pipe bits for lived workplace safety / prep-labor dressing — **Built-in only** (matches RP) | Added 2026-08-04; try free Workshop Tools extinguisher + Industrial Props Kit first; skip URP-only Basic Safety Cone Pack; prefer Synty safety props when present |
 | Medium | Vintage Ammeter Set (Functional) | ~$9.99 | https://assetstore.unity.com/packages/3d/props/electronics/vintage-ammeter-set-functional-274032 | Scripted needle load gauges for diegetic power-clock / machine faces — **Built-in only** (matches RP) | Added 2026-08-02; try free Control Panels Pack + simple needle script first; AI-assisted pointer script noted by publisher; prefer Synty gauges when present |
 | Medium | Fuse Box Prop – Game Ready | ~$15.99 | https://assetstore.unity.com/packages/3d/props/electronics/fuse-box-prop-game-ready-351458 | Removable fuses + green/red/off fault bulbs for diegetic power-clock / sticky-bay breaker panels — Built-in listed | Added 2026-08-01; try free Abandoned Factory Lite power boxes + Free Sockets and Switches first; prefer Synty electrical props when they cover the need |
 | Medium | Industrial Lights Pack HDRP/URP/SRP | ~$15 | https://assetstore.unity.com/packages/3d/props/industrial-lights-pack-hdrp-urp-srp-306225 | 24 hanging/fixture industrial lights (Gray/Yellow) for lived decks — Built-in Compatible (listed) | Added 2026-07-31; try free Industrial Props Kit work light + Poly Haven industrial pipe lamp first; prefer Synty fixtures when they cover the need |
@@ -47,5 +48,6 @@ Last updated: 2026-08-02
 - Skip HDRP-only rust/stain decal packs (e.g. Rust Stain Decal Pack Vol. 11) while the project stays on Built-in; prefer free materials + Built-in Projector workflow.
 - Prefer cheap biomass kitbash (**Bionic structures**) before $50+ infestation packs if only prototyping growth props.
 - Try free **Abandoned Factory (Lite)** power boxes, **Free Sockets and Switches**, **Control Panels Pack**, and Poly Haven **industrial wall lamp / caged sconce** before buying fuse-box, ammeter, or extra industrial light packs.
+- Try free **Workshop Tools** (fire extinguisher, hand tools, carts) before buying Fire Safety Equipment Props or other safety-dressing packs; skip URP-only Basic Safety Cone Pack while Built-in.
 - Skip URP-only gauge/control-panel kits (e.g. Stylized Gauges Pack) while the project stays on Built-in; Vintage Ammeter is Built-in-only if a paid needle gauge is needed later.
 - Re-check prices and Unity version compatibility on purchase day.
