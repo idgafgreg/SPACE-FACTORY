@@ -2,7 +2,7 @@
 
 Assets and tools found during lore research that require purchase. **Do not buy until funded.** Prices are approximate store listing prices at discovery time and may change.
 
-Last updated: 2026-08-05
+Last updated: 2026-08-07
 
 | Priority | Item | Est. price | Link | Why it fits SPACE FACTORY | Notes |
 |----------|------|------------|------|---------------------------|-------|
@@ -10,6 +10,7 @@ Last updated: 2026-08-05
 | High | Modular Horror Kit: Industrial Edition | ~$23 | https://assetstore.unity.com/packages/3d/environments/industrial/modular-horror-kit-industrial-edition-342062 | Cheap industrial horror corridors, traps, creatures, URP | Good prototype kit; Dec 2025 release; URP — convert if still on Built-in |
 | High | Bionic structures | ~$9.90 | https://assetstore.unity.com/packages/3d/environments/bionic-structures-163649 | Low-cost organic outgrowths/cocoons for hive-on-metal kitbash | Added 2026-07-19; URP/HDRP shaders noted on store page |
 | High | Janky Audio | ~$20 | https://assetstore.unity.com/packages/tools/audio/janky-audio-288290 | Occlusion + non-spherical reverb for diegetic PA / vents / lonely decks | Added 2026-07-20; **Built-in compatible** (matches current project RP) |
+| Medium | Industrial Power Control Panel – Game-Ready | ~$20 | https://assetstore.unity.com/packages/3d/props/electronics/industrial-power-control-panel-game-ready-357998 | Mixed-era retrofit power panel + separate meters/emissives + removable selector lever for diegetic breaker triage / Remus→Romulus power walls — Built-in listed | Added 2026-08-07; try free Control Panels Pack + Abandoned Factory Lite power boxes + Free Sockets first; prefer Fuse Box Prop wishlist / Synty electrical when they cover the need; skip URP-only gauge kits |
 | Medium | Vintage Facility Signs | ~$11.99 | https://assetstore.unity.com/packages/3d/props/interior/vintage-facility-signs-364818 | Worn metal room IDs / safety / navigation placards + lightboxes for bureaucratic workplace diegesis — **Built-in only** (matches RP) | Added 2026-08-05; try free Dirty Road Sign Pack industrial symbols + Three signs ISO + Warwolf InfoDecals first; skip URP-only Warning Signs; prefer Synty / Hazard & Safety 285 when they cover the need |
 | Medium | Fire Safety Equipment Props Pack | ~$14.49 | https://assetstore.unity.com/packages/3d/props/fire-safety-equipment-props-pack-extinguishers-alarms-modular-pi-352168 | Extinguishers, alarms, modular pipe bits for lived workplace safety / prep-labor dressing — **Built-in only** (matches RP) | Added 2026-08-04; try free Workshop Tools extinguisher + Industrial Props Kit first; skip URP-only Basic Safety Cone Pack; prefer Synty safety props when present |
 | Medium | Vintage Ammeter Set (Functional) | ~$9.99 | https://assetstore.unity.com/packages/3d/props/electronics/vintage-ammeter-set-functional-274032 | Scripted needle load gauges for diegetic power-clock / machine faces — **Built-in only** (matches RP) | Added 2026-08-02; try free Control Panels Pack + simple needle script first; AI-assisted pointer script noted by publisher; prefer Synty gauges when present |
@@ -51,5 +52,7 @@ Last updated: 2026-08-05
 - Try free **Abandoned Factory (Lite)** power boxes, **Free Sockets and Switches**, **Control Panels Pack**, and Poly Haven **industrial wall lamp / caged sconce** before buying fuse-box, ammeter, or extra industrial light packs.
 - Try free **Workshop Tools** (fire extinguisher, hand tools, carts) before buying Fire Safety Equipment Props or other safety-dressing packs; skip URP-only Basic Safety Cone Pack while Built-in.
 - Try free **Dirty Road Sign Pack** industrial symbols + **Three signs (ISO 7010)** + Warwolf InfoDecals before buying Vintage Facility Signs or Hazard & Safety 285; skip URP-only Warning Signs packs while Built-in.
+- Try free **Street Props Prototype Collection** (BiRP barricades/channelizing) before buying extra safety-cone / barrier packs; skip URP-only Basic Safety Cone Pack while Built-in.
+- Try free **Control Panels Pack** + **Abandoned Factory (Lite)** power boxes + **Free Sockets and Switches** before buying Industrial Power Control Panel or stacking another fuse/power-wall pack.
 - Skip URP-only gauge/control-panel kits (e.g. Stylized Gauges Pack) while the project stays on Built-in; Vintage Ammeter is Built-in-only if a paid needle gauge is needed later.
 - Re-check prices and Unity version compatibility on purchase day.
